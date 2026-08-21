@@ -1,0 +1,1 @@
+"""Console panel responsibilities for IDE output."""

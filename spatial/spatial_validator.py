@@ -1,0 +1,1 @@
+"""Spatial validation responsibilities for Lumi scene plans."""

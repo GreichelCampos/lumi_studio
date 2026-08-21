@@ -1,0 +1,1 @@
+"""Rendering responsibilities for 3D scene visualization."""

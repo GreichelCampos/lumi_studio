@@ -1,0 +1,1 @@
+"""Project coordination responsibilities for Estudio Lumi workspaces."""

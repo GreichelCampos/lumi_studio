@@ -1,0 +1,1 @@
+"""Camera responsibilities for the 3D renderer."""

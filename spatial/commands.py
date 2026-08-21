@@ -1,0 +1,1 @@
+"""Spatial command model responsibilities for Lumi programs."""

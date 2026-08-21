@@ -1,0 +1,1 @@
+"""Main window responsibilities for the Estudio Lumi IDE."""

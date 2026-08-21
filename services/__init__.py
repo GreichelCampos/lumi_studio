@@ -1,0 +1,1 @@
+"""Service package coordinating IDE, compilation, execution, and projects."""

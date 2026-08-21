@@ -1,0 +1,1 @@
+"""3D renderer package for Estudio Lumi visualization."""

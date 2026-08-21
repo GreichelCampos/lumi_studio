@@ -1,0 +1,1 @@
+"""Entry point for launching Estudio Lumi."""

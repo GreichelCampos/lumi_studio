@@ -1,0 +1,1 @@
+"""Spatial domain package for scene planning and validation."""
