@@ -1,0 +1,108 @@
+{
+  "source": "hacer entero i = 0; i < 4; i = i + 1 {\n}",
+  "file": "principal.lumi",
+  "expected_tokens": [
+    {
+      "type": "FOR",
+      "lexeme": "hacer",
+      "line": 1,
+      "column": 1
+    },
+    {
+      "type": "INTEGER_TYPE",
+      "lexeme": "entero",
+      "line": 1,
+      "column": 7
+    },
+    {
+      "type": "IDENTIFIER",
+      "lexeme": "i",
+      "line": 1,
+      "column": 14
+    },
+    {
+      "type": "ASSIGN",
+      "lexeme": "=",
+      "line": 1,
+      "column": 16
+    },
+    {
+      "type": "INTEGER_LITERAL",
+      "lexeme": "0",
+      "line": 1,
+      "column": 18
+    },
+    {
+      "type": "SEMICOLON",
+      "lexeme": ";",
+      "line": 1,
+      "column": 19
+    },
+    {
+      "type": "IDENTIFIER",
+      "lexeme": "i",
+      "line": 1,
+      "column": 21
+    },
+    {
+      "type": "LESS",
+      "lexeme": "<",
+      "line": 1,
+      "column": 23
+    },
+    {
+      "type": "INTEGER_LITERAL",
+      "lexeme": "4",
+      "line": 1,
+      "column": 25
+    },
+    {
+      "type": "SEMICOLON",
+      "lexeme": ";",
+      "line": 1,
+      "column": 26
+    },
+    {
+      "type": "IDENTIFIER",
+      "lexeme": "i",
+      "line": 1,
+      "column": 28
+    },
+    {
+      "type": "ASSIGN",
+      "lexeme": "=",
+      "line": 1,
+      "column": 30
+    },
+    {
+      "type": "IDENTIFIER",
+      "lexeme": "i",
+      "line": 1,
+      "column": 32
+    },
+    {
+      "type": "PLUS",
+      "lexeme": "+",
+      "line": 1,
+      "column": 34
+    },
+    {
+      "type": "INTEGER_LITERAL",
+      "lexeme": "1",
+      "line": 1,
+      "column": 36
+    },
+    {
+      "type": "LEFT_BRACE",
+      "lexeme": "{",
+      "line": 1,
+      "column": 38
+    },
+    {
+      "type": "RIGHT_BRACE",
+      "lexeme": "}",
+      "line": 2,
+      "column": 1
+    }
+  ]
+}

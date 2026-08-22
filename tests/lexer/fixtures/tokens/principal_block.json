@@ -1,0 +1,54 @@
+{
+  "source": "principal {\n    mostrar(\"Hola\")>>\n}",
+  "file": "principal.lumi",
+  "expected_tokens": [
+    {
+      "type": "PRINCIPAL",
+      "lexeme": "principal",
+      "line": 1,
+      "column": 1
+    },
+    {
+      "type": "LEFT_BRACE",
+      "lexeme": "{",
+      "line": 1,
+      "column": 11
+    },
+    {
+      "type": "SHOW",
+      "lexeme": "mostrar",
+      "line": 2,
+      "column": 5
+    },
+    {
+      "type": "LEFT_PAREN",
+      "lexeme": "(",
+      "line": 2,
+      "column": 12
+    },
+    {
+      "type": "STRING_LITERAL",
+      "lexeme": "\"Hola\"",
+      "line": 2,
+      "column": 13
+    },
+    {
+      "type": "RIGHT_PAREN",
+      "lexeme": ")",
+      "line": 2,
+      "column": 19
+    },
+    {
+      "type": "TERMINATOR",
+      "lexeme": ">>",
+      "line": 2,
+      "column": 20
+    },
+    {
+      "type": "RIGHT_BRACE",
+      "lexeme": "}",
+      "line": 3,
+      "column": 1
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "source": "entero edad = 20>>",
+  "file": "principal.lumi",
+  "expected_tokens": [
+    {
+      "type": "INTEGER_TYPE",
+      "lexeme": "entero",
+      "line": 1,
+      "column": 1
+    },
+    {
+      "type": "IDENTIFIER",
+      "lexeme": "edad",
+      "line": 1,
+      "column": 8
+    },
+    {
+      "type": "ASSIGN",
+      "lexeme": "=",
+      "line": 1,
+      "column": 13
+    },
+    {
+      "type": "INTEGER_LITERAL",
+      "lexeme": "20",
+      "line": 1,
+      "column": 15
+    },
+    {
+      "type": "TERMINATOR",
+      "lexeme": ">>",
+      "line": 1,
+      "column": 17
+    }
+  ]
+}
