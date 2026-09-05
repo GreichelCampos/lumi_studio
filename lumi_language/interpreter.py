@@ -113,6 +113,8 @@ class Interpreter:
             else:
                 branch = node.get("else_body", [])
             return self._execute_block(branch)
+        if node_type == "SwitchNode":
+            return self._execute_switch(node)
         if node_type == "WhileNode":
             return self._execute_while(node)
         if node_type == "RepeatNode":
@@ -137,6 +139,16 @@ class Interpreter:
             self._execute_statements(statements)
         finally:
             self.environment = previous
+
+    def _execute_switch(self, node: dict[str, Any]) -> None:
+        switch_value = self._evaluate(node["expression"])
+
+        for case in node.get("cases", []):
+            if switch_value == self._evaluate(case["value"]):
+                self._execute_block(case.get("body", []))
+                return
+
+        self._execute_block(node.get("default_body", []))
 
     def _execute_while(self, node: dict[str, Any]) -> None:
         iterations = 0

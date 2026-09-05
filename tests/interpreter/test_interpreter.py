@@ -94,6 +94,73 @@ def test_evaluates_logical_and_unary_expressions():
     assert result.output == ["verdadero"]
 
 
+def test_executes_matching_switch_case():
+    switch = {
+        "node": "SwitchNode",
+        "expression": literal("madera", "texto"),
+        "cases": [
+            {
+                "node": "CaseNode",
+                "value": literal("ceramica", "texto"),
+                "body": [
+                    {
+                        "node": "ShowNode",
+                        "expression": literal("ceramica", "texto"),
+                    }
+                ],
+            },
+            {
+                "node": "CaseNode",
+                "value": literal("madera", "texto"),
+                "body": [
+                    {
+                        "node": "ShowNode",
+                        "expression": literal("madera", "texto"),
+                    }
+                ],
+            },
+        ],
+        "default_body": [
+            {
+                "node": "ShowNode",
+                "expression": literal("otro", "texto"),
+            }
+        ],
+    }
+    program = {"node": "ProgramNode", "statements": [switch]}
+
+    result = Interpreter().execute(program)
+
+    assert result.succeeded
+    assert result.output == ["madera"]
+
+
+def test_executes_switch_default_body():
+    switch = {
+        "node": "SwitchNode",
+        "expression": literal("vidrio", "texto"),
+        "cases": [
+            {
+                "node": "CaseNode",
+                "value": literal("madera", "texto"),
+                "body": [],
+            }
+        ],
+        "default_body": [
+            {
+                "node": "ShowNode",
+                "expression": literal("otro", "texto"),
+            }
+        ],
+    }
+    program = {"node": "ProgramNode", "statements": [switch]}
+
+    result = Interpreter().execute(program)
+
+    assert result.succeeded
+    assert result.output == ["otro"]
+
+
 def test_read_node_returns_input_value():
     program = {"node": "ProgramNode", "statements": [
         {
