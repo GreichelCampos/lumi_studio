@@ -1,0 +1,23 @@
+{
+  "node": "ProgramNode",
+  "statements": [
+    {
+      "node": "VariableDeclarationNode",
+      "type": "decimal",
+      "name": "ancho",
+      "value": 5.0,
+      "file": "principal.lumi",
+      "line": 1,
+      "column": 1
+    },
+    {
+      "node": "VariableDeclarationNode",
+      "type": "decimal",
+      "name": "ancho",
+      "value": 6.0,
+      "file": "principal.lumi",
+      "line": 2,
+      "column": 1
+    }
+  ]
+}
