@@ -1,0 +1,15 @@
+{
+  "node": "ProgramNode",
+  "statements": [
+    {"node": "VariableDeclarationNode", "type": "entero", "name": "contador", "value": {"node": "LiteralNode", "value": 0, "literal_kind": "entero"}},
+    {"node": "WhileNode", "condition": {"node": "BinaryExpressionNode", "left": {"node": "IdentifierNode", "name": "contador"}, "operator": "<", "right": {"node": "LiteralNode", "value": 2, "literal_kind": "entero"}}, "body": [
+      {"node": "ShowNode", "expression": {"node": "IdentifierNode", "name": "contador"}},
+      {"node": "AssignmentNode", "name": "contador", "value": {"node": "BinaryExpressionNode", "left": {"node": "IdentifierNode", "name": "contador"}, "operator": "+", "right": {"node": "LiteralNode", "value": 1, "literal_kind": "entero"}}}
+    ]},
+    {"node": "IfNode", "condition": {"node": "LiteralNode", "value": true, "literal_kind": "booleano"}, "then_body": [{"node": "ShowNode", "expression": {"node": "LiteralNode", "value": "listo", "literal_kind": "texto"}}], "else_body": []},
+    {"node": "RepeatNode", "count": {"node": "LiteralNode", "value": 2, "literal_kind": "entero"}, "body": [{"node": "ShowNode", "expression": {"node": "LiteralNode", "value": "repetir", "literal_kind": "texto"}}]}
+  ],
+  "file": "principal.lumi",
+  "line": 1,
+  "column": 1
+}

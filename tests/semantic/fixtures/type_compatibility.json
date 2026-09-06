@@ -1,0 +1,30 @@
+{
+  "valid_assignments": [
+    {"target": "entero", "value": "entero"},
+    {"target": "decimal", "value": "entero"},
+    {"target": "decimal", "value": "decimal"},
+    {"target": "texto", "value": "texto"},
+    {"target": "booleano", "value": "booleano"}
+  ],
+  "invalid_assignments": [
+    {"target": "entero", "value": "decimal"},
+    {"target": "entero", "value": "texto"},
+    {"target": "booleano", "value": "entero"}
+  ],
+  "valid_binary_operations": [
+    {"left": "entero", "operator": "+", "right": "entero", "result": "entero"},
+    {"left": "entero", "operator": "+", "right": "decimal", "result": "decimal"},
+    {"left": "decimal", "operator": "*", "right": "entero", "result": "decimal"},
+    {"left": "entero", "operator": "/", "right": "entero", "result": "decimal"},
+    {"left": "texto", "operator": "+", "right": "texto", "result": "texto"},
+    {"left": "booleano", "operator": "y", "right": "booleano", "result": "booleano"},
+    {"left": "entero", "operator": ">=", "right": "decimal", "result": "booleano"},
+    {"left": "texto", "operator": "==", "right": "texto", "result": "booleano"}
+  ],
+  "invalid_binary_operations": [
+    {"left": "texto", "operator": "-", "right": "texto"},
+    {"left": "entero", "operator": "y", "right": "entero"},
+    {"left": "booleano", "operator": ">", "right": "booleano"},
+    {"left": "texto", "operator": "==", "right": "entero"}
+  ]
+}

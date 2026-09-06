@@ -1,0 +1,11 @@
+{
+  "node": "ProgramNode",
+  "statements": [
+    {"node": "VariableDeclarationNode", "type": "entero", "name": "cantidad", "value": {"node": "LiteralNode", "value": 2, "literal_kind": "entero"}},
+    {"node": "AssignmentNode", "name": "cantidad", "value": {"node": "BinaryExpressionNode", "left": {"node": "IdentifierNode", "name": "cantidad"}, "operator": "+", "right": {"node": "LiteralNode", "value": 3, "literal_kind": "entero"}}},
+    {"node": "ShowNode", "expression": {"node": "IdentifierNode", "name": "cantidad"}}
+  ],
+  "file": "principal.lumi",
+  "line": 1,
+  "column": 1
+}

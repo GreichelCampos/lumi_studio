@@ -1,0 +1,85 @@
+{
+  "valid_program": {
+    "node": "ProgramNode",
+    "statements": [
+      {
+        "node": "VariableDeclarationNode",
+        "type": "entero",
+        "name": "contador",
+        "value": {
+          "node": "LiteralNode",
+          "value": 0,
+          "literal_kind": "entero"
+        }
+      },
+      {
+        "node": "WhileNode",
+        "condition": {
+          "node": "BinaryExpressionNode",
+          "left": {"node": "IdentifierNode", "name": "contador"},
+          "operator": "<",
+          "right": {
+            "node": "LiteralNode",
+            "value": 3,
+            "literal_kind": "entero"
+          }
+        },
+        "body": [
+          {
+            "node": "IfNode",
+            "condition": {
+              "node": "BinaryExpressionNode",
+              "left": {"node": "IdentifierNode", "name": "contador"},
+              "operator": "==",
+              "right": {
+                "node": "LiteralNode",
+                "value": 1,
+                "literal_kind": "entero"
+              }
+            },
+            "then_body": [
+              {
+                "node": "ShowNode",
+                "expression": {
+                  "node": "LiteralNode",
+                  "value": "mitad",
+                  "literal_kind": "texto"
+                }
+              }
+            ],
+            "else_body": [
+              {
+                "node": "ShowNode",
+                "expression": {"node": "IdentifierNode", "name": "contador"}
+              }
+            ]
+          },
+          {
+            "node": "AssignmentNode",
+            "name": "contador",
+            "value": {
+              "node": "BinaryExpressionNode",
+              "left": {"node": "IdentifierNode", "name": "contador"},
+              "operator": "+",
+              "right": {
+                "node": "LiteralNode",
+                "value": 1,
+                "literal_kind": "entero"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "file": "principal.lumi",
+    "line": 1,
+    "column": 1
+  },
+  "invalid_assignment": {
+    "target_type": "booleano",
+    "value_type": "entero",
+    "file": "principal.lumi",
+    "line": 12,
+    "column": 5
+  }
+}

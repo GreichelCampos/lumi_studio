@@ -1,0 +1,23 @@
+{
+  "node": "ProgramNode",
+  "statements": [
+    {
+      "node": "VariableDeclarationNode",
+      "type": "entero",
+      "name": "cantidad",
+      "value": 4,
+      "file": "principal.lumi",
+      "line": 1,
+      "column": 1
+    },
+    {
+      "node": "VariableDeclarationNode",
+      "type": "texto",
+      "name": "mensaje",
+      "value": "Habitación amplia",
+      "file": "principal.lumi",
+      "line": 2,
+      "column": 1
+    }
+  ]
+}
