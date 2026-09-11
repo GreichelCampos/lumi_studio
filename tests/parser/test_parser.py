@@ -5,14 +5,24 @@ from lumi_language.parser import Parser
 from lumi_language.ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
+    CaseNode,
+    ForNode,
+    FunctionDeclarationNode,
     IdentifierNode,
+    IfNode,
     ListNode,
     LiteralNode,
+    MainNode,
+    ParameterNode,
     ReadNode,
+    RepeatNode,
+    ReturnNode,
     ShowNode,
+    SwitchNode,
     UnaryExpressionNode,
     VariableDeclarationNode,
     VectorNode,
+    WhileNode,
 )
 
 
@@ -441,3 +451,358 @@ def test_unary_minus_precedence_before_multiplication():
 
     assert isinstance(expression.right, LiteralNode)
     assert expression.right.value == 2
+
+
+def test_if_without_else():
+    ast = parse_source('si ancho >= 5 { mostrar("Amplia")>> }')
+    statement = ast.statements[0]
+
+    assert isinstance(statement, IfNode)
+    assert isinstance(statement.condition, BinaryExpressionNode)
+    assert len(statement.then_body) == 1
+    assert statement.else_body == []
+
+
+def test_if_with_else():
+    ast = parse_source(
+        'si ancho >= 5 { mostrar("Amplia")>> } sino { mostrar("Compacta")>> }'
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, IfNode)
+    assert len(statement.then_body) == 1
+    assert len(statement.else_body) == 1
+
+
+def test_if_complex_condition():
+    ast = parse_source("si ancho >= 5 y activo o falso { }")
+    condition = ast.statements[0].condition
+
+    assert isinstance(condition, BinaryExpressionNode)
+    assert condition.operator == "o"
+
+
+def test_nested_if():
+    ast = parse_source('si activo { si ancho > 5 { mostrar("Amplia")>> } }')
+    outer = ast.statements[0]
+    inner = outer.then_body[0]
+
+    assert isinstance(outer, IfNode)
+    assert isinstance(inner, IfNode)
+
+
+def test_if_empty_block():
+    ast = parse_source("si activo { }")
+
+    assert ast.statements[0].then_body == []
+
+
+def test_switch_one_case_without_default():
+    ast = parse_source('segun acabado { caso "madera": mostrar("Calido")>> }')
+    statement = ast.statements[0]
+
+    assert isinstance(statement, SwitchNode)
+    assert isinstance(statement.expression, IdentifierNode)
+    assert len(statement.cases) == 1
+    assert statement.default_body == []
+
+
+def test_switch_multiple_cases_with_default_and_case_content():
+    ast = parse_source(
+        """
+segun acabado {
+    caso "madera":
+        mostrar("Calido")>>
+    caso "ceramica":
+        mostrar("Resistente")>>
+    defecto:
+        mostrar("Desconocido")>>
+}
+"""
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, SwitchNode)
+    assert len(statement.cases) == 2
+    assert len(statement.default_body) == 1
+
+    first_case = statement.cases[0]
+    assert isinstance(first_case, CaseNode)
+    assert first_case.value.value == "madera"
+    assert isinstance(first_case.body[0], ShowNode)
+
+
+def test_while_condition_and_assignment_body():
+    ast = parse_source("mientras cantidad < 4 { cantidad = cantidad + 1>> }")
+    statement = ast.statements[0]
+
+    assert isinstance(statement, WhileNode)
+    assert isinstance(statement.condition, BinaryExpressionNode)
+    assert isinstance(statement.body[0], AssignmentNode)
+
+
+def test_repeat_literal_count():
+    ast = parse_source('repetir 4 { mostrar("Dato")>> }')
+    statement = ast.statements[0]
+
+    assert isinstance(statement, RepeatNode)
+    assert isinstance(statement.count, LiteralNode)
+    assert len(statement.body) == 1
+
+
+def test_repeat_identifier_count():
+    ast = parse_source('repetir cantidad { mostrar("Dato")>> }')
+
+    assert isinstance(ast.statements[0].count, IdentifierNode)
+
+
+def test_for_header_and_body():
+    ast = parse_source(
+        "hacer entero i = 0; i < 4; i = i + 1 { mostrar(i)>> }"
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, ForNode)
+    assert isinstance(statement.initializer, VariableDeclarationNode)
+    assert statement.initializer.type == "entero"
+    assert statement.initializer.name == "i"
+    assert isinstance(statement.condition, BinaryExpressionNode)
+    assert statement.condition.operator == "<"
+    assert isinstance(statement.update, AssignmentNode)
+    assert statement.update.name == "i"
+    assert isinstance(statement.body[0], ShowNode)
+
+
+def test_for_body_is_parsed_as_block():
+    ast = parse_source(
+        """
+hacer entero i = 0; i < 4; i = i + 1 {
+    mostrar(i)>>
+    si i < 2 { mostrar(i)>> }
+}
+"""
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, ForNode)
+    assert len(statement.body) == 2
+    assert isinstance(statement.body[0], ShowNode)
+    assert isinstance(statement.body[1], IfNode)
+
+
+def test_for_header_uses_semicolon_not_terminator():
+    ast = parse_source("hacer entero i = 0; i < 1; i = i + 1 { }")
+
+    assert isinstance(ast.statements[0], ForNode)
+
+
+def test_for_missing_left_brace_raises_value_error():
+    with pytest.raises(ValueError) as error:
+        parse_source("hacer entero i = 0; i < 4; i = i + 1 mostrar(i)>> }")
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_for_header_rejects_terminator_after_initializer():
+    with pytest.raises(ValueError) as error:
+        parse_source("hacer entero i = 0>> i < 4; i = i + 1 { mostrar(i)>> }")
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_for_missing_semicolon_raises_value_error():
+    with pytest.raises(ValueError) as error:
+        parse_source("hacer entero i = 0 i < 4; i = i + 1 { }")
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_for_incomplete_header_raises_value_error_not_index_error():
+    with pytest.raises(ValueError) as error:
+        parse_source("hacer entero i = 0; i < 4; i =")
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_function_with_return_and_multiple_parameters():
+    ast = parse_source(
+        """
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}
+"""
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, FunctionDeclarationNode)
+    assert statement.name == "calcular_area"
+    assert statement.return_type == "decimal"
+    assert len(statement.parameters) == 2
+    assert isinstance(statement.parameters[0], ParameterNode)
+    assert statement.parameters[0].name == "ancho"
+    assert statement.parameters[0].data_type == "decimal"
+    assert isinstance(statement.body[0], ReturnNode)
+
+
+def test_void_function_without_parameters():
+    ast = parse_source('funcion vacio preparar_espacio() { mostrar("Ok")>> }')
+    statement = ast.statements[0]
+
+    assert isinstance(statement, FunctionDeclarationNode)
+    assert statement.return_type == "vacio"
+    assert statement.parameters == []
+
+
+def test_function_with_one_parameter():
+    ast = parse_source("funcion entero duplicar(entero valor) { retornar valor>> }")
+
+    assert len(ast.statements[0].parameters) == 1
+
+
+def test_return_literal_identifier_and_expression():
+    literal_ast = parse_source("retornar 4>>")
+    identifier_ast = parse_source("retornar cantidad>>")
+    expression_ast = parse_source("retornar ancho * largo>>")
+
+    assert isinstance(literal_ast.statements[0].value, LiteralNode)
+    assert isinstance(identifier_ast.statements[0].value, IdentifierNode)
+    assert isinstance(expression_ast.statements[0].value, BinaryExpressionNode)
+
+
+def test_return_requires_terminator():
+    with pytest.raises(ValueError) as error:
+        parse_source("retornar 4")
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_main_empty():
+    ast = parse_source("principal { }")
+    statement = ast.statements[0]
+
+    assert isinstance(statement, MainNode)
+    assert statement.body == []
+
+
+def test_main_with_multiple_statements():
+    ast = parse_source(
+        """
+principal {
+    entero cantidad = 4>>
+    mostrar(cantidad)>>
+}
+"""
+    )
+    statement = ast.statements[0]
+
+    assert isinstance(statement, MainNode)
+    assert isinstance(statement.body[0], VariableDeclarationNode)
+    assert isinstance(statement.body[1], ShowNode)
+
+
+@pytest.mark.parametrize(
+    "source",
+    [
+        "si activo mostrar(activo)>>",
+        "si activo { mostrar(activo)>>",
+        "segun acabado { caso 1 mostrar(acabado)>> }",
+        "funcion entero prueba(entero valor { retornar valor>> }",
+        "funcion entero prueba(entero) { retornar 1>> }",
+        "retornar",
+        "principal { si activo {",
+    ],
+)
+def test_l016_incomplete_or_invalid_input_raises_value_error(source):
+    with pytest.raises(ValueError) as error:
+        parse_source(source)
+
+    assert not isinstance(error.value, IndexError)
+
+
+def test_l016_node_locations():
+    ast = parse_source(
+        """
+principal {
+    si activo { }
+    mientras activo { }
+    repetir 2 { }
+    hacer entero i = 0; i < 1; i = i + 1 { }
+    segun i {
+        caso 1:
+            mostrar(i)>>
+    }
+    funcion entero identidad(entero valor) {
+        retornar valor>>
+    }
+}
+"""
+    )
+    main = ast.statements[0]
+    if_node = main.body[0]
+    while_node = main.body[1]
+    repeat_node = main.body[2]
+    for_node = main.body[3]
+    switch_node = main.body[4]
+    case_node = switch_node.cases[0]
+    function_node = main.body[5]
+    parameter_node = function_node.parameters[0]
+    return_node = function_node.body[0]
+
+    assert (main.file, main.line, main.column) == ("principal.lumi", 2, 1)
+    assert (if_node.file, if_node.line, if_node.column) == (
+        "principal.lumi",
+        3,
+        5,
+    )
+    assert while_node.line == 4
+    assert repeat_node.line == 5
+    assert for_node.line == 6
+    assert switch_node.line == 7
+    assert case_node.line == 8
+    assert function_node.line == 11
+    assert parameter_node.line == 11
+    assert return_node.line == 12
+
+
+def test_l016_integrated_program():
+    ast = parse_source(
+        """
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}
+
+principal {
+    entero cantidad = 0>>
+
+    mientras cantidad < 3 {
+        cantidad = cantidad + 1>>
+    }
+
+    si cantidad == 3 {
+        mostrar("Completo")>>
+    } sino {
+        mostrar("Incompleto")>>
+    }
+
+    repetir 2 {
+        mostrar(cantidad)>>
+    }
+
+    hacer entero i = 0; i < 3; i = i + 1 {
+        mostrar(i)>>
+    }
+
+    segun cantidad {
+        caso 1:
+            mostrar("Uno")>>
+        caso 2:
+            mostrar("Dos")>>
+        defecto:
+            mostrar("Otro")>>
+    }
+}
+"""
+    )
+
+    assert isinstance(ast.statements[0], FunctionDeclarationNode)
+    assert isinstance(ast.statements[1], MainNode)

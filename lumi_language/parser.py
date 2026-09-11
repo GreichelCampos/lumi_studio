@@ -5,15 +5,25 @@ from .token_type import TokenType
 from .ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
+    CaseNode,
+    ForNode,
+    FunctionDeclarationNode,
     IdentifierNode,
+    IfNode,
     ListNode,
     LiteralNode,
+    MainNode,
+    ParameterNode,
+    ProgramNode,
     ReadNode,
+    RepeatNode,
+    ReturnNode,
     ShowNode,
+    SwitchNode,
     UnaryExpressionNode,
     VariableDeclarationNode,
     VectorNode,
-    ProgramNode,
+    WhileNode,
 )
 
 
@@ -55,7 +65,7 @@ class Parser:
 
     def parse_primary(self):
         if self.is_at_end():
-            raise ValueError("Se esperaba una expresión.")
+            raise ValueError("Se esperaba una expresion.")
 
         token = self.advance()
 
@@ -112,6 +122,7 @@ class Parser:
                 line=token.line,
                 column=token.column,
             )
+
         if token.type == TokenType.IDENTIFIER:
             return IdentifierNode(
                 name=token.lexeme,
@@ -119,14 +130,13 @@ class Parser:
                 line=token.line,
                 column=token.column,
             )
+
         if token.type == TokenType.LEFT_PAREN:
             expression = self.parse_expression()
-
             self.consume(
                 TokenType.RIGHT_PAREN,
-                "Se esperaba ')' después de la expresión.",
+                "Se esperaba ')' despues de la expresion.",
             )
-
             return expression
 
         if token.type == TokenType.READ:
@@ -137,7 +147,7 @@ class Parser:
             self.current -= 1
             return self.parse_list()
 
-        raise ValueError("Se esperaba una expresión.")
+        raise ValueError("Se esperaba una expresion.")
 
     def parse_expression(self):
         return self.parse_or()
@@ -163,7 +173,6 @@ class Parser:
         while self.match(TokenType.MULTIPLY, TokenType.DIVIDE):
             operator = self.tokens[self.current - 1]
             right = self.parse_unary()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -181,7 +190,6 @@ class Parser:
         while self.match(TokenType.PLUS, TokenType.MINUS):
             operator = self.tokens[self.current - 1]
             right = self.parse_factor()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -204,7 +212,6 @@ class Parser:
         ):
             operator = self.tokens[self.current - 1]
             right = self.parse_term()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -219,13 +226,9 @@ class Parser:
     def parse_equality(self):
         expression = self.parse_comparison()
 
-        while self.match(
-            TokenType.EQUAL_EQUAL,
-            TokenType.NOT_EQUAL,
-        ):
+        while self.match(TokenType.EQUAL_EQUAL, TokenType.NOT_EQUAL):
             operator = self.tokens[self.current - 1]
             right = self.parse_comparison()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -243,7 +246,6 @@ class Parser:
         while self.match(TokenType.AND):
             operator = self.tokens[self.current - 1]
             right = self.parse_equality()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -261,7 +263,6 @@ class Parser:
         while self.match(TokenType.OR):
             operator = self.tokens[self.current - 1]
             right = self.parse_and()
-
             expression = BinaryExpressionNode(
                 left=expression,
                 operator=operator.lexeme,
@@ -273,17 +274,28 @@ class Parser:
 
         return expression
 
-    def parse_variable_declaration(self):
-        type_token = self.advance()
+    def variable_type_tokens(self):
+        return (
+            TokenType.INTEGER_TYPE,
+            TokenType.DECIMAL_TYPE,
+            TokenType.STRING_TYPE,
+            TokenType.BOOLEAN_TYPE,
+            TokenType.LIST_TYPE,
+            TokenType.VECTOR_TYPE,
+        )
 
+    def parse_variable_declaration(self):
+        return self.parse_variable_declaration_until(TokenType.TERMINATOR)
+
+    def parse_variable_declaration_until(self, terminator_type: TokenType):
+        type_token = self.advance()
         name_token = self.consume(
             TokenType.IDENTIFIER,
             "Se esperaba el nombre de la variable.",
         )
-
         self.consume(
             TokenType.ASSIGN,
-            "Se esperaba '=' después del nombre de la variable.",
+            "Se esperaba '=' despues del nombre de la variable.",
         )
 
         if type_token.type == TokenType.VECTOR_TYPE:
@@ -292,8 +304,8 @@ class Parser:
             value = self.parse_expression()
 
         self.consume(
-            TokenType.TERMINATOR,
-            "Se esperaba '>>' al final de la declaración.",
+            terminator_type,
+            "Se esperaba el separador al final de la declaracion.",
         )
 
         return VariableDeclarationNode(
@@ -306,22 +318,27 @@ class Parser:
         )
 
     def parse_assignment(self):
+        return self.parse_assignment_until(TokenType.TERMINATOR)
+
+    def parse_assignment_until(self, terminator_type: TokenType):
+        assignment = self.parse_assignment_without_terminator()
+        self.consume(
+            terminator_type,
+            "Se esperaba el separador al final de la asignacion.",
+        )
+
+        return assignment
+
+    def parse_assignment_without_terminator(self):
         name_token = self.consume(
             TokenType.IDENTIFIER,
             "Se esperaba el nombre de la variable.",
         )
-
         self.consume(
             TokenType.ASSIGN,
-            "Se esperaba '=' después del nombre de la variable.",
+            "Se esperaba '=' despues del nombre de la variable.",
         )
-
         value = self.parse_expression()
-
-        self.consume(
-            TokenType.TERMINATOR,
-            "Se esperaba '>>' al final de la asignación.",
-        )
 
         return AssignmentNode(
             name=name_token.lexeme,
@@ -332,21 +349,12 @@ class Parser:
         )
 
     def parse_read(self):
-        read_token = self.consume(
-            TokenType.READ,
-            "Se esperaba 'leer'.",
-        )
-
-        self.consume(
-            TokenType.LEFT_PAREN,
-            "Se esperaba '(' después de 'leer'.",
-        )
-
+        read_token = self.consume(TokenType.READ, "Se esperaba 'leer'.")
+        self.consume(TokenType.LEFT_PAREN, "Se esperaba '(' despues de 'leer'.")
         message = self.parse_expression()
-
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' después del mensaje de leer.",
+            "Se esperaba ')' despues del mensaje de leer.",
         )
 
         return ReadNode(
@@ -357,23 +365,16 @@ class Parser:
         )
 
     def parse_show(self):
-        show_token = self.consume(
-            TokenType.SHOW,
-            "Se esperaba 'mostrar'.",
-        )
-
+        show_token = self.consume(TokenType.SHOW, "Se esperaba 'mostrar'.")
         self.consume(
             TokenType.LEFT_PAREN,
-            "Se esperaba '(' después de 'mostrar'.",
+            "Se esperaba '(' despues de 'mostrar'.",
         )
-
         expression = self.parse_expression()
-
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' después de la expresión.",
+            "Se esperaba ')' despues de la expresion.",
         )
-
         self.consume(
             TokenType.TERMINATOR,
             "Se esperaba '>>' al final de 'mostrar'.",
@@ -386,27 +387,280 @@ class Parser:
             column=show_token.column,
         )
 
+    def parse_block(self):
+        self.consume(TokenType.LEFT_BRACE, "Se esperaba '{' para iniciar el bloque.")
+        statements = []
 
-    def parse_statement(self):
-        variable_types = (
-            TokenType.INTEGER_TYPE,
-            TokenType.DECIMAL_TYPE,
-            TokenType.STRING_TYPE,
-            TokenType.BOOLEAN_TYPE,
-            TokenType.LIST_TYPE,
-            TokenType.VECTOR_TYPE,
+        while not self.check(TokenType.RIGHT_BRACE):
+            if self.is_at_end():
+                raise ValueError("Se esperaba '}' para cerrar el bloque.")
+            statements.append(self.parse_statement())
+
+        self.consume(TokenType.RIGHT_BRACE, "Se esperaba '}' para cerrar el bloque.")
+        return statements
+
+    def parse_if(self):
+        if_token = self.consume(TokenType.IF, "Se esperaba 'si'.")
+        condition = self.parse_expression()
+        then_body = self.parse_block()
+        else_body = []
+
+        if self.match(TokenType.ELSE):
+            else_body = self.parse_block()
+
+        return IfNode(
+            condition=condition,
+            then_body=then_body,
+            else_body=else_body,
+            file=if_token.file,
+            line=if_token.line,
+            column=if_token.column,
         )
 
-        if self.peek().type in variable_types:
+    def parse_switch(self):
+        switch_token = self.consume(TokenType.SWITCH, "Se esperaba 'segun'.")
+        expression = self.parse_expression()
+        self.consume(
+            TokenType.LEFT_BRACE,
+            "Se esperaba '{' para iniciar el bloque de 'segun'.",
+        )
+        cases = []
+        default_body = []
+
+        while not self.check(TokenType.RIGHT_BRACE):
+            if self.is_at_end():
+                raise ValueError("Se esperaba '}' para cerrar 'segun'.")
+
+            if self.check(TokenType.CASE):
+                cases.append(self.parse_case())
+                continue
+
+            if self.match(TokenType.DEFAULT):
+                self.consume(TokenType.COLON, "Se esperaba ':' despues de 'defecto'.")
+                default_body = self.parse_switch_section_body()
+                continue
+
+            raise ValueError("Se esperaba 'caso', 'defecto' o '}'.")
+
+        self.consume(TokenType.RIGHT_BRACE, "Se esperaba '}' para cerrar 'segun'.")
+
+        return SwitchNode(
+            expression=expression,
+            cases=cases,
+            default_body=default_body,
+            file=switch_token.file,
+            line=switch_token.line,
+            column=switch_token.column,
+        )
+
+    def parse_case(self):
+        case_token = self.consume(TokenType.CASE, "Se esperaba 'caso'.")
+        value = self.parse_expression()
+        self.consume(TokenType.COLON, "Se esperaba ':' despues de 'caso'.")
+        body = self.parse_switch_section_body()
+
+        return CaseNode(
+            value=value,
+            body=body,
+            file=case_token.file,
+            line=case_token.line,
+            column=case_token.column,
+        )
+
+    def parse_switch_section_body(self):
+        body = []
+
+        while not (
+            self.check(TokenType.CASE)
+            or self.check(TokenType.DEFAULT)
+            or self.check(TokenType.RIGHT_BRACE)
+        ):
+            if self.is_at_end():
+                raise ValueError("Se esperaba '}' para cerrar 'segun'.")
+            body.append(self.parse_statement())
+
+        return body
+
+    def parse_for(self):
+        for_token = self.consume(TokenType.FOR, "Se esperaba 'hacer'.")
+
+        if not self.is_at_end() and self.peek().type in self.variable_type_tokens():
+            initializer = self.parse_variable_declaration_until(TokenType.SEMICOLON)
+        else:
+            initializer = self.parse_assignment_until(TokenType.SEMICOLON)
+
+        condition = self.parse_expression()
+        self.consume(
+            TokenType.SEMICOLON,
+            "Se esperaba ';' despues de la condicion.",
+        )
+        update = self.parse_assignment_without_terminator()
+        body = self.parse_block()
+
+        return ForNode(
+            initializer=initializer,
+            condition=condition,
+            update=update,
+            body=body,
+            file=for_token.file,
+            line=for_token.line,
+            column=for_token.column,
+        )
+
+    def parse_while(self):
+        while_token = self.consume(TokenType.WHILE, "Se esperaba 'mientras'.")
+        condition = self.parse_expression()
+        body = self.parse_block()
+
+        return WhileNode(
+            condition=condition,
+            body=body,
+            file=while_token.file,
+            line=while_token.line,
+            column=while_token.column,
+        )
+
+    def parse_repeat(self):
+        repeat_token = self.consume(TokenType.REPEAT, "Se esperaba 'repetir'.")
+        count = self.parse_expression()
+        body = self.parse_block()
+
+        return RepeatNode(
+            count=count,
+            body=body,
+            file=repeat_token.file,
+            line=repeat_token.line,
+            column=repeat_token.column,
+        )
+
+    def parse_function_declaration(self):
+        function_token = self.consume(TokenType.FUNCTION, "Se esperaba 'funcion'.")
+        return_type_token = self.consume_return_type()
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre de la funcion.",
+        )
+        self.consume(
+            TokenType.LEFT_PAREN,
+            "Se esperaba '(' despues del nombre de la funcion.",
+        )
+        parameters = self.parse_parameters()
+        self.consume(
+            TokenType.RIGHT_PAREN,
+            "Se esperaba ')' despues de los parametros.",
+        )
+        body = self.parse_block()
+
+        return FunctionDeclarationNode(
+            name=name_token.lexeme,
+            parameters=parameters,
+            return_type=return_type_token.lexeme,
+            body=body,
+            file=function_token.file,
+            line=function_token.line,
+            column=function_token.column,
+        )
+
+    def parse_parameters(self):
+        parameters = []
+
+        if self.check(TokenType.RIGHT_PAREN):
+            return parameters
+
+        while True:
+            parameters.append(self.parse_parameter())
+
+            if not self.match(TokenType.COMMA):
+                break
+
+        return parameters
+
+    def parse_parameter(self):
+        type_token = self.consume_parameter_type()
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del parametro.",
+        )
+
+        return ParameterNode(
+            name=name_token.lexeme,
+            data_type=type_token.lexeme,
+            file=type_token.file,
+            line=type_token.line,
+            column=type_token.column,
+        )
+
+    def parse_return(self):
+        return_token = self.consume(TokenType.RETURN, "Se esperaba 'retornar'.")
+        value = self.parse_expression()
+        self.consume(
+            TokenType.TERMINATOR,
+            "Se esperaba '>>' al final de 'retornar'.",
+        )
+
+        return ReturnNode(
+            value=value,
+            file=return_token.file,
+            line=return_token.line,
+            column=return_token.column,
+        )
+
+    def parse_main(self):
+        main_token = self.consume(TokenType.PRINCIPAL, "Se esperaba 'principal'.")
+        body = self.parse_block()
+
+        return MainNode(
+            body=body,
+            file=main_token.file,
+            line=main_token.line,
+            column=main_token.column,
+        )
+
+    def consume_parameter_type(self):
+        if self.is_at_end():
+            raise ValueError("Se esperaba el tipo del parametro.")
+
+        if self.peek().type in self.variable_type_tokens():
+            return self.advance()
+
+        raise ValueError("Se esperaba el tipo del parametro.")
+
+    def consume_return_type(self):
+        if self.is_at_end():
+            raise ValueError("Se esperaba el tipo de retorno de la funcion.")
+
+        if self.peek().type in (*self.variable_type_tokens(), TokenType.VOID):
+            return self.advance()
+
+        raise ValueError("Se esperaba el tipo de retorno de la funcion.")
+
+    def parse_statement(self):
+        if self.is_at_end():
+            raise ValueError("Se esperaba una instruccion valida.")
+
+        if self.peek().type in self.variable_type_tokens():
             return self.parse_variable_declaration()
 
         if self.check(TokenType.IDENTIFIER):
             return self.parse_assignment()
 
-        if self.check(TokenType.SHOW):
-            return self.parse_show()
+        statement_parsers = {
+            TokenType.IF: self.parse_if,
+            TokenType.SWITCH: self.parse_switch,
+            TokenType.FOR: self.parse_for,
+            TokenType.WHILE: self.parse_while,
+            TokenType.REPEAT: self.parse_repeat,
+            TokenType.FUNCTION: self.parse_function_declaration,
+            TokenType.RETURN: self.parse_return,
+            TokenType.PRINCIPAL: self.parse_main,
+            TokenType.SHOW: self.parse_show,
+        }
+        parser = statement_parsers.get(self.peek().type)
 
-        raise ValueError("Se esperaba una instrucción válida.")
+        if parser is not None:
+            return parser()
+
+        raise ValueError("Se esperaba una instruccion valida.")
 
     def parse(self):
         statements = []
@@ -416,7 +670,6 @@ class Parser:
 
         if statements:
             first_statement = statements[0]
-
             return ProgramNode(
                 statements=statements,
                 file=first_statement.file,
@@ -424,19 +677,13 @@ class Parser:
                 column=first_statement.column,
             )
 
-        return ProgramNode(
-            statements=[],
-            file="",
-            line=1,
-            column=1,
-        )
+        return ProgramNode(statements=[], file="", line=1, column=1)
 
     def parse_list(self):
         left_bracket = self.consume(
             TokenType.LEFT_BRACKET,
             "Se esperaba '[' para iniciar la lista.",
         )
-
         elements = []
 
         if not self.check(TokenType.RIGHT_BRACKET):
@@ -446,10 +693,7 @@ class Parser:
                 if not self.match(TokenType.COMMA):
                     break
 
-        self.consume(
-            TokenType.RIGHT_BRACKET,
-            "Se esperaba ']' al final de la lista.",
-        )
+        self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' al final de la lista.")
 
         return ListNode(
             elements=elements,
@@ -463,27 +707,12 @@ class Parser:
             TokenType.LEFT_BRACKET,
             "Se esperaba '[' para iniciar el vector.",
         )
-
         x = self.parse_expression()
-
-        self.consume(
-            TokenType.COMMA,
-            "Se esperaba ',' después del componente x.",
-        )
-
+        self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente x.")
         y = self.parse_expression()
-
-        self.consume(
-            TokenType.COMMA,
-            "Se esperaba ',' después del componente y.",
-        )
-
+        self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente y.")
         z = self.parse_expression()
-
-        self.consume(
-            TokenType.RIGHT_BRACKET,
-            "Se esperaba ']' al final del vector.",
-        )
+        self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' al final del vector.")
 
         return VectorNode(
             x=x,
