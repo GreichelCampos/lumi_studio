@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
 
 
@@ -71,13 +72,14 @@ class Interpreter:
         self.result = InterpreterResult()
         self.environment = RuntimeEnvironment()
 
-    def execute(self, program: dict[str, Any]) -> InterpreterResult:
-        """Execute a ProgramNode fixture and return output plus diagnostics."""
+    def execute(self, program: Any) -> InterpreterResult:
+        """Execute a parsed ProgramNode or a compatible AST fixture."""
 
         self.result = InterpreterResult()
         self.environment = RuntimeEnvironment()
+        normalized_program = normalize_ast(program)
         try:
-            self._execute_node(program)
+            self._execute_node(normalized_program)
         except InterpreterRuntimeError as error:
             self.result.diagnostics.append(error.diagnostic)
         return self.result
