@@ -2,14 +2,18 @@
 
 from .token import Token
 from .token_type import TokenType
+from .lexer import Lexer
+from .diagnostics import Diagnostic, DiagnosticCategory
 from .ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
     CaseNode,
     ForNode,
+    FunctionCallNode,
     FunctionDeclarationNode,
     IdentifierNode,
     IfNode,
+    ImportNode,
     ListNode,
     LiteralNode,
     MainNode,
@@ -27,16 +31,42 @@ from .ast_nodes import (
 )
 
 
+class ParserError(ValueError):
+    """Syntax error that carries a Lumi diagnostic."""
+
+    def __init__(self, diagnostic: Diagnostic):
+        super().__init__(diagnostic.description)
+        self.diagnostic = diagnostic
+
+
 class Parser:
-    def __init__(self, tokens: list[Token]):
+    def __init__(self, tokens: list[Token], import_resolver=None):
         self.tokens = tokens
         self.current = 0
+        self.import_resolver = import_resolver
+        self.diagnostics: list[Diagnostic] = []
+        self.imported_programs: dict[str, ProgramNode] = {}
 
     def is_at_end(self) -> bool:
         return self.current >= len(self.tokens)
 
     def peek(self) -> Token:
+        if self.is_at_end():
+            return self.previous()
         return self.tokens[self.current]
+
+    def previous(self) -> Token:
+        if self.tokens and self.current > 0:
+            return self.tokens[self.current - 1]
+        if self.tokens:
+            return self.tokens[0]
+        return Token(TokenType.TERMINATOR, "", "", 1, 1)
+
+    def peek_next(self) -> Token | None:
+        if self.current + 1 >= len(self.tokens):
+            return None
+
+        return self.tokens[self.current + 1]
 
     def advance(self) -> Token:
         token = self.peek()
@@ -61,11 +91,61 @@ class Parser:
         if self.check(token_type):
             return self.advance()
 
-        raise ValueError(message)
+        raise self.error(message)
+
+    def error(
+        self,
+        message: str,
+        token: Token | None = None,
+        *,
+        code: str = "SYN_UNEXPECTED_TOKEN",
+    ) -> ParserError:
+        if token is None:
+            token = self.peek()
+        found = "fin de archivo" if self.is_at_end() else f"'{token.lexeme}'"
+        diagnostic = Diagnostic(
+            category=DiagnosticCategory.SYNTACTIC,
+            code=code,
+            file=token.file,
+            line=token.line,
+            column=token.column,
+            description=f"{message} Encontrado: {found}.",
+        )
+        self.diagnostics.append(diagnostic)
+        return ParserError(diagnostic)
+
+    def synchronize(self) -> None:
+        statement_starters = (
+            *self.variable_type_tokens(),
+            TokenType.IDENTIFIER,
+            TokenType.IMPORT,
+            TokenType.IF,
+            TokenType.SWITCH,
+            TokenType.FOR,
+            TokenType.WHILE,
+            TokenType.REPEAT,
+            TokenType.FUNCTION,
+            TokenType.RETURN,
+            TokenType.PRINCIPAL,
+            TokenType.SHOW,
+        )
+
+        if not self.is_at_end() and self.peek().type in statement_starters:
+            return
+
+        if not self.is_at_end():
+            self.advance()
+
+        while not self.is_at_end():
+            if self.previous().type in (TokenType.TERMINATOR, TokenType.RIGHT_BRACE):
+                return
+            if self.peek().type in statement_starters:
+                return
+            self.advance()
 
     def parse_primary(self):
         if self.is_at_end():
-            raise ValueError("Se esperaba una expresion.")
+            raise self.error("Se esperaba una expresion.")
 
         token = self.advance()
 
@@ -124,6 +204,20 @@ class Parser:
             )
 
         if token.type == TokenType.IDENTIFIER:
+            if self.match(TokenType.LEFT_PAREN):
+                arguments = self.parse_arguments()
+                self.consume(
+                    TokenType.RIGHT_PAREN,
+                    "Se esperaba ')' despues de los argumentos.",
+                )
+                return FunctionCallNode(
+                    name=token.lexeme,
+                    arguments=arguments,
+                    file=token.file,
+                    line=token.line,
+                    column=token.column,
+                )
+
             return IdentifierNode(
                 name=token.lexeme,
                 file=token.file,
@@ -147,7 +241,24 @@ class Parser:
             self.current -= 1
             return self.parse_list()
 
-        raise ValueError("Se esperaba una expresion.")
+        raise self.error("Se esperaba una expresion.", token)
+
+    def parse_arguments(self):
+        arguments = []
+
+        if self.check(TokenType.RIGHT_PAREN):
+            return arguments
+
+        while True:
+            arguments.append(self.parse_expression())
+
+            if not self.match(TokenType.COMMA):
+                break
+
+            if self.check(TokenType.RIGHT_PAREN) or self.is_at_end():
+                raise self.error("Se esperaba un argumento despues de ','.")
+
+        return arguments
 
     def parse_expression(self):
         return self.parse_or()
@@ -387,13 +498,65 @@ class Parser:
             column=show_token.column,
         )
 
+    def parse_import(self):
+        import_token = self.consume(TokenType.IMPORT, "Se esperaba 'importar'.")
+        file_token = self.consume(
+            TokenType.STRING_LITERAL,
+            "Se esperaba el nombre del archivo a importar.",
+        )
+        self.consume(TokenType.USE, "Se esperaba 'usar' despues del archivo importado.")
+        symbol_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el simbolo importado despues de 'usar'.",
+        )
+        self.consume(
+            TokenType.TERMINATOR,
+            "Se esperaba '>>' al final de la importacion.",
+        )
+
+        file_name = file_token.lexeme[1:-1]
+        node = ImportNode(
+            file_name=file_name,
+            symbol_name=symbol_token.lexeme,
+            file=import_token.file,
+            line=import_token.line,
+            column=import_token.column,
+        )
+        self.resolve_import(node)
+        return node
+
+    def resolve_import(self, node: ImportNode) -> None:
+        if self.import_resolver is None:
+            return
+
+        try:
+            source = self.import_resolver.resolve(node.file_name)
+        except FileNotFoundError:
+            diagnostic = Diagnostic(
+                category=DiagnosticCategory.IMPORT,
+                code="IMPORT_FILE_NOT_FOUND",
+                file=node.file,
+                line=node.line,
+                column=node.column,
+                description=f"No se encontro el archivo importado '{node.file_name}'.",
+                suggestion="Verifique el nombre del archivo importado.",
+            )
+            self.diagnostics.append(diagnostic)
+            raise ParserError(diagnostic)
+
+        tokens = Lexer(source, node.file_name).tokenize()
+        imported_parser = Parser(tokens, import_resolver=self.import_resolver)
+        program = imported_parser.parse()
+        self.diagnostics.extend(imported_parser.diagnostics)
+        self.imported_programs[node.file_name] = program
+
     def parse_block(self):
         self.consume(TokenType.LEFT_BRACE, "Se esperaba '{' para iniciar el bloque.")
         statements = []
 
         while not self.check(TokenType.RIGHT_BRACE):
             if self.is_at_end():
-                raise ValueError("Se esperaba '}' para cerrar el bloque.")
+                raise self.error("Se esperaba '}' para cerrar el bloque.")
             statements.append(self.parse_statement())
 
         self.consume(TokenType.RIGHT_BRACE, "Se esperaba '}' para cerrar el bloque.")
@@ -429,7 +592,7 @@ class Parser:
 
         while not self.check(TokenType.RIGHT_BRACE):
             if self.is_at_end():
-                raise ValueError("Se esperaba '}' para cerrar 'segun'.")
+                raise self.error("Se esperaba '}' para cerrar 'segun'.")
 
             if self.check(TokenType.CASE):
                 cases.append(self.parse_case())
@@ -440,7 +603,7 @@ class Parser:
                 default_body = self.parse_switch_section_body()
                 continue
 
-            raise ValueError("Se esperaba 'caso', 'defecto' o '}'.")
+            raise self.error("Se esperaba 'caso', 'defecto' o '}'.")
 
         self.consume(TokenType.RIGHT_BRACE, "Se esperaba '}' para cerrar 'segun'.")
 
@@ -476,7 +639,7 @@ class Parser:
             or self.check(TokenType.RIGHT_BRACE)
         ):
             if self.is_at_end():
-                raise ValueError("Se esperaba '}' para cerrar 'segun'.")
+                raise self.error("Se esperaba '}' para cerrar 'segun'.")
             body.append(self.parse_statement())
 
         return body
@@ -618,33 +781,42 @@ class Parser:
 
     def consume_parameter_type(self):
         if self.is_at_end():
-            raise ValueError("Se esperaba el tipo del parametro.")
+            raise self.error("Se esperaba el tipo del parametro.")
 
         if self.peek().type in self.variable_type_tokens():
             return self.advance()
 
-        raise ValueError("Se esperaba el tipo del parametro.")
+        raise self.error("Se esperaba el tipo del parametro.")
 
     def consume_return_type(self):
         if self.is_at_end():
-            raise ValueError("Se esperaba el tipo de retorno de la funcion.")
+            raise self.error("Se esperaba el tipo de retorno de la funcion.")
 
         if self.peek().type in (*self.variable_type_tokens(), TokenType.VOID):
             return self.advance()
 
-        raise ValueError("Se esperaba el tipo de retorno de la funcion.")
+        raise self.error("Se esperaba el tipo de retorno de la funcion.")
 
     def parse_statement(self):
         if self.is_at_end():
-            raise ValueError("Se esperaba una instruccion valida.")
+            raise self.error("Se esperaba una instruccion valida.")
 
         if self.peek().type in self.variable_type_tokens():
             return self.parse_variable_declaration()
 
         if self.check(TokenType.IDENTIFIER):
+            next_token = self.peek_next()
+            if next_token is not None and next_token.type == TokenType.LEFT_PAREN:
+                call = self.parse_expression()
+                self.consume(
+                    TokenType.TERMINATOR,
+                    "Se esperaba '>>' al final de la llamada.",
+                )
+                return call
             return self.parse_assignment()
 
         statement_parsers = {
+            TokenType.IMPORT: self.parse_import,
             TokenType.IF: self.parse_if,
             TokenType.SWITCH: self.parse_switch,
             TokenType.FOR: self.parse_for,
@@ -660,13 +832,33 @@ class Parser:
         if parser is not None:
             return parser()
 
-        raise ValueError("Se esperaba una instruccion valida.")
+        raise self.error("Se esperaba una instruccion valida.")
 
     def parse(self):
         statements = []
 
         while not self.is_at_end():
             statements.append(self.parse_statement())
+
+        if statements:
+            first_statement = statements[0]
+            return ProgramNode(
+                statements=statements,
+                file=first_statement.file,
+                line=first_statement.line,
+                column=first_statement.column,
+            )
+
+        return ProgramNode(statements=[], file="", line=1, column=1)
+
+    def parse_with_recovery(self):
+        statements = []
+
+        while not self.is_at_end():
+            try:
+                statements.append(self.parse_statement())
+            except ParserError:
+                self.synchronize()
 
         if statements:
             first_statement = statements[0]

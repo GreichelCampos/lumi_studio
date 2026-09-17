@@ -22,6 +22,15 @@ class IdentifierNode:
 
 
 @dataclass
+class FunctionCallNode:
+    name: str
+    arguments: list[Any]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
 class BinaryExpressionNode:
     left: Any
     operator: str
@@ -78,6 +87,15 @@ class ShowNode:
 @dataclass
 class ProgramNode:
     statements: list[Any]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class ImportNode:
+    file_name: str
+    symbol_name: str
     file: str
     line: int
     column: int

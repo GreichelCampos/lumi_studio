@@ -2,14 +2,17 @@ import pytest
 
 from lumi_language.lexer import Lexer
 from lumi_language.parser import Parser
+from lumi_language.import_resolver import InMemoryImportResolver
 from lumi_language.ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
     CaseNode,
     ForNode,
+    FunctionCallNode,
     FunctionDeclarationNode,
     IdentifierNode,
     IfNode,
+    ImportNode,
     ListNode,
     LiteralNode,
     MainNode,
@@ -29,6 +32,11 @@ from lumi_language.ast_nodes import (
 def parse_source(source: str):
     tokens = Lexer(source, "principal.lumi").tokenize()
     return Parser(tokens).parse()
+
+
+def make_parser(source: str, file: str = "principal.lumi", import_resolver=None):
+    tokens = Lexer(source, file).tokenize()
+    return Parser(tokens, import_resolver=import_resolver)
 
 
 def test_variable_declaration():
@@ -806,3 +814,159 @@ principal {
 
     assert isinstance(ast.statements[0], FunctionDeclarationNode)
     assert isinstance(ast.statements[1], MainNode)
+
+
+def test_l022_function_call_without_arguments_as_statement():
+    ast = parse_source("preparar()>>")
+
+    statement = ast.statements[0]
+
+    assert isinstance(statement, FunctionCallNode)
+    assert statement.name == "preparar"
+    assert statement.arguments == []
+
+
+def test_l022_function_call_with_one_argument():
+    ast = parse_source("centro(longitud)>>")
+
+    call = ast.statements[0]
+
+    assert isinstance(call, FunctionCallNode)
+    assert call.name == "centro"
+    assert len(call.arguments) == 1
+    assert isinstance(call.arguments[0], IdentifierNode)
+
+
+def test_l022_function_call_with_multiple_expression_arguments():
+    ast = parse_source("decimal total = calcular_area(ancho + 1, largo * 2)>>")
+
+    call = ast.statements[0].value
+
+    assert isinstance(call, FunctionCallNode)
+    assert call.name == "calcular_area"
+    assert len(call.arguments) == 2
+    assert isinstance(call.arguments[0], BinaryExpressionNode)
+    assert isinstance(call.arguments[1], BinaryExpressionNode)
+
+
+def test_l022_function_call_inside_show_return_and_binary_expression():
+    ast = parse_source(
+        """
+mostrar(calcular_area(ancho, largo))>>
+retornar calcular_area(ancho, largo)>>
+decimal total = calcular_area(ancho, largo) + 5>>
+"""
+    )
+
+    assert isinstance(ast.statements[0].expression, FunctionCallNode)
+    assert isinstance(ast.statements[1].value, FunctionCallNode)
+
+    expression = ast.statements[2].value
+    assert isinstance(expression, BinaryExpressionNode)
+    assert isinstance(expression.left, FunctionCallNode)
+
+
+def test_l022_nested_function_call_argument():
+    ast = parse_source("mostrar(exterior(interior(1)))>>")
+
+    outer = ast.statements[0].expression
+
+    assert isinstance(outer, FunctionCallNode)
+    assert isinstance(outer.arguments[0], FunctionCallNode)
+
+
+def test_l022_identifier_statement_still_parses_assignment():
+    ast = parse_source("cantidad = cantidad + 1>>")
+
+    assert isinstance(ast.statements[0], AssignmentNode)
+
+
+def test_l022_import_uses_documented_importar_usar_syntax():
+    ast = parse_source('importar "utilidades.lumi" usar calcular_area>>')
+
+    statement = ast.statements[0]
+
+    assert isinstance(statement, ImportNode)
+    assert statement.file_name == "utilidades.lumi"
+    assert statement.symbol_name == "calcular_area"
+
+
+def test_l022_import_resolver_parses_imported_file_and_preserves_file():
+    resolver = InMemoryImportResolver(
+        {
+            "utilidades.lumi": """
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}
+"""
+        }
+    )
+    parser = make_parser(
+        'importar "utilidades.lumi" usar calcular_area>>',
+        import_resolver=resolver,
+    )
+
+    ast = parser.parse()
+    imported = parser.imported_programs["utilidades.lumi"]
+
+    assert isinstance(ast.statements[0], ImportNode)
+    assert imported.statements[0].file == "utilidades.lumi"
+    assert imported.statements[0].body[0].file == "utilidades.lumi"
+
+
+def test_l022_import_missing_file_reports_import_diagnostic():
+    parser = make_parser(
+        'importar "faltante.lumi" usar calcular_area>>',
+        import_resolver=InMemoryImportResolver({}),
+    )
+
+    with pytest.raises(ValueError):
+        parser.parse()
+
+    assert parser.diagnostics[0].category.value == "IMPORT"
+    assert parser.diagnostics[0].code == "IMPORT_FILE_NOT_FOUND"
+    assert parser.diagnostics[0].file == "principal.lumi"
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("preparar(", "Se esperaba una expresion."),
+        ("preparar(1, )>>", "Se esperaba un argumento"),
+        ("preparar(1 2)>>", "Se esperaba ')' despues de los argumentos."),
+        ('importar "utilidades.lumi">>', "Se esperaba 'usar'"),
+        ("mostrar(1)", "Se esperaba '>>'"),
+        ("si activo {", "Se esperaba '}'"),
+        ("entero x = >>", "Se esperaba una expresion."),
+        (">>", "Se esperaba una instruccion valida."),
+    ],
+)
+def test_l022_precise_syntax_errors_include_location(source, expected):
+    parser = make_parser(source)
+
+    with pytest.raises(ValueError):
+        parser.parse()
+
+    diagnostic = parser.diagnostics[0]
+    assert diagnostic.category.value == "SYNTACTIC"
+    assert expected in diagnostic.description
+    assert diagnostic.file == "principal.lumi"
+    assert diagnostic.line >= 1
+    assert diagnostic.column >= 1
+
+
+def test_l022_recovery_continues_after_invalid_statement():
+    parser = make_parser(
+        """
+mostrar(1)
+entero cantidad = 4>>
+mostrar(cantidad)>>
+"""
+    )
+
+    ast = parser.parse_with_recovery()
+
+    assert len(parser.diagnostics) == 1
+    assert len(ast.statements) == 2
+    assert isinstance(ast.statements[0], VariableDeclarationNode)
+    assert isinstance(ast.statements[1], ShowNode)
