@@ -38,12 +38,12 @@ El AST de Lumi utilizará nodos específicos para representar las principales co
 | `WhileNode`               | Ciclo `mientras`.                                                                   |
 | `RepeatNode`              | Estructura `repetir`.                                                               |
 | `FunctionDeclarationNode` | Declaración de una función con parámetros, tipo de retorno y cuerpo.                |
-| `ParameterNode`           | Parámetro declarado por una función.                                                |
-| `FunctionCallNode`        | Llamada a una función.                                                              |
-| `ReturnNode`              | Instrucción `retornar`.                                                             |
+| `ParameterNode`           | Parámetro perteneciente al alcance local de una función.                            |
+| `FunctionCallNode`        | Llamada a una función utilizada como expresión o instrucción independiente.         |
+| `ReturnNode`              | Instrucción `retornar` con una expresión como valor.                                |
 | `ShowNode`                | Instrucción `mostrar`.                                                              |
 | `ReadNode`                | Expresión de entrada `leer` que devuelve el valor leído.                            |
-| `ImportNode`              | Importación de símbolos desde otro archivo `.lumi`.                                 |
+| `ImportNode`              | Importación de un símbolo específico desde otro archivo `.lumi`.                    |
 | `RoomNode`                | Declaración de una `habitacion`.                                                    |
 | `FloorNode`               | Definición de propiedades del piso.                                                 |
 | `WallNode`                | Definición de una pared.                                                            |
@@ -116,8 +116,8 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `left` y `right`: operandos de una expresión binaria.
 * `operator`: operador utilizado en una expresión.
 * `condition`: expresión que debe evaluarse como booleana.
-* `parameters`: lista de nodos `ParameterNode` declarados por una función.
-* `arguments`: valores o expresiones enviados al llamar una función.
+* `parameters`: lista de nodos `ParameterNode` declarados por una función. Cada parámetro contiene `name`, `data_type`, `file`, `line` y `column`, y pertenece al alcance local de esa función.
+* `arguments`: lista ordenada de nodos de expresión enviados al llamar una función.
 * `return_type`: tipo de retorno declarado por una función.
 * `cases`: lista de nodos `CaseNode` pertenecientes a una estructura `segun`.
 * `position`: nodo `VectorNode` que representa una posición `[x, y, z]`.
@@ -125,7 +125,7 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `properties`: propiedades asociadas a un elemento espacial.
 * `direction`: dirección de una pared, puerta o ventana.
 * `file_name`: nombre del archivo `.lumi` que se desea importar.
-* `symbol_name`: símbolo solicitado mediante `usar`.
+* `symbol_name`: único símbolo solicitado mediante `usar`; su importación no hace visibles automáticamente los demás símbolos del archivo.
 * `object_type`: tipo de objeto perteneciente inicialmente al catálogo incorporado de objetos de Lumi.
 
 Las propiedades cuyo contenido represente otra construcción del lenguaje deberán contener otros nodos AST. Por ejemplo, `value`, `condition`, `left`, `right` y los elementos de `body` podrán contener nodos correspondientes a expresiones o instrucciones.
@@ -155,6 +155,7 @@ Esta clasificación es conceptual y no obliga todavía a implementar herencia de
 * `WhileNode`
 * `RepeatNode`
 * `FunctionDeclarationNode`
+* `FunctionCallNode`, cuando la llamada aparece como instrucción independiente.
 * `ReturnNode`
 * `ShowNode`
 * `ImportNode`
@@ -175,6 +176,51 @@ Esta clasificación es conceptual y no obliga todavía a implementar herencia de
 Las propiedades `VariableDeclarationNode.value`, `AssignmentNode.value`, `IfNode.condition`, `BinaryExpressionNode.left` y `BinaryExpressionNode.right` deben contener nodos de expresión compatibles.
 
 Los nodos `RoomNode`, `FloorNode`, `WallNode`, `DoorNode` y `WindowNode` deben conservar la información sintáctica necesaria para que posteriormente el intérprete y la capa espacial puedan generar y validar `ScenePlan`. Este contrato no define la estructura interna de `ScenePlan`.
+
+### 4.3 Contrato de funciones
+
+`FunctionCallNode` representa una llamada a la función identificada por `name`. Puede formar parte de otra expresión o aparecer como una instrucción independiente. Su propiedad `arguments` conserva, en orden, los nodos de expresión proporcionados por el código fuente. Cuando la llamada es válida, el tipo inferido para la expresión corresponde al `return_type` de la función resuelta.
+
+`ParameterNode` representa un parámetro formal mediante `name` y `data_type`, además de la ubicación común `file`, `line` y `column`. Los parámetros se registran en el alcance local creado para analizar o ejecutar la función y no quedan disponibles fuera de él.
+
+`ReturnNode.value` contiene un nodo de expresión. El parser actual requiere una expresión después de `retornar`; no existe sintaxis `retornar>>` sin valor. Una función `vacio` puede finalizar normalmente sin contener un `ReturnNode`. Una función cuyo retorno sea diferente de `vacio` debe garantizar un retorno compatible.
+
+El analizador aplica actualmente las siguientes reglas conservadoras para determinar si una función garantiza retorno:
+
+* Un `ReturnNode` directo garantiza el retorno del bloque que lo contiene.
+* Un `IfNode` garantiza retorno únicamente cuando sus bloques `then_body` y `else_body` lo garantizan.
+* Un `SwitchNode` garantiza retorno únicamente cuando todos sus `CaseNode` y su bloque `default_body` lo garantizan.
+* Los ciclos no se consideran una garantía de retorno.
+* Los retornos pertenecientes a funciones anidadas no cuentan como retorno de la función exterior.
+
+Este comportamiento es conservador y no constituye un análisis exhaustivo de todos los caminos de control posibles.
+
+### 4.4 Alcance léxico de funciones
+
+Lumi utiliza alcance léxico para las declaraciones y llamadas de funciones. Las funciones se registran previamente dentro de cada alcance para permitir llamadas anteriores a su declaración en ese mismo alcance. Una función anidada solamente es visible en su alcance y en los alcances internos derivados de este.
+
+Durante la ejecución, cada función conserva el entorno léxico correspondiente a su lugar de declaración. Los argumentos se evalúan en el entorno del llamador; después, los parámetros y las variables locales se ejecutan en un entorno nuevo cuyo padre es el entorno léxico conservado por la función, no el entorno del llamador. Las llamadas recursivas y anidadas utilizan este mismo mecanismo.
+
+Estas reglas describen el comportamiento del analizador y del intérprete; no agregan propiedades a los nodos AST.
+
+### 4.5 ImportNode y contexto de programas importados
+
+`ImportNode` conserva `file_name`, `symbol_name`, `file`, `line` y `column`. `file_name` identifica el archivo Lumi solicitado y `symbol_name` identifica exclusivamente el símbolo que se desea importar. La implementación actual permite importar funciones y no registra automáticamente las demás funciones del archivo.
+
+El parser conserva los programas importados directos en un contexto separado:
+
+```python
+parser.imported_programs: dict[str, ProgramNode]
+```
+
+`imported_programs` no forma parte de `ProgramNode` ni modifica el contrato del AST. La integración actual permite proporcionar este contexto de manera opcional a los componentes consumidores:
+
+```python
+SemanticAnalyzer().analyze(program, imported_programs=None)
+Interpreter().execute(program, imported_programs=None)
+```
+
+Los programas que no contienen importaciones continúan funcionando sin proporcionar este argumento.
 
 ## 5. Contrato de Diagnostic
 
@@ -244,6 +290,45 @@ Diagnostic
 * `suggestion`: `Declare la variable antes de utilizarla.`
 
 El contrato de `Diagnostic` será compartido por los distintos módulos del lenguaje para evitar que cada componente utilice una representación diferente de los errores.
+
+### 5.5 Códigos implementados para funciones e importaciones
+
+Los siguientes códigos complementan los códigos anteriores y respetan los prefijos definidos en la sección 5.3.
+
+**Análisis semántico:**
+
+* `SEM_UNDECLARED_FUNCTION`: la función llamada no se encuentra declarada en un alcance visible.
+* `SEM_SYMBOL_NOT_CALLABLE`: el nombre resuelto pertenece a un símbolo que no es una función.
+* `SEM_ARGUMENT_COUNT_MISMATCH`: la cantidad de argumentos no coincide con la firma.
+* `SEM_ARGUMENT_TYPE_MISMATCH`: un argumento no es compatible con el parámetro correspondiente.
+* `SEM_RETURN_TYPE_MISMATCH`: el valor retornado no coincide con el tipo declarado.
+* `SEM_RETURN_OUTSIDE_FUNCTION`: se encontró `retornar` fuera de una función.
+* `SEM_MISSING_RETURN`: una función no `vacio` puede finalizar sin retornar un valor.
+* `SEM_UNKNOWN_TYPE`: se encontró un nombre de tipo que Lumi no reconoce.
+
+**Importaciones:**
+
+* `IMPORT_FILE_NOT_FOUND`: el contexto está disponible, pero no contiene el archivo solicitado.
+* `IMPORT_CONTEXT_UNAVAILABLE`: no se proporcionó el contexto de programas importados.
+* `IMPORT_SYMBOL_NOT_FOUND`: el archivo no contiene el símbolo solicitado.
+* `IMPORT_UNSUPPORTED_SYMBOL`: el símbolo solicitado no pertenece a una construcción importable actualmente.
+* `IMPORT_DUPLICATE_SYMBOL`: el mismo símbolo ya fue importado en el alcance.
+* `IMPORT_SYMBOL_CONFLICT`: el nombre importado entra en conflicto con otro símbolo visible.
+* `IMPORT_INVALID_SIGNATURE`: la función importada posee una firma o estructura mínima inválida.
+
+**Ejecución:**
+
+* `RUN_UNDEFINED_FUNCTION`: la función llamada no está registrada en runtime.
+* `RUN_ARGUMENT_COUNT_MISMATCH`: la cantidad de argumentos no coincide durante la ejecución.
+* `RUN_RETURN_OUTSIDE_FUNCTION`: se intentó ejecutar `retornar` fuera de una llamada.
+* `RUN_DUPLICATE_FUNCTION`: dos funciones del mismo alcance tienen el mismo nombre.
+* `RUN_IMPORT_CONTEXT_UNAVAILABLE`: el intérprete no recibió el contexto de importaciones.
+* `RUN_IMPORT_FILE_NOT_FOUND`: el archivo solicitado no se encuentra en el contexto recibido.
+* `RUN_IMPORT_SYMBOL_NOT_FOUND`: el archivo importado no contiene el símbolo solicitado.
+* `RUN_IMPORT_SYMBOL_NOT_FUNCTION`: el símbolo solicitado no es una función ejecutable.
+* `RUN_IMPORT_NAME_CONFLICT`: la importación intenta reemplazar una función ya registrada.
+* `RUN_IMPORT_INVALID_AST`: el AST importado no posee la estructura mínima necesaria para ejecutarse.
+
 ## 6. Contrato de SymbolTable
 
 `SymbolTable` será la estructura utilizada durante el análisis semántico para registrar y consultar los símbolos declarados en un programa Lumi.
@@ -326,6 +411,36 @@ mostrar(mensaje)>>
 `mensaje` pertenece al alcance del bloque `si`, por lo que podrá utilizarse dentro de ese bloque, pero no deberá estar disponible fuera de él.
 
 Si se intenta utilizar un símbolo que no puede resolverse en el alcance actual ni en sus alcances padres, el analizador semántico podrá generar un `Diagnostic` con código `SEM_UNDECLARED_VARIABLE`.
+
+### 6.5 Semántica de funciones importadas
+
+Al procesar un `ImportNode`, `SemanticAnalyzer` localiza el programa indicado por `file_name` y busca exclusivamente `symbol_name`. Comprueba que el símbolo sea importable, valida su firma, registra sus parámetros y tipo de retorno, y analiza el cuerpo de la función solicitada con las mismas reglas aplicadas a una función local.
+
+El símbolo registrado conserva la ubicación original de su declaración y utiliza los metadatos:
+
+* `source_file`: archivo Lumi del que procede la función.
+* `is_imported=True`: indica que el símbolo fue incorporado mediante un `ImportNode`.
+
+El analizador detecta importaciones duplicadas y conflictos con símbolos visibles. Los errores propios de la instrucción de importación utilizan `file`, `line` y `column` del `ImportNode`; los errores encontrados dentro del cuerpo importado utilizan la ubicación original de los nodos del archivo importado.
+
+### 6.6 Runtime de funciones importadas
+
+`Interpreter` recibe opcionalmente el mismo contexto `imported_programs`, procesa `ImportNode` y registra únicamente la `FunctionDeclarationNode` cuyo nombre coincide con `symbol_name`. No registra automáticamente las demás funciones del archivo.
+
+Después del registro, la función importada reutiliza el mismo mecanismo de `FunctionCallNode` empleado por las funciones locales: evaluación de argumentos, entorno léxico local, asociación de parámetros, retorno anticipado y aislamiento de variables. La declaración conserva su archivo de origen para diagnósticos y depuración.
+
+### 6.7 Limitaciones actuales
+
+La integración actual no implementa todavía:
+
+* Propagación de importaciones transitivas.
+* Detección de importaciones circulares.
+* Construcción de un grafo completo de dependencias.
+* Un límite propio para la profundidad de recursión.
+* Análisis exhaustivo de todos los caminos de control de una función.
+
+Si una función importada utiliza otra función del mismo archivo que no fue importada explícitamente y no se encuentra visible en el alcance actual, esa dependencia no recibe visibilidad automática y se reporta como función no declarada.
+
 ## 7. Ejemplos de AST
 
 Los siguientes ejemplos muestran cómo las construcciones del lenguaje Lumi pueden representarse utilizando los nodos definidos en este contrato. Estos ejemplos funcionan como referencia para el parser, el analizador semántico y el intérprete.
