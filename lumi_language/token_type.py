@@ -60,7 +60,6 @@ class TokenType(Enum):
     MOVE = auto()
     ROTATE = auto()
     VISUALIZE_3D = auto()
-    IN = auto()
     COLOR = auto()
     MATERIAL = auto()
     POSITION = auto()

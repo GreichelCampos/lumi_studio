@@ -128,6 +128,100 @@ class VectorNode:
 
 
 @dataclass
+class SpatialPropertyNode:
+    name: str
+    value: Any
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class RoomNode:
+    name: str
+    width: Any
+    length: Any
+    height: Any
+    body: list[Any]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class SpatialObjectDeclarationNode:
+    object_type: str
+    name: str
+    properties: list[SpatialPropertyNode]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class FloorNode:
+    name: str
+    properties: list[SpatialPropertyNode]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class WallNode:
+    name: str
+    properties: list[SpatialPropertyNode]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class DoorNode:
+    name: str
+    properties: list[SpatialPropertyNode]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class WindowNode:
+    name: str
+    properties: list[SpatialPropertyNode]
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class PlaceObjectNode:
+    object_name: str
+    position: VectorNode
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class MoveObjectNode:
+    object_name: str
+    position: VectorNode
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
+class RotateObjectNode:
+    object_name: str
+    rotation: VectorNode
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
 class IfNode:
     condition: Any
     then_body: list[Any]

@@ -73,7 +73,6 @@ KEYWORDS = {
     "mover": TokenType.MOVE,
     "rotar": TokenType.ROTATE,
     "visualizar3D": TokenType.VISUALIZE_3D,
-    "en": TokenType.IN,
     "color": TokenType.COLOR,
     "material": TokenType.MATERIAL,
     "posicion": TokenType.POSITION,

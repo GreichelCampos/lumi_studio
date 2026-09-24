@@ -147,7 +147,6 @@ def test_delimiters():
         ("mover", "MOVE"),
         ("rotar", "ROTATE"),
         ("visualizar3D", "VISUALIZE_3D"),
-        ("en", "IN"),
         ("color", "COLOR"),
         ("material", "MATERIAL"),
         ("posicion", "POSITION"),
@@ -167,6 +166,19 @@ def test_keywords(lexeme, expected_type):
     assert len(tokens) == 1
     assert tokens[0].type.name == expected_type
     assert tokens[0].lexeme == lexeme
+
+
+def test_en_is_an_identifier():
+    lexer = Lexer(
+        "en",
+        "principal.lumi",
+    )
+
+    tokens = lexer.tokenize()
+
+    assert len(tokens) == 1
+    assert tokens[0].type.name == "IDENTIFIER"
+    assert tokens[0].lexeme == "en"
 
 
 def test_identifiers():

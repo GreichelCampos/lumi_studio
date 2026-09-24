@@ -45,13 +45,15 @@ El AST de Lumi utilizará nodos específicos para representar las principales co
 | `ReadNode`                | Expresión de entrada `leer` que devuelve el valor leído.                            |
 | `ImportNode`              | Importación de símbolos desde otro archivo `.lumi`.                                 |
 | `RoomNode`                | Declaración de una `habitacion`.                                                    |
-| `FloorNode`               | Definición de propiedades del piso.                                                 |
-| `WallNode`                | Definición de una pared.                                                            |
-| `DoorNode`                | Declaración de una puerta.                                                          |
-| `WindowNode`              | Declaración de una ventana.                                                         |
+| `SpatialObjectDeclarationNode` | Declaración de un objeto espacial de tipo arbitrario.                          |
+| `FloorNode`               | Declaración de un piso con nombre y propiedades.                                    |
+| `WallNode`                | Declaración de una pared con nombre y propiedades.                                  |
+| `DoorNode`                | Declaración de una puerta con nombre y propiedades.                                 |
+| `WindowNode`              | Declaración de una ventana con nombre y propiedades.                                |
 | `PlaceObjectNode`         | Instrucción `colocar` un objeto en una posición.                                    |
 | `MoveObjectNode`          | Instrucción `mover` un objeto.                                                      |
 | `RotateObjectNode`        | Instrucción `rotar` un objeto.                                                      |
+| `SpatialPropertyNode`     | Propiedad `color` o `material` de una declaración espacial.                         |
 
 ### 3.1 Categorías generales
 
@@ -61,7 +63,7 @@ Para facilitar su organización, los nodos podrán agruparse conceptualmente en:
 * **Variables y expresiones:** `VariableDeclarationNode`, `AssignmentNode`, `IdentifierNode`, `LiteralNode`, `ListNode`, `VectorNode`, `BinaryExpressionNode`, `UnaryExpressionNode`.
 * **Control de flujo:** `IfNode`, `SwitchNode`, `CaseNode`, `ForNode`, `WhileNode`, `RepeatNode`.
 * **Funciones y entrada/salida:** `FunctionDeclarationNode`, `ParameterNode`, `FunctionCallNode`, `ReturnNode`, `ShowNode`, `ReadNode`.
-* **Lenguaje espacial:** `RoomNode`, `FloorNode`, `WallNode`, `DoorNode`, `WindowNode`, `PlaceObjectNode`, `MoveObjectNode`, `RotateObjectNode`.
+* **Lenguaje espacial:** `RoomNode`, `SpatialObjectDeclarationNode`, `FloorNode`, `WallNode`, `DoorNode`, `WindowNode`, `PlaceObjectNode`, `MoveObjectNode`, `RotateObjectNode`, `SpatialPropertyNode`.
 
 Esta lista representa el contrato mínimo inicial del AST y podrá ampliarse únicamente si durante la implementación aparece una construcción del lenguaje que no pueda representarse adecuadamente con estos nodos.
 
@@ -95,13 +97,15 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 | `ReadNode`                | `message`                                    |
 | `ImportNode`              | `file_name`, `symbol_name`                   |
 | `RoomNode`                | `name`, `width`, `length`, `height`, `body`  |
-| `FloorNode`               | `material`                                   |
-| `WallNode`                | `direction`, `properties`                    |
-| `DoorNode`                | `direction`, `properties`                    |
-| `WindowNode`              | `direction`, `properties`                    |
-| `PlaceObjectNode`         | `object_type`, `position`                    |
+| `SpatialObjectDeclarationNode` | `object_type`, `name`, `properties`     |
+| `FloorNode`               | `name`, `properties`                         |
+| `WallNode`                | `name`, `properties`                         |
+| `DoorNode`                | `name`, `properties`                         |
+| `WindowNode`              | `name`, `properties`                         |
+| `PlaceObjectNode`         | `object_name`, `position`                    |
 | `MoveObjectNode`          | `object_name`, `position`                    |
 | `RotateObjectNode`        | `object_name`, `rotation`                    |
+| `SpatialPropertyNode`     | `name`, `value`                              |
 
 ### 4.1 Descripción de las propiedades
 
@@ -120,13 +124,16 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `arguments`: valores o expresiones enviados al llamar una función.
 * `return_type`: tipo de retorno declarado por una función.
 * `cases`: lista de nodos `CaseNode` pertenecientes a una estructura `segun`.
+* `width`, `length` y `height`: nodos de expresión que representan las dimensiones de una habitación.
 * `position`: nodo `VectorNode` que representa una posición `[x, y, z]`.
-* `rotation`: vector que representa una rotación.
-* `properties`: propiedades asociadas a un elemento espacial.
-* `direction`: dirección de una pared, puerta o ventana.
+* `rotation`: nodo `VectorNode` que representa una rotación `[x, y, z]`.
+* `properties`: lista de nodos `SpatialPropertyNode`. Puede estar vacía porque `color` y `material` son opcionales.
 * `file_name`: nombre del archivo `.lumi` que se desea importar.
 * `symbol_name`: símbolo solicitado mediante `usar`.
-* `object_type`: tipo de objeto perteneciente inicialmente al catálogo incorporado de objetos de Lumi.
+* `object_type`: identificador que representa un tipo arbitrario de objeto espacial, por ejemplo `silla`, `mesa` o `sofa`.
+* `object_name`: nombre que referencia un objeto espacial declarado previamente.
+
+Cada `SpatialPropertyNode` representa exclusivamente una propiedad `color` o `material`. Su campo `name` identifica cuál de las dos propiedades contiene y `value` conserva el nodo de expresión asociado. La lista mantiene el orden de aparición en el código fuente. La restricción de que cada propiedad aparezca como máximo una vez corresponde al parser y no al nodo AST.
 
 Las propiedades cuyo contenido represente otra construcción del lenguaje deberán contener otros nodos AST. Por ejemplo, `value`, `condition`, `left`, `right` y los elementos de `body` podrán contener nodos correspondientes a expresiones o instrucciones.
 
@@ -159,6 +166,7 @@ Esta clasificación es conceptual y no obliga todavía a implementar herencia de
 * `ShowNode`
 * `ImportNode`
 * `RoomNode`
+* `SpatialObjectDeclarationNode`
 * `FloorNode`
 * `WallNode`
 * `DoorNode`
@@ -171,10 +179,11 @@ Esta clasificación es conceptual y no obliga todavía a implementar herencia de
 
 * `ParameterNode`
 * `CaseNode`
+* `SpatialPropertyNode`
 
 Las propiedades `VariableDeclarationNode.value`, `AssignmentNode.value`, `IfNode.condition`, `BinaryExpressionNode.left` y `BinaryExpressionNode.right` deben contener nodos de expresión compatibles.
 
-Los nodos `RoomNode`, `FloorNode`, `WallNode`, `DoorNode` y `WindowNode` deben conservar la información sintáctica necesaria para que posteriormente el intérprete y la capa espacial puedan generar y validar `ScenePlan`. Este contrato no define la estructura interna de `ScenePlan`.
+Los nodos `RoomNode`, `SpatialObjectDeclarationNode`, `FloorNode`, `WallNode`, `DoorNode` y `WindowNode` deben conservar la información sintáctica necesaria para que posteriormente el intérprete y la capa espacial puedan generar y validar `ScenePlan`. Este contrato no define la estructura interna de `ScenePlan`.
 
 ## 5. Contrato de Diagnostic
 
@@ -415,7 +424,10 @@ Código Lumi:
 
 ```lumi
 habitacion sala(5, 4, 2.7) {
-    colocar mesa en [0, 0, 0]>>
+    mesa mesa1 {
+        material "madera">>
+    }
+    colocar mesa1 [0, 0, 0]>>
 }
 ```
 
@@ -438,8 +450,18 @@ RoomNode
 │       └── literal_kind: "decimal"
 │
 ├── body:
+│   ├── SpatialObjectDeclarationNode
+│   │   ├── object_type: "mesa"
+│   │   ├── name: "mesa1"
+│   │   └── properties:
+│   │       └── SpatialPropertyNode
+│   │           ├── name: "material"
+│   │           └── value:
+│   │               └── LiteralNode
+│   │                   ├── value: "madera"
+│   │                   └── literal_kind: "texto"
 │   └── PlaceObjectNode
-│       ├── object_type: "mesa"
+│       ├── object_name: "mesa1"
 │       └── position:
 │           └── VectorNode
 │               ├── x:

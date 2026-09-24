@@ -126,7 +126,6 @@ Las palabras reservadas tienen un significado propio dentro del lenguaje Lumi y 
 | `mover` | `MOVE` | Cambia la ubicación de un objeto. |
 | `rotar` | `ROTATE` | Cambia la rotación de un objeto. |
 | `visualizar3D` | `VISUALIZE_3D` | Solicita la visualización tridimensional. |
-| `en` | `IN` | Indica una ubicación o relación espacial. |
 | `color` | `COLOR` | Define una propiedad de color. |
 | `material` | `MATERIAL` | Define una propiedad de material. |
 | `posicion` | `POSITION` | Representa una propiedad de posición. |
