@@ -7,6 +7,8 @@ from lumi_language.ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
     CaseNode,
+    DoorNode,
+    FloorNode,
     ForNode,
     FunctionCallNode,
     FunctionDeclarationNode,
@@ -16,16 +18,24 @@ from lumi_language.ast_nodes import (
     ListNode,
     LiteralNode,
     MainNode,
+    MoveObjectNode,
     ParameterNode,
+    PlaceObjectNode,
     ReadNode,
     RepeatNode,
     ReturnNode,
+    RoomNode,
+    RotateObjectNode,
     ShowNode,
+    SpatialObjectDeclarationNode,
+    SpatialPropertyNode,
     SwitchNode,
     UnaryExpressionNode,
     VariableDeclarationNode,
     VectorNode,
+    WallNode,
     WhileNode,
+    WindowNode,
 )
 
 
@@ -970,3 +980,182 @@ mostrar(cantidad)>>
     assert len(ast.statements) == 2
     assert isinstance(ast.statements[0], VariableDeclarationNode)
     assert isinstance(ast.statements[1], ShowNode)
+
+
+def test_l025_empty_room_with_literal_dimensions():
+    ast = parse_source("habitacion sala(5, 4, 2.7) { }")
+
+    room = ast.statements[0]
+    assert isinstance(room, RoomNode)
+    assert room.name == "sala"
+    assert room.width.value == 5
+    assert room.length.value == 4
+    assert room.height.value == 2.7
+    assert room.body == []
+
+
+def test_l025_room_accepts_expression_dimensions():
+    ast = parse_source("habitacion sala(ancho, largo + 1, alto) { }")
+
+    room = ast.statements[0]
+    assert isinstance(room.width, IdentifierNode)
+    assert isinstance(room.length, BinaryExpressionNode)
+    assert isinstance(room.height, IdentifierNode)
+
+
+@pytest.mark.parametrize(
+    "source, expected_names",
+    [
+        ("silla silla1 { }", []),
+        ('silla silla1 { color "rojo">> }', ["color"]),
+        ('mesa mesa1 { material "madera">> }', ["material"]),
+        (
+            'silla silla1 { color "rojo">> material "madera">> }',
+            ["color", "material"],
+        ),
+        (
+            'silla silla1 { material "madera">> color "rojo">> }',
+            ["material", "color"],
+        ),
+    ],
+)
+def test_l025_generic_spatial_object_properties(source, expected_names):
+    declaration = parse_source(source).statements[0]
+
+    assert isinstance(declaration, SpatialObjectDeclarationNode)
+    assert declaration.object_type in ("silla", "mesa")
+    assert declaration.name in ("silla1", "mesa1")
+    assert [property_node.name for property_node in declaration.properties] == (
+        expected_names
+    )
+    assert all(
+        isinstance(property_node, SpatialPropertyNode)
+        for property_node in declaration.properties
+    )
+
+
+def test_l025_spatial_property_value_accepts_expression():
+    declaration = parse_source("silla silla1 { color tono + sufijo>> }").statements[0]
+
+    assert isinstance(declaration.properties[0].value, BinaryExpressionNode)
+
+
+@pytest.mark.parametrize(
+    "source, node_type",
+    [
+        ('piso piso1 { material "madera">> }', FloorNode),
+        ('pared pared1 { color "blanco">> }', WallNode),
+        ("puerta puerta1 { }", DoorNode),
+        ("ventana ventana1 { }", WindowNode),
+    ],
+)
+def test_l025_reserved_spatial_elements(source, node_type):
+    declaration = parse_source(source).statements[0]
+
+    assert isinstance(declaration, node_type)
+    assert declaration.name.endswith("1")
+
+
+def test_l025_place_with_literal_vector():
+    statement = parse_source("colocar silla1 [1, 0, 2]>>").statements[0]
+
+    assert isinstance(statement, PlaceObjectNode)
+    assert statement.object_name == "silla1"
+    assert isinstance(statement.position, VectorNode)
+    assert (statement.position.x.value, statement.position.y.value) == (1, 0)
+    assert statement.position.z.value == 2
+
+
+def test_l025_place_with_expression_vector():
+    statement = parse_source(
+        "colocar silla1 [x + 1, 0, largo / 2]>>"
+    ).statements[0]
+
+    assert isinstance(statement.position.x, BinaryExpressionNode)
+    assert isinstance(statement.position.z, BinaryExpressionNode)
+
+
+def test_l025_move_and_rotate_use_vectors():
+    ast = parse_source("mover silla1 [2, 0, 3]>> rotar silla1 [0, 90, 0]>>")
+
+    assert isinstance(ast.statements[0], MoveObjectNode)
+    assert isinstance(ast.statements[0].position, VectorNode)
+    assert isinstance(ast.statements[1], RotateObjectNode)
+    assert isinstance(ast.statements[1].rotation, VectorNode)
+
+
+def test_l025_room_reuses_general_block_for_mixed_instructions():
+    ast = parse_source(
+        """
+habitacion sala(5, 4, 2.7) {
+    silla silla1 {
+        color "rojo">>
+        material "madera">>
+    }
+    colocar silla1 [1, 0, 2]>>
+    mostrar("Habitacion creada")>>
+}
+"""
+    )
+
+    room = ast.statements[0]
+    assert isinstance(room, RoomNode)
+    assert isinstance(room.body[0], SpatialObjectDeclarationNode)
+    assert isinstance(room.body[1], PlaceObjectNode)
+    assert isinstance(room.body[2], ShowNode)
+
+
+def test_l025_identifier_dispatch_regressions():
+    ast = parse_source("x = 10>> calcular(5)>> silla silla1 { }")
+
+    assert isinstance(ast.statements[0], AssignmentNode)
+    assert isinstance(ast.statements[1], FunctionCallNode)
+    assert isinstance(ast.statements[2], SpatialObjectDeclarationNode)
+
+
+def test_l025_list_assignment_remains_list_not_vector():
+    statement = parse_source("punto = [4, 5, 6]>>").statements[0]
+
+    assert isinstance(statement.value, ListNode)
+    assert not isinstance(statement.value, VectorNode)
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        ("habitacion sala(5, 4) { }", "Se esperaba ',' despues del largo."),
+        (
+            "habitacion sala(5, 4, 2.7 { }",
+            "Se esperaba ')' despues de las dimensiones",
+        ),
+        ("habitacion sala(5, 4, 2.7)", "Se esperaba '{'"),
+        ("silla { }", "una asignacion, una llamada o una declaracion espacial"),
+        ("silla silla1", "Se esperaba '{'"),
+        ('silla silla1 { color >> }', "Se esperaba una expresion."),
+        ('silla silla1 { color "rojo" }', "Se esperaba '>>'"),
+        (
+            'silla silla1 { color "rojo">> color "azul">> }',
+            "La propiedad 'color' no puede repetirse.",
+        ),
+        (
+            'silla silla1 { material "madera">> material "metal">> }',
+            "La propiedad 'material' no puede repetirse.",
+        ),
+        ("silla silla1 { mostrar(1)>> }", "Solo se permiten las propiedades"),
+        ("colocar [1, 0, 2]>>", "Se esperaba el nombre del objeto a colocar."),
+        ("colocar silla1 en [1, 0, 2]>>", "Se esperaba '['"),
+        ("mover silla1 a [2, 0, 3]>>", "Se esperaba '['"),
+        ("colocar silla1 [1, 0]>>", "Se esperaba ',' despues del componente y."),
+        ("rotar silla1 [0, 90, 0, 1]>>", "Se esperaba ']'"),
+    ],
+)
+def test_l025_invalid_spatial_syntax_reports_controlled_error(source, expected):
+    parser = make_parser(source)
+
+    with pytest.raises(ValueError):
+        parser.parse()
+
+    diagnostic = parser.diagnostics[0]
+    assert diagnostic.category.value == "SYNTACTIC"
+    assert expected in diagnostic.description
+    assert diagnostic.file == "principal.lumi"

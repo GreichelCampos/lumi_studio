@@ -8,6 +8,8 @@ from .ast_nodes import (
     AssignmentNode,
     BinaryExpressionNode,
     CaseNode,
+    DoorNode,
+    FloorNode,
     ForNode,
     FunctionCallNode,
     FunctionDeclarationNode,
@@ -17,17 +19,25 @@ from .ast_nodes import (
     ListNode,
     LiteralNode,
     MainNode,
+    MoveObjectNode,
     ParameterNode,
+    PlaceObjectNode,
     ProgramNode,
     ReadNode,
     RepeatNode,
     ReturnNode,
+    RoomNode,
+    RotateObjectNode,
     ShowNode,
+    SpatialObjectDeclarationNode,
+    SpatialPropertyNode,
     SwitchNode,
     UnaryExpressionNode,
     VariableDeclarationNode,
     VectorNode,
+    WallNode,
     WhileNode,
+    WindowNode,
 )
 
 
@@ -128,6 +138,14 @@ class Parser:
             TokenType.RETURN,
             TokenType.PRINCIPAL,
             TokenType.SHOW,
+            TokenType.ROOM,
+            TokenType.FLOOR,
+            TokenType.WALL,
+            TokenType.DOOR,
+            TokenType.WINDOW,
+            TokenType.PLACE,
+            TokenType.MOVE,
+            TokenType.ROTATE,
         )
 
         if not self.is_at_end() and self.peek().type in statement_starters:
@@ -797,6 +815,179 @@ class Parser:
 
         raise self.error("Se esperaba el tipo de retorno de la funcion.")
 
+    def parse_room_declaration(self):
+        room_token = self.consume(TokenType.ROOM, "Se esperaba 'habitacion'.")
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre de la habitacion.",
+        )
+        self.consume(
+            TokenType.LEFT_PAREN,
+            "Se esperaba '(' despues del nombre de la habitacion.",
+        )
+        width = self.parse_expression()
+        self.consume(TokenType.COMMA, "Se esperaba ',' despues del ancho.")
+        length = self.parse_expression()
+        self.consume(TokenType.COMMA, "Se esperaba ',' despues del largo.")
+        height = self.parse_expression()
+        self.consume(
+            TokenType.RIGHT_PAREN,
+            "Se esperaba ')' despues de las dimensiones de la habitacion.",
+        )
+        body = self.parse_block()
+
+        return RoomNode(
+            name=name_token.lexeme,
+            width=width,
+            length=length,
+            height=height,
+            body=body,
+            file=room_token.file,
+            line=room_token.line,
+            column=room_token.column,
+        )
+
+    def parse_spatial_object_declaration(self):
+        object_type_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el tipo del objeto espacial.",
+        )
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del objeto espacial.",
+        )
+        properties = self.parse_spatial_properties()
+
+        return SpatialObjectDeclarationNode(
+            object_type=object_type_token.lexeme,
+            name=name_token.lexeme,
+            properties=properties,
+            file=object_type_token.file,
+            line=object_type_token.line,
+            column=object_type_token.column,
+        )
+
+    def parse_reserved_spatial_element(self):
+        element_token = self.advance()
+        node_types = {
+            TokenType.FLOOR: FloorNode,
+            TokenType.WALL: WallNode,
+            TokenType.DOOR: DoorNode,
+            TokenType.WINDOW: WindowNode,
+        }
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del elemento espacial.",
+        )
+        properties = self.parse_spatial_properties()
+
+        return node_types[element_token.type](
+            name=name_token.lexeme,
+            properties=properties,
+            file=element_token.file,
+            line=element_token.line,
+            column=element_token.column,
+        )
+
+    def parse_spatial_properties(self):
+        self.consume(
+            TokenType.LEFT_BRACE,
+            "Se esperaba '{' para iniciar las propiedades espaciales.",
+        )
+        properties = []
+        seen_properties = set()
+
+        while not self.check(TokenType.RIGHT_BRACE):
+            if self.is_at_end():
+                raise self.error(
+                    "Se esperaba '}' para cerrar las propiedades espaciales."
+                )
+            if self.peek().type not in (TokenType.COLOR, TokenType.MATERIAL):
+                raise self.error(
+                    "Solo se permiten las propiedades 'color' y 'material'."
+                )
+
+            property_token = self.advance()
+            property_name = property_token.lexeme
+            if property_name in seen_properties:
+                raise self.error(
+                    f"La propiedad '{property_name}' no puede repetirse.",
+                    property_token,
+                )
+
+            seen_properties.add(property_name)
+            value = self.parse_expression()
+            self.consume(
+                TokenType.TERMINATOR,
+                f"Se esperaba '>>' al final de la propiedad '{property_name}'.",
+            )
+            properties.append(
+                SpatialPropertyNode(
+                    name=property_name,
+                    value=value,
+                    file=property_token.file,
+                    line=property_token.line,
+                    column=property_token.column,
+                )
+            )
+
+        self.consume(
+            TokenType.RIGHT_BRACE,
+            "Se esperaba '}' para cerrar las propiedades espaciales.",
+        )
+        return properties
+
+    def parse_place_object(self):
+        place_token = self.consume(TokenType.PLACE, "Se esperaba 'colocar'.")
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del objeto a colocar.",
+        )
+        position = self.parse_vector()
+        self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'colocar'.")
+
+        return PlaceObjectNode(
+            object_name=name_token.lexeme,
+            position=position,
+            file=place_token.file,
+            line=place_token.line,
+            column=place_token.column,
+        )
+
+    def parse_move_object(self):
+        move_token = self.consume(TokenType.MOVE, "Se esperaba 'mover'.")
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del objeto a mover.",
+        )
+        position = self.parse_vector()
+        self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'mover'.")
+
+        return MoveObjectNode(
+            object_name=name_token.lexeme,
+            position=position,
+            file=move_token.file,
+            line=move_token.line,
+            column=move_token.column,
+        )
+
+    def parse_rotate_object(self):
+        rotate_token = self.consume(TokenType.ROTATE, "Se esperaba 'rotar'.")
+        name_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre del objeto a rotar.",
+        )
+        rotation = self.parse_vector()
+        self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'rotar'.")
+
+        return RotateObjectNode(
+            object_name=name_token.lexeme,
+            rotation=rotation,
+            file=rotate_token.file,
+            line=rotate_token.line,
+            column=rotate_token.column,
+        )
+
     def parse_statement(self):
         if self.is_at_end():
             raise self.error("Se esperaba una instruccion valida.")
@@ -806,6 +997,8 @@ class Parser:
 
         if self.check(TokenType.IDENTIFIER):
             next_token = self.peek_next()
+            if next_token is not None and next_token.type == TokenType.ASSIGN:
+                return self.parse_assignment()
             if next_token is not None and next_token.type == TokenType.LEFT_PAREN:
                 call = self.parse_expression()
                 self.consume(
@@ -813,7 +1006,11 @@ class Parser:
                     "Se esperaba '>>' al final de la llamada.",
                 )
                 return call
-            return self.parse_assignment()
+            if next_token is not None and next_token.type == TokenType.IDENTIFIER:
+                return self.parse_spatial_object_declaration()
+            raise self.error(
+                "Se esperaba una asignacion, una llamada o una declaracion espacial."
+            )
 
         statement_parsers = {
             TokenType.IMPORT: self.parse_import,
@@ -826,6 +1023,14 @@ class Parser:
             TokenType.RETURN: self.parse_return,
             TokenType.PRINCIPAL: self.parse_main,
             TokenType.SHOW: self.parse_show,
+            TokenType.ROOM: self.parse_room_declaration,
+            TokenType.FLOOR: self.parse_reserved_spatial_element,
+            TokenType.WALL: self.parse_reserved_spatial_element,
+            TokenType.DOOR: self.parse_reserved_spatial_element,
+            TokenType.WINDOW: self.parse_reserved_spatial_element,
+            TokenType.PLACE: self.parse_place_object,
+            TokenType.MOVE: self.parse_move_object,
+            TokenType.ROTATE: self.parse_rotate_object,
         }
         parser = statement_parsers.get(self.peek().type)
 
