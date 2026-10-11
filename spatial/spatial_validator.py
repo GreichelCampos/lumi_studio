@@ -70,7 +70,7 @@ class SpatialValidator:
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             return Diagnostic(
                 category=DiagnosticCategory.SPATIAL,
-                code="SPATIAL_DIMENSION_NOT_NUMERIC",
+                code="SPA_INVALID_DIMENSION",
                 file=source.file,
                 line=source.line,
                 column=source.column,
@@ -84,7 +84,7 @@ class SpatialValidator:
         if isinstance(value, float) and not isfinite(value):
             return Diagnostic(
                 category=DiagnosticCategory.SPATIAL,
-                code="SPATIAL_DIMENSION_NOT_FINITE",
+                code="SPA_INVALID_DIMENSION",
                 file=source.file,
                 line=source.line,
                 column=source.column,
@@ -98,7 +98,7 @@ class SpatialValidator:
         if value <= 0:
             return Diagnostic(
                 category=DiagnosticCategory.SPATIAL,
-                code="SPATIAL_DIMENSION_NOT_POSITIVE",
+                code="SPA_INVALID_DIMENSION",
                 file=source.file,
                 line=source.line,
                 column=source.column,
@@ -162,7 +162,7 @@ class SpatialValidator:
         if isinstance(value, bool) or not isinstance(value, (int, float)):
             return Diagnostic(
                 category=DiagnosticCategory.SPATIAL,
-                code="SPATIAL_VECTOR_COMPONENT_NOT_NUMERIC",
+                code="SPA_INVALID_VECTOR",
                 file=source.file,
                 line=source.line,
                 column=source.column,
@@ -176,7 +176,7 @@ class SpatialValidator:
         if isinstance(value, float) and not isfinite(value):
             return Diagnostic(
                 category=DiagnosticCategory.SPATIAL,
-                code="SPATIAL_VECTOR_COMPONENT_NOT_FINITE",
+                code="SPA_INVALID_VECTOR",
                 file=source.file,
                 line=source.line,
                 column=source.column,
@@ -205,7 +205,7 @@ class SpatialValidator:
                 diagnostics.append(
                     Diagnostic(
                         category=DiagnosticCategory.SPATIAL,
-                        code="SPATIAL_PROPERTY_DUPLICATE",
+                        code="SPA_INVALID_PROPERTY",
                         file=source.file,
                         line=source.line,
                         column=source.column,
@@ -225,7 +225,7 @@ class SpatialValidator:
                 diagnostics.append(
                     Diagnostic(
                         category=DiagnosticCategory.SPATIAL,
-                        code="SPATIAL_PROPERTY_UNKNOWN",
+                        code="SPA_INVALID_PROPERTY",
                         file=source.file,
                         line=source.line,
                         column=source.column,
@@ -242,7 +242,7 @@ class SpatialValidator:
                 diagnostics.append(
                     Diagnostic(
                         category=DiagnosticCategory.SPATIAL,
-                        code="SPATIAL_PROPERTY_TYPE_MISMATCH",
+                        code="SPA_INVALID_PROPERTY",
                         file=source.file,
                         line=source.line,
                         column=source.column,

@@ -113,7 +113,7 @@ def test_non_positive_dimension_is_rejected(invalid_room, dimension_name):
     assert not result.succeeded
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "SPATIAL_DIMENSION_NOT_POSITIVE"
+    assert diagnostic.code == "SPA_INVALID_DIMENSION"
     assert dimension_name in diagnostic.description
     assert "sala" in diagnostic.description
 
@@ -123,7 +123,7 @@ def test_non_numeric_dimension_is_rejected(value):
     result = SpatialValidator().validate(scene(room(width=value)))
 
     assert len(result.diagnostics) == 1
-    assert result.diagnostics[0].code == "SPATIAL_DIMENSION_NOT_NUMERIC"
+    assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
 
 
 @pytest.mark.parametrize(
@@ -134,7 +134,7 @@ def test_non_finite_dimension_is_rejected(value):
     result = SpatialValidator().validate(scene(room(height=value)))
 
     assert len(result.diagnostics) == 1
-    assert result.diagnostics[0].code == "SPATIAL_DIMENSION_NOT_FINITE"
+    assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
 
 
 def test_extremely_large_positive_integer_dimension_succeeds():
@@ -147,7 +147,7 @@ def test_extremely_large_negative_integer_dimension_is_not_positive():
     result = SpatialValidator().validate(scene(room(width=-(10**1000))))
 
     assert len(result.diagnostics) == 1
-    assert result.diagnostics[0].code == "SPATIAL_DIMENSION_NOT_POSITIVE"
+    assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
 
 
 def test_validates_multiple_rooms():
@@ -168,9 +168,9 @@ def test_accumulates_multiple_dimension_errors():
     )
 
     assert tuple(item.code for item in result.diagnostics) == (
-        "SPATIAL_DIMENSION_NOT_POSITIVE",
-        "SPATIAL_DIMENSION_NOT_POSITIVE",
-        "SPATIAL_DIMENSION_NOT_FINITE",
+        "SPA_INVALID_DIMENSION",
+        "SPA_INVALID_DIMENSION",
+        "SPA_INVALID_DIMENSION",
     )
 
 
@@ -249,7 +249,7 @@ def test_non_numeric_vector_component_is_rejected(value):
 
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "SPATIAL_VECTOR_COMPONENT_NOT_NUMERIC"
+    assert diagnostic.code == "SPA_INVALID_VECTOR"
     assert "silla1" in diagnostic.description
     assert "posición" in diagnostic.description
     assert "x" in diagnostic.description
@@ -266,7 +266,7 @@ def test_non_finite_vector_component_is_rejected(value):
 
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "SPATIAL_VECTOR_COMPONENT_NOT_FINITE"
+    assert diagnostic.code == "SPA_INVALID_VECTOR"
     assert "rotación" in diagnostic.description
     assert "z" in diagnostic.description
 
@@ -287,9 +287,9 @@ def test_accumulates_multiple_invalid_vector_components():
     result = SpatialValidator().validate(plan)
 
     assert tuple(item.code for item in result.diagnostics) == (
-        "SPATIAL_VECTOR_COMPONENT_NOT_NUMERIC",
-        "SPATIAL_VECTOR_COMPONENT_NOT_FINITE",
-        "SPATIAL_VECTOR_COMPONENT_NOT_NUMERIC",
+        "SPA_INVALID_VECTOR",
+        "SPA_INVALID_VECTOR",
+        "SPA_INVALID_VECTOR",
     )
 
 
@@ -337,8 +337,8 @@ def test_accumulates_dimension_and_vector_errors():
     result = SpatialValidator().validate(scene(invalid_room))
 
     assert tuple(item.code for item in result.diagnostics) == (
-        "SPATIAL_DIMENSION_NOT_POSITIVE",
-        "SPATIAL_VECTOR_COMPONENT_NOT_FINITE",
+        "SPA_INVALID_DIMENSION",
+        "SPA_INVALID_VECTOR",
     )
     assert not result.succeeded
 
@@ -405,7 +405,7 @@ def test_unknown_property_is_rejected_without_type_diagnostic():
 
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "SPATIAL_PROPERTY_UNKNOWN"
+    assert diagnostic.code == "SPA_INVALID_PROPERTY"
     assert "textura" in diagnostic.description
     assert "silla1" in diagnostic.description
 
@@ -425,7 +425,10 @@ def test_duplicate_property_reports_second_occurrence():
 
     diagnostic = SpatialValidator().validate(plan).diagnostics[0]
 
-    assert diagnostic.code == "SPATIAL_PROPERTY_DUPLICATE"
+    assert diagnostic.code == "SPA_INVALID_PROPERTY"
+    assert "color" in diagnostic.description
+    assert "silla1" in diagnostic.description
+    assert "duplicada" in diagnostic.description
     assert diagnostic.file == "objetos.lumi"
     assert diagnostic.line == 4
     assert diagnostic.column == 13
@@ -447,9 +450,10 @@ def test_non_text_property_value_is_rejected(name, value):
 
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "SPATIAL_PROPERTY_TYPE_MISMATCH"
+    assert diagnostic.code == "SPA_INVALID_PROPERTY"
     assert name in diagnostic.description
     assert "silla1" in diagnostic.description
+    assert "valor de texto" in diagnostic.description
 
 
 def test_same_property_name_on_different_elements_is_not_duplicate():
@@ -487,9 +491,9 @@ def test_accumulates_multiple_property_errors_in_room():
     )
 
     assert tuple(item.code for item in result.diagnostics) == (
-        "SPATIAL_PROPERTY_TYPE_MISMATCH",
-        "SPATIAL_PROPERTY_UNKNOWN",
-        "SPATIAL_PROPERTY_TYPE_MISMATCH",
+        "SPA_INVALID_PROPERTY",
+        "SPA_INVALID_PROPERTY",
+        "SPA_INVALID_PROPERTY",
     )
 
 
@@ -528,9 +532,9 @@ def test_accumulates_dimension_vector_and_property_errors():
     result = SpatialValidator().validate(scene(invalid_room))
 
     assert tuple(item.code for item in result.diagnostics) == (
-        "SPATIAL_DIMENSION_NOT_POSITIVE",
-        "SPATIAL_VECTOR_COMPONENT_NOT_FINITE",
-        "SPATIAL_PROPERTY_TYPE_MISMATCH",
+        "SPA_INVALID_DIMENSION",
+        "SPA_INVALID_VECTOR",
+        "SPA_INVALID_PROPERTY",
     )
     assert not result.succeeded
 

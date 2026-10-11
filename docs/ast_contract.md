@@ -337,6 +337,17 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `RUN_IMPORT_NAME_CONFLICT`: la importación intenta reemplazar una función ya registrada.
 * `RUN_IMPORT_INVALID_AST`: el AST importado no posee la estructura mínima necesaria para ejecutarse.
 
+**Validación espacial:**
+
+* `SPA_INVALID_DIMENSION`: una dimensión de habitación no es numérica, no es finita o no es mayor que cero.
+* `SPA_INVALID_VECTOR`: un vector resuelto contiene un componente no numérico o no finito.
+* `SPA_INVALID_PROPERTY`: una propiedad espacial es desconocida, está duplicada o contiene un valor incompatible.
+* `SPA_OBJECT_OUT_OF_BOUNDS`: un objeto se encuentra fuera de los límites permitidos de la habitación.
+* `SPA_OBJECT_COLLISION`: dos objetos espaciales presentan una colisión.
+* `SPA_BLOCKED_DOOR`: una puerta se encuentra bloqueada por un elemento espacial.
+
+Los códigos espaciales agrupan causas relacionadas. La causa específica, el elemento afectado y el componente o propiedad responsable se conservan en la descripción de cada diagnóstico.
+
 ## 6. Contrato de SymbolTable
 
 `SymbolTable` será la estructura utilizada durante el análisis semántico para registrar y consultar los símbolos declarados en un programa Lumi.
