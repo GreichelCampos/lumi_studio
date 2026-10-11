@@ -323,6 +323,7 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `IMPORT_DUPLICATE_SYMBOL`: el mismo símbolo ya fue importado en el alcance.
 * `IMPORT_SYMBOL_CONFLICT`: el nombre importado entra en conflicto con otro símbolo visible.
 * `IMPORT_INVALID_SIGNATURE`: la función importada posee una firma o estructura mínima inválida.
+* `IMPORT_CIRCULAR_DEPENDENCY` (**aprobado por el equipo**): una importación referencia un archivo actualmente activo en la pila de resolución. El diagnóstico conserva la ubicación de la instrucción `importar` que cierra el ciclo y describe la cadena circular.
 
 **Ejecución:**
 
@@ -450,10 +451,11 @@ Después del registro, la función importada reutiliza el mismo mecanismo de `Fu
 
 ### 6.7 Limitaciones actuales
 
+El parser detecta autoimportaciones y ciclos entre archivos mediante una pila privada compartida con sus parsers hijos. Cada archivo se retira de la pila al terminar, incluso si ocurre un error. Una dependencia que ya terminó de procesarse no se considera un ciclo. Los diagnósticos de los hijos se propagan al parser principal una sola vez y los programas importados fallidos no se registran. Este mecanismo no propaga importaciones transitivas ni cambia la visibilidad de símbolos.
+
 La integración actual no implementa todavía:
 
 * Propagación de importaciones transitivas.
-* Detección de importaciones circulares.
 * Construcción de un grafo completo de dependencias.
 * Un límite propio para la profundidad de recursión.
 * Análisis exhaustivo de todos los caminos de control de una función.

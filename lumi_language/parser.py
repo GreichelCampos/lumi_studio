@@ -1,5 +1,7 @@
 """Parsing responsibilities for Lumi source code."""
 
+from dataclasses import dataclass, field
+
 from .token import Token
 from .token_type import TokenType
 from .lexer import Lexer
@@ -49,13 +51,30 @@ class ParserError(ValueError):
         self.diagnostic = diagnostic
 
 
+@dataclass
+class _ImportResolutionContext:
+    """Files active in one parse operation, shared only with child parsers."""
+
+    active_files: list[str] = field(default_factory=list)
+
+
 class Parser:
-    def __init__(self, tokens: list[Token], import_resolver=None):
+    def __init__(
+        self,
+        tokens: list[Token],
+        import_resolver=None,
+        *,
+        _import_context: _ImportResolutionContext | None = None,
+    ):
         self.tokens = tokens
         self.current = 0
         self.import_resolver = import_resolver
         self.diagnostics: list[Diagnostic] = []
         self.imported_programs: dict[str, ProgramNode] = {}
+        self._import_context = (
+            _import_context if _import_context is not None
+            else _ImportResolutionContext()
+        )
 
     def is_at_end(self) -> bool:
         return self.current >= len(self.tokens)
@@ -547,6 +566,22 @@ class Parser:
         if self.import_resolver is None:
             return
 
+        active_files = self._import_context.active_files
+        if node.file_name in active_files:
+            start = active_files.index(node.file_name)
+            cycle = " → ".join(active_files[start:] + [node.file_name])
+            diagnostic = Diagnostic(
+                category=DiagnosticCategory.IMPORT,
+                code="IMPORT_CIRCULAR_DEPENDENCY",
+                file=node.file,
+                line=node.line,
+                column=node.column,
+                description=f"Se detectó una importación circular: {cycle}.",
+                suggestion="Elimine una de las importaciones que forman el ciclo.",
+            )
+            self.diagnostics.append(diagnostic)
+            raise ParserError(diagnostic)
+
         try:
             source = self.import_resolver.resolve(node.file_name)
         except FileNotFoundError:
@@ -563,9 +598,15 @@ class Parser:
             raise ParserError(diagnostic)
 
         tokens = Lexer(source, node.file_name).tokenize()
-        imported_parser = Parser(tokens, import_resolver=self.import_resolver)
-        program = imported_parser.parse()
-        self.diagnostics.extend(imported_parser.diagnostics)
+        imported_parser = Parser(
+            tokens,
+            import_resolver=self.import_resolver,
+            _import_context=self._import_context,
+        )
+        try:
+            program = imported_parser.parse()
+        finally:
+            self.diagnostics.extend(imported_parser.diagnostics)
         self.imported_programs[node.file_name] = program
 
     def parse_block(self):
@@ -1040,6 +1081,24 @@ class Parser:
         raise self.error("Se esperaba una instruccion valida.")
 
     def parse(self):
+        return self._parse_with_import_context(recover=False)
+
+    def parse_with_recovery(self):
+        return self._parse_with_import_context(recover=True)
+
+    def _parse_with_import_context(self, *, recover: bool):
+        file_name = self.tokens[0].file if self.tokens else None
+        if file_name is not None:
+            self._import_context.active_files.append(file_name)
+        try:
+            if recover:
+                return self._parse_recovering_program()
+            return self._parse_program()
+        finally:
+            if file_name is not None:
+                self._import_context.active_files.pop()
+
+    def _parse_program(self):
         statements = []
 
         while not self.is_at_end():
@@ -1056,7 +1115,7 @@ class Parser:
 
         return ProgramNode(statements=[], file="", line=1, column=1)
 
-    def parse_with_recovery(self):
+    def _parse_recovering_program(self):
         statements = []
 
         while not self.is_at_end():
