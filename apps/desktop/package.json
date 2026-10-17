@@ -5,6 +5,7 @@
   "main": "dist/main.cjs",
   "packageManager": "bun@1.4.3",
   "scripts": {
+    "icons:generate": "node scripts/generate-icon.mjs",
     "lint": "tsc --noEmit && npm --prefix renderer run lint",
     "test": "vitest run"
   },
