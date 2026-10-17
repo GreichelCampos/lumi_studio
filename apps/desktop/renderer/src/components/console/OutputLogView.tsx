@@ -7,7 +7,7 @@ import {
   RoomModel 
 } from '../../types';
 import { Clock, Filter, Trash2 } from 'lucide-react';
-import { getLogEventStyle, filterLogEvents } from './outputLogUtils';
+import { getLogEventStyle, filterLogEvents, getCompileResultSummary } from './outputLogUtils';
 
 export interface OutputLogViewProps {
   /**
@@ -88,6 +88,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
   }, [events, activeFilterType]);
 
   const resolvedPrimaryRoom = primaryRoom || scenePlan?.rooms[0] || null;
+  const resultSummary = lastCompileResult ? getCompileResultSummary(lastCompileResult) : null;
 
   useEffect(() => {
     if (events.length > prevEventsLength.current) {
@@ -159,26 +160,30 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
               Estado:{' '}
               <strong
                 className={
-                  lastCompileResult.status === 'blocked'
+                  resultSummary?.tone === 'error'
                     ? 'text-rose-400 font-bold'
-                    : lastCompileResult.status === 'completed_with_spatial_issues'
+                    : resultSummary?.tone === 'warning'
                     ? 'text-amber-400 font-bold'
                     : 'text-emerald-400 font-bold'
                 }
               >
-                {lastCompileResult.status === 'blocked'
-                  ? 'Compilación bloqueada'
-                  : lastCompileResult.status === 'completed_with_spatial_issues'
-                  ? 'Válido para 3D (con problemas espaciales)'
-                  : 'Válido para 3D'}
+                {resultSummary?.label}
               </strong>
             </div>
-            <div>
-              Errores: <span className="text-rose-400 font-bold">{errorCount}</span>
-            </div>
-            <div>
-              Advertencias: <span className="text-amber-400 font-bold">{warningCount}</span>
-            </div>
+            {lastCompileResult.origin === 'python' ? (
+              <div>
+                Diagnósticos: <span className="text-[var(--ide-text)] font-bold">{lastCompileResult.diagnostics.length}</span>
+              </div>
+            ) : (
+              <>
+                <div>
+                  Errores: <span className="text-rose-400 font-bold">{errorCount}</span>
+                </div>
+                <div>
+                  Advertencias: <span className="text-amber-400 font-bold">{warningCount}</span>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

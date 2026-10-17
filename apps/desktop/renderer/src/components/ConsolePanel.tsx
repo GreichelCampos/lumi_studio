@@ -13,6 +13,7 @@ import {
 } from '../types';
 import { LumiMascot } from './LumiMascot';
 import { OutputLogView } from './console/OutputLogView';
+import { getCompileResultSummary } from './console/outputLogUtils';
 import { DiagnosticsListView } from './console/DiagnosticsListView';
 import { SpatialDebuggerView } from './console/SpatialDebuggerView';
 import { ideLogger } from '../services/logger/IdeLogService';
@@ -202,7 +203,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
               <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
               <span>{diagnostics.some((item) => item.severity === 'unspecified')
                 ? `${diagnostics.length} diagnóstico(s)`
-                : diagnostics.length === 0 ? 'Fallo de infraestructura'
+                : diagnostics.length === 0 ? lastCompileResult?.origin === 'python'
+                  ? getCompileResultSummary(lastCompileResult).label : 'Fallo de infraestructura'
                 : `${errorCount} error${errorCount !== 1 ? 'es' : ''}`}</span>
             </span>
           )}
@@ -210,7 +212,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
           {lumiState === 'warning' && (
             <span className="flex items-center gap-1.5 text-xs text-amber-300 glass-btn border-amber-400/40 px-2.5 py-1 rounded-full font-medium">
               <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-              <span>{lastCompileResult?.status === 'incomplete' ? 'Análisis incompleto'
+              <span>{lastCompileResult?.status === 'incomplete' ? getCompileResultSummary(lastCompileResult).label
                 : `${warningCount} advertencia${warningCount !== 1 ? 's' : ''}`}</span>
             </span>
           )}

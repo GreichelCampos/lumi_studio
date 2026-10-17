@@ -138,7 +138,7 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
           </div>
           <p className="text-xs text-[var(--ide-text-muted)] max-w-sm">
             {diagnostics.length === 0
-              ? 'El proyecto no presenta errores ni advertencias de sintaxis o espaciales.'
+              ? 'No hay diagnósticos estructurados para mostrar. Consulta la salida para conocer el resultado de la última operación.'
               : 'Prueba cambiando los filtros de severidad o categoría.'}
           </p>
         </div>

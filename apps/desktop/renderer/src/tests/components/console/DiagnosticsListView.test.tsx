@@ -152,7 +152,7 @@ describe('DiagnosticsListView', () => {
       screen.getByText('No se encontraron diagnósticos para el filtro actual')
     ).toBeInTheDocument();
     expect(
-      screen.getByText('El proyecto no presenta errores ni advertencias de sintaxis o espaciales.')
+      screen.getByText('No hay diagnósticos estructurados para mostrar. Consulta la salida para conocer el resultado de la última operación.')
     ).toBeInTheDocument();
   });
 

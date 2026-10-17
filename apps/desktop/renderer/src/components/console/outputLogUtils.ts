@@ -1,4 +1,25 @@
-import { IdeEventType, IdeLogEvent } from '../../types';
+import { CompileResult, IdeEventType, IdeLogEvent } from '../../types';
+
+export function getCompileResultSummary(result: CompileResult): { label: string; tone: 'error' | 'warning' | 'success' } {
+  const tone = result.status === 'failed' || result.status === 'blocked' ? 'error'
+    : result.status === 'incomplete' || result.status === 'completed_with_spatial_issues' ? 'warning' : 'success';
+  if (result.origin === 'python') {
+    const execution = result.operation === 'execute';
+    const labels = {
+      completed: execution ? 'Ejecución terminada' : 'Análisis terminado',
+      incomplete: execution ? 'Ejecución incompleta' : 'Análisis incompleto',
+      failed: execution ? 'Ejecución fallida' : 'Análisis fallido',
+      blocked: execution ? 'Ejecución bloqueada' : 'Análisis bloqueado',
+      completed_with_spatial_issues: 'Resultado Python con incidencias',
+    };
+    return { label: labels[result.status], tone };
+  }
+  const labels = {
+    blocked: 'Compilación bloqueada', failed: 'Compilación fallida', incomplete: 'Compilación incompleta',
+    completed_with_spatial_issues: 'Válido para 3D (con problemas espaciales)', completed: 'Válido para 3D',
+  };
+  return { label: labels[result.status], tone };
+}
 
 export interface LogFilterOptions {
   type?: 'all' | IdeEventType;

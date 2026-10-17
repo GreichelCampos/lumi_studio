@@ -32,6 +32,8 @@ try {
   await editor.fill('mostrar(4 / 0)>>');
   await page.getByTitle('Compilar y validar sintaxis (F5)').click();
   await page.getByText('[Python · Análisis] completed', { exact: true }).waitFor();
+  assert.equal(await page.getByTestId('output-log-view').getByText('Análisis terminado', { exact: true }).count(), 1);
+  assert.equal(await page.getByText(/Válido para 3D/).count(), 0);
   await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await page.getByRole('button', { name: /Diagnósticos/ }).click();
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).waitFor();
@@ -40,6 +42,13 @@ try {
   await mkdir(new URL('../test-results/', import.meta.url), { recursive: true });
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).scrollIntoViewIfNeeded();
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-python.png', import.meta.url)), fullPage: true });
+  await editor.fill('principal {\n  @\n}');
+  await page.getByTitle('Compilar y validar sintaxis (F5)').click();
+  await page.locator('#tab-salida-btn').click();
+  await page.getByText('[Python · Análisis] failed', { exact: true }).waitFor();
+  assert.equal(await page.getByText('Fallo de infraestructura', { exact: true }).count(), 0);
+  assert.equal(await page.getByTestId('output-log-view').getByText('Análisis fallido', { exact: true }).count(), 1);
+  assert.equal(await page.getByText(/Válido para 3D/).count(), 0);
   const invalid = await page.evaluate(() => window.lumiDesktop.execute({ entryFile: 'x', files: {}, command: 'whoami' }));
   assert.equal(invalid.ok, false);
   assert.equal(invalid.error.code, 'INVALID_IPC_INPUT');
