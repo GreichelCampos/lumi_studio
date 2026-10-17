@@ -6,8 +6,12 @@
   "packageManager": "bun@1.4.3",
   "scripts": {
     "icons:generate": "node scripts/generate-icon.mjs",
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs && npm --prefix renderer run build",
     "lint": "tsc --noEmit && npm --prefix renderer run lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:integration": "node scripts/build.mjs && node tests/electron.integration.mjs",
+    "test:window": "node scripts/build.mjs && node tests/window.integration.mjs"
   },
   "devDependencies": {
     "electron": "44.8.0",
