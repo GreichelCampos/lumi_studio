@@ -106,7 +106,8 @@ def test_spatial_execution_returns_real_unsupported_node_failure():
         "habitacion sala(5, 4, 2.7) {}", "principal.lumi"
     )
 
-    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.compilation.status == CompilationStatus.COMPLETED
+    assert result.compilation.scene_plan is not None
     assert result.status == ExecutionStatus.FAILED
     assert not result.succeeded
     diagnostic = result.diagnostics[0]

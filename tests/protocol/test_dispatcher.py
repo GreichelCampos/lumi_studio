@@ -82,7 +82,7 @@ def test_imports_and_explicit_entry_use_real_services():
 
 @pytest.mark.parametrize("operation, expected", [("analyze", "incomplete"), ("execute", "failed")])
 def test_spatial_capability_is_not_simulated(operation, expected):
-    result = RequestDispatcher().dispatch(request("habitacion sala(5, 4, 2.7) {}", operation))
+    result = RequestDispatcher().dispatch(request("habitacion sala(5, 4, 2.7) { pared pared1 {} }", operation))
     assert result["status"] == expected
     assert result["result"]["analysisStatus"] == "incomplete"
     assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]

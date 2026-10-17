@@ -38,7 +38,6 @@ def test_reuses_spatial_validator_for_invalid_literal_dimensions(width):
 
 
 @pytest.mark.parametrize("source", [
-    "habitacion sala(5, 4, 2.7) {}",
     "principal { si falso { habitacion sala(5, 4, 2.7) {} } }",
     "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} }",
     "principal { entero ancho = 5>> habitacion sala(ancho, 4, 2.7) {} }",
@@ -55,3 +54,10 @@ def test_resolves_multiple_direct_rooms_in_source_order_and_can_be_reused():
     result = builder.build(parse("principal { habitacion primera(3, 4, 2) {} habitacion segunda(7, 6, 3) {} }"))
     assert [room.name for room in result.scene_plan.rooms] == ["primera", "segunda"]
     assert builder.build(parse("principal {} ")).scene_plan is None
+
+
+def test_resolves_documented_top_level_rooms_in_source_order():
+    result = SceneBuilder().build(parse(
+        "habitacion primera(3,4,2) {} principal { habitacion segunda(7,6,3) {} }"
+    ))
+    assert [room.name for room in result.scene_plan.rooms] == ["primera", "segunda"]

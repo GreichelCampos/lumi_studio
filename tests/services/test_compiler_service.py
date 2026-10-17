@@ -144,7 +144,7 @@ def test_errors_inside_imports_retain_the_available_origin(imported_source, expe
 @pytest.mark.parametrize(
     "source",
     [
-        "habitacion sala(5, 4, 2.7) {}",
+        "habitacion sala(5, 4, 2.7) { pared pared1 {} }",
         "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} }",
         "si falso { habitacion sala(5, 4, 2.7) {} }",
     ],

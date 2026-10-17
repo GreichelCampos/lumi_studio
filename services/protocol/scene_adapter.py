@@ -1,4 +1,4 @@
-"""Adapt resolved empty rooms to the IDE exchange model; styles are visual defaults."""
+"""Adapt resolved rooms and floors; absent styles retain neutral visual defaults."""
 
 from typing import TypedDict
 
@@ -33,13 +33,22 @@ class ScenePlanDTO(TypedDict):
 
 
 def _room_dto(room: RoomPlan) -> RoomDTO:
-    if room.elements:
-        raise ValueError("El adaptador de habitaciones vacías no admite elementos espaciales.")
+    if len(room.elements) > 1 or any(element.element_kind != "floor" for element in room.elements):
+        raise ValueError("El adaptador admite únicamente un piso por habitación.")
+    floor: FloorDTO = {"material": "standard", "color": "#e2e8f0"}
+    for element in room.elements:
+        for prop in element.properties:
+            if prop.name not in {"material", "color"} or not isinstance(prop.value, str):
+                raise ValueError("El piso requiere propiedades de color o material con valores de texto validados.")
+            if prop.name == "material":
+                floor["material"] = prop.value
+            else:
+                floor["color"] = prop.value
     width, length, height = room.width.value, room.length.value, room.height.value
     return {
         "id": f"{room.source.file}:{room.source.line}:{room.source.column}",
         "name": room.name, "dimensions": [width, length, height],
-        "floor": {"material": "standard", "color": "#e2e8f0"},
+        "floor": floor,
         "walls": {side: {"color": "#f1f5f9"} for side in ("north", "south", "east", "west")},
         "doors": [], "windows": [], "objects": [],
         "calculatedArea": width * length, "calculatedVolume": width * length * height,
