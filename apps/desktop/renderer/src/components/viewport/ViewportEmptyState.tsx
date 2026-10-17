@@ -19,8 +19,8 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       icon: Box,
       iconColor: 'text-[var(--ide-accent)]', bgColor: 'bg-[var(--ide-accent-bg)]',
       borderColor: 'border-[var(--ide-panel-border)]',
-      title: 'Generación de ScenePlan pendiente',
-      description: 'El núcleo Python todavía no produce escenas 3D. El análisis y la ejecución reales se muestran en la consola; no se utiliza una escena simulada.',
+      title: 'Sin ScenePlan para esta compilación',
+      description: 'Esta respuesta de Python no incluye una escena 3D. Revisa el resultado y las capacidades pendientes en la consola; no se utiliza una escena simulada.',
       actionText: '', actionFn: undefined,
     },
     no_compile: {

@@ -32,7 +32,7 @@ function bridge(response = reply()): DesktopBridge {
 describe('Real compiler adapter', () => {
   it('labels the unavailable spatial capability without claiming that source has no rooms', () => {
     render(createElement(ViewportEmptyState, { type: 'scene_unavailable' }));
-    expect(screen.getByText('Generación de ScenePlan pendiente')).toBeInTheDocument();
+    expect(screen.getByText('Sin ScenePlan para esta compilación')).toBeInTheDocument();
     expect(screen.queryByText('Sin habitaciones definidas')).not.toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });

@@ -54,7 +54,7 @@ describe('IDE scene flow using simulated backend replies, not Python-generated s
     const renderRoom = vi.spyOn(ThreeSceneManager.prototype, 'renderRoom');
     const view = render(<Viewport3D scenePlan={hook.result.current.scenePlan} sceneSource={hook.result.current.sceneSource} sceneGenerationUnavailable />);
     expect(renderRoom).toHaveBeenCalledWith(fixture.result.scenePlan!.rooms[0], null, null);
-    expect(screen.queryByText('Generación de ScenePlan pendiente')).not.toBeInTheDocument();
+    expect(screen.queryByText('Sin ScenePlan para esta compilación')).not.toBeInTheDocument();
     view.unmount(); hook.unmount();
   });
 

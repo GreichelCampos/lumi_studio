@@ -81,13 +81,21 @@ código. Tampoco se generan eventos a partir de una escena estática.
 
 ## Estado de la integración
 
-Electron ya se comunica con Python, pero las fachadas aún no devuelven escenas ni
-trazas. El protocolo anuncia `scenePlan: false` y `debugTrace: false`; el adaptador
-del IDE mantiene `scenePlan: null`.
+Electron recibe escenas reales para habitaciones vacías declaradas directamente
+en `principal` con dimensiones literales. `SceneBuilder` produce el modelo interno,
+`SpatialValidator` comprueba sus dimensiones y `scene_plan_dto` adapta el resultado
+al intercambio. Las dimensiones se interpretan en metros; piso y paredes ausentes
+usan estilos visuales neutros y los IDs se derivan de archivo, línea y columna.
+Estas convenciones iniciales requieren revisión antes de ampliar el productor.
+
+La respuesta completada incluye `result.scenePlan` y `capabilities.scenePlan: true`.
+Las respuestas sin escena mantienen la compatibilidad anterior. No se publican
+escenas parciales ante errores o construcciones espaciales aún incompletas.
+`debugTrace` continúa en `false` y el intérprete no ejecuta `RoomNode`.
 
 El IDE valida campos, ubicaciones, dimensiones y snapshots. Esa validación
 estructural no garantiza integridad referencial ni validez semántica espacial.
-La producción de escenas y eventos reales desde Python requiere resolver los
+La ampliación de las escenas y la producción de eventos reales requieren resolver los
 siguientes requisitos; importar fixtures no demuestra esa integración.
 
 ## Requisitos de interoperabilidad

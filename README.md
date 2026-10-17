@@ -28,8 +28,24 @@ npm run lint
 npm run build
 ```
 
-La prueba de integración abre Electron y usa Python real. ScenePlan y trazas siguen
-pendientes; este build no produce un instalador. En PowerShell puede usarse `npm.cmd`.
+La prueba de integración abre Electron y usa Python real. La compilación espacial
+inicial admite habitaciones vacías declaradas directamente dentro de `principal`,
+con dimensiones literales en metros:
+
+```lumi
+principal {
+    habitacion sala(5.0, 4.0, 2.7) {
+    }
+}
+```
+
+Al pulsar **Compilar**, Python genera y valida ScenePlan; el visor representa el
+piso y las cuatro paredes con un estilo neutro. `npm run test:room` verifica este
+recorrido en Electron real. El subconjunto espacial inicial contiene únicamente
+declaraciones de habitaciones en `principal`. Expresiones en dimensiones, elementos espaciales,
+habitaciones en funciones o control de flujo siguen incompletos; no se muestran
+escenas parciales. El intérprete todavía no ejecuta `RoomNode` y no hay trazas
+espaciales ni instalador. En PowerShell puede usarse `npm.cmd`.
 
 ## Ejecutar el frontend de Estudio Lumi
 

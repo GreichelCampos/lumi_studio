@@ -17,6 +17,6 @@ export function BackendModeNotice({ real, refresh }: { real: boolean; refresh: b
   }, [real, refresh]);
   if (!real) return <MockModeNotice />;
   return <aside aria-label="Modo Python real" className="shrink-0 border-b border-emerald-300/20 px-4 py-1 text-center text-xs">
-    Python real · {message} · ScenePlan y trazas pendientes.
+    Python real · {message} · Trazas espaciales todavía no disponibles.
   </aside>;
 }
