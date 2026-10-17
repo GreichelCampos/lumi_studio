@@ -91,7 +91,7 @@ export function renameLumiFile(project: LumiProject, fileId: string, newCleanNam
     return {
       ...f,
       name: newCleanName,
-      path: `${project.name}/${newCleanName}`,
+      path: `${f.path.slice(0, f.path.lastIndexOf('/') + 1)}${newCleanName}`,
     };
   });
 
@@ -124,6 +124,7 @@ export function deleteLumiFile(
   if (activeFileId === fileId) {
     newActiveId = remainingTabs[0] || remainingFiles[0]?.id || null;
   }
+  if (newActiveId && !remainingTabs.includes(newActiveId)) remainingTabs.push(newActiveId);
 
   const updatedProject: LumiProject = {
     ...project,

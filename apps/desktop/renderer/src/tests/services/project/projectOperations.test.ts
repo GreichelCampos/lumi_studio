@@ -49,7 +49,7 @@ describe('projectOperations', () => {
     const updated = renameLumiFile(project, 'f-1', 'modulo_renombrado.lumi');
 
     expect(updated.files.find((f) => f.id === 'f-1')?.name).toBe('modulo_renombrado.lumi');
-    expect(updated.files.find((f) => f.id === 'f-1')?.path).toBe('ProyectoTest/modulo_renombrado.lumi');
+    expect(updated.files.find((f) => f.id === 'f-1')?.path).toBe('P/modulo_renombrado.lumi');
     expect(updated.files.find((f) => f.id === 'f-2')?.name).toBe('modulo2.lumi');
   });
 
