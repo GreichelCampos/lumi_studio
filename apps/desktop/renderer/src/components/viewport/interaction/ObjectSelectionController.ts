@@ -80,7 +80,6 @@ export class ObjectSelectionController {
         }
       }
 
-      // Empty click deselects
       this.onSelectEntity(null);
     };
     this.domElement.addEventListener('pointerup', this.pointerUpHandler);

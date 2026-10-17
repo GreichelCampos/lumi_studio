@@ -17,7 +17,6 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
     return null;
   }
 
-  // Si solo hay una habitación, mostrar un badge completo y limpio
   if (rooms.length === 1) {
     const room = rooms[0];
     const [rw, rl, rh] = room.dimensions;
@@ -50,7 +49,6 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
     );
   }
 
-  // Si hay múltiples habitaciones independientes, mostrar selector interactivo
   return (
     <div id="room-selector-multi" className="flex items-center gap-1.5 glass-btn rounded-xl p-1 border border-[var(--ide-panel-border)]">
       <div className="flex items-center gap-1 px-1.5 text-[var(--ide-text-muted)] flex-shrink-0">

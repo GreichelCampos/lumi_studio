@@ -70,7 +70,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      {/* Card Header */}
       <div className="flex items-center justify-between px-3.5 py-2.5 glass-panel-header border-b border-[var(--ide-panel-border)] backdrop-blur-md flex-shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="p-1.5 rounded-xl bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/40 shadow-sm flex-shrink-0">
@@ -103,7 +102,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
         </button>
       </div>
 
-      {/* Warning/Error banner if object has collision or out of bounds */}
       {hasError && (
         <div className="px-3.5 py-2 bg-rose-500/20 border-b border-rose-500/30 backdrop-blur-sm flex items-center gap-2 text-rose-200 text-[11px] flex-shrink-0">
           <AlertTriangle className="w-4 h-4 text-rose-300 flex-shrink-0" />
@@ -115,9 +113,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
         </div>
       )}
 
-      {/* Properties List */}
       <div className="p-3.5 space-y-2.5 text-xs flex-1 overflow-y-auto min-h-0 backdrop-blur-md">
-        {/* Identificador Lumi */}
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
@@ -128,7 +124,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </span>
         </div>
 
-        {/* Posición espacial */}
         <div className="flex items-start justify-between gap-2">
           <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5 flex-shrink-0">
             <Move className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
@@ -139,7 +134,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </span>
         </div>
 
-        {/* Dimensiones */}
         <div className="flex items-center justify-between">
           <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
             <Maximize2 className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
@@ -150,7 +144,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </span>
         </div>
 
-        {/* Rotación (si es objeto espacial) */}
         {isObject && rotationStr && (
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
@@ -163,7 +156,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </div>
         )}
 
-        {/* Material y Color */}
         {isObject && (entity.data.color || entity.data.material) && (
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
@@ -177,7 +169,6 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
         )}
       </div>
 
-      {/* Footer / Actions */}
       <div className="px-3.5 py-2.5 glass-panel-header border-t border-[var(--ide-panel-border)] backdrop-blur-md flex items-center justify-between gap-2">
         {sourceRef ? (
           <span className="text-[10px] text-[var(--ide-text-muted)] font-mono truncate">

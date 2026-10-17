@@ -78,7 +78,6 @@ export class RoomFactory {
     floorMesh.receiveShadow = true;
     roomRoot.add(floorMesh);
 
-    // Zócalo base inferior
     const baseboard = new THREE.Mesh(
       new THREE.BoxGeometry(rw + 0.06, 0.04, rl + 0.06),
       new THREE.MeshStandardMaterial({ color: '#1e293b', roughness: 0.6 })

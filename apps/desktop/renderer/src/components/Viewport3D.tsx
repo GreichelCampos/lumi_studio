@@ -68,14 +68,12 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   const [lightingMode, setLightingMode] = useState<'day' | 'evening' | 'cyber'>('day');
   const [showLegend, setShowLegend] = useState(false);
 
-  // Centralized clear selection action
   const clearSelection = useCallback(() => {
     if (onSelectObject) {
       onSelectObject(null);
     }
   }, [onSelectObject]);
 
-  // Escape key deselects object
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && activeObjectId) {
@@ -86,7 +84,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeObjectId, clearSelection]);
 
-  // Determinar la habitación activa inicial o sincronizar con cambios de scenePlan
   useEffect(() => {
     if (scenePlan?.rooms && scenePlan.rooms.length > 0) {
       if (!selectedRoomId || !scenePlan.rooms.some((r) => r.id === selectedRoomId)) {
@@ -116,7 +113,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     }
   }, [activeObjectId, debugActiveObjectId, scenePlan, selectedRoomId]);
 
-  // Habitación activa actual
   const activeRoom = useMemo(() => {
     if (!scenePlan?.rooms || scenePlan.rooms.length === 0) return null;
     return scenePlan.rooms.find((r) => r.id === selectedRoomId) || scenePlan.rooms[0];
@@ -138,7 +134,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     return null;
   }, [activeObjectId, activeRoom]);
 
-  // Callback cuando se hace clic en una entidad en el canvas 3D
   const handleEntityClicked = useCallback(
     (entityId: string | null) => {
       if (onSelectObject) {
@@ -150,7 +145,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   const [webglError, setWebGLError] = useState<string | null>(null);
 
-  // Inicializar ThreeSceneManager
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -179,7 +173,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     };
   }, [handleEntityClicked]);
 
-  // Sincronizar tema espacial cuando cambia el tema del IDE o la iluminación
   useEffect(() => {
     if (!sceneManagerRef.current) return;
     sceneManagerRef.current.applyTheme(currentTheme, spatialBackground, lightingMode);
@@ -210,7 +203,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   // Track previous focused entity id to focus camera gently on selection change
   const prevFocusedIdRef = useRef<string | null>(null);
 
-  // Re-renderizar habitación cuando cambian datos
   useEffect(() => {
     if (!sceneManagerRef.current) return;
 
@@ -227,7 +219,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     }
   }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData]);
 
-  // Manejador para cambio de habitación con limpieza de selección si no pertenece a la nueva
   const handleRoomSelect = useCallback(
     (newRoomId: string) => {
       setSelectedRoomId(newRoomId);
@@ -248,7 +239,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     [activeObjectId, scenePlan, onSelectObject]
   );
 
-  // Controles de visualización
   const handleToggleDimensions = () => {
     const next = !showDimensions;
     setShowDimensions(next);
@@ -324,10 +314,8 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   return (
     <div id="viewport-3d-main" className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none">
-      {/* 3D Viewport Header Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 glass-panel-header z-10">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
-          {/* Room Selector */}
           {scenePlan && scenePlan.rooms.length > 0 && (
             <RoomSelector
               rooms={scenePlan.rooms}
@@ -336,16 +324,13 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             />
           )}
 
-          {/* Coordinate system badge */}
           <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl glass-btn text-[11px] text-[var(--ide-text-muted)] font-mono flex-shrink-0">
             <Compass className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
             <span>Origen [0,0,0]</span>
           </div>
         </div>
 
-        {/* Action icons & Controls */}
         <div className="flex items-center gap-1 flex-shrink-0 flex-wrap">
-          {/* Focus Selected Object */}
           <button
             id="btn-focus-object"
             onClick={handleFocusSelectedObject}
@@ -360,7 +345,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <Crosshair className="w-3.5 h-3.5" />
           </button>
 
-          {/* Focus Room Frame */}
           <button
             id="btn-focus-room"
             onClick={handleFocusRoom}
@@ -370,7 +354,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <Scan className="w-3.5 h-3.5 text-[var(--ide-text)]" />
           </button>
 
-          {/* Camera Reset */}
           <button
             id="btn-reset-camera"
             onClick={handleResetCamera}
@@ -381,7 +364,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
 
-          {/* Zoom In */}
           <button
             id="btn-zoom-in"
             onClick={() => handleZoom(0.25)}
@@ -392,7 +374,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <ZoomIn className="w-3.5 h-3.5" />
           </button>
 
-          {/* Zoom Out */}
           <button
             id="btn-zoom-out"
             onClick={() => handleZoom(-0.25)}
@@ -405,7 +386,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
           <div className="w-px h-4 bg-white/10 mx-0.5 hidden sm:block" />
 
-          {/* Reference Axes Toggle */}
           <button
             id="btn-toggle-axes"
             onClick={handleToggleAxes}
@@ -420,7 +400,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <Grid className="w-3.5 h-3.5" />
           </button>
 
-          {/* Dimensions Cotas Toggle */}
           <button
             id="btn-toggle-dimensions"
             onClick={handleToggleDimensions}
@@ -435,7 +414,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <Ruler className="w-3.5 h-3.5" />
           </button>
 
-          {/* Wireframe toggle */}
           <button
             id="btn-toggle-wireframe"
             onClick={handleToggleWireframe}
@@ -452,7 +430,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
           <div className="w-px h-4 bg-white/10 mx-0.5 hidden sm:block" />
 
-          {/* Lighting Mode Selector */}
           <div className="flex items-center rounded-xl glass-btn p-0.5 border border-[var(--ide-panel-border)]">
             <button
               id="btn-light-day"
@@ -489,7 +466,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             </button>
           </div>
 
-          {/* Snapshot Button */}
           <button
             id="btn-snapshot"
             onClick={handleSnapshot}
@@ -500,7 +476,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             <Camera className="w-3.5 h-3.5" />
           </button>
 
-          {/* Maximize / Restore Viewport Panel Toggle */}
           {onToggleMaximize && (
             <button
               id="btn-toggle-maximize-viewport"
@@ -523,11 +498,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
         </div>
       </div>
 
-      {/* Main Canvas Container */}
       <div className="relative flex-1 w-full min-h-0 overflow-hidden">
         <div ref={containerRef} className="absolute inset-0 w-full h-full min-h-0 cursor-grab active:cursor-grabbing" />
 
-        {/* WebGL Error / Fallback State */}
         {webglError && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 text-center bg-[var(--ide-bg,#02110c)]/90 backdrop-blur-md">
             <div className="p-3 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 mb-3">
@@ -542,7 +515,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
           </div>
         )}
 
-        {/* Empty State Overlay */}
         {!webglError && emptyState && (
           <ViewportEmptyState
             type={emptyState}
@@ -560,7 +532,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
           />
         )}
 
-        {/* Visual Legend Toggle & Card */}
         {activeRoom && !emptyState && (
           <div className="absolute bottom-3 left-3 z-10">
             <VisualLegendOverlay

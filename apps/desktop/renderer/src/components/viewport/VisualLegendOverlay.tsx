@@ -49,7 +49,6 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
       </div>
 
       <div className="space-y-2 text-xs">
-        {/* Normal */}
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-[var(--ide-accent)] opacity-60 border border-[var(--ide-panel-border)] flex-shrink-0" />
           <div className="flex flex-col">
@@ -58,7 +57,6 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           </div>
         </div>
 
-        {/* Seleccionado */}
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-[var(--ide-accent)] border border-[var(--ide-accent)] shadow-sm flex-shrink-0" />
           <div className="flex flex-col">
@@ -67,7 +65,6 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           </div>
         </div>
 
-        {/* Advertencia */}
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-amber-500 border border-amber-300 flex-shrink-0" />
           <div className="flex flex-col">
@@ -76,7 +73,6 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           </div>
         </div>
 
-        {/* Error espacial */}
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-rose-500 border border-rose-300 shadow-sm shadow-rose-500/50 flex-shrink-0" />
           <div className="flex flex-col">
@@ -85,7 +81,6 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           </div>
         </div>
 
-        {/* Depuración Activa */}
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-purple-500 border border-purple-300 shadow-sm flex-shrink-0" />
           <div className="flex flex-col">

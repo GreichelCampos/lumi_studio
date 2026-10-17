@@ -19,7 +19,6 @@ export class FurnitureFactory {
     const hasError = Boolean(item.isOutOfBounds || item.hasError);
     const hasWarning = Boolean(!hasError && (item.hasCollision || item.hasWarning));
 
-    // Resolver color y acabado
     const objColor = resolveLumiColor(item.color, '#64748b');
     const isMetal = item.material?.toLowerCase().includes('metal');
     const isWoodMat =
@@ -54,7 +53,6 @@ export class FurnitureFactory {
       wireframe: isWireframe,
     });
 
-    // Crear geometría procedimental según tipo
     this.buildGeometryByType(objGroup, item.type.toLowerCase(), standardMat, ow, oh, od);
 
     // Aplicar posición y rotación (en radianes)
@@ -75,7 +73,6 @@ export class FurnitureFactory {
         ? SPATIAL_THEME.states.warning.outlineColor
         : SPATIAL_THEME.states.selected.outlineColor;
 
-      // Caja de alambre envolvente
       const boxGeo = new THREE.BoxGeometry(ow + 0.08, oh + 0.08, od + 0.08);
       const boxMat = new THREE.MeshBasicMaterial({
         color: stateColor,
@@ -87,7 +84,6 @@ export class FurnitureFactory {
       highlightBox.position.set(0, oh / 2, 0);
       objGroup.add(highlightBox);
 
-      // Anillo / Disco proyector en el piso
       const ringColor = hasError
         ? SPATIAL_THEME.states.error.ringColor
         : isDebugActive

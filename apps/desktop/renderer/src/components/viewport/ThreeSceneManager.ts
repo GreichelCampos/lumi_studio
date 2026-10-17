@@ -50,12 +50,10 @@ export class ThreeSceneManager {
     const width = Math.max(this.container.clientWidth, 100);
     const height = Math.max(this.container.clientHeight, 100);
 
-    // 1. Scene
     this.scene = new THREE.Scene();
     const initialBgColor = options.activeTheme?.spatialColors?.bg || SPATIAL_THEME.background.day;
     this.scene.background = new THREE.Color(initialBgColor);
 
-    // 2. WebGL Renderer
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -81,16 +79,13 @@ export class ThreeSceneManager {
     this.container.innerHTML = '';
     this.container.appendChild(this.renderer.domElement);
 
-    // 3. Camera Controller
     this.cameraController = new CameraController({
       container: this.container,
       rendererDomElement: this.renderer.domElement,
     });
 
-    // 4. Lighting & Ambient setup
     this.setupLighting();
 
-    // 5. Ground grid plane
     const centerColor = options.activeTheme?.spatialColors?.gridCenter || SPATIAL_THEME.grid.center;
     const linesColor = options.activeTheme?.spatialColors?.gridLines || SPATIAL_THEME.grid.lines;
     const grid = new THREE.GridHelper(40, 40, new THREE.Color(centerColor), new THREE.Color(linesColor));
@@ -98,11 +93,9 @@ export class ThreeSceneManager {
     grid.name = 'gridHelper';
     this.scene.add(grid);
 
-    // 6. Room Group
     this.roomGroup = new THREE.Group();
     this.scene.add(this.roomGroup);
 
-    // 7. Selection Controller
     this.selectionController = new ObjectSelectionController({
       domElement: this.renderer.domElement,
       scene: this.scene,
@@ -110,7 +103,6 @@ export class ThreeSceneManager {
       onSelectEntity: options.onSelectEntity,
     });
 
-    // 8. Resize Observer & Window resize listener
     this.boundWindowResize = () => {
       this.handleResize();
     };
@@ -121,12 +113,10 @@ export class ThreeSceneManager {
     this.resizeObserver.observe(this.container);
     window.addEventListener('resize', this.boundWindowResize);
 
-    // Apply active theme immediately if provided
     if (options.activeTheme) {
       this.applyTheme(options.activeTheme, options.spatialBackground);
     }
 
-    // 9. Start render loop
     this.startRenderLoop();
   }
 
@@ -177,13 +167,10 @@ export class ThreeSceneManager {
     const animate = () => {
       this.animationFrameId = requestAnimationFrame(animate);
 
-      // 1. Update controls
       this.cameraController.update();
 
-      // 2. Dynamic Wall Occlusion Update
       this.updateDynamicWallOcclusion();
 
-      // 3. Render scene
       this.renderer.render(this.scene, this.cameraController.getCamera());
     };
     animate();
@@ -242,7 +229,6 @@ export class ThreeSceneManager {
       this.cameraController.adaptCameraToRoom(room);
     }
 
-    // 1. Room Floor, Walls, Axes, Dimensions via RoomFactory
     const { group: roomRoot, wallRecords } = RoomFactory.createRoomStructure(room, {
       isWireframe: this.isWireframe,
       showReferenceAxes: this.showReferenceAxes,
@@ -250,7 +236,6 @@ export class ThreeSceneManager {
     });
     this.wallRecords = wallRecords;
 
-    // 2. Doors via OpeningFactory
     room.doors.forEach((door) => {
       const isSelected = activeEntityId === door.id;
       const doorGroup = OpeningFactory.createDoorMesh(door, room, isSelected);
@@ -258,7 +243,6 @@ export class ThreeSceneManager {
       roomRoot.add(doorGroup);
     });
 
-    // 3. Windows via OpeningFactory
     room.windows.forEach((win) => {
       const isSelected = activeEntityId === win.id;
       const winGroup = OpeningFactory.createWindowMesh(win, room, isSelected);
@@ -266,7 +250,6 @@ export class ThreeSceneManager {
       roomRoot.add(winGroup);
     });
 
-    // 4. Spatial Objects (Furniture) via FurnitureFactory
     room.objects.forEach((item) => {
       const isSelected = activeEntityId === item.id;
       const isDebugActive = debugActiveObjectId === item.id;
@@ -323,7 +306,6 @@ export class ThreeSceneManager {
     const mode = this.spatialSpaceMode;
     const isLight = theme?.category === 'light';
 
-    // 1. Resolve background color
     let bgColorStr = theme?.spatialColors?.bg || (isLight ? '#f1f5f9' : '#02110c');
     if (mode === 'deep-dark') {
       bgColorStr = '#030712';
@@ -342,7 +324,6 @@ export class ThreeSceneManager {
       this.container.style.backgroundColor = bgColorStr;
     }
 
-    // 2. Resolve Grid colors and recreate gridHelper
     let gridCenterStr = theme?.spatialColors?.gridCenter || (isLight ? '#0969da' : '#f3ebd6');
     let gridLinesStr = theme?.spatialColors?.gridLines || (isLight ? '#cbd5e1' : '#1a422f');
 
@@ -368,14 +349,11 @@ export class ThreeSceneManager {
     newGrid.name = 'gridHelper';
     this.scene.add(newGrid);
 
-    // 3. Update spatial tokens for outline and room element materials
     const accentColor = theme?.previewColors?.accent || (isLight ? '#0969da' : '#007acc');
     applyIdeThemeToSpatialTheme(accentColor, bgColorStr, gridCenterStr, gridLinesStr, isLight);
 
-    // 4. Update lighting colors according to theme and lighting mode
     this.updateLightingColors();
 
-    // 5. If a room is active, re-render it immediately to apply theme outlines and materials
     if (this.currentRoom) {
       this.renderRoom(this.currentRoom, this.activeEntityId, this.debugActiveObjectId);
     }
@@ -415,7 +393,6 @@ export class ThreeSceneManager {
         rim.intensity = 0.5;
       }
     } else if (isLight) {
-      // Light mode / studio lighting
       ambient.color.set('#cbd5e1');
       ambient.intensity = 0.85;
       dir.color.set('#ffffff');
@@ -427,7 +404,6 @@ export class ThreeSceneManager {
         rim.intensity = 0.35;
       }
     } else {
-      // Dark mode default
       ambient.color.set('#dbeafe');
       ambient.intensity = 0.85;
       dir.color.set('#ffffff');
@@ -472,7 +448,6 @@ export class ThreeSceneManager {
     this.selectionController.dispose();
     this.cameraController.dispose();
 
-    // Dispose all scene objects
     ThreeResourceDisposer.disposeHierarchy(this.scene);
     this.renderer.dispose();
     this.wallRecords = [];
