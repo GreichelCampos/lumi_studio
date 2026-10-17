@@ -4,6 +4,7 @@ from typing import cast
 
 from lumi_language.diagnostics import Diagnostic
 from services.results import CompilationResult, ExecutionResult
+from .scene_adapter import scene_plan_dto
 
 from .models import (
     AnalysisStatus, Category, DiagnosticDTO, Limitation, PROTOCOL_VERSION,
@@ -44,10 +45,14 @@ def adapt_result(
     }
     if compilation.lexical_error is not None:
         payload["lexicalError"] = compilation.lexical_error
+    status = execution.status.value if execution is not None else compilation.status.value
+    if status == "completed" and compilation.scene_plan is not None:
+        payload["scenePlan"] = scene_plan_dto(compilation.scene_plan)
+        payload["capabilities"]["scenePlan"] = True
     return {
         "protocolVersion": PROTOCOL_VERSION,
         "requestId": request.request_id,
         "operation": request.operation,
-        "status": cast(ProgramStatus, execution.status.value if execution is not None else compilation.status.value),
+        "status": cast(ProgramStatus, status),
         "result": payload,
     }

@@ -1,7 +1,8 @@
-"""Wire contracts. No AST, synthetic diagnostics, scenes or traces cross this boundary."""
+"""Wire contracts for source analysis, execution and resolved scenes; never ASTs."""
 
 from dataclasses import dataclass
 from typing import Literal, NotRequired, TypedDict
+from .scene_adapter import ScenePlanDTO
 
 PROTOCOL_VERSION = "1.0.0"
 MAX_REQUEST_BYTES = 1_048_576
@@ -44,7 +45,7 @@ class DiagnosticDTO(TypedDict):
 
 
 class Capabilities(TypedDict):
-    scenePlan: Literal[False]
+    scenePlan: bool
     debugTrace: Literal[False]
     interactiveInput: Literal[False]
     cancellation: Literal[False]
@@ -58,6 +59,7 @@ class ResultPayload(TypedDict):
     diagnostics: list[DiagnosticDTO]
     limitations: list[Limitation]
     lexicalError: NotRequired[str]
+    scenePlan: NotRequired[ScenePlanDTO]
     executionAttempted: bool
     capabilities: Capabilities
 
