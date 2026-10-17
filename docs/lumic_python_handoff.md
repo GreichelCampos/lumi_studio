@@ -65,9 +65,9 @@ compilador Python actual.
 | Modelo interno | Intercambio y requisito |
 |---|---|
 | `ScenePlan.rooms` | Arreglo `scenePlan.rooms`, conservando el orden. |
-| `RoomPlan.name` | `RoomModel.name`; falta definir `id`. |
-| `width.value`, `length.value`, `height.value` | `[ancho X, largo Z, altura Y]`, tras acordar unidades. |
-| `elements` y `element_kind` | Clasificar piso, paredes, aberturas y objetos; falta el mapeo completo. |
+| `RoomPlan.name` | `RoomModel.name`; el productor experimental deriva `id` de archivo, línea y columna, sin garantizar estabilidad tras editar. |
+| `width.value`, `length.value`, `height.value` | `[ancho X, largo Z, altura Y]`, en metros en el productor experimental. |
+| `elements` y `element_kind` | El productor experimental adapta un elemento `floor` a `RoomModel.floor`; paredes, aberturas y objetos siguen pendientes. |
 | `object_type` | Tipo del objeto del visor; faltan dimensiones resueltas o catálogo acordado. |
 | `properties` | Color y material, sin inventar valores ausentes ni asumir equivalencias. |
 | Vectores de `SpatialNumber` | Tuplas numéricas; acordar unidades y tratamiento de valores opcionales. |
@@ -81,12 +81,24 @@ código. Tampoco se generan eventos a partir de una escena estática.
 
 ## Estado de la integración
 
-Electron recibe escenas reales para habitaciones vacías declaradas directamente
-en `principal` con dimensiones literales. `SceneBuilder` produce el modelo interno,
+Electron recibe escenas reales para habitaciones directas, al nivel del archivo
+o en `principal`, con dimensiones literales y un piso opcional. `SceneBuilder` produce el modelo interno,
 `SpatialValidator` comprueba sus dimensiones y `scene_plan_dto` adapta el resultado
 al intercambio. Las dimensiones se interpretan en metros; piso y paredes ausentes
 usan estilos visuales neutros y los IDs se derivan de archivo, línea y columna.
-Estas convenciones iniciales requieren revisión antes de ampliar el productor.
+Estas convenciones experimentales requieren revisión antes de adoptarlas en el núcleo compartido.
+
+Un `FloorNode` único con propiedades literales se conserva como `SpatialElement`
+de tipo `floor`. `SpatialValidator` exige texto en `color` y `material`; el adaptador
+mantiene esos valores en `RoomModel.floor`. Las propiedades ausentes conservan los
+estilos neutros. El visor aplica su paleta y materiales existentes; no hay un
+catálogo normativo de colores, texturas o materiales físicos. No se cambian las
+dataclasses ni el formato candidato para representar este subconjunto.
+
+Se mantienen incompletas las expresiones del piso, los pisos múltiples, la
+orientación de paredes, las dimensiones de muebles y la ubicación y tamaño de
+aberturas. Tampoco se evalúa control de flujo para producir escenas. El productor
+no interpreta ni ignora silenciosamente estas construcciones.
 
 La respuesta completada incluye `result.scenePlan` y `capabilities.scenePlan: true`.
 Las respuestas sin escena mantienen la compatibilidad anterior. No se publican

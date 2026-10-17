@@ -23,10 +23,10 @@ export async function temporaryWorkspace() {
   return { root, userData, project, dispose: () => rm(root, { recursive: true, force: true }) };
 }
 
-export async function launchDesktop(env, workspace) {
+export async function launchDesktop(env, workspace, mainFile = 'workspace-main.cjs') {
   const desktop = await _electron.launch({
     executablePath: electron, cwd: desktopRoot, env, timeout: 30_000,
-    args: [fileURLToPath(new URL('./fixtures/workspace-main.cjs', import.meta.url)),
+    args: [fileURLToPath(new URL(`./fixtures/${mainFile}`, import.meta.url)),
       `--lumi-test-user-data=${workspace.userData}`, `--lumi-test-root=${resolve(desktopRoot)}`],
   });
   await desktop.evaluate(({ dialog }) => { dialog.showMessageBoxSync = () => 1; });

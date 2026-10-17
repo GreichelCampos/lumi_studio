@@ -29,23 +29,35 @@ npm run build
 ```
 
 La prueba de integración abre Electron y usa Python real. La compilación espacial
-inicial admite habitaciones vacías declaradas directamente dentro de `principal`,
-con dimensiones literales en metros:
+experimental admite habitaciones directas, dentro de `principal` o al nivel del
+archivo, con dimensiones literales en metros y un piso opcional:
 
 ```lumi
 principal {
     habitacion sala(5.0, 4.0, 2.7) {
+        piso suelo {
+            material "madera">>
+            color "#C8A27A">>
+        }
     }
 }
 ```
 
 Al pulsar **Compilar**, Python genera y valida ScenePlan; el visor representa el
-piso y las cuatro paredes con un estilo neutro. `npm run test:room` verifica este
-recorrido en Electron real. El subconjunto espacial inicial contiene únicamente
-declaraciones de habitaciones en `principal`. Expresiones en dimensiones, elementos espaciales,
-habitaciones en funciones o control de flujo siguen incompletos; no se muestran
-escenas parciales. El intérprete todavía no ejecuta `RoomNode` y no hay trazas
-espaciales ni instalador. En PowerShell puede usarse `npm.cmd`.
+piso con las propiedades declaradas y cuatro paredes neutras. Las propiedades del
+piso deben ser valores literales de texto, sin `:` ni `=`; los estilos ausentes
+conservan los valores visuales neutros. `npm run test:room` comprueba habitaciones
+y `npm run test:language` verifica programas guardados desde Electron, respuestas
+reales de Python, consola, diagnósticos y materiales en WebGL.
+
+Expresiones en dimensiones o propiedades, múltiples pisos en una habitación,
+paredes declaradas, aberturas, muebles y habitaciones en funciones o control de
+flujo siguen incompletos; no se muestran escenas parciales. El intérprete todavía
+no ejecuta `RoomNode`. **Compilar** analiza; **Ejecutar Python** produce la salida
+de `mostrar` mediante el intérprete. Listas y vectores se analizan, pero su
+ejecución sigue pendiente; `leer` requiere entrada interactiva no disponible en el
+protocolo actual. No hay trazas espaciales ni instalador. En PowerShell puede
+usarse `npm.cmd`.
 
 ## Ejecutar el frontend de Estudio Lumi
 

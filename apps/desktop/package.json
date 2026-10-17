@@ -14,7 +14,8 @@
     "test:window": "node scripts/build.mjs && node tests/window.integration.mjs",
     "test:workspace": "node scripts/build.mjs && node tests/workspace.integration.mjs",
     "test:viewport": "node scripts/build.mjs && node tests/viewport.integration.mjs",
-    "test:room": "node scripts/build.mjs && node tests/room-compilation.integration.mjs"
+    "test:room": "node scripts/build.mjs && node tests/room-compilation.integration.mjs",
+    "test:language": "node scripts/build.mjs && node tests/language.integration.mjs"
   },
   "devDependencies": {
     "electron": "44.8.0",
