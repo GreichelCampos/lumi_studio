@@ -5,6 +5,7 @@ import { workerTimeout } from './pythonConfig';
 import { registerIpc } from './ipc';
 import { contentSecurityPolicy, localRendererUrl } from './security';
 import { registerWindowControls } from './windowControls';
+import { registerWorkspaceIpc } from './workspaceIpc';
 import { APP_USER_MODEL_ID, applicationIconPath, configureWindowsTaskbar } from './appIdentity';
 
 if (process.platform === 'win32') app.setAppUserModelId(APP_USER_MODEL_ID);
@@ -13,6 +14,8 @@ const root = resolve(__dirname, '../../..');
 const renderer = localRendererUrl(process.env.LUMI_RENDERER_URL ?? 'http://127.0.0.1:5173/');
 const worker = new PythonWorker({ root, timeoutMs: workerTimeout(), log: (text) => process.stderr.write(text) });
 let closed = false;
+let quitting = false;
+let flushWorkspace = async (): Promise<void> => undefined;
 process.on('message', (message: unknown) => {
   if (message && typeof message === 'object' && 'type' in message && message.type === 'shutdown') app.quit();
 });
@@ -43,8 +46,11 @@ app.whenReady().then(async () => {
   window.webContents.on('will-attach-webview', (event) => event.preventDefault());
   const dispose = registerIpc(window, worker, renderer);
   const disposeControls = registerWindowControls(window, renderer);
+  const workspace = registerWorkspaceIpc(window, renderer);
+  flushWorkspace = workspace.flush;
   window.once('closed', dispose);
   window.once('closed', disposeControls);
+  window.once('closed', workspace.dispose);
   try { await worker.start(); } catch (error) { console.error('Backend Python no disponible:', error); }
   await window.loadURL(renderer.href);
   console.log('Estudio Lumi iniciado.');
@@ -54,5 +60,9 @@ app.on('window-all-closed', () => app.quit());
 app.on('before-quit', (event) => {
   if (closed) return;
   event.preventDefault();
-  void worker.close().finally(() => { closed = true; app.quit(); });
+  const windows = BrowserWindow.getAllWindows();
+  if (windows.length) { windows.forEach(window => window.close()); return; }
+  if (quitting) return;
+  quitting = true;
+  void flushWorkspace().then(() => worker.close()).finally(() => { closed = true; app.quit(); });
 });

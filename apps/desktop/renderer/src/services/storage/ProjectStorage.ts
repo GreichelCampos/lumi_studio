@@ -1,6 +1,7 @@
 import { LumiProject } from '../../types';
 
 export interface ProjectStorage {
+  readonly kind?: 'desktop';
   /**
    * Obtiene la lista completa de proyectos disponibles.
    */
