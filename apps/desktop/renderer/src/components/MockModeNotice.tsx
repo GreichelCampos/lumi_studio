@@ -1,4 +1,4 @@
-/** Labels the prototype services until the Python integration is available. */
+/** Identifies browser demo mode, where compilation and debugging remain simulated. */
 export function MockModeNotice() {
   return (
     <aside

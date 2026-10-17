@@ -95,5 +95,4 @@ export class LocalProjectStorage implements ProjectStorage {
   }
 }
 
-// Singleton de almacenamiento predeterminado para el prototipo
 export const defaultProjectStorage: ProjectStorage = new LocalProjectStorage();

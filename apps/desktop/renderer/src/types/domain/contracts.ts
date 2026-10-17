@@ -5,7 +5,7 @@ import { DebugStep } from './debug';
 import { LumiProject, LumiFile, EntryFileInfo } from './project';
 
 /**
- * Protocolo de integración y versión de esquema actual de Estudio Lumi.
+ * Schema version for presentation contracts and compiled demo artifacts.
  */
 export const LUMI_PROTOCOL_VERSION = '1.0.0';
 export const LUMI_SUPPORTED_MAJOR_VERSIONS = [1];
@@ -33,8 +33,8 @@ export interface CompileSourceFileDTO {
 }
 
 /**
- * Solicitud de compilación que el IDE envía al servicio del compilador (Python o Mock).
- * Es 100% serializable a JSON.
+ * JSON-serializable request for the prototype compiler service.
+ * The Python backend uses the independent integration protocol.
  */
 export interface LumiCompileRequest {
   schemaVersion: string;
