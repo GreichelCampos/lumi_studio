@@ -9,7 +9,8 @@ interface ConfirmDeleteModalProps {
   hasUnsavedChanges: boolean;
   isEntryFile: boolean;
   totalFilesInProject: number;
-  onConfirmDelete: (fileId: string) => void;
+  recoverable?: boolean;
+  onConfirmDelete: (fileId: string) => void | Promise<boolean>;
 }
 
 export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
@@ -19,6 +20,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
   hasUnsavedChanges,
   isEntryFile,
   totalFilesInProject,
+  recoverable = false,
   onConfirmDelete,
 }) => {
   React.useEffect(() => {
@@ -68,8 +70,9 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
 
         <div className="p-6 space-y-4">
           <p className="text-xs sm:text-sm text-[#d5cbb2] leading-relaxed">
-            ¿Estás seguro de que deseas eliminar permanentemente el archivo{' '}
-            <strong className="text-[#f3ebd6] font-mono bg-[#1a422f]/60 px-2 py-0.5 rounded-md border border-[#f3ebd6]/20">{file.name}</strong>? Esta acción no se puede deshacer.
+            {recoverable ? '¿Mover a la papelera el archivo ' : '¿Eliminar permanentemente el archivo '}
+            <strong className="text-[#f3ebd6] font-mono bg-[#1a422f]/60 px-2 py-0.5 rounded-md border border-[#f3ebd6]/20">{file.name}</strong>?
+            {recoverable ? ' Podrás recuperar la copia guardada desde la papelera del sistema.' : ' Esta acción no se puede deshacer.'}
           </p>
 
           {hasUnsavedChanges && (
@@ -110,14 +113,14 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => {
-              onConfirmDelete(file.id);
+            onClick={async () => {
+              if (await onConfirmDelete(file.id) === false) return;
               onClose();
             }}
             className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-xs shadow-lg shadow-rose-600/30 border border-rose-400/40 transition-all flex items-center gap-1.5 active:scale-95"
           >
             <Trash2 className="w-4 h-4" />
-            <span>Eliminar Definitivamente</span>
+            <span>{recoverable ? 'Mover a la papelera' : 'Eliminar Definitivamente'}</span>
           </button>
         </div>
       </div>

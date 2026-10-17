@@ -1,16 +1,16 @@
-import { _electron } from 'playwright-core';
-import electron from 'electron';
+import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { desktopRoot, startVite } from '../scripts/development.mjs';
 
 const vite = await startVite(Number(process.env.LUMI_TEST_PORT ?? 5174));
+const workspace = await temporaryWorkspace();
 let desktop;
 try {
   const env = { ...process.env, LUMI_RENDERER_URL: vite.url, LUMI_CSP_NONCE: vite.nonce };
   delete env.ELECTRON_RUN_AS_NODE;
-  desktop = await _electron.launch({ executablePath: electron, args: ['.'], cwd: desktopRoot, env, timeout: 30_000 });
+  desktop = await launchDesktop(env, workspace);
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
@@ -50,7 +50,7 @@ try {
   await desktop.close(); desktop = undefined;
 
   const unavailableEnv = { ...env, LUMI_PYTHON: fileURLToPath(new URL('../test-results/missing-python.exe', import.meta.url)) };
-  desktop = await _electron.launch({ executablePath: electron, args: ['.'], cwd: desktopRoot, env: unavailableEnv });
+  desktop = await launchDesktop(unavailableEnv, workspace);
   const unavailablePage = await desktop.firstWindow();
   await unavailablePage.getByLabel('Modo Python real').waitFor();
   await unavailablePage.locator('textarea').fill('mostrar("NO_DEBE_SIMULAR")>>');
@@ -61,4 +61,5 @@ try {
 } finally {
   if (desktop) await desktop.close();
   vite.processHandle.kill();
+  await workspace.dispose();
 }

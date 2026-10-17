@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { NewFileModal } from '../../../components/modals/NewFileModal';
 
 describe('NewFileModal Component', () => {
@@ -16,7 +16,7 @@ describe('NewFileModal Component', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('debe validar y crear un archivo nuevo añadiendo la extensión .lumi si hace falta', () => {
+  it('debe validar y crear un archivo nuevo añadiendo la extensión .lumi si hace falta', async () => {
     const handleCreateFile = vi.fn();
     const handleClose = vi.fn();
 
@@ -38,7 +38,7 @@ describe('NewFileModal Component', () => {
     fireEvent.click(submitBtn);
 
     expect(handleCreateFile).toHaveBeenCalledWith('cocina_moderna.lumi');
-    expect(handleClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(handleClose).toHaveBeenCalledTimes(1));
   });
 
   it('debe rechazar nombres duplicados y mostrar el mensaje de error', () => {

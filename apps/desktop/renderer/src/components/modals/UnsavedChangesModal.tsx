@@ -6,8 +6,8 @@ interface UnsavedChangesModalProps {
   isOpen: boolean;
   onClose: () => void;
   file: LumiFile | null;
-  onSaveAndClose: (fileId: string) => void;
-  onDiscardAndClose: (fileId: string) => void;
+  onSaveAndClose: (fileId: string) => void | Promise<boolean>;
+  onDiscardAndClose: (fileId: string) => void | Promise<boolean>;
 }
 
 export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
@@ -17,6 +17,15 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
   onSaveAndClose,
   onDiscardAndClose,
 }) => {
+  const [busy, setBusy] = React.useState(false);
+  const complete = (action: (id: string) => void | Promise<boolean>) => {
+    if (!file || busy) return;
+    const result = action(file.id);
+    if (result instanceof Promise) {
+      setBusy(true);
+      void result.then(ok => { if (ok !== false) onClose(); }).finally(() => setBusy(false));
+    } else onClose();
+  };
   React.useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -84,10 +93,8 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
           <div className="flex items-center gap-2.5">
             <button
               type="button"
-              onClick={() => {
-                onDiscardAndClose(file.id);
-                onClose();
-              }}
+              disabled={busy}
+              onClick={() => complete(onDiscardAndClose)}
               className="px-4 py-2 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -95,10 +102,8 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
             </button>
             <button
               type="button"
-              onClick={() => {
-                onSaveAndClose(file.id);
-                onClose();
-              }}
+              disabled={busy}
+              onClick={() => complete(onSaveAndClose)}
               className="px-4 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs shadow-lg shadow-[#02110c]/40 border border-[#f3ebd6] transition-all flex items-center gap-1.5 active:scale-95"
             >
               <Save className="w-3.5 h-3.5 fill-[#082016]" />

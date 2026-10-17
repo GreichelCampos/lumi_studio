@@ -1,5 +1,4 @@
-import { _electron } from 'playwright-core';
-import electron from 'electron';
+import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile } from 'node:fs/promises';
@@ -25,11 +24,12 @@ function workerPids() {
 
 const before = workerPids();
 const vite = await startVite(Number(process.env.LUMI_TEST_PORT ?? 5175));
+const workspace = await temporaryWorkspace();
 let desktop;
 try {
   const env = { ...process.env, LUMI_RENDERER_URL: vite.url, LUMI_CSP_NONCE: vite.nonce };
   delete env.ELECTRON_RUN_AS_NODE;
-  desktop = await _electron.launch({ executablePath: electron, args: ['.'], cwd: desktopRoot, env });
+  desktop = await launchDesktop(env, workspace);
   const page = await desktop.firstWindow();
   await page.getByLabel('Modo Python real').waitFor();
   const iconUrl = new URL('../resources/lumi-taskbar-adapted.ico', import.meta.url);
@@ -135,4 +135,5 @@ try {
 } finally {
   if (desktop) await desktop.close();
   vite.processHandle.kill();
+  await workspace.dispose();
 }

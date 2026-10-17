@@ -3,6 +3,7 @@ import { LumiFile } from '../types';
 import { useIdeSettings } from '../context/IdeSettingsContext';
 import { renderHighlightedLine } from './editor/LumiSyntaxHighlighter';
 import { EditorTabBar } from './editor/EditorTabBar';
+import { sourceSelection, type SourceNavigation } from '../services/editor/sourceNavigation';
 import { 
   Copy, 
   Check, 
@@ -25,6 +26,7 @@ interface CodeEditorProps {
   isDirty?: (fileId: string) => boolean;
   getFileContent?: (file: LumiFile) => string;
   highlightedLine?: number | null;
+  sourceNavigation?: SourceNavigation | null;
   errorLines?: number[];
   warningLines?: number[];
   breakpoints?: number[];
@@ -44,6 +46,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   isDirty,
   getFileContent,
   highlightedLine = null,
+  sourceNavigation = null,
   errorLines = [],
   warningLines = [],
   breakpoints = [],
@@ -101,9 +104,12 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
   // Auto-scroll to highlightedLine when focused from diagnostic
   useEffect(() => {
-    if (highlightedLine !== null && textareaRef.current) {
+    if (sourceNavigation && sourceNavigation.fileId !== activeFileId) return;
+    const targetLine = sourceNavigation?.line ?? highlightedLine;
+    if (targetLine !== null && textareaRef.current) {
+      const selection = sourceSelection(textareaRef.current.value, targetLine, sourceNavigation?.column);
       const lineHeight = lineHeightPx;
-      const targetScrollTop = Math.max(0, (highlightedLine - 3) * lineHeight);
+      const targetScrollTop = Math.max(0, (selection.line - 3) * lineHeight);
       if (typeof textareaRef.current.scrollTo === 'function') {
         textareaRef.current.scrollTo({
           top: targetScrollTop,
@@ -114,22 +120,15 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       }
       syncScroll();
 
-      const linesArray = currentContent.split('\n');
-      let charIndex = 0;
-      for (let i = 0; i < Math.min(highlightedLine - 1, linesArray.length); i++) {
-        charIndex += linesArray[i].length + 1;
-      }
-      try {
-        textareaRef.current.setSelectionRange(charIndex, charIndex + (linesArray[highlightedLine - 1]?.length || 0));
-        textareaRef.current.focus();
-        setCursorPos({ line: highlightedLine, col: 1 });
-      } catch (err) {
-      }
+      textareaRef.current.setSelectionRange(selection.start, selection.end);
+      textareaRef.current.focus();
+      setCursorPos({ line: selection.line, col: selection.column });
     }
-  }, [highlightedLine, currentContent, lineHeightPx]);
+  }, [highlightedLine, activeFileId, sourceNavigation, lineHeightPx]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
         e.preventDefault();
         if (e.shiftKey) {

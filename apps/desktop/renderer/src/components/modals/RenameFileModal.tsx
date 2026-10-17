@@ -7,7 +7,7 @@ interface RenameFileModalProps {
   isOpen: boolean;
   onClose: () => void;
   file: LumiFile | null;
-  onRename: (fileId: string, newName: string) => void;
+  onRename: (fileId: string, newName: string) => void | Promise<boolean>;
   existingFileNames: string[];
 }
 
@@ -41,7 +41,7 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
 
   if (!isOpen || !file) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validation = validateFileName(name, existingFileNames, file.name);
@@ -50,7 +50,7 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
       return;
     }
 
-    onRename(file.id, validation.cleanValue!);
+    if (await onRename(file.id, validation.cleanValue!) === false) return;
     setErrorMessage(null);
     onClose();
   };
@@ -88,6 +88,7 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          <p className="text-xs text-amber-200">El contenido se conserva. Si otros archivos importan este archivo, ajusta sus imports manualmente.</p>
           {errorMessage && (
             <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs backdrop-blur-sm">
               <AlertCircle className="w-4 h-4 flex-shrink-0" />

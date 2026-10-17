@@ -42,6 +42,8 @@ interface TopBarProps {
   onNewFile: () => void;
   onSaveFile: () => void;
   onSaveAll: () => void;
+  onSaveAs?: () => void;
+  onRenameProject?: () => void;
   onInsertRoomModal: () => void;
   dirtyCount?: number;
   onExportLumic?: () => { success: boolean; error?: string; fileName?: string };
@@ -67,6 +69,8 @@ export const TopBar: React.FC<TopBarProps> = ({
   onNewFile,
   onSaveFile,
   onSaveAll,
+  onSaveAs,
+  onRenameProject,
   onInsertRoomModal,
   dirtyCount = 0,
   onExportLumic,
@@ -143,6 +147,8 @@ export const TopBar: React.FC<TopBarProps> = ({
       items: [
         { label: 'Nuevo archivo .lumi', action: onNewFile, shortcut: 'Ctrl+N' },
         { label: 'Guardar archivo actual', action: onSaveFile, shortcut: 'Ctrl+S' },
+        ...(onSaveAs ? [{ label: 'Guardar archivo como...', action: onSaveAs }] : []),
+        ...(onRenameProject ? [{ label: 'Renombrar proyecto...', action: onRenameProject }] : []),
         { label: 'Guardar todos los cambios', action: onSaveAll, shortcut: 'Ctrl+Shift+S' },
         { divider: true },
         { label: 'Nuevo proyecto...', action: onNewProject, shortcut: '' },

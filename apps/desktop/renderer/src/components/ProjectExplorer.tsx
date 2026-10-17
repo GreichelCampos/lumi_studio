@@ -247,6 +247,8 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                     return (
                       <div
                         key={file.id}
+                        data-testid={`explorer-file-${file.id}`}
+                        title={file.path}
                         onClick={() => onSelectFile(file.id)}
                         className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-mono cursor-pointer transition-all ${
                           isActive

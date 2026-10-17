@@ -1,403 +1,76 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
-import { LumiProject, LumiFile } from '../types';
-import { ProjectStorage } from '../services/storage/ProjectStorage';
+import { useEffect, useMemo, useSyncExternalStore } from 'react';
+import type { LumiFile } from '../types';
+import type { ProjectStorage } from '../services/storage/ProjectStorage';
 import { defaultProjectStorage } from '../services/storage/LocalProjectStorage';
-import { ideLogger } from '../services/logger/IdeLogService';
-import {
-  createInitialProject,
-  createLumiFile,
-  renameLumiFile,
-  deleteLumiFile,
-  setProjectEntryFile,
-  saveFileContentInProject,
-  saveAllDirtyFilesInProject,
-  resolveInitialProjectSelection,
-} from '../services/project/projectOperations';
+import { DesktopProjectStorage, desktopProjectStorage } from '../services/storage/DesktopProjectStorage';
+import { ProjectSession } from '../services/project/ProjectSession';
 
-export function useProjectManager(storage: ProjectStorage = defaultProjectStorage) {
-  const [projects, setProjects] = useState<LumiProject[]>([]);
-  const [currentProjectId, setCurrentProjectId] = useState<string | null>(null);
-  const [activeFileId, setActiveFileId] = useState<string | null>(null);
-  const [openTabIds, setOpenTabIds] = useState<string[]>([]);
-  const [dirtyFiles, setDirtyFiles] = useState<Record<string, string>>({});
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [projectRevision, setProjectRevision] = useState<number>(1);
-
+export function useProjectManager(storage: ProjectStorage = desktopProjectStorage ?? defaultProjectStorage) {
+  const session = useMemo(() => new ProjectSession(storage), [storage]);
+  const state = useSyncExternalStore(session.subscribe, session.snapshot);
+  useEffect(() => { void session.initialize(); }, [session]);
+  const currentProject = state.projects.find(p => p.id === state.currentProjectId) ?? null;
+  const dirtyFiles = state.drafts[state.currentProjectId ?? ''] ?? {};
+  const activeFileId = currentProject?.activeFileId || null;
+  const hasUnsavedChanges = Object.values(state.drafts).some(drafts => Object.keys(drafts).length > 0);
   useEffect(() => {
-    let isMounted = true;
-
-    async function initializeProjects() {
-      try {
-        const loadedProjects = await storage.getProjects();
-        if (!isMounted) return;
-
-        setProjects(loadedProjects);
-
-        const lastActiveId = await storage.getLastActiveProjectId();
-        const { selectedProject, initialTabs, initialActiveId } = resolveInitialProjectSelection(
-          loadedProjects,
-          lastActiveId
-        );
-
-        if (selectedProject) {
-          setCurrentProjectId(selectedProject.id);
-          ideLogger.logProjectOpened(selectedProject.name, selectedProject.files.length);
-          setOpenTabIds(initialTabs);
-          setActiveFileId(initialActiveId);
-        }
-      } catch (err) {
-        console.error('Error inicializando proyectos en useProjectManager:', err);
-      } finally {
-        if (isMounted) setIsLoaded(true);
-      }
-    }
-
-    initializeProjects();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [storage]);
-
-  const currentProject = useMemo(() => {
-    if (!currentProjectId) return null;
-    return projects.find((p) => p.id === currentProjectId) || null;
-  }, [projects, currentProjectId]);
-
-  const activeFile = useMemo(() => {
-    if (!currentProject || !activeFileId) return null;
-    return currentProject.files.find((f) => f.id === activeFileId) || null;
-  }, [currentProject, activeFileId]);
-
-  const entryFile = useMemo(() => {
-    if (!currentProject) return null;
-    return (
-      currentProject.files.find((f) => f.id === currentProject.entryFileId) ||
-      currentProject.files.find((f) => f.isEntry) ||
-      currentProject.files[0] ||
-      null
-    );
-  }, [currentProject]);
-
-  const isDirty = useCallback(
-    (fileId: string): boolean => {
-      if (!(fileId in dirtyFiles)) return false;
-      const file = currentProject?.files.find((f) => f.id === fileId);
-      if (!file) return false;
-      return dirtyFiles[fileId] !== file.content;
-    },
-    [dirtyFiles, currentProject]
-  );
-
-  const getFileContent = useCallback(
-    (file: LumiFile): string => {
-      if (file.id in dirtyFiles) {
-        return dirtyFiles[file.id];
-      }
-      return file.content;
-    },
-    [dirtyFiles]
-  );
-
-  const dirtyCount = useMemo(() => {
-    if (!currentProject) return 0;
-    return currentProject.files.filter((f) => isDirty(f.id)).length;
-  }, [currentProject, isDirty]);
-
-  const handleSelectProject = useCallback(
-    async (projectId: string) => {
-      const selected = projects.find((p) => p.id === projectId);
-      if (!selected) return;
-
-      setCurrentProjectId(projectId);
-      setDirtyFiles({});
-      setProjectRevision((r) => r + 1);
-      ideLogger.logProjectOpened(selected.name, selected.files.length);
-
-      const targetEntry =
-        selected.entryFileId ||
-        selected.files.find((f) => f.isEntry)?.id ||
-        selected.files[0]?.id ||
-        null;
-
-      const validTabs =
-        selected.openTabIds && selected.openTabIds.length > 0
-          ? selected.openTabIds.filter((tid) => selected.files.some((f) => f.id === tid))
-          : targetEntry
-          ? [targetEntry]
-          : [];
-
-      setOpenTabIds(validTabs);
-      const targetActive =
-        selected.activeFileId && selected.files.some((f) => f.id === selected.activeFileId)
-          ? selected.activeFileId
-          : targetEntry;
-
-      setActiveFileId(targetActive);
-      await storage.setLastActiveProjectId(projectId);
-    },
-    [projects, storage]
-  );
-
-  const handleCreateProject = useCallback(
-    async (data: { name: string; location: string; description?: string }) => {
-      const { project: newProject, principalFile } = createInitialProject(data);
-
-      const updatedProjects = [...projects, newProject];
-      setProjects(updatedProjects);
-      setCurrentProjectId(newProject.id);
-      setActiveFileId(principalFile.id);
-      setOpenTabIds([principalFile.id]);
-      setDirtyFiles({});
-
-      await storage.saveProject(newProject);
-      await storage.setLastActiveProjectId(newProject.id);
-    },
-    [projects, storage]
-  );
-
-  const handleDeleteProject = useCallback(
-    async (projectId: string) => {
-      const remainingProjects = projects.filter((p) => p.id !== projectId);
-      setProjects(remainingProjects);
-      await storage.deleteProject(projectId);
-
-      if (currentProjectId === projectId) {
-        const nextProj = remainingProjects[0] || null;
-        if (nextProj) {
-          await handleSelectProject(nextProj.id);
-        } else {
-          setCurrentProjectId(null);
-          setActiveFileId(null);
-          setOpenTabIds([]);
-          setDirtyFiles({});
-        }
-      }
-    },
-    [projects, currentProjectId, storage, handleSelectProject]
-  );
-
-  const handleSelectFile = useCallback(
-    (fileId: string) => {
-      if (!currentProject) return;
-      const fileExists = currentProject.files.some((f) => f.id === fileId);
-      if (!fileExists) return;
-
-      setActiveFileId(fileId);
-      setOpenTabIds((prev) => (prev.includes(fileId) ? prev : [...prev, fileId]));
-
-      setProjects((prev) =>
-        prev.map((p) => {
-          if (p.id !== currentProjectId) return p;
-          const updatedOpenTabs = p.openTabIds?.includes(fileId)
-            ? p.openTabIds
-            : [...(p.openTabIds || []), fileId];
-          const updated = { ...p, activeFileId: fileId, openTabIds: updatedOpenTabs };
-          storage.saveProject(updated);
-          return updated;
-        })
-      );
-    },
-    [currentProject, currentProjectId, storage]
-  );
-
-  const handleCreateFile = useCallback(
-    async (cleanFileName: string) => {
-      if (!currentProject) return;
-
-      const newFile = createLumiFile(currentProject.name, cleanFileName);
-      const updatedFiles = [...currentProject.files, newFile];
-      const updatedOpenTabs = [...openTabIds, newFile.id];
-
-      const updatedProject: LumiProject = {
-        ...currentProject,
-        files: updatedFiles,
-        activeFileId: newFile.id,
-        openTabIds: updatedOpenTabs,
-      };
-
-      setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-      setOpenTabIds(updatedOpenTabs);
-      setActiveFileId(newFile.id);
-
-      await storage.saveProject(updatedProject);
-    },
-    [currentProject, currentProjectId, openTabIds, storage]
-  );
-
-  const handleRenameFile = useCallback(
-    async (fileId: string, newCleanName: string) => {
-      if (!currentProject) return;
-
-      const updatedProject = renameLumiFile(currentProject, fileId, newCleanName);
-
-      setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-      await storage.saveProject(updatedProject);
-    },
-    [currentProject, currentProjectId, storage]
-  );
-
-  const handleDeleteFile = useCallback(
-    async (fileId: string) => {
-      if (!currentProject) return;
-
-      const { updatedProject, remainingTabs, newActiveId } = deleteLumiFile(
-        currentProject,
-        fileId,
-        openTabIds,
-        activeFileId
-      );
-
-      setDirtyFiles((prev) => {
-        const next = { ...prev };
-        delete next[fileId];
-        return next;
-      });
-
-      setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-      setOpenTabIds(remainingTabs);
-      setActiveFileId(newActiveId);
-
-      await storage.saveProject(updatedProject);
-    },
-    [currentProject, openTabIds, activeFileId, currentProjectId, storage]
-  );
-
-  const handleSetEntryFile = useCallback(
-    async (fileId: string) => {
-      if (!currentProject) return;
-      const fileExists = currentProject.files.some((f) => f.id === fileId);
-      if (!fileExists) return;
-
-      const updatedProject = setProjectEntryFile(currentProject, fileId);
-
-      setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-      await storage.saveProject(updatedProject);
-    },
-    [currentProject, currentProjectId, storage]
-  );
-
-  const handleCodeChange = useCallback(
-    (fileId: string, newContent: string) => {
-      if (!currentProject) return;
-      const originalFile = currentProject.files.find((f) => f.id === fileId);
-      if (!originalFile) return;
-
-      setProjectRevision((r) => r + 1);
-
-      if (newContent === originalFile.content) {
-        setDirtyFiles((prev) => {
-          const next = { ...prev };
-          delete next[fileId];
-          return next;
-        });
-      } else {
-        setDirtyFiles((prev) => ({
-          ...prev,
-          [fileId]: newContent,
-        }));
-      }
-    },
-    [currentProject]
-  );
-
-  const handleSaveCurrentFile = useCallback(
-    async (targetFileId?: string) => {
-      const fileIdToSave = targetFileId || activeFileId;
-      if (!currentProject || !fileIdToSave) return;
-
-      const currentDirtyContent = dirtyFiles[fileIdToSave];
-      if (currentDirtyContent === undefined) return;
-
-      const targetFileObj = currentProject.files.find((f) => f.id === fileIdToSave);
-      const updatedProject = saveFileContentInProject(currentProject, fileIdToSave, currentDirtyContent);
-
-      setDirtyFiles((prev) => {
-        const next = { ...prev };
-        delete next[fileIdToSave];
-        return next;
-      });
-
-      setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-
-      await storage.saveProject(updatedProject);
-      if (targetFileObj) {
-        ideLogger.logFileSaved(targetFileObj.name);
-      }
-    },
-    [activeFileId, currentProject, dirtyFiles, currentProjectId, storage]
-  );
-
-  const handleSaveAllFiles = useCallback(async () => {
-    if (!currentProject || Object.keys(dirtyFiles).length === 0) return;
-
-    const modifiedCount = Object.keys(dirtyFiles).length;
-    const updatedProject = saveAllDirtyFilesInProject(currentProject, dirtyFiles);
-
-    setDirtyFiles({});
-    setProjects((prev) => (prev.map((p) => (p.id === currentProjectId ? updatedProject : p))));
-
-    await storage.saveProject(updatedProject);
-    ideLogger.logAllFilesSaved(modifiedCount);
-  }, [currentProject, dirtyFiles, currentProjectId, storage]);
-
-  const handleDiscardFileChanges = useCallback((fileId: string) => {
-    setDirtyFiles((prev) => {
-      const next = { ...prev };
-      delete next[fileId];
-      return next;
-    });
-  }, []);
-
-  const handleForceCloseTab = useCallback(
-    (fileId: string) => {
-      handleDiscardFileChanges(fileId);
-
-      const nextTabs = openTabIds.filter((id) => id !== fileId);
-      setOpenTabIds(nextTabs);
-
-      if (activeFileId === fileId) {
-        const nextActive = nextTabs[nextTabs.length - 1] || null;
-        setActiveFileId(nextActive);
-      }
-
-      if (currentProject) {
-        const updatedProject: LumiProject = {
-          ...currentProject,
-          openTabIds: nextTabs,
-          activeFileId: activeFileId === fileId ? nextTabs[nextTabs.length - 1] || '' : currentProject.activeFileId,
-        };
-        storage.saveProject(updatedProject);
-      }
-    },
-    [handleDiscardFileChanges, openTabIds, activeFileId, currentProject, storage]
-  );
-
+    if (!hasUnsavedChanges) return;
+    const prevent = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    window.addEventListener('beforeunload', prevent);
+    return () => window.removeEventListener('beforeunload', prevent);
+  }, [hasUnsavedChanges]);
+  const desktop = storage instanceof DesktopProjectStorage ? storage : null;
+  const legacyProjects = useMemo(() => {
+    if (!desktop) return [];
+    try {
+      const raw: unknown = JSON.parse(localStorage.getItem('lumi_ide_projects_v1') ?? '[]');
+      return Array.isArray(raw) ? raw.filter(p => p && typeof p.id === 'string' && typeof p.name === 'string') as typeof state.projects : [];
+    } catch { return []; }
+  }, [desktop]);
   return {
-    projects,
-    currentProject,
-    currentProjectId,
-    activeFile,
-    activeFileId,
-    entryFile,
-    openTabIds,
-    isLoaded,
-    isDirty,
-    dirtyCount,
-    projectRevision,
-    getFileContent,
-    handleSelectProject,
-    handleCreateProject,
-    handleDeleteProject,
-    handleSelectFile,
-    handleCreateFile,
-    handleRenameFile,
-    handleDeleteFile,
-    handleSetEntryFile,
-    handleCodeChange,
-    handleSaveCurrentFile,
-    handleSaveAllFiles,
-    handleDiscardFileChanges,
-    handleForceCloseTab,
+    projects: state.projects, currentProject, currentProjectId: state.currentProjectId,
+    activeFile: currentProject?.files.find(f => f.id === activeFileId) ?? null,
+    activeFileId, entryFile: currentProject?.files.find(f => f.id === currentProject.entryFileId)
+      ?? currentProject?.files.find(f => f.isEntry) ?? null,
+    openTabIds: currentProject?.openTabIds ?? [], isLoaded: state.loaded,
+    isDirty: (fileId: string) => Object.hasOwn(dirtyFiles, fileId),
+    dirtyCount: Object.keys(dirtyFiles).length, projectRevision: state.revision,
+    getFileContent: (file: LumiFile) => dirtyFiles[file.id] ?? file.content,
+    storageError: state.error, clearStorageError: session.clearError,
+    isDiskStorage: !!desktop,
+    chooseProjectLocation: desktop ? () => desktop.chooseLocation() : undefined,
+    legacyProjects,
+    handleImportLocalProject: desktop ? (id: string) => session.run(async () => {
+      const project = legacyProjects.find(p => p.id === id);
+      if (!project) throw new Error('Proyecto local no encontrado.');
+      const location = await desktop.chooseLocation();
+      if (location) await session.adopt(await desktop.importProject(project, location));
+    }) : undefined,
+    handleOpenProject: desktop ? () => session.run(async () => {
+      const project = await desktop.openProject();
+      if (project) await session.adopt(project);
+    }) : undefined,
+    handleRenameProject: desktop ? (name: string) => session.run(async () => {
+      if (!session.current) return;
+      await session.adopt(await desktop.renameProject(session.current.id, name));
+    }) : undefined,
+    handleSaveAs: desktop ? () => session.run(async () => {
+      const project = session.current;
+      const file = project?.files.find(f => f.id === project.activeFileId);
+      if (!project || !file) return;
+      const copy = await desktop.saveAs(project.id, file.id, session.state.drafts[project.id]?.[file.id] ?? file.content);
+      if (copy) await session.adopt(copy);
+    }) : undefined,
+    handleCreateProject: desktop ? (data: { name: string; location: string; description?: string }) => session.run(async () => {
+      await session.adopt(await desktop.createProject(data));
+    }) : session.createProject,
+    handleSelectProject: session.selectProject, handleDeleteProject: session.deleteProject,
+    handleSelectFile: session.selectFile, handleCreateFile: session.createFile,
+    handleRenameFile: session.renameFile, handleDeleteFile: session.deleteFile,
+    handleSetEntryFile: session.setEntry, handleCodeChange: session.edit,
+    handleSaveCurrentFile: session.save, handleSaveAllFiles: () => session.save('*'),
+    handleDiscardFileChanges: (fileId: string) => { if (state.currentProjectId) session.discard(state.currentProjectId, fileId); },
+    handleForceCloseTab: session.closeTab,
+    handleDiscardAndCloseTab: (fileId: string) => session.closeTab(fileId, true),
   };
 }

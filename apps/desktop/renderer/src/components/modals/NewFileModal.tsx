@@ -5,7 +5,7 @@ import { X, FilePlus, AlertCircle, Sparkles } from 'lucide-react';
 interface NewFileModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateFile: (fileName: string) => void;
+  onCreateFile: (fileName: string) => void | Promise<boolean>;
   existingFileNames: string[];
 }
 
@@ -31,7 +31,7 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validation = validateFileName(fileName, existingFileNames);
@@ -40,7 +40,7 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
       return;
     }
 
-    onCreateFile(validation.cleanValue!);
+    if (await onCreateFile(validation.cleanValue!) === false) return;
     setFileName('');
     setErrorMessage(null);
     onClose();

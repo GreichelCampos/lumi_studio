@@ -13,6 +13,7 @@ import { NewProjectModal } from './components/modals/NewProjectModal';
 import { OpenProjectModal } from './components/modals/OpenProjectModal';
 import { NewFileModal } from './components/modals/NewFileModal';
 import { RenameFileModal } from './components/modals/RenameFileModal';
+import { RenameProjectModal } from './components/modals/RenameProjectModal';
 import { ConfirmDeleteModal } from './components/modals/ConfirmDeleteModal';
 import { UnsavedChangesModal } from './components/modals/UnsavedChangesModal';
 import { InsertRoomModal } from './components/modals/InsertRoomModal';
@@ -23,7 +24,7 @@ import { lumiAssistant } from './services/assistant/LumiAssistantService';
 import { LumicFileService } from './services/storage/LumicFileService';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { BackendModeNotice } from './components/BackendModeNotice';
-import { relativePath } from './services/integration/projectInput';
+import { findSourceFile } from './services/editor/sourceNavigation';
 
 export default function App() {
   const {
@@ -50,11 +51,16 @@ export default function App() {
     handleCodeChange,
     handleSaveCurrentFile,
     handleSaveAllFiles,
-    handleDiscardFileChanges,
     handleForceCloseTab,
+    handleDiscardAndCloseTab,
+    storageError, clearStorageError, chooseProjectLocation,
+    handleOpenProject, handleRenameProject, handleSaveAs,
+    legacyProjects, handleImportLocalProject,
+    isDiskStorage,
   } = useProjectManager();
 
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+  const [showRenameProjectModal, setShowRenameProjectModal] = useState(false);
   const [showOpenProjectModal, setShowOpenProjectModal] = useState(false);
   const [showNewFileModal, setShowNewFileModal] = useState(false);
   const [showInsertRoomModal, setShowInsertRoomModal] = useState(false);
@@ -73,12 +79,14 @@ export default function App() {
   const {
     highlightedLine,
     setHighlightedLine,
+    sourceNavigation,
+    navigateToLocation,
     breakpoints,
     allBreakpoints,
     toggleBreakpoint,
     activeObjectId,
     setActiveObjectId,
-  } = useEditorState(activeFileName);
+  } = useEditorState(activeFileName, currentProjectId ?? '');
 
   const {
     lumiState,
@@ -197,6 +205,7 @@ export default function App() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented) return;
       if (e.key === 'Escape' && isViewportMaximized) {
         setIsViewportMaximized(false);
       }
@@ -276,14 +285,21 @@ export default function App() {
 
       if (diagnostics.length > 0) {
         const firstError = diagnostics.find((d) => d.blocking) || diagnostics.find((d) => d.severity === 'error') || diagnostics[0];
-        setHighlightedLine(firstError.line);
+        const targetFile = currentProject && findSourceFile(currentProject, firstError.file, isRealBackend);
+        if (targetFile) {
+          handleSelectFile(targetFile.id);
+          navigateToLocation(targetFile.id, firstError.line, firstError.column);
+        } else {
+          setHighlightedLine(null);
+        }
         const targetObj = firstError.targetObjectId || firstError.objectId;
         if (targetObj) {
           setActiveObjectId(targetObj);
         }
       }
     }
-  }, [lastCompileResult, diagnostics, setHighlightedLine, setActiveObjectId]);
+  }, [lastCompileResult, diagnostics, setHighlightedLine, setActiveObjectId, currentProject,
+    isRealBackend, handleSelectFile, navigateToLocation]);
 
   const handleDebugStepChange = useCallback(
     (step: DebugStep) => {
@@ -364,17 +380,15 @@ export default function App() {
     (sourceRef: SourceReference) => {
       if (!currentProject) return;
 
-      const targetFile = currentProject.files.find(
-        (f) => f.name === sourceRef.file || f.path.endsWith(sourceRef.file) || f.id === sourceRef.file
-      );
-
-      if (targetFile) {
-        handleSelectFile(targetFile.id);
+      const targetFile = findSourceFile(currentProject, sourceRef.file, isRealBackend);
+      if (!targetFile) {
+        ideLogger.log('warning', `No se pudo identificar el archivo de origen: ${sourceRef.file}.`, undefined, 'Editor');
+        return;
       }
-
-      setHighlightedLine(sourceRef.line);
+      handleSelectFile(targetFile.id);
+      navigateToLocation(targetFile.id, sourceRef.line, sourceRef.column);
     },
-    [currentProject, handleSelectFile, setHighlightedLine]
+    [currentProject, handleSelectFile, navigateToLocation, isRealBackend]
   );
 
   const handleNavigateToDiagnostic = useCallback(
@@ -383,22 +397,19 @@ export default function App() {
 
       lumiAssistant.onDiagnosticFocused(diag);
 
-      const targetFile = currentProject.files.find(
-        (f) => isRealBackend ? relativePath(f.path, currentProject.name) === diag.file
-          : f.name === diag.file || f.path.endsWith(diag.file) || f.id === diag.file
-      );
-
-      if (targetFile) {
-        handleSelectFile(targetFile.id);
+      const targetFile = findSourceFile(currentProject, diag.file, isRealBackend);
+      if (!targetFile) {
+        ideLogger.log('warning', `No se pudo identificar el archivo del diagnóstico: ${diag.file}.`, undefined, 'Editor');
+        return;
       }
-
-      setHighlightedLine(diag.line);
+      handleSelectFile(targetFile.id);
+      navigateToLocation(targetFile.id, diag.line, diag.column);
 
       if (diag.targetObjectId) {
         setActiveObjectId(diag.targetObjectId);
       }
     },
-    [currentProject, handleSelectFile, setHighlightedLine, setActiveObjectId, isRealBackend]
+    [currentProject, handleSelectFile, navigateToLocation, setActiveObjectId, isRealBackend]
   );
 
   const handleInsertRoomCode = useCallback(
@@ -420,21 +431,6 @@ export default function App() {
     },
     [currentProject, activeFile, entryFile, getFileContent, handleCodeChange, handleSelectFile]
   );
-
-  useEffect(() => {
-    const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'F5') {
-        e.preventDefault();
-        handleCompileCurrent();
-      } else if (e.key === 'F6') {
-        e.preventDefault();
-        handleRunExecution();
-      }
-    };
-
-    window.addEventListener('keydown', handleGlobalKeyDown);
-    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [handleCompileCurrent, handleRunExecution]);
 
   const handleTabCloseRequest = useCallback(
     (fileId: string) => {
@@ -459,13 +455,15 @@ export default function App() {
   );
 
   const errorLines = useMemo(
-    () => diagnostics.filter((d) => d.severity === 'error').map((d) => d.line),
-    [diagnostics]
+    () => diagnostics.filter((d) => d.severity === 'error' && currentProject
+      && findSourceFile(currentProject, d.file, isRealBackend)?.id === activeFileId).map((d) => d.line),
+    [diagnostics, currentProject, isRealBackend, activeFileId]
   );
 
   const warningLines = useMemo(
-    () => diagnostics.filter((d) => d.severity === 'warning').map((d) => d.line),
-    [diagnostics]
+    () => diagnostics.filter((d) => d.severity === 'warning' && currentProject
+      && findSourceFile(currentProject, d.file, isRealBackend)?.id === activeFileId).map((d) => d.line),
+    [diagnostics, currentProject, isRealBackend, activeFileId]
   );
 
   return (
@@ -489,12 +487,20 @@ export default function App() {
         onNewFile={() => setShowNewFileModal(true)}
         onSaveFile={() => handleSaveCurrentFile()}
         onSaveAll={() => handleSaveAllFiles()}
+        onSaveAs={handleSaveAs}
+        onRenameProject={handleRenameProject && currentProject ? () => setShowRenameProjectModal(true) : undefined}
         onInsertRoomModal={() => setShowInsertRoomModal(true)}
         dirtyCount={dirtyCount}
         onExportLumic={handleExportLumic}
         onImportLumicFile={handleImportLumicFile}
       />
       <BackendModeNotice real={isRealBackend} refresh={isCompiling} />
+      {storageError && <div role="alert" className="bg-rose-950 text-rose-100 px-4 py-2 text-sm z-[60]">
+        {storageError} <button onClick={clearStorageError} className="underline ml-3">Cerrar aviso</button>
+      </div>}
+      {currentProject && !entryFile && <div role="status" className="px-4 py-2 text-xs text-amber-200">
+        Selecciona el archivo principal desde el explorador antes de compilar. Esta selección se guarda en esta computadora.
+      </div>}
 
       <div className={`relative flex-1 grid ${isViewportMaximized ? 'grid-rows-[1fr]' : 'grid-rows-[1fr_235px] xl:grid-rows-[1fr_210px]'} gap-3 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250`}>
         <div 
@@ -544,7 +550,8 @@ export default function App() {
                   onSaveAll={handleSaveAllFiles}
                   isDirty={isDirty}
                   getFileContent={getFileContent}
-                  highlightedLine={highlightedLine}
+                  highlightedLine={sourceNavigation && sourceNavigation.fileId !== activeFileId ? null : highlightedLine}
+                  sourceNavigation={sourceNavigation}
                   errorLines={errorLines}
                   warningLines={warningLines}
                   breakpoints={breakpoints}
@@ -609,6 +616,7 @@ export default function App() {
         isOpen={showNewProjectModal}
         onClose={() => setShowNewProjectModal(false)}
         onCreateProject={handleCreateProject}
+        onChooseLocation={chooseProjectLocation}
         existingProjectNames={existingProjectNames}
       />
 
@@ -620,6 +628,9 @@ export default function App() {
         onSelectProject={handleSelectProject}
         onDeleteProject={handleDeleteProject}
         onNewProjectClick={() => setShowNewProjectModal(true)}
+        onOpenFromDisk={handleOpenProject}
+        legacyProjects={legacyProjects} onImportLocalProject={handleImportLocalProject}
+        confirmProjectDeletion={!isDiskStorage}
       />
 
       <NewFileModal
@@ -650,6 +661,7 @@ export default function App() {
         }
         totalFilesInProject={currentProject ? currentProject.files.length : 0}
         onConfirmDelete={handleDeleteFile}
+        recoverable={isDiskStorage}
       />
 
       <UnsavedChangesModal
@@ -657,15 +669,18 @@ export default function App() {
         onClose={() => setUnsavedTargetFile(null)}
         file={unsavedTargetFile}
         onSaveAndClose={async (fileId) => {
-          await handleSaveCurrentFile(fileId);
-          handleForceCloseTab(fileId);
+          if (!await handleSaveCurrentFile(fileId)) return false;
+          return handleForceCloseTab(fileId);
         }}
         onDiscardAndClose={(fileId) => {
-          handleDiscardFileChanges(fileId);
-          handleForceCloseTab(fileId);
+          return handleDiscardAndCloseTab(fileId);
         }}
       />
 
+      {handleRenameProject && <RenameProjectModal
+        name={showRenameProjectModal ? currentProject?.name ?? null : null}
+        onClose={() => setShowRenameProjectModal(false)} onRename={handleRenameProject}
+      />}
       <InsertRoomModal
         isOpen={showInsertRoomModal}
         onClose={() => setShowInsertRoomModal(false)}

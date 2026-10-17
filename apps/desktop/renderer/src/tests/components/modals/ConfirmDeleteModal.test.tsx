@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ConfirmDeleteModal } from '../../../components/modals/ConfirmDeleteModal';
 import { createMockFile } from '../../fixtures/testFixtures';
 
@@ -56,7 +56,7 @@ describe('ConfirmDeleteModal Component', () => {
     expect(screen.getByText(/archivo principal del proyecto/i)).toBeInTheDocument();
   });
 
-  it('debe llamar a onConfirmDelete con el fileId y cerrar el modal al confirmar', () => {
+  it('debe llamar a onConfirmDelete con el fileId y cerrar el modal al confirmar', async () => {
     const handleConfirm = vi.fn();
     const handleClose = vi.fn();
 
@@ -76,6 +76,6 @@ describe('ConfirmDeleteModal Component', () => {
     fireEvent.click(deleteBtn);
 
     expect(handleConfirm).toHaveBeenCalledWith('file-delete');
-    expect(handleClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(handleClose).toHaveBeenCalledTimes(1));
   });
 });

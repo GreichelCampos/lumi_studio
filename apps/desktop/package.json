@@ -11,7 +11,8 @@
     "lint": "tsc --noEmit && npm --prefix renderer run lint",
     "test": "vitest run",
     "test:integration": "node scripts/build.mjs && node tests/electron.integration.mjs",
-    "test:window": "node scripts/build.mjs && node tests/window.integration.mjs"
+    "test:window": "node scripts/build.mjs && node tests/window.integration.mjs",
+    "test:workspace": "node scripts/build.mjs && node tests/workspace.integration.mjs"
   },
   "devDependencies": {
     "electron": "44.8.0",

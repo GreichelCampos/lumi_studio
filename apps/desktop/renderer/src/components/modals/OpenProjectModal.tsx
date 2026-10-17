@@ -20,6 +20,10 @@ interface OpenProjectModalProps {
   onSelectProject: (projectId: string) => void;
   onDeleteProject?: (projectId: string) => void;
   onNewProjectClick?: () => void;
+  onOpenFromDisk?: () => Promise<boolean>;
+  legacyProjects?: LumiProject[];
+  onImportLocalProject?: (id: string) => Promise<boolean>;
+  confirmProjectDeletion?: boolean;
 }
 
 export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
@@ -30,6 +34,9 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
   onSelectProject,
   onDeleteProject,
   onNewProjectClick,
+  onOpenFromDisk,
+  legacyProjects = [], onImportLocalProject,
+  confirmProjectDeletion = true,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -97,6 +104,12 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
+          {onImportLocalProject && legacyProjects.length > 0 && <div className="text-xs space-y-2 border p-3 rounded">
+            <p>Proyectos anteriores del almacenamiento local. Guarda una copia en disco para trabajar con ellos:</p>
+            {legacyProjects.map(project => <button key={project.id} className="block underline" onClick={async () => {
+              if (await onImportLocalProject(project.id)) onClose();
+            }}>Guardar copia de {project.name}...</button>)}
+          </div>}
           {filteredProjects.length === 0 ? (
             <div className="text-center py-10 space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-[#1a422f]/40 flex items-center justify-center mx-auto text-[#8f9d95]">
@@ -122,6 +135,7 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
               return (
                 <div
                   key={project.id}
+                  data-testid={`open-project-${project.id}`}
                   onClick={() => {
                     onSelectProject(project.id);
                     onClose();
@@ -178,11 +192,11 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
                       {isCurrent ? 'Continuar' : 'Abrir'}
                     </button>
 
-                    {onDeleteProject && projects.length > 1 && (
+                    {onDeleteProject && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          if (confirm(`¿Eliminar el proyecto "${project.name}" permanentemente?`)) {
+                          if (!confirmProjectDeletion || confirm(`¿Eliminar el proyecto "${project.name}"? Sus cambios sin guardar se descartarán.`)) {
                             onDeleteProject(project.id);
                           }
                         }}
@@ -204,6 +218,9 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
             Total: <strong className="text-[#f3ebd6] font-mono">{projects.length}</strong> {projects.length === 1 ? 'proyecto' : 'proyectos'}
           </div>
           <div className="flex items-center gap-2.5">
+            {onOpenFromDisk && <button className="text-xs underline" onClick={async () => {
+              if (await onOpenFromDisk()) onClose();
+            }}>Abrir carpeta del disco...</button>}
             {onNewProjectClick && (
               <button
                 onClick={() => {

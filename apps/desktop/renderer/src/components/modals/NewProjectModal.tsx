@@ -5,7 +5,8 @@ import { X, FolderPlus, Sparkles, Folder, AlertCircle } from 'lucide-react';
 interface NewProjectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateProject: (data: { name: string; location: string; description?: string }) => void;
+  onCreateProject: (data: { name: string; location: string; description?: string }) => void | Promise<boolean>;
+  onChooseLocation?: () => Promise<string | null>;
   existingProjectNames: string[];
 }
 
@@ -14,6 +15,7 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
   onClose,
   onCreateProject,
   existingProjectNames,
+  onChooseLocation,
 }) => {
   const [name, setName] = useState('');
   const [location, setLocation] = useState('~/ProyectosLumi');
@@ -33,10 +35,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const nameValidation = validateProjectName(name, existingProjectNames);
+    const nameValidation = validateProjectName(name, onChooseLocation ? [] : existingProjectNames);
     if (!nameValidation.isValid) {
       setErrorMessage(nameValidation.error || 'Nombre de proyecto no válido');
       return;
@@ -48,11 +50,12 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
       return;
     }
 
-    onCreateProject({
+    const saved = await onCreateProject({
       name: nameValidation.cleanValue!,
       location: locValidation.cleanValue!,
       description: description.trim(),
     });
+    if (saved === false) return;
 
     setName('');
     setErrorMessage(null);
@@ -118,12 +121,13 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-[#d5cbb2] mb-1.5 uppercase tracking-wider">
-              Ubicación / Directorio Simulado <span className="text-[#f3ebd6]">*</span>
+              Ubicación del proyecto <span className="text-[#f3ebd6]">*</span>
             </label>
             <div className="relative">
               <input
                 type="text"
                 value={location}
+                readOnly={!!onChooseLocation}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="~/ProyectosLumi"
                 className="w-full px-4 py-2.5 rounded-xl bg-[#082016]/90 border border-[#f3ebd6]/20 focus:border-[#f3ebd6] focus:ring-1 focus:ring-[#f3ebd6] text-[#f3ebd6] placeholder-[#8f9d95] outline-none font-mono text-xs transition-all backdrop-blur-sm shadow-inner"
@@ -131,8 +135,12 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
               <Folder className="absolute right-3.5 top-3 w-4 h-4 text-[#8f9d95]" />
             </div>
             <p className="text-[11px] text-[#8f9d95] mt-1">
-              Ruta física en PySide6 o almacenamiento local en el navegador.
+              {onChooseLocation ? 'Se creará una carpeta dentro de la ubicación elegida.' : 'Almacenamiento local del navegador.'}
             </p>
+            {onChooseLocation && <button type="button" className="text-xs underline" onClick={async () => {
+              try { const chosen = await onChooseLocation(); if (chosen) setLocation(chosen); }
+              catch (error) { setErrorMessage(error instanceof Error ? error.message : 'No se pudo elegir la carpeta.'); }
+            }}>Elegir carpeta...</button>}
           </div>
 
           <div>

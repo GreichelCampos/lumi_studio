@@ -1,11 +1,24 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
 import { UnsavedChangesModal } from '../../../components/modals/UnsavedChangesModal';
 import { createMockFile } from '../../fixtures/testFixtures';
 
 describe('UnsavedChangesModal Component', () => {
   const file = createMockFile({ id: 'file-mod', name: 'modulo1.lumi' });
+  it('waits for persistence and keeps the modal open after a failed save', async () => {
+    let complete!: (saved: boolean) => void;
+    const pending = new Promise<boolean>(resolve => { complete = resolve; });
+    const close = vi.fn();
+    render(<UnsavedChangesModal isOpen onClose={close} file={file}
+      onSaveAndClose={() => pending} onDiscardAndClose={vi.fn()} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar' }));
+    expect(close).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Guardar' })).toBeDisabled();
+    await act(async () => { complete(false); await pending; });
+    expect(close).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Guardar' })).not.toBeDisabled();
+  });
 
   it('no debe renderizarse si isOpen es false o file es null', () => {
     const { container } = render(

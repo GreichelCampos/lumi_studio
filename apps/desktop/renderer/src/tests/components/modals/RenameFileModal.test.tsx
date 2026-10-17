@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RenameFileModal } from '../../../components/modals/RenameFileModal';
 import { createMockFile } from '../../fixtures/testFixtures';
 
@@ -20,7 +20,7 @@ describe('RenameFileModal Component', () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it('debe permitir renombrar el archivo y llamar a onRename con el nombre normalizado', () => {
+  it('debe permitir renombrar el archivo y llamar a onRename con el nombre normalizado', async () => {
     const handleRename = vi.fn();
     const handleClose = vi.fn();
 
@@ -41,7 +41,7 @@ describe('RenameFileModal Component', () => {
     fireEvent.click(submitBtn);
 
     expect(handleRename).toHaveBeenCalledWith('file-123', 'dormitorio_suite.lumi');
-    expect(handleClose).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(handleClose).toHaveBeenCalledTimes(1));
   });
 
   it('debe bloquear nombres duplicados contra otros archivos existentes', () => {

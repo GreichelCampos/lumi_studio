@@ -1,10 +1,27 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect, type SetStateAction } from 'react';
 import { Breakpoint } from '../types';
+import type { SourceNavigation } from '../services/editor/sourceNavigation';
 
-export function useEditorState(activeFileName?: string) {
-  const [highlightedLine, setHighlightedLine] = useState<number | null>(null);
+export function useEditorState(activeFileName?: string, scopeKey = '') {
+  const [highlightedLine, setLine] = useState<number | null>(null);
+  const [sourceNavigation, setSourceNavigation] = useState<SourceNavigation | null>(null);
   const [breakpointsMap, setBreakpointsMap] = useState<Breakpoint[]>([]);
   const [activeObjectId, setActiveObjectId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLine(null);
+    setSourceNavigation(null);
+  }, [scopeKey]);
+
+  const setHighlightedLine = useCallback((value: SetStateAction<number | null>) => {
+    setSourceNavigation(null);
+    setLine(value);
+  }, []);
+
+  const navigateToLocation = useCallback((fileId: string, line: number, column?: number) => {
+    setLine(line);
+    setSourceNavigation({ fileId, line, column });
+  }, []);
 
   const toggleBreakpoint = useCallback((line: number, file?: string) => {
     const targetFile = file || activeFileName || '';
@@ -32,6 +49,8 @@ export function useEditorState(activeFileName?: string) {
   return {
     highlightedLine,
     setHighlightedLine,
+    sourceNavigation,
+    navigateToLocation,
     breakpoints: activeBreakpoints,
     allBreakpoints: breakpointsMap,
     toggleBreakpoint,
