@@ -356,7 +356,6 @@ export function validateRoomModel(
     }
   }
 
-  // Floor
   if (!room.floor || typeof room.floor !== 'object') {
     errors.push({
       path: `${pathPrefix}.floor`,
@@ -377,7 +376,6 @@ export function validateRoomModel(
     }
   }
 
-  // Walls
   const validWallOrientations = ['norte', 'sur', 'este', 'oeste'];
   if (!room.walls || typeof room.walls !== 'object') {
     errors.push({
@@ -401,7 +399,6 @@ export function validateRoomModel(
     }
   }
 
-  // Doors
   if (!Array.isArray(room.doors)) {
     errors.push({
       path: `${pathPrefix}.doors`,
@@ -440,7 +437,6 @@ export function validateRoomModel(
     });
   }
 
-  // Windows
   if (!Array.isArray(room.windows)) {
     errors.push({
       path: `${pathPrefix}.windows`,
@@ -479,7 +475,6 @@ export function validateRoomModel(
     });
   }
 
-  // Objects
   if (!Array.isArray(room.objects)) {
     errors.push({
       path: `${pathPrefix}.objects`,
@@ -787,7 +782,6 @@ export function validateCompileResult(
     });
   }
 
-  // Diagnostics
   if (!Array.isArray(res.diagnostics)) {
     errors.push({
       path: `${pathPrefix}.diagnostics`,
@@ -804,14 +798,12 @@ export function validateCompileResult(
     });
   }
 
-  // ScenePlan
   if (res.scenePlan !== null && res.scenePlan !== undefined) {
     const spRes = validateScenePlan(res.scenePlan, `${pathPrefix}.scenePlan`);
     errors.push(...spRes.errors);
     warnings.push(...spRes.warnings);
   }
 
-  // Duration
   if (typeof res.durationMs !== 'number' || res.durationMs < 0 || !Number.isFinite(res.durationMs)) {
     errors.push({
       path: `${pathPrefix}.durationMs`,
@@ -822,7 +814,6 @@ export function validateCompileResult(
     });
   }
 
-  // Logs
   if (!Array.isArray(res.logs)) {
     errors.push({
       path: `${pathPrefix}.logs`,
@@ -833,7 +824,6 @@ export function validateCompileResult(
     });
   }
 
-  // DebugSteps
   if (!Array.isArray(res.debugSteps)) {
     errors.push({
       path: `${pathPrefix}.debugSteps`,
@@ -850,7 +840,6 @@ export function validateCompileResult(
     });
   }
 
-  // Timestamp
   if (typeof res.timestamp !== 'string' || !res.timestamp.trim()) {
     errors.push({
       path: `${pathPrefix}.timestamp`,
@@ -1047,7 +1036,6 @@ export function validateLumicArtifact(
     });
   }
 
-  // ScenePlan
   if (!art.scenePlan || typeof art.scenePlan !== 'object') {
     errors.push({
       path: `${pathPrefix}.scenePlan`,

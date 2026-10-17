@@ -22,7 +22,6 @@
   }
 }
 
-/* Luxury Color Tokens & Dynamic Theme Fallbacks */
 :root {
   --color-dark-emerald: #02110c;
   --color-olive-green: #1a422f;
@@ -43,7 +42,6 @@
   --ide-radius-sm: 12px;
 }
 
-/* Custom sleek scrollbar for IDE panels */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -62,7 +60,6 @@
   background: rgba(243, 235, 214, 0.45);
 }
 
-/* Hide scrollbar for horizontal tab bars */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -71,7 +68,6 @@
   scrollbar-width: none;
 }
 
-/* Glowing animations for Lumi mascot and active lines */
 @keyframes lumi-float {
   0%, 100% {
     transform: translateY(0px) rotate(0deg);
@@ -138,15 +134,11 @@
   filter: drop-shadow(0 0 14px rgba(248, 113, 113, 0.7));
 }
 
-/* Glass panel glow */
 .panel-border {
   border: 1px solid rgba(243, 235, 214, 0.12);
   box-shadow: 0 8px 32px 0 rgba(2, 17, 12, 0.6);
 }
 
-/* ============================================================
-   GLASSMORPHISM & THEME-AWARE SURFACES
-   ============================================================ */
 
 .glass-card {
   background: var(--ide-control-bg, rgba(255, 255, 255, 0.05));
@@ -178,7 +170,6 @@
   z-index: 10;
 }
 
-/* Glass Main IDE Panels (Project Explorer, Code Editor, Viewport 3D, Console) */
 .glass-panel {
   background: var(--ide-active-panel-bg, var(--ide-panel-bg, rgba(255, 255, 255, 0.05)));
   backdrop-filter: var(--ide-backdrop-filter, blur(20px));
@@ -211,7 +202,6 @@
   z-index: 20;
 }
 
-/* Glass Panel Headers */
 .glass-panel-header {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: var(--ide-backdrop-filter, blur(16px));
@@ -219,7 +209,6 @@
   border-bottom: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.1));
 }
 
-/* Glass Topbar Window Header */
 .glass-topbar {
   background: var(--ide-topbar-bg, rgba(20, 20, 20, 0.95));
   backdrop-filter: var(--ide-backdrop-filter, blur(24px));
@@ -231,7 +220,6 @@
   transition: background 0.2s ease, border-color 0.2s ease;
 }
 
-/* Glass Buttons & Interactive Elements */
 .glass-btn {
   background: var(--ide-btn-bg, rgba(255, 255, 255, 0.08));
   backdrop-filter: blur(8px);
@@ -259,7 +247,6 @@
   transform: scale(0.96);
 }
 
-/* Glass Tabs */
 .glass-tab-active {
   background: var(--ide-btn-bg, rgba(255, 255, 255, 0.15));
   backdrop-filter: blur(12px);
@@ -285,7 +272,6 @@
   color: var(--ide-text, #ffffff);
 }
 
-/* Glass Modal Dialogs */
 .glass-modal {
   background: var(--ide-dropdown-bg, rgba(25, 25, 25, 0.95));
   backdrop-filter: blur(22px);
@@ -300,7 +286,6 @@
   transition: background 0.2s ease, border-color 0.2s ease, border-radius 0.2s ease;
 }
 
-/* Glass Dropdown Menus */
 .glass-dropdown {
   background: var(--ide-dropdown-bg, rgba(25, 25, 25, 0.98));
   backdrop-filter: blur(24px);
@@ -314,7 +299,6 @@
   transition: background 0.2s ease, border-color 0.2s ease, border-radius 0.2s ease;
 }
 
-/* Glass Bubble for Lumi Assistant floating messages */
 .glass-bubble {
   background: var(--ide-panel-solid, rgba(25, 25, 25, 0.95));
   backdrop-filter: blur(16px);

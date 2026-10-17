@@ -89,10 +89,6 @@ const TYPE_REGEX = /^(entero|decimal|texto|booleano|vector|lista|vacio)$/;
 const PROPERTY_REGEX = /^(material|color|ancho|alto|largo|posicion)$/;
 const NUMBER_REGEX = /^\d+(\.\d+)?$/;
 
-/**
- * Expresión regular canónica para escaneo de tokens de una línea de código Lumi.
- * Coincide exactamente con el escáner original de CodeEditor.tsx.
- */
 export const LUMI_TOKEN_REGEX_SOURCE =
   '(--[^\\n]*|\\/\\/[^\\n]*|"(?:\\\\.|[^"\\\\])*"|\\[[^\\]]+\\]|\\b(?:principal|habitacion|piso|pared|puerta|ventana|colocar|en|rotar|mover|si|sino|segun|caso|defecto|hacer|mientras|repetir|funcion|retornar|mostrar|leer|visualizar3D|importar|usar)\\b|\\b(?:entero|decimal|texto|booleano|vector|lista|vacio)\\b|\\bnulo\\b|\\b(?:verdadero|falso)\\b|\\b\\d+(?:\\.\\d+)?\\b|>>|[{}();,=+\\-*\\/]|[a-zA-Z_][a-zA-Z0-9_]*)';
 
@@ -106,7 +102,6 @@ export function tokenizeLumiLine(lineText: string): LumiSyntaxToken[] {
     return [];
   }
 
-  // Comentario de línea completa que empieza por '--'
   if (lineText.trim().startsWith('--')) {
     return [
       {
@@ -125,7 +120,6 @@ export function tokenizeLumiLine(lineText: string): LumiSyntaxToken[] {
   let lastIndex = 0;
 
   while ((match = tokenRegex.exec(lineText)) !== null) {
-    // Texto plano intercalado antes del token (espacios, caracteres no emparejados, etc.)
     if (match.index > lastIndex) {
       tokens.push({
         text: lineText.substring(lastIndex, match.index),
@@ -180,7 +174,6 @@ export function tokenizeLumiLine(lineText: string): LumiSyntaxToken[] {
     lastIndex = tokenRegex.lastIndex;
   }
 
-  // Texto plano residual al final de la línea
   if (lastIndex < lineText.length) {
     tokens.push({
       text: lineText.substring(lastIndex),

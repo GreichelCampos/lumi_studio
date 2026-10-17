@@ -36,7 +36,6 @@ export class MockCompilerService implements CompilerService {
 
     const compilationId = `comp-${Date.now().toString(36)}-${Math.floor(Math.random() * 8999 + 1000)}`;
 
-    // 1. Verify open project & files
     if (!project || !project.files || project.files.length === 0) {
       return {
         compilationId,
@@ -52,7 +51,6 @@ export class MockCompilerService implements CompilerService {
       };
     }
 
-    // 2. Identify Entry File
     const entryFiles = project.files.filter((f) => f.isEntry || f.id === project.entryFileId);
     let targetFile = project.files.find((f) => f.id === activeFileId);
 
@@ -138,7 +136,6 @@ export class MockCompilerService implements CompilerService {
         diagnostics.push(MockDiagnosticFactory.legacyComment(compilationId, targetFile.name, lineNum));
       }
 
-      // Track braces
       if (trimmed.includes('{')) openBraces += (trimmed.match(/\{/g) || []).length;
       if (trimmed.includes('}')) openBraces -= (trimmed.match(/\}/g) || []).length;
 

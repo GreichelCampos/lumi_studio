@@ -38,20 +38,17 @@ export const IdeSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return IDE_THEMES.find((t) => t.id === settings.theme) || IDE_THEMES[0];
   }, [settings.theme]);
 
-  // Aplicar variables CSS y atributos en documentElement cuando cambian los ajustes
   useEffect(() => {
     const root = document.documentElement;
     root.setAttribute('data-theme', settings.theme);
     root.setAttribute('data-glass', settings.glassStyle);
     root.setAttribute('data-radius', settings.radiusStyle);
 
-    // Aplicar variables CSS del tema
     const vars = currentTheme.cssVars;
     Object.entries(vars).forEach(([key, val]) => {
       root.style.setProperty(key, String(val));
     });
 
-    // Ajustar opacidad según modo de cristal
     if (settings.glassStyle === 'solid') {
       root.style.setProperty('--ide-backdrop-filter', 'none');
       root.style.setProperty('--ide-active-panel-bg', vars['--ide-panel-solid'] || vars['--ide-panel-bg']);
@@ -63,7 +60,6 @@ export const IdeSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       root.style.setProperty('--ide-active-panel-bg', vars['--ide-panel-bg']);
     }
 
-    // Radio de bordes
     if (settings.radiusStyle === 'classic-vscode') {
       root.style.setProperty('--ide-radius', '6px');
       root.style.setProperty('--ide-radius-sm', '4px');
@@ -72,7 +68,6 @@ export const IdeSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       root.style.setProperty('--ide-radius-sm', '12px');
     }
 
-    // Persistir en localStorage
     try {
       localStorage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
     } catch (err) {

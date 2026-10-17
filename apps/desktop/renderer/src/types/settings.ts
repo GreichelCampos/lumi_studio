@@ -39,12 +39,10 @@ export interface IdeThemeDefinition {
 }
 
 export interface IdeSettings {
-  // Apariencia y Temas
   theme: IdeThemeId;
   glassStyle: GlassStyle;
   radiusStyle: RadiusStyle;
   
-  // Editor de código
   fontSize: number; // 12, 13, 14, 16, 18
   fontFamily: 'Fira Code' | 'JetBrains Mono' | 'Source Code Pro' | 'Consolas' | 'monospace';
   lineNumbers: boolean;
@@ -53,7 +51,6 @@ export interface IdeSettings {
   activeLineHighlight: ActiveLineHighlight;
   autoSave: AutoSaveOption;
 
-  // Visor 3D y Espacio
   showGrid: boolean;
   showAxes: boolean;
   showDimensions: boolean;
@@ -61,7 +58,6 @@ export interface IdeSettings {
   renderQuality: RenderQuality;
   spatialBackground: SpatialBackgroundMode;
 
-  // Asistente Lumi y Sistema
   showMascot: boolean;
   lumiColorPreset: LumiColorPreset;
   autoCompileOnType: boolean;

@@ -34,7 +34,6 @@ export function validateProjectName(
     };
   }
 
-  // Comprobar caracteres no permitidos en nombres de proyecto / directorio
   const invalidCharsRegex = /[<>:"/\\|?*]/;
   if (invalidCharsRegex.test(trimmed)) {
     return {
@@ -104,7 +103,6 @@ export function validateFileName(
     };
   }
 
-  // Asegurar extensión .lumi
   if (!trimmed.toLowerCase().endsWith('.lumi')) {
     trimmed = `${trimmed}.lumi`;
   }
@@ -118,7 +116,6 @@ export function validateFileName(
     };
   }
 
-  // Caracteres inválidos para nombres de archivo
   const invalidCharsRegex = /[<>:"/\\|?*\s]/;
   if (invalidCharsRegex.test(baseName)) {
     return {
@@ -127,7 +124,6 @@ export function validateFileName(
     };
   }
 
-  // Comprobar duplicados excluyendo el archivo original si es renombre
   const isDuplicate = existingFileNames.some((existing) => {
     if (originalName && existing.toLowerCase() === originalName.toLowerCase()) {
       return false;
@@ -187,14 +183,12 @@ export function validateRoomParams(
   const errors: RoomValidationResult['errors'] = {};
   const trimmedName = String(name || '').trim();
 
-  // Validar nombre como identificador válido de Lumi
   if (!trimmedName) {
     errors.name = 'El nombre de la habitación es obligatorio.';
   } else if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(trimmedName)) {
     errors.name = 'El nombre debe ser un identificador válido de Lumi (letras, números y guion bajo, sin iniciar con dígito).';
   }
 
-  // Validar ancho
   const anchoVal = typeof anchoStr === 'number' ? anchoStr : parseFloat(String(anchoStr).replace(',', '.'));
   if (isNaN(anchoVal) || String(anchoStr).trim() === '') {
     errors.ancho = 'El ancho debe ser un valor numérico.';
@@ -202,7 +196,6 @@ export function validateRoomParams(
     errors.ancho = 'El ancho debe ser mayor a 0 (ej: 5.0).';
   }
 
-  // Validar largo
   const largoVal = typeof largoStr === 'number' ? largoStr : parseFloat(String(largoStr).replace(',', '.'));
   if (isNaN(largoVal) || String(largoStr).trim() === '') {
     errors.largo = 'El largo debe ser un valor numérico.';
@@ -210,7 +203,6 @@ export function validateRoomParams(
     errors.largo = 'El largo debe ser mayor a 0 (ej: 4.0).';
   }
 
-  // Validar altura
   const alturaVal = typeof alturaStr === 'number' ? alturaStr : parseFloat(String(alturaStr).replace(',', '.'));
   if (isNaN(alturaVal) || String(alturaStr).trim() === '') {
     errors.altura = 'La altura debe ser un valor numérico.';

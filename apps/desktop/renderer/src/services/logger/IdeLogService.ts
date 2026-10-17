@@ -54,7 +54,6 @@ export class IdeLogService {
     return event;
   }
 
-  // Specialized logging helpers
   public logProjectOpened(projectName: string, fileCount: number): IdeLogEvent {
     return this.log('info', `Proyecto "${projectName}" cargado (${fileCount} archivo${fileCount !== 1 ? 's' : ''}).`, undefined, 'Proyecto');
   }

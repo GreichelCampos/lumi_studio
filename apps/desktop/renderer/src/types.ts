@@ -1,7 +1,5 @@
-// Re-export domain contracts
 export * from './types/domain';
 
-// Mascot and IDE Shell types
 export type LumiState = 'ready' | 'compiling' | 'success' | 'warning' | 'error';
 
 export type IdeEventType = 

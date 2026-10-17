@@ -23,7 +23,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
   const [isLoaded, setIsLoaded] = useState(false);
   const [projectRevision, setProjectRevision] = useState<number>(1);
 
-  // 1. Inicialización desde ProjectStorage
   useEffect(() => {
     let isMounted = true;
 
@@ -60,19 +59,16 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     };
   }, [storage]);
 
-  // Proyecto activo actual
   const currentProject = useMemo(() => {
     if (!currentProjectId) return null;
     return projects.find((p) => p.id === currentProjectId) || null;
   }, [projects, currentProjectId]);
 
-  // Archivo activo actual
   const activeFile = useMemo(() => {
     if (!currentProject || !activeFileId) return null;
     return currentProject.files.find((f) => f.id === activeFileId) || null;
   }, [currentProject, activeFileId]);
 
-  // Archivo principal actual
   const entryFile = useMemo(() => {
     if (!currentProject) return null;
     return (
@@ -83,7 +79,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     );
   }, [currentProject]);
 
-  // Comprobar si un archivo tiene cambios sin guardar
   const isDirty = useCallback(
     (fileId: string): boolean => {
       if (!(fileId in dirtyFiles)) return false;
@@ -94,7 +89,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [dirtyFiles, currentProject]
   );
 
-  // Obtener contenido actual de un archivo (con cambios pendientes si existen)
   const getFileContent = useCallback(
     (file: LumiFile): string => {
       if (file.id in dirtyFiles) {
@@ -105,13 +99,11 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [dirtyFiles]
   );
 
-  // Cantidad de archivos modificados
   const dirtyCount = useMemo(() => {
     if (!currentProject) return 0;
     return currentProject.files.filter((f) => isDirty(f.id)).length;
   }, [currentProject, isDirty]);
 
-  // 2. Cambiar de proyecto
   const handleSelectProject = useCallback(
     async (projectId: string) => {
       const selected = projects.find((p) => p.id === projectId);
@@ -147,7 +139,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [projects, storage]
   );
 
-  // 3. Crear nuevo proyecto
   const handleCreateProject = useCallback(
     async (data: { name: string; location: string; description?: string }) => {
       const { project: newProject, principalFile } = createInitialProject(data);
@@ -165,7 +156,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [projects, storage]
   );
 
-  // 4. Eliminar proyecto
   const handleDeleteProject = useCallback(
     async (projectId: string) => {
       const remainingProjects = projects.filter((p) => p.id !== projectId);
@@ -187,7 +177,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [projects, currentProjectId, storage, handleSelectProject]
   );
 
-  // 5. Seleccionar / Abrir archivo
   const handleSelectFile = useCallback(
     (fileId: string) => {
       if (!currentProject) return;
@@ -212,7 +201,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject, currentProjectId, storage]
   );
 
-  // 6. Crear archivo .lumi
   const handleCreateFile = useCallback(
     async (cleanFileName: string) => {
       if (!currentProject) return;
@@ -237,7 +225,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject, currentProjectId, openTabIds, storage]
   );
 
-  // 7. Renombrar archivo
   const handleRenameFile = useCallback(
     async (fileId: string, newCleanName: string) => {
       if (!currentProject) return;
@@ -250,7 +237,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject, currentProjectId, storage]
   );
 
-  // 8. Eliminar archivo
   const handleDeleteFile = useCallback(
     async (fileId: string) => {
       if (!currentProject) return;
@@ -277,7 +263,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject, openTabIds, activeFileId, currentProjectId, storage]
   );
 
-  // 9. Establecer como archivo principal
   const handleSetEntryFile = useCallback(
     async (fileId: string) => {
       if (!currentProject) return;
@@ -292,7 +277,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject, currentProjectId, storage]
   );
 
-  // 10. Modificación de código en el editor
   const handleCodeChange = useCallback(
     (fileId: string, newContent: string) => {
       if (!currentProject) return;
@@ -317,7 +301,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [currentProject]
   );
 
-  // 11. Guardar archivo actual
   const handleSaveCurrentFile = useCallback(
     async (targetFileId?: string) => {
       const fileIdToSave = targetFileId || activeFileId;
@@ -345,7 +328,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     [activeFileId, currentProject, dirtyFiles, currentProjectId, storage]
   );
 
-  // 12. Guardar todos los archivos modificados
   const handleSaveAllFiles = useCallback(async () => {
     if (!currentProject || Object.keys(dirtyFiles).length === 0) return;
 
@@ -359,7 +341,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     ideLogger.logAllFilesSaved(modifiedCount);
   }, [currentProject, dirtyFiles, currentProjectId, storage]);
 
-  // 13. Descartar cambios pendientes de un archivo
   const handleDiscardFileChanges = useCallback((fileId: string) => {
     setDirtyFiles((prev) => {
       const next = { ...prev };
@@ -368,7 +349,6 @@ export function useProjectManager(storage: ProjectStorage = defaultProjectStorag
     });
   }, []);
 
-  // 14. Cerrar pestaña
   const handleForceCloseTab = useCallback(
     (fileId: string) => {
       handleDiscardFileChanges(fileId);

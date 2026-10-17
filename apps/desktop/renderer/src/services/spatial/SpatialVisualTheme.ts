@@ -11,20 +11,19 @@ export interface EntityVisualState {
 }
 
 export const SPATIAL_THEME = {
-  // Base Scene Colors
   background: {
-    day: '#02110c',     // Dark Emerald Green (#02110c)
+    day: '#02110c',
     evening: '#031912',
     cyber: '#010a07',
   },
   grid: {
-    center: '#f3ebd6',  // Cream Beige primary center lines
-    lines: '#1a422f',   // Olive Green / Forest Emerald grid lines
+    center: '#f3ebd6',
+    lines: '#1a422f',
   },
   axes: {
     x: '#ef4444',       // Red (Eje X: Ancho)
     z: '#22c55e',       // Green (Eje Z: Largo)
-    origin: '#f3ebd6',  // Cream Beige Origin Marker
+    origin: '#f3ebd6',
   },
   walls: {
     solidOpacity: 0.95,
@@ -36,7 +35,6 @@ export const SPATIAL_THEME = {
     text: '#f3ebd6',
   },
 
-  // Entity States
   states: {
     normal: {
       outlineColor: '#1a422f',
@@ -75,15 +73,14 @@ export const SPATIAL_THEME = {
     },
   },
 
-  // Color lookup for Lumi wall & furniture named colors
   namedColors: {
-    blanco: '#f3ebd6',  // Warm cream white
-    crema: '#f3ebd6',   // Cream beige
-    beige: '#f3ebd6',   // Cream beige
+    blanco: '#f3ebd6',
+    crema: '#f3ebd6',
+    beige: '#f3ebd6',
     gris: '#8f9d95',
     azul: '#1e3a8a',
-    negro: '#02110c',   // Dark emerald black
-    verde: '#1a422f',   // Olive forest green
+    negro: '#02110c',
+    verde: '#1a422f',
     esmeralda: '#1a422f',
     oliva: '#1a422f',
     rojo: '#991b1b',

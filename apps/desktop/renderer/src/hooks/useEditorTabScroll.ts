@@ -30,7 +30,6 @@ export function useEditorTabScroll({
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
-  // Monitorear y calcular si hay pestañas desbordadas para mostrar flechas de navegación
   const checkTabScroll = useCallback(() => {
     const el = tabsContainerRef.current;
     if (!el) return;
@@ -54,7 +53,6 @@ export function useEditorTabScroll({
     [tabsContainerRef, checkTabScroll]
   );
 
-  // Auto-scroll para que la pestaña activa siempre sea visible al cambiar de archivo
   useEffect(() => {
     const el = tabsContainerRef.current;
     if (!el) return;
@@ -65,7 +63,6 @@ export function useEditorTabScroll({
     checkTabScroll();
   }, [activeFileId, openTabCount, tabsContainerRef, checkTabScroll]);
 
-  // Suscribirse al scroll y cambios de tamaño del contenedor
   useEffect(() => {
     const el = tabsContainerRef.current;
     if (!el) return;

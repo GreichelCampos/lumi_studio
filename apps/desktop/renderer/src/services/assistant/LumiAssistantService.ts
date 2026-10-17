@@ -51,7 +51,6 @@ class LumiAssistantService {
     this.notify();
   }
 
-  // --- Contextual Helpers ---
 
   public onReady() {
     this.setMessage('Todo listo. Puedes seguir editando ✨', 'ready');
@@ -138,7 +137,6 @@ class LumiAssistantService {
     this.setMessage(`Estructura para "${roomName}" insertada en el código.`, 'success');
   }
 
-  // --- Spatial Debugger Contextual Messages ---
 
   public onDebugStart() {
     this.setMessage('Voy a recorrer el proyecto paso a paso.', 'ready');

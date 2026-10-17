@@ -35,7 +35,6 @@ export function useSpatialDebugger({
   const breakpointsRef = useRef<Breakpoint[]>(breakpoints);
   breakpointsRef.current = breakpoints;
 
-  // Track initial or recompilation reset
   useEffect(() => {
     if (debugSteps.length > 0) {
       setCurrentStepIndex(0);
@@ -48,7 +47,6 @@ export function useSpatialDebugger({
     }
   }, [debugSteps]);
 
-  // Synchronize active step notifications to Editor & 3D & Lumi Assistant
   useEffect(() => {
     if (debugSteps.length > 0 && debugSteps[currentStepIndex] !== undefined) {
       if (prevStepIndexRef.current !== currentStepIndex) {
@@ -56,7 +54,6 @@ export function useSpatialDebugger({
         const activeStep = debugSteps[currentStepIndex];
         onStepChangeRef.current?.(activeStep);
 
-        // Assistant messaging based on step event and metadata
         if (activeStep.assistantMessage) {
           if (activeStep.eventType === 'spatial_error') {
             lumiAssistant.onDebugSpatialError(activeStep.assistantMessage);
@@ -80,7 +77,6 @@ export function useSpatialDebugger({
     }
   }, [currentStepIndex, debugSteps]);
 
-  // Execution ticker with Breakpoint detection
   useEffect(() => {
     if (status !== 'running' || debugSteps.length === 0) return;
 
@@ -117,7 +113,6 @@ export function useSpatialDebugger({
     return () => clearInterval(timer);
   }, [status, debugSteps, playbackSpeed]);
 
-  // Debugger Actions
   const startDebugging = useCallback(() => {
     if (debugSteps.length === 0) return;
     setCurrentStepIndex(0);

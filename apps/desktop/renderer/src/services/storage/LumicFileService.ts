@@ -118,7 +118,6 @@ export class LumicFileService {
       .replace(/[^a-z0-9_-]/gi, '_');
     const fileName = `${sanitizedBase}.lumic`;
 
-    // Disparar descarga en navegador
     this.downloadInBrowser(rawJson, fileName);
 
     ideLogger.log(

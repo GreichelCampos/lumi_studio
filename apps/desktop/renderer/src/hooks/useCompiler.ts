@@ -45,7 +45,6 @@ export function useCompiler(options?: UseCompilerOptions) {
     setLogs([]); setDebugSteps([]); setLastCompiledRevision(null);
   }, [options?.scopeKey]);
 
-  // Run compilation
   const runOperation = useCallback(
     async (project: LumiProject, activeFileId?: string, projectRevision?: number, operation: 'analyze' | 'execute' = 'analyze'): Promise<CompileResult | null> => {
       const requestId = ++latestCompilationRequestIdRef.current;
@@ -53,7 +52,7 @@ export function useCompiler(options?: UseCompilerOptions) {
       setIsCompiling(true);
       setLumiState('compiling');
       lumiAssistant.onCompiling();
-      setDiagnostics([]); // Limpiar diagnósticos anteriores al iniciar
+      setDiagnostics([]);
 
       const targetEntry =
         project.files.find((f) => f.id === activeFileId)?.name ||
@@ -90,7 +89,6 @@ export function useCompiler(options?: UseCompilerOptions) {
           );
         }
 
-        // Registrar inicio y fin en el registrador centralizado
         ideLogger.logCompilationStarted(result.compilationId, result.entryFileInfo?.name || targetEntry);
 
         setLastCompileResult(result);
