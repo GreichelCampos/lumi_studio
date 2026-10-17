@@ -56,7 +56,10 @@ npm run build
 `lint` comprueba TypeScript: modo estricto para la aplicación y configuración
 heredada para las pruebas. El frontend conserva temporalmente un **compilador
 mock y depuración simulada** en navegador. Electron utiliza Python real sin fallback
-automático al mock. Los proyectos todavía se almacenan en localStorage.
+automático al mock. Electron trabaja con carpetas y archivos `.lumi` reales y guarda
+la selección del principal y las pestañas en `userData`; el navegador conserva
+`localStorage`. Consulta [proyectos y flujo multiarchivo](docs/project_workspaces.md)
+para persistencia, portabilidad y pruebas con archivos reales.
 
 ### Probar la fachada Python sin interfaz
 
