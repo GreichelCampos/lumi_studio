@@ -16,6 +16,7 @@ describe('useCompiler - Integración de Artefactos .lumic', () => {
     });
 
     expect(result.current.scenePlan).not.toBeNull();
+    expect(result.current.sceneSource).toBe('artifact');
     expect(result.current.scenePlan?.rooms).toHaveLength(1);
     expect(result.current.scenePlan?.rooms[0].name).toBe('estudio');
 

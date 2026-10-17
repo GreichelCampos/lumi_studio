@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { ScenePlan, SourceReference } from '../types';
 import { ThreeSceneManager } from './viewport/ThreeSceneManager';
+import { validateViewportScene } from './viewport/helpers/validateViewportScene';
 import { RoomSelector } from './viewport/RoomSelector';
 import { ObjectPropertiesCard, SelectedEntity } from './viewport/ObjectPropertiesCard';
 import { ViewportEmptyState, EmptyStateType } from './viewport/ViewportEmptyState';
@@ -27,6 +28,7 @@ import {
 interface Viewport3DProps {
   sceneGenerationUnavailable?: boolean;
   scenePlan: ScenePlan | null;
+  sceneSource?: 'simulation' | 'artifact' | 'python' | null;
   activeObjectId?: string | null;
   debugActiveObjectId?: string | null;
   onSelectObject?: (objectId: string | null) => void;
@@ -41,7 +43,8 @@ interface Viewport3DProps {
 
 export const Viewport3D: React.FC<Viewport3DProps> = ({
   sceneGenerationUnavailable = false,
-  scenePlan,
+  scenePlan: inputScenePlan,
+  sceneSource = 'simulation',
   activeObjectId = null,
   debugActiveObjectId = null,
   onSelectObject,
@@ -55,6 +58,10 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneManagerRef = useRef<ThreeSceneManager | null>(null);
+  const validationError = useMemo(() => inputScenePlan === null ? null : validateViewportScene(inputScenePlan), [inputScenePlan]);
+  const scenePlan = validationError ? null : inputScenePlan;
+  const onSelectRef = useRef(onSelectObject);
+  onSelectRef.current = onSelectObject;
 
   const ideContext = useOptionalIdeSettings();
   const currentTheme = ideContext?.currentTheme;
@@ -136,11 +143,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   const handleEntityClicked = useCallback(
     (entityId: string | null) => {
-      if (onSelectObject) {
-        onSelectObject(entityId);
-      }
+      onSelectRef.current?.(entityId);
     },
-    [onSelectObject]
+    []
   );
 
   const [webglError, setWebGLError] = useState<string | null>(null);
@@ -157,10 +162,10 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
       });
       sceneManagerRef.current = manager;
       setWebGLError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.warn('WebGL / Three.js could not be initialized in this environment:', err);
       sceneManagerRef.current = null;
-      setWebGLError(err?.message || 'Error inicializando WebGL');
+      setWebGLError(err instanceof Error ? err.message : 'Error inicializando WebGL');
     }
 
     return () => {
@@ -216,6 +221,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
         }
       }
       prevFocusedIdRef.current = activeObjectId;
+    } else {
+      sceneManagerRef.current.clearRoom();
+      prevFocusedIdRef.current = null;
     }
   }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData]);
 
@@ -243,21 +251,21 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     const next = !showDimensions;
     setShowDimensions(next);
     sceneManagerRef.current?.toggleDimensions(next);
-    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId);
+    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
   };
 
   const handleToggleAxes = () => {
     const next = !showAxes;
     setShowAxes(next);
     sceneManagerRef.current?.toggleAxes(next);
-    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId);
+    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
   };
 
   const handleToggleWireframe = () => {
     const next = !wireframeMode;
     setWireframeMode(next);
     sceneManagerRef.current?.toggleWireframe(next);
-    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId);
+    if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
   };
 
   const handleLightingChange = (mode: 'day' | 'evening' | 'cyber') => {
@@ -314,6 +322,10 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   return (
     <div id="viewport-3d-main" className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none">
+      {scenePlan && <div role="status" className="px-3 py-1 text-[10px] text-[var(--ide-text-muted)]">
+        {sceneSource === 'artifact' ? 'Archivo .lumic importado · no implica generación espacial desde Python'
+          : sceneSource === 'python' ? 'ScenePlan recibido de Python' : 'ScenePlan simulado · datos de demostración'}
+      </div>}
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 glass-panel-header z-10">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
           {scenePlan && scenePlan.rooms.length > 0 && (
@@ -515,7 +527,10 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
           </div>
         )}
 
-        {!webglError && emptyState && (
+        {validationError && <div role="alert" className="absolute inset-0 z-20 p-6 bg-[var(--ide-bg)] text-rose-300">
+          Escena no válida: {validationError}
+        </div>}
+        {!webglError && !validationError && emptyState && (
           <ViewportEmptyState
             type={emptyState}
             onCompile={onCompile}

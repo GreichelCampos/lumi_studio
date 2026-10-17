@@ -93,6 +93,7 @@ export default function App() {
     isCompiling,
     lastCompileResult,
     scenePlan,
+    sceneSource,
     setScenePlan,
     diagnostics,
     logs,
@@ -564,6 +565,7 @@ export default function App() {
           <div className={`${isViewportMaximized ? 'col-span-12' : 'col-span-12 md:col-span-4 lg:col-span-5 xl:col-span-6'} h-full min-h-0`}>
             <ErrorBoundary fallbackTitle="Error al renderizar el visualizador 3D">
               <Viewport3D
+                sceneSource={sceneSource}
                 sceneGenerationUnavailable={isRealBackend}
                 scenePlan={scenePlan}
                 activeObjectId={activeObjectId}

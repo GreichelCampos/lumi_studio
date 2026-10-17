@@ -43,6 +43,8 @@ export class CameraController {
     this.controls.maxPolarAngle = Math.PI / 2.02; // Prevent going beneath floor
     this.controls.minDistance = 3;
     this.controls.maxDistance = 120;
+    this.controls.minZoom = 0.4;
+    this.controls.maxZoom = 3.5;
     this.controls.enablePan = true;
     this.controls.panSpeed = 0.9;
     this.controls.rotateSpeed = 0.75;
@@ -69,7 +71,7 @@ export class CameraController {
     const aspect = w / h;
     const activeRoom = room !== undefined ? room : this.currentRoom;
     if (activeRoom) {
-      this.viewSpan = calculateDynamicViewSpan(activeRoom, aspect);
+      this.viewSpan = this.fittedSpan(activeRoom, aspect);
     }
 
     this.camera.left = -this.viewSpan * aspect;
@@ -100,8 +102,26 @@ export class CameraController {
     this.controls.target.copy(this.targetLookAt);
 
     const camDist = calculateCameraDistance(room);
+    this.camera.far = Math.max(1000, camDist * 6);
+    this.controls.maxDistance = Math.max(120, camDist * 4);
     this.camera.position.set(camDist, camDist * 1.05, camDist);
     this.controls.update();
+    this.handleResize(room);
+  }
+
+  private fittedSpan(room: RoomModel, aspect: number): number {
+    this.camera.updateMatrixWorld();
+    const [width, length, height] = room.dimensions;
+    let span = 0;
+    for (const x of [-width / 2 - 0.3, width / 2 + 0.3]) {
+      for (const y of [-0.1, height + 0.1]) {
+        for (const z of [-length / 2 - 0.3, length / 2 + 0.3]) {
+          const point = new THREE.Vector3(x, y, z).applyMatrix4(this.camera.matrixWorldInverse);
+          span = Math.max(span, Math.abs(point.x) / aspect, Math.abs(point.y));
+        }
+      }
+    }
+    return Math.max(span * 1.08, 0.1);
   }
 
   public focusObject(position?: [number, number, number], currentRoom?: RoomModel | null): void {
@@ -136,6 +156,7 @@ export class CameraController {
   }
 
   public zoomCamera(delta: number): void {
+    if (!Number.isFinite(delta)) return;
     this.camera.zoom = Math.max(0.4, Math.min(3.5, this.camera.zoom + delta));
     this.camera.updateProjectionMatrix();
   }

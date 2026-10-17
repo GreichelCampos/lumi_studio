@@ -26,6 +26,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   const [isCompiling, setIsCompiling] = useState(false);
   const [lastCompileResult, setLastCompileResult] = useState<CompileResult | null>(null);
   const [scenePlan, setScenePlan] = useState<ScenePlan | null>(null);
+  const [sceneSource, setSceneSource] = useState<'simulation' | 'artifact' | 'python' | null>(null);
   const [diagnostics, setDiagnostics] = useState<DiagnosticItem[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [debugSteps, setDebugSteps] = useState<DebugStep[]>([]);
@@ -42,6 +43,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   }, [options?.contextKey]);
   useEffect(() => {
     setLastCompileResult(null); setScenePlan(null); setDiagnostics([]);
+    setSceneSource(null);
     setLogs([]); setDebugSteps([]); setLastCompiledRevision(null);
   }, [options?.scopeKey]);
 
@@ -93,6 +95,7 @@ export function useCompiler(options?: UseCompilerOptions) {
 
         setLastCompileResult(result);
         setScenePlan(result.scenePlan);
+        setSceneSource(result.scenePlan ? compilerService.mode === 'python' ? 'python' : 'simulation' : null);
         setDiagnostics(result.diagnostics);
         setLogs(result.logs);
         setDebugSteps(result.debugSteps);
@@ -108,6 +111,7 @@ export function useCompiler(options?: UseCompilerOptions) {
         setLumiState('error');
         setLastCompileResult(null);
         setScenePlan(null);
+        setSceneSource(null);
         setDebugSteps([]);
         setDiagnostics([]);
         const message = `[Infraestructura] ${err instanceof Error ? err.message : String(err)}`;
@@ -138,6 +142,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   }, []);
 
   const loadCompiledArtifact = useCallback((artifact: LumiCompiledArtifact) => {
+    setSceneSource('artifact');
     // Invalidar cualquier compilación en vuelo previa
     latestCompilationRequestIdRef.current++;
     setIsCompiling(false);
@@ -196,6 +201,7 @@ export function useCompiler(options?: UseCompilerOptions) {
     isCompiling,
     lastCompileResult,
     scenePlan,
+    sceneSource,
     setScenePlan,
     diagnostics,
     logs,

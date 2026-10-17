@@ -9,6 +9,7 @@ import { ObjectSelectionController } from './interaction/ObjectSelectionControll
 import { ThreeResourceDisposer } from './resources/ThreeResourceDisposer';
 import { calculateWallOcclusion } from './helpers/spatialMath';
 import { IdeThemeDefinition, SpatialBackgroundMode } from '../../types/settings';
+import { validateViewportScene } from './helpers/validateViewportScene';
 
 export interface ThreeSceneManagerOptions {
   container: HTMLDivElement;
@@ -23,10 +24,11 @@ export class ThreeSceneManager {
   private renderer: THREE.WebGLRenderer;
   private roomGroup: THREE.Group;
 
-  private cameraController: CameraController;
-  private selectionController: ObjectSelectionController;
+  private cameraController!: CameraController;
+  private selectionController!: ObjectSelectionController;
 
   private animationFrameId: number | null = null;
+  private disposed = false;
   private resizeObserver: ResizeObserver | null = null;
 
   private isWireframe = false;
@@ -40,7 +42,7 @@ export class ThreeSceneManager {
   private activeEntityId: string | null = null;
   private debugActiveObjectId: string | null = null;
   private wallRecords: WallMeshRecord[] = [];
-  private boundWindowResize: () => void;
+  private boundWindowResize = () => this.handleResize();
 
   constructor(options: ThreeSceneManagerOptions) {
     this.container = options.container;
@@ -60,64 +62,72 @@ export class ThreeSceneManager {
       preserveDrawingBuffer: true,
       powerPreference: 'high-performance',
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    this.renderer.setSize(width, height, false);
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.1;
+    try {
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer.setSize(width, height, false);
+      this.renderer.shadowMap.enabled = true;
+      this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      this.renderer.toneMappingExposure = 1.1;
 
-    // Critical: Style canvas to always fill 100% of container seamlessly without blocking parent resizing
-    this.renderer.domElement.style.display = 'block';
-    this.renderer.domElement.style.position = 'absolute';
-    this.renderer.domElement.style.top = '0';
-    this.renderer.domElement.style.left = '0';
-    this.renderer.domElement.style.width = '100%';
-    this.renderer.domElement.style.height = '100%';
-    this.renderer.domElement.style.outline = 'none';
+      // Critical: Style canvas to always fill 100% of container seamlessly without blocking parent resizing
+      this.renderer.domElement.style.display = 'block';
+      this.renderer.domElement.style.position = 'absolute';
+      this.renderer.domElement.style.top = '0';
+      this.renderer.domElement.style.left = '0';
+      this.renderer.domElement.style.width = '100%';
+      this.renderer.domElement.style.height = '100%';
+      this.renderer.domElement.style.outline = 'none';
 
-    this.container.innerHTML = '';
-    this.container.appendChild(this.renderer.domElement);
+      this.container.innerHTML = '';
+      this.container.appendChild(this.renderer.domElement);
 
-    this.cameraController = new CameraController({
-      container: this.container,
-      rendererDomElement: this.renderer.domElement,
-    });
+      this.cameraController = new CameraController({
+        container: this.container,
+        rendererDomElement: this.renderer.domElement,
+      });
 
-    this.setupLighting();
+      this.setupLighting();
 
-    const centerColor = options.activeTheme?.spatialColors?.gridCenter || SPATIAL_THEME.grid.center;
-    const linesColor = options.activeTheme?.spatialColors?.gridLines || SPATIAL_THEME.grid.lines;
-    const grid = new THREE.GridHelper(40, 40, new THREE.Color(centerColor), new THREE.Color(linesColor));
-    grid.position.y = -0.05;
-    grid.name = 'gridHelper';
-    this.scene.add(grid);
+      const centerColor = options.activeTheme?.spatialColors?.gridCenter || SPATIAL_THEME.grid.center;
+      const linesColor = options.activeTheme?.spatialColors?.gridLines || SPATIAL_THEME.grid.lines;
+      const grid = new THREE.GridHelper(40, 40, new THREE.Color(centerColor), new THREE.Color(linesColor));
+      grid.position.y = -0.05;
+      grid.name = 'gridHelper';
+      this.scene.add(grid);
 
-    this.roomGroup = new THREE.Group();
-    this.scene.add(this.roomGroup);
+      this.roomGroup = new THREE.Group();
+      this.scene.add(this.roomGroup);
 
-    this.selectionController = new ObjectSelectionController({
-      domElement: this.renderer.domElement,
-      scene: this.scene,
-      getCamera: () => this.cameraController.getCamera(),
-      onSelectEntity: options.onSelectEntity,
-    });
+      this.selectionController = new ObjectSelectionController({
+        domElement: this.renderer.domElement,
+        scene: this.scene,
+        getCamera: () => this.cameraController.getCamera(),
+        onSelectEntity: options.onSelectEntity,
+      });
 
-    this.boundWindowResize = () => {
-      this.handleResize();
-    };
+      this.resizeObserver = new ResizeObserver(() => {
+        this.handleResize();
+      });
+      this.resizeObserver.observe(this.container);
+      window.addEventListener('resize', this.boundWindowResize);
 
-    this.resizeObserver = new ResizeObserver(() => {
-      this.handleResize();
-    });
-    this.resizeObserver.observe(this.container);
-    window.addEventListener('resize', this.boundWindowResize);
+      if (options.activeTheme) {
+        this.applyTheme(options.activeTheme, options.spatialBackground);
+      }
 
-    if (options.activeTheme) {
-      this.applyTheme(options.activeTheme, options.spatialBackground);
+      this.startRenderLoop();
+    } catch (error) {
+      if (this.animationFrameId !== null) cancelAnimationFrame(this.animationFrameId);
+      this.resizeObserver?.disconnect();
+      window.removeEventListener('resize', this.boundWindowResize);
+      this.selectionController?.dispose();
+      this.cameraController?.dispose();
+      ThreeResourceDisposer.disposeHierarchy(this.scene);
+      this.renderer.dispose();
+      this.renderer.domElement.remove();
+      throw error;
     }
-
-    this.startRenderLoop();
   }
 
   private setupLighting(): void {
@@ -153,7 +163,7 @@ export class ThreeSceneManager {
   }
 
   public handleResize(): void {
-    if (!this.container || !this.renderer) return;
+    if (this.disposed || !this.container || !this.renderer) return;
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
     if (w === 0 || h === 0) return;
@@ -205,6 +215,9 @@ export class ThreeSceneManager {
     activeEntityId: string | null,
     debugActiveObjectId: string | null = null
   ): void {
+    if (this.disposed) return;
+    const validationError = validateViewportScene({ version: '1.0.0', rooms: [room] });
+    if (validationError) throw new Error(`Escena no válida: ${validationError}`);
     this.activeEntityId = activeEntityId;
     this.debugActiveObjectId = debugActiveObjectId;
     this.selectionController.clearPickables();
@@ -238,14 +251,14 @@ export class ThreeSceneManager {
 
     room.doors.forEach((door) => {
       const isSelected = activeEntityId === door.id;
-      const doorGroup = OpeningFactory.createDoorMesh(door, room, isSelected);
+      const doorGroup = OpeningFactory.createDoorMesh(door, room, isSelected, this.isWireframe);
       this.selectionController.registerPickable(doorGroup, door.id);
       roomRoot.add(doorGroup);
     });
 
     room.windows.forEach((win) => {
       const isSelected = activeEntityId === win.id;
-      const winGroup = OpeningFactory.createWindowMesh(win, room, isSelected);
+      const winGroup = OpeningFactory.createWindowMesh(win, room, isSelected, this.isWireframe);
       this.selectionController.registerPickable(winGroup, win.id);
       roomRoot.add(winGroup);
     });
@@ -264,6 +277,14 @@ export class ThreeSceneManager {
     });
 
     this.roomGroup.add(roomRoot);
+  }
+
+  public clearRoom(): void {
+    ThreeResourceDisposer.disposeHierarchy(this.roomGroup);
+    this.roomGroup.clear();
+    this.selectionController.clearPickables();
+    this.wallRecords = [];
+    this.currentRoom = null;
   }
 
   public focusObject(position?: [number, number, number]): void {
@@ -430,11 +451,13 @@ export class ThreeSceneManager {
   }
 
   public captureSnapshot(): string | null {
-    if (!this.renderer) return null;
+    if (this.disposed || !this.renderer) return null;
     return this.renderer.domElement.toDataURL('image/png');
   }
 
   public dispose(): void {
+    if (this.disposed) return;
+    this.disposed = true;
     if (this.animationFrameId !== null) {
       cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = null;
@@ -450,6 +473,8 @@ export class ThreeSceneManager {
 
     ThreeResourceDisposer.disposeHierarchy(this.scene);
     this.renderer.dispose();
+    this.renderer.domElement.remove();
+    this.scene.clear();
     this.wallRecords = [];
   }
 }

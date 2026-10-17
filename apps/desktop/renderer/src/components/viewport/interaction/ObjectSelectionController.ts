@@ -19,6 +19,7 @@ export class ObjectSelectionController {
 
   private pointerDownHandler: ((e: PointerEvent) => void) | null = null;
   private pointerUpHandler: ((e: PointerEvent) => void) | null = null;
+  private pointerCancelHandler: (() => void) | null = null;
 
   constructor(options: ObjectSelectionControllerOptions) {
     this.domElement = options.domElement;
@@ -38,23 +39,31 @@ export class ObjectSelectionController {
   }
 
   private setupListeners(): void {
-    let pointerDownPos = { x: 0, y: 0 };
+    let pointerDownPos: { x: number; y: number; id: number } | null = null;
 
     this.pointerDownHandler = (e: PointerEvent) => {
-      pointerDownPos = { x: e.clientX, y: e.clientY };
+      pointerDownPos = e.button === 0 ? { x: e.clientX, y: e.clientY, id: e.pointerId } : null;
     };
     this.domElement.addEventListener('pointerdown', this.pointerDownHandler);
+    this.pointerCancelHandler = () => { pointerDownPos = null; };
+    this.domElement.addEventListener('pointercancel', this.pointerCancelHandler);
 
     this.pointerUpHandler = (e: PointerEvent) => {
+      const down = pointerDownPos;
+      pointerDownPos = null;
+      if (!down || down.id !== e.pointerId || e.button !== 0) return;
       // Ignore drags / orbit movements
-      const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+      const dist = Math.hypot(e.clientX - down.x, e.clientY - down.y);
       if (dist > 5) return;
 
       const rect = this.domElement.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
       this.mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       this.mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
 
       const camera = this.getCamera();
+      this.scene.updateMatrixWorld(true);
+      camera.updateMatrixWorld(true);
       this.raycaster.setFromCamera(this.mouse, camera);
 
       const pickableObjects = Array.from(this.pickableMeshes.keys());
@@ -63,6 +72,7 @@ export class ObjectSelectionController {
       if (intersects.length > 0) {
         let clickedEntityId: string | null = null;
         for (const hit of intersects) {
+          if (hit.object.userData.ignorePicking) continue;
           let curr: THREE.Object3D | null = hit.object;
           while (curr && curr !== this.scene) {
             if (this.pickableMeshes.has(curr)) {
@@ -86,6 +96,10 @@ export class ObjectSelectionController {
   }
 
   public dispose(): void {
+    if (this.pointerCancelHandler) {
+      this.domElement.removeEventListener('pointercancel', this.pointerCancelHandler);
+      this.pointerCancelHandler = null;
+    }
     if (this.pointerDownHandler) {
       this.domElement.removeEventListener('pointerdown', this.pointerDownHandler);
       this.pointerDownHandler = null;
