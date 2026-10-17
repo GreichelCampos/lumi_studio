@@ -152,7 +152,7 @@ describe('Contract Validator (Fase de Contratos de Integración)', () => {
   describe('Validación de referencias espaciales (INVALID_SPATIAL_REFERENCE)', () => {
     it('rechaza dimensiones de habitación no numéricas, menores o iguales a cero', () => {
       const habitacionInvalida = createMockRoom({
-        dimensions: [0, 4.0, 2.7], // Ancho 0 inválido
+        dimensions: [0, 4.0, 2.7],
       });
       const res = validateRoomModel(habitacionInvalida);
       expect(res.isValid).toBe(false);
@@ -203,7 +203,7 @@ describe('Contract Validator (Fase de Contratos de Integración)', () => {
     });
 
     it('captura errores de sintaxis JSON sin crashear (MALFORMED_JSON)', () => {
-      const jsonInvalido = '{"compilationId": "123", status: blocked'; // sintaxis rota
+      const jsonInvalido = '{"compilationId": "123", status: blocked';
       const res = parseAndValidateCompileResult(jsonInvalido);
       expect(res.isValid).toBe(false);
       expect(res.errors).toHaveLength(1);
@@ -239,8 +239,8 @@ describe('Contract Validator (Fase de Contratos de Integración)', () => {
       expect(fallback.status).toBe('blocked');
       expect(fallback.success).toBe(false);
       expect(fallback.diagnostics).toHaveLength(2);
-      expect(fallback.diagnostics[0].code).toBe('LUMI-E802'); // Espacial
-      expect(fallback.diagnostics[1].code).toBe('LUMI-E801'); // Ejecución
+      expect(fallback.diagnostics[0].code).toBe('LUMI-E802');
+      expect(fallback.diagnostics[1].code).toBe('LUMI-E801');
       expect(fallback.logs.length).toBeGreaterThan(1);
       expect(fallback.scenePlan).toBeNull();
     });

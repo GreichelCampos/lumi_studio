@@ -20,7 +20,6 @@ describe('CompileResult Contracts (Regla de Severidad vs Bloqueo)', () => {
 
     const result = await compiler.compile(project);
 
-    // 1. Verificar existencia de diagnóstico con severity === 'error'
     const spatialErrorDiag = result.diagnostics.find(
       (d) => d.category === 'espacial' && d.severity === 'error'
     );

@@ -47,7 +47,6 @@ const DebuggerSelectionOrchestrator: React.FC<{
         Re-render ({renderCount})
       </button>
 
-      {/* Tarjeta de propiedades */}
       <ObjectPropertiesCard
         entity={selectedEntity}
         onClose={() => setActiveObjectId(null)}
@@ -87,15 +86,12 @@ describe('Regresión: Bug de persistencia indebida de selección activa', () => 
 
     render(<DebuggerSelectionOrchestrator steps={steps} />);
 
-    // 1. Paso 0 activo -> mesa-3 seleccionada
     expect(screen.getByTestId('selected-id')).toHaveTextContent('mesa-3');
     expect(screen.getByRole('button', { name: /cerrar detalles del objeto/i })).toBeInTheDocument();
 
-    // 2. El usuario cierra ObjectPropertiesCard mediante el botón X
     const closeBtn = screen.getByRole('button', { name: /cerrar detalles del objeto/i });
     fireEvent.click(closeBtn);
 
-    // 3. activeObjectId pasa a null y la tarjeta desaparece
     expect(screen.getByTestId('selected-id')).toHaveTextContent('none');
     expect(screen.queryByRole('button', { name: /cerrar detalles del objeto/i })).not.toBeInTheDocument();
 

@@ -64,19 +64,16 @@ describe('DiagnosticsListView', () => {
       />
     );
 
-    // Badges de severidad
     expect(screen.getByText('Todos (4)')).toBeInTheDocument();
     expect(screen.getByText('Errores (2)')).toBeInTheDocument();
     expect(screen.getByText('Advertencias (1)')).toBeInTheDocument();
     expect(screen.getByText('Información (1)')).toBeInTheDocument();
 
-    // Códigos
     expect(screen.getByText('LUMI-E101')).toBeInTheDocument();
     expect(screen.getByText('LUMI-W201')).toBeInTheDocument();
     expect(screen.getByText('LUMI-E301')).toBeInTheDocument();
     expect(screen.getByText('LUMI-I001')).toBeInTheDocument();
 
-    // Ubicaciones
     expect(screen.getByText('main.lumi:12:4')).toBeInTheDocument();
     expect(screen.getByText('main.lumi:18:6')).toBeInTheDocument();
     expect(screen.getByText('sala.lumi:25:2')).toBeInTheDocument();
@@ -106,7 +103,6 @@ describe('DiagnosticsListView', () => {
       />
     );
 
-    // Filtrar por 'Errores'
     const errorBtn = screen.getByText(/Errores \(2\)/);
     fireEvent.click(errorBtn);
 
@@ -115,14 +111,12 @@ describe('DiagnosticsListView', () => {
     expect(screen.queryByText('LUMI-W201')).not.toBeInTheDocument();
     expect(screen.queryByText('LUMI-I001')).not.toBeInTheDocument();
 
-    // Filtrar por 'Advertencias'
     const warnBtn = screen.getByText(/Advertencias \(1\)/);
     fireEvent.click(warnBtn);
 
     expect(screen.queryByText('LUMI-E101')).not.toBeInTheDocument();
     expect(screen.getByText('LUMI-W201')).toBeInTheDocument();
 
-    // Volver a 'Todos'
     const allBtn = screen.getByText(/Todos \(4\)/);
     fireEvent.click(allBtn);
 
@@ -171,13 +165,11 @@ describe('DiagnosticsListView', () => {
       />
     );
 
-    // Clic en el botón "Ir al código"
     const goToCodeBtns = screen.getAllByText(/Ir al código/);
     fireEvent.click(goToCodeBtns[0]);
 
     expect(handleNavigate).toHaveBeenCalledWith(mockDiagnostics[0]);
 
-    // Doble clic en una tarjeta de diagnóstico
     const diagCards = screen.getAllByTitle('Haz doble clic para abrir el archivo y resaltar la línea');
     fireEvent.doubleClick(diagCards[1]);
 

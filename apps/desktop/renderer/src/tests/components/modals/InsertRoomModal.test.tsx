@@ -25,7 +25,6 @@ describe('InsertRoomModal', () => {
 
     expect(screen.getByText('Insertar Habitación Lumi')).toBeInTheDocument();
 
-    // Modificar datos
     const nameInput = screen.getByPlaceholderText(/sala, cocina/i);
     fireEvent.change(nameInput, { target: { value: 'dormitorio_suite' } });
 

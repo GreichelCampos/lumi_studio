@@ -68,11 +68,9 @@ describe('SpatialDebuggerView', () => {
       />
     );
 
-    // Encabezado
     expect(screen.getByText('Paso 1 de 2')).toBeInTheDocument();
     expect(screen.getByText('Listo')).toBeInTheDocument();
 
-    // Detalles del paso 0
     expect(screen.getByText(/Línea 12 \(principal.lumi\):/)).toBeInTheDocument();
     expect(screen.getByText('room_create')).toBeInTheDocument();
     expect(screen.getByText('Paso #1')).toBeInTheDocument();
@@ -97,7 +95,6 @@ describe('SpatialDebuggerView', () => {
     expect(screen.getByText('Paso 2 de 2')).toBeInTheDocument();
     expect(screen.getByText('Ejecutando')).toBeInTheDocument();
 
-    // Botón de objeto activo
     const objBtn = screen.getByText('Objeto activo: sofa-1');
     expect(objBtn).toBeInTheDocument();
 

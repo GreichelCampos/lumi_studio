@@ -35,13 +35,11 @@ describe('useSpatialDebugger', () => {
       useSpatialDebugger({ debugSteps: steps })
     );
 
-    // Avanzar a paso 1
     act(() => {
       result.current.nextStep();
     });
     expect(result.current.currentStepIndex).toBe(1);
 
-    // Avanzar a paso 2
     act(() => {
       result.current.nextStep();
     });
@@ -54,14 +52,12 @@ describe('useSpatialDebugger', () => {
     expect(result.current.currentStepIndex).toBe(2);
     expect(result.current.status).toBe('finished');
 
-    // Retroceder a paso 1
     act(() => {
       result.current.prevStep();
     });
     expect(result.current.currentStepIndex).toBe(1);
     expect(result.current.status).toBe('paused');
 
-    // Retroceder a paso 0
     act(() => {
       result.current.prevStep();
     });
@@ -116,13 +112,11 @@ describe('useSpatialDebugger', () => {
     expect(result.current.status).toBe('running');
     expect(result.current.isPlaying).toBe(true);
 
-    // Avanzar 1000ms (velocidad 1x)
     act(() => {
       vi.advanceTimersByTime(1000);
     });
     expect(result.current.currentStepIndex).toBe(1);
 
-    // Pausar
     act(() => {
       result.current.pause();
     });
@@ -166,7 +160,6 @@ describe('useSpatialDebugger', () => {
 
   it('debe pausarse automáticamente al alcanzar un punto de interrupción (Breakpoint)', () => {
     const steps = createMockDebugSteps();
-    // Paso en índice 1 tiene línea 3 en 'principal.lumi'
     const breakpoints = [{ id: 'bp-1', file: 'principal.lumi', line: 3, enabled: true }];
     const onBreakpointHit = vi.fn();
 
@@ -183,7 +176,6 @@ describe('useSpatialDebugger', () => {
     });
     expect(result.current.status).toBe('running');
 
-    // Avanza al siguiente paso donde está el breakpoint
     act(() => {
       vi.advanceTimersByTime(1000);
     });
@@ -206,7 +198,6 @@ describe('useSpatialDebugger', () => {
     });
     expect(result.current.currentStepIndex).toBe(1);
 
-    // Se recompila y entran nuevos pasos
     const newSteps = [
       {
         ...initialSteps[0],

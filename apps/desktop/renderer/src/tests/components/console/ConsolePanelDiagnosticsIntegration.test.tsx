@@ -51,14 +51,11 @@ describe('ConsolePanel Diagnostics Integration', () => {
       />
     );
 
-    // Salida está activa por defecto
     const tabDiagBtn = screen.getByRole('button', { name: /Diagnósticos/i });
     expect(tabDiagBtn).toBeInTheDocument();
 
-    // Cambiar a pestaña Diagnósticos
     fireEvent.click(tabDiagBtn);
 
-    // DiagnosticsListView debe estar visible con sus elementos
     expect(screen.getByText('LUMI-E101')).toBeInTheDocument();
     expect(screen.getByText('LUMI-E301')).toBeInTheDocument();
     expect(screen.getByText('Error de prueba en ConsolePanel')).toBeInTheDocument();
@@ -82,15 +79,12 @@ describe('ConsolePanel Diagnostics Integration', () => {
       />
     );
 
-    // Cambiar a pestaña Diagnósticos
     fireEvent.click(screen.getByRole('button', { name: /Diagnósticos/i }));
 
-    // Clic en "Ir al código"
     const goToCodeBtn = screen.getAllByText(/Ir al código/)[0];
     fireEvent.click(goToCodeBtn);
     expect(mockNavigate).toHaveBeenCalledWith(sampleDiagnostics[0]);
 
-    // Clic en "Enfocar en 3D"
     const focusBtn = screen.getByText('Enfocar en 3D');
     fireEvent.click(focusBtn);
     expect(mockFocus).toHaveBeenCalledWith('puerta-1');

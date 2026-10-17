@@ -110,15 +110,12 @@ describe('projectOperations', () => {
     const p1 = createMockProject({ id: 'p-1', entryFileId: 'f-1' });
     const p2 = createMockProject({ id: 'p-2', entryFileId: 'f-2' });
 
-    // Cuando coincide con lastActiveId
     const res1 = resolveInitialProjectSelection([p1, p2], 'p-2');
     expect(res1.selectedProject?.id).toBe('p-2');
 
-    // Cuando lastActiveId es nulo, toma el primero
     const res2 = resolveInitialProjectSelection([p1, p2], null);
     expect(res2.selectedProject?.id).toBe('p-1');
 
-    // Cuando la lista está vacía
     const resEmpty = resolveInitialProjectSelection([], null);
     expect(resEmpty.selectedProject).toBeNull();
     expect(resEmpty.initialTabs).toEqual([]);

@@ -82,7 +82,7 @@ describe('Three.js Factories (Mesh & Group Generation)', () => {
 
       expect(winGroup).toBeInstanceOf(THREE.Group);
       expect(winGroup.name).toBe('win-1');
-      expect(winGroup.children.length).toBeGreaterThanOrEqual(3); // Marco, cristal, travesaños
+      expect(winGroup.children.length).toBeGreaterThanOrEqual(3);
     });
   });
 });

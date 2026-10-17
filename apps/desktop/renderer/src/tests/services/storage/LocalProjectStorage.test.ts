@@ -80,7 +80,7 @@ describe('LocalProjectStorage', () => {
   });
 
   it('debe recuperarse de datos corruptos o inválidos en localStorage sin lanzar excepciones', async () => {
-    localStorage.setItem('lumi_ide_projects_v1', '{ "corruptedJson: true '); // JSON inválido
+    localStorage.setItem('lumi_ide_projects_v1', '{ "corruptedJson: true ');
 
     const projects = await storage.getProjects();
     expect(projects).toBeDefined();

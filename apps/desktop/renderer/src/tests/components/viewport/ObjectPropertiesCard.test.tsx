@@ -40,26 +40,19 @@ describe('ObjectPropertiesCard', () => {
       />
     );
 
-    // Título y tipo
     expect(screen.getByText('Mesa de Centro')).toBeInTheDocument();
     expect(screen.getByText(/mueble • mesa/i)).toBeInTheDocument();
 
-    // ID
     expect(screen.getByText('mesa-centro-1')).toBeInTheDocument();
 
-    // Posición formateada
     expect(screen.getByText(/X: 1.50m, Y: 0.00m, Z: -0.80m/i)).toBeInTheDocument();
 
-    // Dimensiones
     expect(screen.getByText(/1.20 × 0.45 × 0.60 m/i)).toBeInTheDocument();
 
-    // Rotación
     expect(screen.getByText(/X: 0°, Y: 90°, Z: 0°/i)).toBeInTheDocument();
 
-    // Acabado
     expect(screen.getByText(/madera • nogal/i)).toBeInTheDocument();
 
-    // Referencia de código
     expect(screen.getByText('principal.lumi:15')).toBeInTheDocument();
   });
 
@@ -94,12 +87,10 @@ describe('ObjectPropertiesCard', () => {
       />
     );
 
-    // Botón X
     const btnX = screen.getByRole('button', { name: /cerrar detalles del objeto/i });
     fireEvent.click(btnX);
     expect(handleClose).toHaveBeenCalledTimes(1);
 
-    // Botón Cerrar
     const btnFooterClose = screen.getByRole('button', { name: /^cerrar$/i });
     fireEvent.click(btnFooterClose);
     expect(handleClose).toHaveBeenCalledTimes(2);

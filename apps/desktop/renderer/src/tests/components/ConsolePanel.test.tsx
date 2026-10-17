@@ -44,18 +44,14 @@ describe('ConsolePanel (Diagnósticos y Filtros)', () => {
       />
     );
 
-    // Badge con contador total 2
     expect(screen.getByText('Diagnósticos')).toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
 
-    // Cambiar a la pestaña Diagnósticos
     fireEvent.click(screen.getByRole('button', { name: /diagnósticos/i }));
 
-    // Ver ambos diagnósticos
     expect(screen.getByText('LUMI-S103')).toBeInTheDocument();
     expect(screen.getByText('LUMI-W301')).toBeInTheDocument();
 
-    // Ver insignias de bloqueo vs 3D disponible
     expect(screen.getByText(/bloqueante/i)).toBeInTheDocument();
     expect(screen.getByText(/3d disponible/i)).toBeInTheDocument();
   });
@@ -83,7 +79,6 @@ describe('ConsolePanel (Diagnósticos y Filtros)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /diagnósticos/i }));
 
-    // Filtrar por categoría "Espacial"
     const categorySelect = screen.getByRole('combobox');
     fireEvent.change(categorySelect, { target: { value: 'espacial' } });
 

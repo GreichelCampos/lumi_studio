@@ -133,17 +133,14 @@ describe('LumicFileService (.lumic Export and Import)', () => {
 
   describe('Ciclo completo: exportar → serializar → importar', () => {
     it('conserva fielmente ScenePlan, entidades y DebugSteps en el ciclo completo', () => {
-      // 1. Exportar compilación multietapa con pasos de depuración
       const exportRes = LumicFileService.validateForExport(FIXTURE_COMPILATION_MULTI_STEP, mockProject);
       expect(exportRes.canExport).toBe(true);
 
       const jsonString = JSON.stringify(exportRes.artifact, null, 2);
 
-      // 2. Importar la cadena serializada
       const importRes = LumicFileService.parseAndValidateContent(jsonString);
       expect(importRes.success).toBe(true);
 
-      // 3. Comprobar preservación exacta
       expect(importRes.artifact?.scenePlan.rooms).toHaveLength(
         FIXTURE_COMPILATION_MULTI_STEP.scenePlan!.rooms.length
       );

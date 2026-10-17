@@ -32,7 +32,6 @@ describe('NewFileModal Component', () => {
     const input = screen.getByPlaceholderText(/mobiliario_comedor/i);
     fireEvent.change(input, { target: { value: 'cocina_moderna' } });
 
-    // Live preview actualiza
     expect(screen.getByText('cocina_moderna.lumi')).toBeInTheDocument();
 
     const submitBtn = screen.getByRole('button', { name: /crear y abrir/i });

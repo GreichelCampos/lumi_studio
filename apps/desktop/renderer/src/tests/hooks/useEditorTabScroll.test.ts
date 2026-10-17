@@ -24,7 +24,6 @@ describe('useEditorTabScroll hook', () => {
     Object.defineProperty(mockDiv, 'scrollWidth', { value: 500, writable: true });
     Object.defineProperty(mockDiv, 'clientWidth', { value: 200, writable: true });
 
-    // Asignar el ref internamente simulado
     (result.current.tabsContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = mockDiv;
 
     act(() => {
@@ -34,7 +33,6 @@ describe('useEditorTabScroll hook', () => {
     expect(result.current.canScrollLeft).toBe(true);
     expect(result.current.canScrollRight).toBe(true);
 
-    // Al llegar al final
     act(() => {
       Object.defineProperty(mockDiv, 'scrollLeft', { value: 300, writable: true });
       result.current.checkTabScroll();

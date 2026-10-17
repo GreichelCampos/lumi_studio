@@ -70,7 +70,6 @@ describe('DebuggerControls', () => {
     fireEvent.click(playBtn);
     expect(handleTogglePlay).toHaveBeenCalledTimes(1);
 
-    // Re-render en reproducción
     rerender(
       <DebuggerControls
         stepCount={5}

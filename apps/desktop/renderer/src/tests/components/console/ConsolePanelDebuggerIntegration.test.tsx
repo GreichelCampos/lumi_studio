@@ -64,10 +64,8 @@ describe('ConsolePanel SpatialDebugger Integration', () => {
     const tabDepuradorBtn = screen.getByRole('button', { name: /Depurador Espacial/i });
     expect(tabDepuradorBtn).toBeInTheDocument();
 
-    // Cambiar a la pestaña del Depurador
     fireEvent.click(tabDepuradorBtn);
 
-    // Debe mostrar la vista del depurador
     expect(screen.getByText('Paso 1 de 2')).toBeInTheDocument();
     expect(screen.getByText('Listo')).toBeInTheDocument();
     expect(screen.getByText('habitacion principal [6, 6, 3] {')).toBeInTheDocument();
@@ -95,15 +93,12 @@ describe('ConsolePanel SpatialDebugger Integration', () => {
       />
     );
 
-    // Cambiar a la pestaña del Depurador
     fireEvent.click(screen.getByRole('button', { name: /Depurador Espacial/i }));
 
-    // Clic en Pausar
     const pauseBtn = screen.getByTitle('Pausar depuración');
     fireEvent.click(pauseBtn);
     expect(mockTogglePlay).toHaveBeenCalledTimes(1);
 
-    // Clic en Objeto activo
     const objBtn = screen.getByText('Objeto activo: mesa-1');
     fireEvent.click(objBtn);
     expect(mockFocusObject).toHaveBeenCalledWith('mesa-1');

@@ -41,7 +41,6 @@ describe('OutputLogView', () => {
     const filterSelect = screen.getByRole('combobox', { name: /filtrar eventos por nivel/i });
     expect(filterSelect).toHaveValue('all');
 
-    // Cambiar a errores
     fireEvent.change(filterSelect, { target: { value: 'error' } });
 
     expect(screen.getByText('Error de identificador no reconocido')).toBeInTheDocument();

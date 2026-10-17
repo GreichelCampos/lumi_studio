@@ -113,7 +113,6 @@ describe('EditorTabBar (componente modular de pestañas)', () => {
     expect(tabs[1]).toHaveTextContent('main.lumi');
     expect(tabs[2]).toHaveTextContent('sala.lumi');
 
-    // Cambiar orden inverso
     rerender(
       <EditorTabBar
         files={sampleFiles}

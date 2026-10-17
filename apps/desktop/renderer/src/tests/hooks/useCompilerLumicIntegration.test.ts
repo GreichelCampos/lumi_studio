@@ -11,23 +11,19 @@ describe('useCompiler - Integración de Artefactos .lumic', () => {
     expect(result.current.scenePlan).toBeNull();
     expect(result.current.debugSteps).toHaveLength(0);
 
-    // Cargar artefacto compilado
     act(() => {
       result.current.loadCompiledArtifact(FIXTURE_LUMIC_ARTIFACT);
     });
 
-    // 1. Debe actualizar el ScenePlan para el visor 3D
     expect(result.current.scenePlan).not.toBeNull();
     expect(result.current.scenePlan?.rooms).toHaveLength(1);
     expect(result.current.scenePlan?.rooms[0].name).toBe('estudio');
 
-    // 2. Debe generar un resultado de compilación sintético conforme al contrato
     expect(result.current.lastCompileResult).not.toBeNull();
     expect(result.current.lastCompileResult?.success).toBe(true);
     expect(result.current.lastCompileResult?.status).toBe('completed');
     expect(result.current.lumiState).toBe('success');
 
-    // 3. Debe incluir logs descriptivos del artefacto
     expect(result.current.logs.some((l) => l.includes('ApartamentoMinimalista'))).toBe(true);
   });
 

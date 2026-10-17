@@ -26,7 +26,6 @@ describe('ConsolePanel & OutputLogView Integration', () => {
 
     render(<ConsolePanel {...defaultProps} />);
 
-    // La pestaña activa por defecto es Salida
     expect(screen.getByTestId('output-log-view')).toBeInTheDocument();
     expect(screen.getByText('Mensaje de prueba de integración')).toBeInTheDocument();
     expect(screen.getByText('[Sistema]')).toBeInTheDocument();
@@ -64,11 +63,9 @@ describe('ConsolePanel & OutputLogView Integration', () => {
 
     expect(screen.getByTestId('output-log-view')).toBeInTheDocument();
 
-    // Cambiar a pestaña Diagnósticos
     fireEvent.click(screen.getByRole('button', { name: /diagnósticos/i }));
     expect(screen.queryByTestId('output-log-view')).not.toBeInTheDocument();
 
-    // Volver a pestaña Salida
     fireEvent.click(screen.getByRole('button', { name: /^salida$/i }));
     expect(screen.getByTestId('output-log-view')).toBeInTheDocument();
     expect(screen.getByText('Evento permanente')).toBeInTheDocument();

@@ -43,20 +43,17 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
         compileRes = await result.current.runCompile(project);
       });
 
-      // 1. Diagnósticos limpios y estado exitoso
       expect(compileRes).not.toBeNull();
       expect(compileRes?.success).toBe(true);
       expect(compileRes?.status).toBe('completed');
       expect(result.current.lumiState).toBe('success');
 
-      // 2. ScenePlan generado para el visor 3D
       expect(compileRes?.scenePlan).not.toBeNull();
       expect(compileRes?.scenePlan?.rooms).toHaveLength(1);
       expect(compileRes?.scenePlan?.rooms[0].name).toBe('sala');
       expect(compileRes?.scenePlan?.rooms[0].objects).toHaveLength(1);
       expect(compileRes?.scenePlan?.rooms[0].objects[0].name).toBe('sofa');
 
-      // 3. Pasos de depuración listos para el depurador espacial
       expect(compileRes?.debugSteps.length).toBeGreaterThan(0);
       expect(compileRes?.debugSteps.some((s) => s.eventType === 'room_create')).toBe(true);
       expect(compileRes?.debugSteps.some((s) => s.eventType === 'place_object')).toBe(true);
@@ -142,7 +139,6 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
     it('exporta, importa y restaura escena 3D y depurador sin alterar el proyecto fuente original', async () => {
       const project = createMockProject({ name: 'Proyecto Fuente Original' });
 
-      // 1. Exportar compilación válida
       const exportRes = LumicFileService.validateForExport(
         FIXTURE_COMPILATION_SUCCESS,
         project
@@ -150,7 +146,6 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
       expect(exportRes.canExport).toBe(true);
       expect(exportRes.artifact?.project.name).toBe('Proyecto Fuente Original');
 
-      // 2. Importar artefacto en useCompiler
       const { result } = renderHook(() => useCompiler());
 
       act(() => {
@@ -177,13 +172,11 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
     it('una importación fallida por corrupción no altera el estado del compilador existente', async () => {
       const { result } = renderHook(() => useCompiler());
 
-      // Establecer un estado previo válido
       act(() => {
         result.current.loadCompiledArtifact(FIXTURE_LUMIC_ARTIFACT);
       });
       const previousScene = result.current.scenePlan;
 
-      // Intentar importar JSON roto
       const badImport = LumicFileService.parseAndValidateContent('{ "corrupto": true, ');
       expect(badImport.success).toBe(false);
 

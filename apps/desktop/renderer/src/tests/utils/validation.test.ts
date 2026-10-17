@@ -28,12 +28,10 @@ describe('Validation Utilities', () => {
     });
 
     it('debe rechazar nombres que no sean identificadores válidos en Lumi', () => {
-      // Iniciar con número
       const res1 = validateRoomParams('1habitacion', '5.0', '4.0', '2.7');
       expect(res1.isValid).toBe(false);
       expect(res1.errors.name).toBeDefined();
 
-      // Caracteres especiales
       const res2 = validateRoomParams('sala-grande!', '5.0', '4.0', '2.7');
       expect(res2.isValid).toBe(false);
       expect(res2.errors.name).toBeDefined();
@@ -97,8 +95,8 @@ describe('Validation Utilities', () => {
 
   describe('validateProjectName', () => {
     it('debe validar longitud y caracteres permitidos', () => {
-      expect(validateProjectName('A').isValid).toBe(false); // Muy corto
-      expect(validateProjectName('Proyecto/Invalido').isValid).toBe(false); // Carácter inválido
+      expect(validateProjectName('A').isValid).toBe(false);
+      expect(validateProjectName('Proyecto/Invalido').isValid).toBe(false);
       expect(validateProjectName('Mi Espacio 3D').isValid).toBe(true);
     });
   });

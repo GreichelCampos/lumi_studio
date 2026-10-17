@@ -28,15 +28,12 @@ describe('SettingsModal', () => {
   it('allows switching between configuration tabs', () => {
     renderWithProvider(<SettingsModal isOpen={true} onClose={vi.fn()} />);
     
-    // Switch to Editor tab
     fireEvent.click(screen.getByRole('button', { name: /Editor de Código/i }));
     expect(screen.getByText(/Tipografía y Tamaño de Fuente/i)).toBeInTheDocument();
 
-    // Switch to Viewport tab
     fireEvent.click(screen.getByRole('button', { name: /Visor 3D y Gráficos/i }));
     expect(screen.getByText(/Visualización Espacial 3D/i)).toBeInTheDocument();
 
-    // Switch to Assistant tab
     fireEvent.click(screen.getByRole('button', { name: /Asistente y Compilación/i }));
     expect(screen.getByText(/Mascota Compañera Lumi/i)).toBeInTheDocument();
   });
@@ -65,21 +62,17 @@ describe('SettingsModal', () => {
   it('modifies preferences across tabs and persists state', () => {
     renderWithProvider(<SettingsModal isOpen={true} onClose={vi.fn()} />);
 
-    // Appearance tab: select a different theme
     const themeCard = screen.getByText(/Monokai Pro/i);
     fireEvent.click(themeCard);
 
-    // Editor tab: change font size
     fireEvent.click(screen.getByRole('button', { name: /Editor de Código/i }));
     const fontSizeBtn = screen.getByRole('button', { name: '16px' });
     fireEvent.click(fontSizeBtn);
     expect(fontSizeBtn).toHaveClass('bg-[var(--ide-accent)]');
 
-    // Viewport tab: change lighting mode
     fireEvent.click(screen.getByRole('button', { name: /Visor 3D y Gráficos/i }));
     expect(screen.getByText(/Visualización Espacial 3D/i)).toBeInTheDocument();
 
-    // Assistant tab: change Lumi color preset
     fireEvent.click(screen.getByRole('button', { name: /Asistente y Compilación/i }));
     const presetGold = screen.getByText(/Oro Champán/i);
     fireEvent.click(presetGold);
@@ -88,17 +81,14 @@ describe('SettingsModal', () => {
   it('restores default settings when clicking Restaurar Predeterminados', () => {
     renderWithProvider(<SettingsModal isOpen={true} onClose={vi.fn()} />);
 
-    // Go to Editor tab and select 18px font size
     fireEvent.click(screen.getByRole('button', { name: /Editor de Código/i }));
     const size18Btn = screen.getByRole('button', { name: '18px' });
     fireEvent.click(size18Btn);
     expect(size18Btn).toHaveClass('bg-[var(--ide-accent)]');
 
-    // Click Restaurar Predeterminados
     const resetBtn = screen.getByRole('button', { name: /Restaurar Predeterminados/i });
     fireEvent.click(resetBtn);
 
-    // Default font size is 13px
     const size13Btn = screen.getByRole('button', { name: '13px' });
     expect(size13Btn).toHaveClass('bg-[var(--ide-accent)]');
   });

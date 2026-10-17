@@ -14,7 +14,7 @@ describe('Spatial Math Pure Functions', () => {
     const center = calculateRoomCenter(room);
 
     expect(center.x).toBe(0);
-    expect(center.y).toBeCloseTo(3.0 * 0.35); // 1.05
+    expect(center.y).toBeCloseTo(3.0 * 0.35);
     expect(center.z).toBe(0);
   });
 
