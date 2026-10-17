@@ -1,0 +1,144 @@
+{
+  "schemaVersion": "1.0.0",
+  "compilationId": "comp-debug-fixture-004",
+  "status": "completed",
+  "success": true,
+  "diagnostics": [],
+  "scenePlan": {
+    "version": "1.0.0",
+    "rooms": [
+      {
+        "id": "hab-sala-01",
+        "name": "sala",
+        "dimensions": [5.0, 4.0, 2.7],
+        "floor": { "material": "madera" },
+        "walls": {
+          "north": { "color": "blanco" },
+          "south": { "color": "gris" },
+          "east": { "color": "blanco" },
+          "west": { "color": "blanco" }
+        },
+        "doors": [],
+        "windows": [],
+        "objects": [
+          {
+            "id": "obj-sofa-01",
+            "type": "sofa",
+            "name": "sofa",
+            "position": [0.0, 0.0, -1.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "dimensions": [2.0, 0.85, 0.9],
+            "roomId": "hab-sala-01"
+          }
+        ],
+        "calculatedArea": 20.0,
+        "calculatedVolume": 54.0
+      }
+    ]
+  },
+  "entryFileInfo": {
+    "id": "file-entry-01",
+    "name": "principal.lumi",
+    "path": "principal.lumi"
+  },
+  "durationMs": 55,
+  "logs": [
+    "Compilación con generación de pasos de depuración activada.",
+    "Generados 3 pasos espaciales."
+  ],
+  "debugSteps": [
+    {
+      "id": "dbg-step-001",
+      "stepIndex: 1": 1,
+      "stepIndex": 1,
+      "eventType": "start",
+      "description": "Inicio de ejecución del bloque principal",
+      "sourceRef": { "file": "principal.lumi", "line": 1, "column": 1 },
+      "lineNumber": 1,
+      "codeLine": "principal {",
+      "actionDescription": "Inicio de ejecución del bloque principal",
+      "sceneSnapshot": {
+        "version": "1.0.0",
+        "rooms": []
+      }
+    },
+    {
+      "id": "dbg-step-002",
+      "stepIndex": 2,
+      "eventType": "room_create",
+      "description": "Creación de habitación 'sala' (5.0 x 4.0 x 2.7m)",
+      "sourceRef": { "file": "principal.lumi", "line": 4, "column": 3 },
+      "roomId": "hab-sala-01",
+      "lineNumber": 4,
+      "codeLine": "habitacion sala(5.0, 4.0, 2.7) {",
+      "actionDescription": "Creación de habitación 'sala'",
+      "sceneSnapshot": {
+        "version": "1.0.0",
+        "rooms": [
+          {
+            "id": "hab-sala-01",
+            "name": "sala",
+            "dimensions": [5.0, 4.0, 2.7],
+            "floor": { "material": "madera" },
+            "walls": {
+              "north": { "color": "blanco" },
+              "south": { "color": "gris" },
+              "east": { "color": "blanco" },
+              "west": { "color": "blanco" }
+            },
+            "doors": [],
+            "windows": [],
+            "objects": [],
+            "calculatedArea": 20.0,
+            "calculatedVolume": 54.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "dbg-step-003",
+      "stepIndex": 3,
+      "eventType": "place_object",
+      "description": "Colocado 'sofa' en [0.0, 0.0, -1.0]",
+      "sourceRef": { "file": "principal.lumi", "line": 7, "column": 5 },
+      "roomId": "hab-sala-01",
+      "activeObjectId": "obj-sofa-01",
+      "lineNumber": 7,
+      "codeLine": "colocar sofa en [0.0, 0.0, -1.0]>>",
+      "actionDescription": "Colocado 'sofa' en [0.0, 0.0, -1.0]",
+      "sceneSnapshot": {
+        "version": "1.0.0",
+        "rooms": [
+          {
+            "id": "hab-sala-01",
+            "name": "sala",
+            "dimensions": [5.0, 4.0, 2.7],
+            "floor": { "material": "madera" },
+            "walls": {
+              "north": { "color": "blanco" },
+              "south": { "color": "gris" },
+              "east": { "color": "blanco" },
+              "west": { "color": "blanco" }
+            },
+            "doors": [],
+            "windows": [],
+            "objects": [
+              {
+                "id": "obj-sofa-01",
+                "type": "sofa",
+                "name": "sofa",
+                "position": [0.0, 0.0, -1.0],
+                "rotation": [0.0, 0.0, 0.0],
+                "dimensions": [2.0, 0.85, 0.9],
+                "roomId": "hab-sala-01"
+              }
+            ],
+            "calculatedArea": 20.0,
+            "calculatedVolume": 54.0
+          }
+        ]
+      }
+    }
+  ],
+  "timestamp": "2026-10-12T13:30:15.000Z"
+}

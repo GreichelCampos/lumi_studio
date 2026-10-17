@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "2.0.0",
+  "compilationId": "",
+  "status": "estado_invalido_desconocido",
+  "success": "si",
+  "diagnostics": [
+    {
+      "id": "",
+      "code": "",
+      "severity": "fatal",
+      "category": "desconocida",
+      "blocking": "true",
+      "file": "",
+      "line": -5,
+      "column": 0,
+      "description": ""
+    }
+  ],
+  "scenePlan": {
+    "version": "9.9.9",
+    "rooms": [
+      {
+        "id": "",
+        "name": "",
+        "dimensions": [-5.0, 0, "tres"],
+        "floor": { "material": 123 },
+        "walls": {},
+        "doors": [
+          {
+            "id": "puerta_mala",
+            "wall": "noreste",
+            "position": "centro",
+            "width": -1.0,
+            "height": 0
+          }
+        ],
+        "windows": "no_es_un_array",
+        "objects": [
+          {
+            "id": "obj_malo",
+            "type": "",
+            "name": "",
+            "position": [null, "y", 0],
+            "rotation": [0, 0],
+            "dimensions": [-1.0, -2.0, 0]
+          }
+        ]
+      }
+    ]
+  },
+  "durationMs": -10,
+  "logs": "esto_deberia_ser_un_array",
+  "debugSteps": "no_array",
+  "timestamp": ""
+}

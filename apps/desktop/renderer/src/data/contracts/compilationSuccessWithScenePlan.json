@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "compilationId": "comp-succ-fixture-001",
+  "status": "completed",
+  "success": true,
+  "diagnostics": [],
+  "scenePlan": {
+    "version": "1.0.0",
+    "rooms": [
+      {
+        "id": "hab-sala-01",
+        "name": "sala_principal",
+        "dimensions": [6.0, 5.0, 2.8],
+        "floor": {
+          "material": "parquet",
+          "color": "#854d0e"
+        },
+        "walls": {
+          "north": { "color": "blanco", "material": "pintura" },
+          "south": { "color": "gris", "material": "pintura" },
+          "east": { "color": "blanco", "material": "pintura" },
+          "west": { "color": "blanco", "material": "pintura" }
+        },
+        "doors": [
+          {
+            "id": "puerta-acceso-01",
+            "wall": "norte",
+            "position": 0.0,
+            "width": 0.9,
+            "height": 2.1,
+            "sourceRef": { "file": "principal.lumi", "line": 8, "column": 5 }
+          }
+        ],
+        "windows": [
+          {
+            "id": "ventana-sur-01",
+            "wall": "sur",
+            "position": 0.5,
+            "width": 1.8,
+            "height": 1.4,
+            "sourceRef": { "file": "principal.lumi", "line": 12, "column": 5 }
+          }
+        ],
+        "objects": [
+          {
+            "id": "obj-sofa-01",
+            "type": "sofa",
+            "name": "sofa_tres_plazas",
+            "position": [0.0, 0.0, -1.2],
+            "rotation": [0.0, 0.0, 0.0],
+            "dimensions": [2.2, 0.9, 0.95],
+            "color": "#334155",
+            "material": "cuero",
+            "sourceRef": { "file": "principal.lumi", "line": 18, "column": 5 },
+            "hasCollision": false,
+            "isOutOfBounds": false,
+            "roomId": "hab-sala-01"
+          },
+          {
+            "id": "obj-mesa-01",
+            "type": "mesa",
+            "name": "mesa_centro",
+            "position": [0.0, 0.0, 0.4],
+            "rotation": [0.0, 0.0, 0.0],
+            "dimensions": [1.2, 0.5, 0.75],
+            "color": "#e2e8f0",
+            "material": "cristal",
+            "sourceRef": { "file": "principal.lumi", "line": 21, "column": 5 },
+            "hasCollision": false,
+            "isOutOfBounds": false,
+            "roomId": "hab-sala-01"
+          }
+        ],
+        "calculatedArea": 30.0,
+        "calculatedVolume": 84.0,
+        "originOffset": [0.0, 0.0, 0.0]
+      }
+    ],
+    "debugInfo": {
+      "totalEntities": 2,
+      "collisionCount": 0,
+      "warningsCount": 0,
+      "compiledAt": "2026-10-12T13:30:00.000Z"
+    }
+  },
+  "entryFileInfo": {
+    "id": "file-entry-01",
+    "name": "principal.lumi",
+    "path": "principal.lumi"
+  },
+  "durationMs": 42,
+  "logs": [
+    "Iniciando compilación LUMI v1.0.0",
+    "Habitación 'sala_principal' creada (6.0 x 5.0 x 2.8m)",
+    "Objeto 'sofa_tres_plazas' ubicado en [0.0, 0.0, -1.2]",
+    "Objeto 'mesa_centro' ubicado en [0.0, 0.0, 0.4]",
+    "Compilación finalizada exitosamente."
+  ],
+  "debugSteps": [],
+  "timestamp": "2026-10-12T13:30:00.000Z"
+}
