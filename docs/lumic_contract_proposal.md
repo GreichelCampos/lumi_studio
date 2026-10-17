@@ -1,7 +1,10 @@
 # L-009: propuesta de contrato de intercambio `.lumic`
 
-Estado: propuesta para revisión. No aprobada por Gaby y Grei. Este documento no
-introduce reglas nuevas de aceptación en el IDE. El cierre de L-009 está pendiente.
+Estado: alternativa A autorizada por la responsable del IDE como base candidata
+v1.0.0, con validación estructural de los campos existentes. No aprobada por Gaby
+y Grei. El cierre de L-009 está pendiente. Véanse el
+[esquema y ejemplos](contracts/lumic/v1.0.0/README.md) y la
+[entrega para Python](lumic_python_handoff.md).
 
 ## Base documental
 
@@ -37,7 +40,8 @@ deben contrastarse con los criterios de aceptación de esas fichas.
 | A. Reutilizar `LumiCompiledArtifact` y ScenePlan TypeScript como candidato v1.0.0 | Conserva los nombres, el visor y los archivos válidos actuales. Requiere un adaptador futuro desde Python y acordar la procedencia de campos ausentes. | Conserva `DebugStep`, `sourceRef` y `sceneSnapshot`. Requiere acordar identidad y referencias entre escenas. |
 | B. Definir un DTO nuevo basado en ScenePlan Python | Conserva la cercanía con el modelo interno, pero exige adaptar el visor y decidir migración/versionado de archivos existentes. | Exige adaptar también snapshots y referencias de los eventos. |
 
-Se recomienda A para reducir cambios. Es una propuesta, no una decisión del equipo.
+Se trabaja sobre A por autorización de la responsable del IDE. Todavía no es una
+decisión conjunta del equipo.
 Ninguna alternativa autoriza generar escenas desde el AST en TypeScript ni modificar
 unilateralmente el núcleo Python.
 
@@ -61,9 +65,9 @@ productor `.lumic` en Python.
 | `metadata` | `Record<string, unknown>` | No |
 
 El ejemplo enlazado es JSON válido del formato existente; todavía no certifica un
-esquema formal completo. El generador no calcula `sourceChecksum`. El validador
-actual no verifica todos los campos declarados, por lo que su aceptación no basta
-para demostrar conformidad con esta tabla.
+acuerdo completo del equipo. El generador no calcula `sourceChecksum`. El validador
+del archivo ahora comprueba los campos declarados, pero no impone las reglas
+semánticas, de identidad y de versiones pendientes.
 
 ## Convenciones existentes y límites
 
