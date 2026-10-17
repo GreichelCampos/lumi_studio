@@ -1,4 +1,4 @@
-"""Analyze source through public core APIs; never execute or generate a scene."""
+"""Analyze source and resolve supported spatial declarations without execution."""
 
 from types import MappingProxyType
 from typing import Mapping
@@ -8,6 +8,7 @@ from lumi_language.lexer import Lexer
 from lumi_language.lexer_error import LexerError
 from lumi_language.parser import Parser, ParserError
 from lumi_language.semantic_analyzer import SemanticAnalyzer
+from spatial.scene_builder import SceneBuilder
 
 from .analysis_capabilities import analysis_limitations
 from .results import AnalysisStage, CompilationResult, CompilationStatus
@@ -44,7 +45,7 @@ class CompilerService:
     def compile(
         self, source: str, file: str, *, sources: Mapping[str, str] | None = None
     ) -> CompilationResult:
-        """Analyze without executing; missing imports are resolved by the core."""
+        """Analyze and resolve supported rooms; imports retain core resolution."""
         if not isinstance(source, str):
             raise TypeError("El código fuente debe ser texto.")
         if not isinstance(file, str) or not file:
@@ -88,14 +89,20 @@ class CompilerService:
             )
 
         semantic = SemanticAnalyzer().analyze(program, dict(imports))
-        limitations = analysis_limitations((program, *imports.values()))
+        spatial = SceneBuilder().build(program) if not semantic.diagnostics else None
+        limitations = analysis_limitations(
+            (program, *imports.values()),
+            resolved_room_ids=spatial.resolved_room_ids if spatial else frozenset(),
+        )
+        diagnostics = tuple(semantic.diagnostics) + (spatial.diagnostics if spatial else ())
         status = CompilationStatus.COMPLETED
-        if semantic.diagnostics:
+        if diagnostics:
             status = CompilationStatus.FAILED
         elif limitations:
             status = CompilationStatus.INCOMPLETE
         return CompilationResult(
             file, status, AnalysisStage.SEMANTIC,
-            diagnostics=tuple(semantic.diagnostics), program=program,
+            diagnostics=diagnostics, program=program,
             imported_programs=imports, limitations=limitations,
+            scene_plan=spatial.scene_plan if spatial and not diagnostics and not limitations else None,
         )

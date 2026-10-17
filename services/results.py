@@ -7,6 +7,7 @@ from typing import Mapping
 
 from lumi_language.ast_nodes import ProgramNode
 from lumi_language.diagnostics import Diagnostic
+from spatial.scene_plan import ScenePlan
 
 
 class AnalysisStage(str, Enum):
@@ -27,7 +28,7 @@ class AnalysisLimitation(str, Enum):
 
 @dataclass(frozen=True, slots=True)
 class CompilationResult:
-    """An analysis snapshot, not a scene or a transport DTO.
+    """An analysis snapshot with an optional resolved scene, never a transport DTO.
 
     ``lexical_error`` preserves the exception text because LexerError has no
     structured diagnostic. Never infer a code or location from that message.
@@ -45,6 +46,7 @@ class CompilationResult:
         default_factory=lambda: MappingProxyType({})
     )
     limitations: tuple[AnalysisLimitation, ...] = ()
+    scene_plan: ScenePlan | None = None
 
     @property
     def succeeded(self) -> bool:
