@@ -17,6 +17,7 @@ import {
   LUMI_PROTOCOL_VERSION,
   LUMI_SUPPORTED_MAJOR_VERSIONS,
 } from '../../../types';
+import { validateLumicStructure } from './lumicStructure';
 
 /**
  * Comprueba si una versión semántica es compatible con las versiones mayores soportadas.
@@ -977,84 +978,7 @@ export function validateLumicArtifact(
   raw: unknown,
   pathPrefix = 'lumicArtifact'
 ): ContractValidationResult<LumiCompiledArtifact> {
-  const errors: ContractValidationError[] = [];
-  const warnings: string[] = [];
-
-  if (!raw || typeof raw !== 'object') {
-    return {
-      isValid: false,
-      data: null,
-      errors: [
-        {
-          path: pathPrefix,
-          code: 'INVALID_FIELD_TYPE',
-          message: `Se esperaba un objeto para LumiCompiledArtifact en ${pathPrefix}.`,
-          receivedValue: raw,
-        },
-      ],
-      warnings,
-    };
-  }
-
-  const art = raw as Record<string, unknown>;
-
-  if (art.format !== 'lumic') {
-    errors.push({
-      path: `${pathPrefix}.format`,
-      code: 'INVALID_FIELD_TYPE',
-      message: `El identificador de formato debe ser exactamente 'lumic' (recibido: "${art.format}").`,
-      receivedValue: art.format,
-      expected: "'lumic'",
-    });
-  }
-
-  if (typeof art.schemaVersion !== 'string' || !isVersionCompatible(art.schemaVersion)) {
-    errors.push({
-      path: `${pathPrefix}.schemaVersion`,
-      code: 'INCOMPATIBLE_VERSION',
-      message: `Versión de artefacto "${art.schemaVersion}" incompatible (se espera 1.x.x).`,
-      receivedValue: art.schemaVersion,
-      expected: '1.x.x',
-    });
-  }
-
-  if (!art.compiler || typeof art.compiler !== 'object') {
-    errors.push({
-      path: `${pathPrefix}.compiler`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'Los metadatos del compilador son obligatorios.',
-      receivedValue: art.compiler,
-    });
-  }
-
-  if (!art.project || typeof art.project !== 'object') {
-    errors.push({
-      path: `${pathPrefix}.project`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'Los metadatos del proyecto son obligatorios.',
-      receivedValue: art.project,
-    });
-  }
-
-  if (!art.scenePlan || typeof art.scenePlan !== 'object') {
-    errors.push({
-      path: `${pathPrefix}.scenePlan`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'El ScenePlan es obligatorio en un artefacto .lumic.',
-      receivedValue: art.scenePlan,
-    });
-  } else {
-    const spRes = validateScenePlan(art.scenePlan, `${pathPrefix}.scenePlan`);
-    errors.push(...spRes.errors);
-    warnings.push(...spRes.warnings);
-  }
-
-  return {
-    isValid: errors.length === 0,
-    data: errors.length === 0 ? (art as unknown as LumiCompiledArtifact) : null,
-    errors,
-    warnings,
-  };
+  return validateLumicStructure(raw, pathPrefix);
 }
 
 /**
