@@ -1,0 +1,94 @@
+{
+  "format": "lumic",
+  "schemaVersion": "1.0.0",
+  "compiledAt": "2026-10-12T13:30:20.000Z",
+  "compiler": {
+    "name": "lumi-compiler",
+    "version": "1.0.0",
+    "target": "lumi-3d-scene"
+  },
+  "project": {
+    "id": "proj-interior-01",
+    "name": "ApartamentoMinimalista",
+    "entryFile": "principal.lumi",
+    "sourceFilesCount": 2,
+    "sourceChecksum": "sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"
+  },
+  "scenePlan": {
+    "version": "1.0.0",
+    "rooms": [
+      {
+        "id": "hab-estudio-01",
+        "name": "estudio",
+        "dimensions": [
+          4,
+          3.5,
+          2.6
+        ],
+        "floor": {
+          "material": "madera_roble",
+          "color": "#92400e"
+        },
+        "walls": {
+          "north": {
+            "color": "blanco"
+          },
+          "south": {
+            "color": "gris"
+          },
+          "east": {
+            "color": "blanco"
+          },
+          "west": {
+            "color": "gris"
+          }
+        },
+        "doors": [],
+        "windows": [],
+        "objects": [
+          {
+            "id": "obj-escritorio-01",
+            "type": "escritorio",
+            "name": "escritorio_trabajo",
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "dimensions": [
+              1.4,
+              0.75,
+              0.8
+            ],
+            "color": "madera",
+            "roomId": "hab-estudio-01",
+            "sourceRef": {
+              "file": "principal.lumi",
+              "line": 0,
+              "column": "incorrecta"
+            }
+          }
+        ],
+        "calculatedArea": 14,
+        "calculatedVolume": 36.4
+      }
+    ],
+    "debugInfo": {
+      "totalEntities": 1,
+      "collisionCount": 0,
+      "warningsCount": 0,
+      "compiledAt": "2026-10-12T13:30:20.000Z"
+    }
+  },
+  "diagnosticsSummary": {
+    "totalErrors": 0,
+    "totalWarnings": 0,
+    "totalSpatialIssues": 0,
+    "hasBlockingErrors": false
+  }
+}
