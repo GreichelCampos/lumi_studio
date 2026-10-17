@@ -18,7 +18,6 @@ export const ViewportTab: React.FC = () => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {/* Show Grid */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Rejilla de Suelo (Grid)</div>
@@ -32,7 +31,6 @@ export const ViewportTab: React.FC = () => {
             />
           </div>
 
-          {/* Show Axes */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Ejes Cartesianos (X, Y, Z)</div>
@@ -46,7 +44,6 @@ export const ViewportTab: React.FC = () => {
             />
           </div>
 
-          {/* Show Dimensions */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Cotas y Medidas Métricas</div>
@@ -60,7 +57,6 @@ export const ViewportTab: React.FC = () => {
             />
           </div>
 
-          {/* Lighting Mode */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Iluminación Ambiental</div>
@@ -77,7 +73,6 @@ export const ViewportTab: React.FC = () => {
             </select>
           </div>
 
-          {/* Spatial Background Mode */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)] md:col-span-2">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Color y Entorno del Espacio 3D</div>
@@ -97,7 +92,6 @@ export const ViewportTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Calidad de Render */}
       <div className="pt-4 border-t border-[var(--ide-panel-border)]/60">
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-2">
           Fidelidad de Renderizado

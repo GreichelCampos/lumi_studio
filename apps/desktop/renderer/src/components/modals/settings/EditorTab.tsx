@@ -17,7 +17,6 @@ export const EditorTab: React.FC = () => {
           Ajusta la fuente tipográfica monoespaciada y la escala de lectura en el editor.
         </p>
 
-        {/* Font Size Selector */}
         <div className="flex items-center gap-2 mb-4">
           <span className="text-xs text-[var(--ide-text-muted)] mr-2">Tamaño:</span>
           {[12, 13, 14, 16, 18].map((size) => (
@@ -35,7 +34,6 @@ export const EditorTab: React.FC = () => {
           ))}
         </div>
 
-        {/* Font Family Selector */}
         <div className="grid grid-cols-2 gap-2.5">
           {[
             { id: 'Fira Code', label: 'Fira Code', sample: '>> habitacion "Suite" [6, 4, 3]' },
@@ -64,14 +62,12 @@ export const EditorTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Line Numbers, Word Wrap & Tab Size */}
       <div className="pt-4 border-t border-[var(--ide-panel-border)]/60 space-y-4">
         <h3 className="text-sm font-bold text-[var(--ide-text)]">
           Comportamiento del Editor
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {/* Toggle Line Numbers */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Números de Línea</div>
@@ -85,7 +81,6 @@ export const EditorTab: React.FC = () => {
             />
           </div>
 
-          {/* Toggle Word Wrap */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Ajuste de Línea (Word Wrap)</div>
@@ -99,7 +94,6 @@ export const EditorTab: React.FC = () => {
             />
           </div>
 
-          {/* Tab Size */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Tamaño de Tabulación</div>
@@ -129,7 +123,6 @@ export const EditorTab: React.FC = () => {
             </div>
           </div>
 
-          {/* Auto-save */}
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Guardado Automático</div>

@@ -70,7 +70,6 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-lg glass-modal overflow-hidden text-slate-200"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 bg-white/[0.04] border-b border-white/10 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 shadow-[0_0_15px_rgba(77,105,50,0.3)]">
@@ -92,7 +91,6 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
           </button>
         </div>
 
-        {/* Form Body */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errorMessage && (
             <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs backdrop-blur-sm">
@@ -150,7 +148,6 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             />
           </div>
 
-          {/* Info pill about auto-created files */}
           <div className="p-3.5 rounded-xl bg-[#1a422f]/30 border border-[#4d6932]/50 text-xs text-[#f3ebd6] flex items-start gap-2.5 backdrop-blur-sm">
             <Sparkles className="w-4 h-4 mt-0.5 text-[#f3ebd6] flex-shrink-0" />
             <div>
@@ -158,7 +155,6 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             </div>
           </div>
 
-          {/* Footer Buttons */}
           <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#f3ebd6]/15">
             <button
               type="button"

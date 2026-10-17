@@ -47,7 +47,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
     }
   };
 
-  // Preview generated code in real time
   const previewValidation = validateRoomParams(name || 'mi_habitacion', ancho || '5.0', largo || '4.0', altura || '2.7');
   const previewCode = previewValidation.generatedCode || `habitacion ${name || 'sala'}(${ancho || '5.0'}, ${largo || '4.0'}, ${altura || '2.7'}) {\n}`;
 
@@ -62,7 +61,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md glass-modal overflow-hidden text-slate-200"
       >
-        {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 shadow-[0_0_15px_rgba(77,105,50,0.3)]">
@@ -84,9 +82,7 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Nombre de la habitación */}
           <div>
             <label className="block text-xs font-semibold text-[#d5cbb2] mb-1.5 uppercase tracking-wider">
               Nombre de la Habitación <span className="text-[#f3ebd6]">*</span>
@@ -120,7 +116,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
 
           {/* Dimensiones: Ancho (X), Largo (Z), Altura (Y) */}
           <div className="grid grid-cols-3 gap-3">
-            {/* Ancho */}
             <div>
               <label className="block text-[11px] font-semibold text-[#d5cbb2] mb-1 uppercase tracking-wider">
                 Ancho (X, m) <span className="text-[#f3ebd6]">*</span>
@@ -148,7 +143,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
               )}
             </div>
 
-            {/* Largo */}
             <div>
               <label className="block text-[11px] font-semibold text-[#d5cbb2] mb-1 uppercase tracking-wider">
                 Largo (Z, m) <span className="text-[#f3ebd6]">*</span>
@@ -176,7 +170,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
               )}
             </div>
 
-            {/* Altura */}
             <div>
               <label className="block text-[11px] font-semibold text-[#d5cbb2] mb-1 uppercase tracking-wider">
                 Altura (Y, m) <span className="text-[#f3ebd6]">*</span>
@@ -205,7 +198,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
             </div>
           </div>
 
-          {/* Live Preview del código Lumi */}
           <div className="p-3.5 rounded-xl bg-[#1a422f]/20 border border-[#f3ebd6]/15 space-y-1.5 backdrop-blur-sm">
             <div className="flex items-center justify-between text-[11px] text-[#d5cbb2]">
               <span className="flex items-center gap-1 font-semibold text-[#f3ebd6]">
@@ -219,7 +211,6 @@ export const InsertRoomModal: React.FC<InsertRoomModalProps> = ({
             </pre>
           </div>
 
-          {/* Footer Action Buttons */}
           <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#f3ebd6]/15">
             <button
               type="button"

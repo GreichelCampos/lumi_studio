@@ -41,7 +41,6 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md glass-modal overflow-hidden text-slate-200"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-[0_0_15px_rgba(245,158,11,0.2)]">
@@ -63,7 +62,6 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
           </button>
         </div>
 
-        {/* Body */}
         <div className="p-6 space-y-3">
           <p className="text-xs sm:text-sm text-[#d5cbb2] leading-relaxed">
             El archivo <strong className="text-[#f3ebd6] font-mono bg-[#1a422f]/60 px-2 py-0.5 rounded-md border border-[#f3ebd6]/20">{file.name}</strong> tiene modificaciones que no han sido guardadas en el disco.
@@ -73,7 +71,6 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
           </p>
         </div>
 
-        {/* Footer with 3 distinct options */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-t border-[#f3ebd6]/15 backdrop-blur-md gap-2">
           <button
             type="button"

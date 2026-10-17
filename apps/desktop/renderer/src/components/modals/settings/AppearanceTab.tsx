@@ -56,7 +56,6 @@ export const AppearanceTab: React.FC = () => {
                   {theme.description}
                 </p>
 
-                {/* Mini Editor Mockup Preview */}
                 <div 
                   className="rounded-lg p-2.5 font-mono text-[10px] space-y-0.5 border shadow-inner"
                   style={{ 
@@ -88,7 +87,6 @@ export const AppearanceTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Estilo de Transparencia y Vidrio */}
       <div className="pt-4 border-t border-[var(--ide-panel-border)]/60">
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1">
           Acabado de Superficie de los Paneles
@@ -119,7 +117,6 @@ export const AppearanceTab: React.FC = () => {
         </div>
       </div>
 
-      {/* Radio de Bordes */}
       <div className="pt-4 border-t border-[var(--ide-panel-border)]/60">
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1">
           Estilo de Bordes y Esquinas

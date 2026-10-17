@@ -36,7 +36,6 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl max-h-[85vh] flex flex-col glass-modal text-slate-200"
       >
-        {/* Modal Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15">
           <div className="flex items-center gap-3">
             <LumiMascot state="ready" size={34} />
@@ -58,9 +57,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
           </button>
         </div>
 
-        {/* Modal Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-          {/* Slogan banner */}
           <div className="p-4 rounded-2xl glass-card border border-[#f3ebd6]/25 flex items-center justify-between !w-auto !h-auto">
             <div>
               <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Estudio LUMI</span>
@@ -74,7 +71,6 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             </div>
           </div>
 
-          {/* Reserved Keywords Grid */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)] mb-3 flex items-center gap-2">
               <Code2 className="w-4 h-4" />
@@ -93,7 +89,6 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             </div>
           </div>
 
-          {/* Documentation Sections */}
           <div className="space-y-4">
             {LUMI_DOCUMENTATION_SECTIONS.map((sec, idx) => (
               <div key={idx} className="glass-card p-4 space-y-2 !w-auto !h-auto">
@@ -106,7 +101,6 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             ))}
           </div>
 
-          {/* Mascot States reference */}
           <div className="glass-card p-4.5 !w-auto !h-auto">
             <h4 className="text-sm font-bold text-[#f3ebd6] mb-3 flex items-center gap-2 drop-shadow-sm">
               <Sparkles className="w-4 h-4 text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
@@ -142,7 +136,6 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
           </div>
         </div>
 
-        {/* Modal Footer */}
         <div className="px-6 py-3.5 glass-panel-header border-t border-[#f3ebd6]/15 flex items-center justify-end">
           <button
             onClick={onClose}

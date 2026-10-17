@@ -17,7 +17,6 @@ export const LumiFace: React.FC<LumiFaceProps> = ({ state, bodyColors }) => {
 
   return (
     <g className="lumi-face">
-      {/* Ojo Izquierdo */}
       {isError ? (
         <path
           d="M58 54 L68 64 M68 54 L58 64"
@@ -33,7 +32,6 @@ export const LumiFace: React.FC<LumiFaceProps> = ({ state, bodyColors }) => {
         </g>
       )}
 
-      {/* Ojo Derecho */}
       {isError ? (
         <path
           d="M92 54 L102 64 M102 54 L92 64"
@@ -49,7 +47,6 @@ export const LumiFace: React.FC<LumiFaceProps> = ({ state, bodyColors }) => {
         </g>
       )}
 
-      {/* Boca / Expresión */}
       {isError ? (
         <path
           d="M72 74 Q80 67 88 74"
@@ -78,7 +75,6 @@ export const LumiFace: React.FC<LumiFaceProps> = ({ state, bodyColors }) => {
         />
       )}
 
-      {/* Mejillas sonrojadas */}
       <ellipse cx="52" cy="69" rx="4" ry="2.5" fill="#f43f5e" opacity="0.35" />
       <ellipse cx="108" cy="69" rx="4" ry="2.5" fill="#f43f5e" opacity="0.35" />
     </g>

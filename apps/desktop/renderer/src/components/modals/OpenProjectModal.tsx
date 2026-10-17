@@ -62,7 +62,6 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-2xl glass-modal overflow-hidden text-slate-200 flex flex-col max-h-[85vh]"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 shadow-[0_0_15px_rgba(77,105,50,0.3)]">
@@ -84,7 +83,6 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
           </button>
         </div>
 
-        {/* Search Bar */}
         <div className="p-4 border-b border-[#f3ebd6]/15 bg-[#02110c]/40 backdrop-blur-sm">
           <div className="relative">
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-[#8f9d95]" />
@@ -98,7 +96,6 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
           </div>
         </div>
 
-        {/* Project List */}
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {filteredProjects.length === 0 ? (
             <div className="text-center py-10 space-y-3">
@@ -202,7 +199,6 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
           )}
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-t border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="text-xs text-[#d5cbb2]">
             Total: <strong className="text-[#f3ebd6] font-mono">{projects.length}</strong> {projects.length === 1 ? 'proyecto' : 'proyectos'}

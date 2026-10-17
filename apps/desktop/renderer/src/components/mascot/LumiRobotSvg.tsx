@@ -31,7 +31,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
       className={`transition-all duration-500 ${colors.pulseClass}`}
     >
       <defs>
-        {/* Degradado del brillo de la pantalla/lámpara */}
         <linearGradient
           id={`lampGrad-${state}-${uid}`}
           x1="80"
@@ -45,7 +44,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
           <stop offset="100%" stopColor={colors.core} stopOpacity="0.9" />
         </linearGradient>
 
-        {/* Degradado metálico del cuerpo del robot */}
         <linearGradient
           id={`bodyGrad-${uid}`}
           x1="80"
@@ -59,7 +57,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
           <stop offset="100%" stopColor={bodyColors.stop100} />
         </linearGradient>
 
-        {/* Degradado del reborde de la pantalla */}
         <linearGradient
           id={`rimGrad-${state}-${uid}`}
           x1="40"
@@ -73,7 +70,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
           <stop offset="100%" stopColor={colors.rimStop100} />
         </linearGradient>
 
-        {/* Filtro de resplandor para el núcleo y pies */}
         <filter
           id={`coreGlow-${state}-${uid}`}
           x="-20%"
@@ -86,7 +82,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         </filter>
       </defs>
 
-      {/* Resplandor ambiental de la lámpara */}
       <ellipse
         cx="80"
         cy="55"
@@ -97,8 +92,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         filter={`url(#coreGlow-${state}-${uid})`}
       />
 
-      {/* Pies del Robot */}
-      {/* Pie Izquierdo */}
       <ellipse
         cx="56"
         cy="158"
@@ -117,7 +110,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         filter={`url(#coreGlow-${state}-${uid})`}
       />
 
-      {/* Pie Derecho */}
       <ellipse
         cx="104"
         cy="158"
@@ -136,7 +128,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         filter={`url(#coreGlow-${state}-${uid})`}
       />
 
-      {/* Torso del Robot */}
       <path
         d="M50 105 C40 120 42 152 60 156 C70 158 90 158 100 156 C118 152 120 120 110 105 Z"
         fill={`url(#bodyGrad-${uid})`}
@@ -144,7 +135,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         strokeWidth="2.5"
       />
 
-      {/* Núcleo pectoral brillante */}
       <circle
         cx="80"
         cy="130"
@@ -155,7 +145,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
       />
       <circle cx="80" cy="130" r="10" fill={colors.core} opacity="0.4" />
 
-      {/* Icono de código dentro del pecho (< / >) */}
       <path
         d="M74 126 L70 130 L74 134 M86 126 L90 130 L86 134 M82 124 L78 136"
         stroke={colors.core}
@@ -165,7 +154,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         filter={`url(#coreGlow-${state}-${uid})`}
       />
 
-      {/* Brazos pequeños del robot */}
       <path
         d="M48 114 C36 122 36 138 48 144 C52 140 50 122 54 118 Z"
         fill={bodyColors.armFill}
@@ -179,7 +167,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         strokeWidth="1.5"
       />
 
-      {/* Aro inferior de la pantalla/lámpara */}
       <ellipse
         cx="80"
         cy="94"
@@ -190,7 +177,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         strokeWidth="2"
       />
 
-      {/* Cabeza / Pantalla del robot Lumi */}
       <path
         d="M50 25 C62 21 98 21 110 25 C122 56 126 84 124 94 C110 99 50 99 36 94 C34 84 38 56 50 25 Z"
         fill={`url(#lampGrad-${state}-${uid})`}
@@ -198,7 +184,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
         strokeWidth="2"
       />
 
-      {/* Anillo superior de la lámpara */}
       <ellipse
         cx="80"
         cy="25"
@@ -210,7 +195,6 @@ export const LumiRobotSvg: React.FC<LumiRobotSvgProps> = ({
       />
       <ellipse cx="80" cy="25" rx="20" ry="4" fill={colors.core} opacity="0.4" />
 
-      {/* Expresión facial y ojos */}
       <LumiFace state={state} bodyColors={bodyColors} />
     </svg>
   );

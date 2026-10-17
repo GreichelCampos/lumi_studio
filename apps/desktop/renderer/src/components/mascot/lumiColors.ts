@@ -267,12 +267,10 @@ export function getLumiGlowColors(
     return LUMI_SEMANTIC_PALETTES[state];
   }
 
-  // 2. Presets decorativos de usuario (para estados normales ready / success)
   if (activePreset !== 'theme' && activePreset in LUMI_DECORATIVE_PRESETS) {
     return LUMI_DECORATIVE_PRESETS[activePreset as keyof typeof LUMI_DECORATIVE_PRESETS];
   }
 
-  // 3. Tema del IDE sincronizado para estados normales
   const themeId = currentTheme?.id || 'lumi-emerald';
   return getThemeBaseColors(themeId);
 }
@@ -299,7 +297,6 @@ export function getLumiBodyColors(
     };
   }
 
-  // Overrides específicos según preset decorativo en dark mode
   if (activePreset === 'blue') {
     return {
       stop0: '#253347',
@@ -373,7 +370,6 @@ export function getLumiBodyColors(
     };
   }
 
-  // Estilos de cuerpo derivados del tema del IDE
   const themeId = currentTheme?.id || 'lumi-emerald';
   switch (themeId) {
     case 'vs-dark':

@@ -45,7 +45,6 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md glass-modal overflow-hidden text-slate-200"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-rose-500/15 text-rose-300 border border-rose-500/30 shadow-[0_0_15px_rgba(244,63,94,0.2)]">
@@ -67,14 +66,12 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           </button>
         </div>
 
-        {/* Content Body */}
         <div className="p-6 space-y-4">
           <p className="text-xs sm:text-sm text-[#d5cbb2] leading-relaxed">
             ¿Estás seguro de que deseas eliminar permanentemente el archivo{' '}
             <strong className="text-[#f3ebd6] font-mono bg-[#1a422f]/60 px-2 py-0.5 rounded-md border border-[#f3ebd6]/20">{file.name}</strong>? Esta acción no se puede deshacer.
           </p>
 
-          {/* Unsaved changes warning */}
           {hasUnsavedChanges && (
             <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs backdrop-blur-sm">
               <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5 drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]" />
@@ -84,7 +81,6 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             </div>
           )}
 
-          {/* Entry file warning & strategy */}
           {isEntryFile && (
             <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#4d6932]/25 border border-[#4d6932]/50 text-[#f3ebd6] text-xs backdrop-blur-sm">
               <Star className="w-4 h-4 text-[#f3ebd6] flex-shrink-0 mt-0.5 fill-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
@@ -104,7 +100,6 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
           )}
         </div>
 
-        {/* Footer Buttons */}
         <div className="flex items-center justify-end gap-2.5 px-6 py-4 glass-panel-header border-t border-[#f3ebd6]/15 backdrop-blur-md">
           <button
             type="button"

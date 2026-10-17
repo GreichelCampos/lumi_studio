@@ -55,7 +55,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-4xl max-h-[88vh] flex flex-col glass-modal text-[var(--ide-text)] shadow-2xl border border-[var(--ide-panel-border)]"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[var(--ide-panel-border)]">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-xl bg-[var(--ide-btn-bg)] border border-[var(--ide-btn-border)] text-[var(--ide-accent)] shadow-sm">
@@ -84,9 +83,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </button>
         </div>
 
-        {/* Content Body with Tabs */}
         <div className="flex flex-1 min-h-[460px] max-h-[calc(88vh-130px)] overflow-hidden">
-          {/* Sidebar Tabs */}
           <div className="w-56 border-r border-[var(--ide-panel-border)] bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] p-3 flex flex-col gap-1.5 overflow-y-auto">
             <button
               onClick={() => setActiveTab('appearance')}
@@ -136,7 +133,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               <span>Asistente y Compilación</span>
             </button>
 
-            {/* Quick Live Preview Card in Sidebar */}
             <div className="mt-auto pt-3 border-t border-[var(--ide-panel-border)]/40 text-[11px] space-y-1.5">
               <div className="text-[10px] uppercase font-bold text-[var(--ide-text-muted)] tracking-wider">
                 Tema en uso
@@ -169,7 +165,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             </div>
           </div>
 
-          {/* Active Tab Content Panel */}
           <div className="flex-1 p-6 overflow-y-auto space-y-6">
             {activeTab === 'appearance' && <AppearanceTab />}
             {activeTab === 'editor' && <EditorTab />}
@@ -178,7 +173,6 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           </div>
         </div>
 
-        {/* Modal Footer */}
         <div className="flex items-center justify-between px-6 py-3.5 bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border-t border-[var(--ide-panel-border)]">
           <button
             type="button"

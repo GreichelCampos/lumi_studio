@@ -63,7 +63,6 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md glass-modal overflow-hidden text-[var(--ide-text)] border border-[var(--ide-panel-border)]"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[var(--ide-panel-border)] backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/40 shadow-sm">
@@ -85,7 +84,6 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
           </button>
         </div>
 
-        {/* Body Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errorMessage && (
             <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs backdrop-blur-sm">
@@ -111,7 +109,6 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
             />
           </div>
 
-          {/* Live Preview */}
           <div className="p-3.5 rounded-xl bg-[var(--ide-control-bg)] border border-[var(--ide-panel-border)] text-xs flex items-center justify-between backdrop-blur-sm">
             <span className="text-[var(--ide-text-muted)]">Archivo resultante:</span>
             <span className="font-mono text-[var(--ide-accent)] font-bold bg-[var(--ide-btn-bg)] px-2.5 py-1 rounded-lg border border-[var(--ide-panel-border)] shadow-sm">
@@ -119,7 +116,6 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
             </span>
           </div>
 
-          {/* Footer Buttons */}
           <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[var(--ide-panel-border)]">
             <button
               type="button"

@@ -66,7 +66,6 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-md glass-modal overflow-hidden text-slate-200"
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15 backdrop-blur-md">
           <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-2xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 shadow-[0_0_15px_rgba(77,105,50,0.3)]">
@@ -88,7 +87,6 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
           </button>
         </div>
 
-        {/* Body Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {errorMessage && (
             <div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs backdrop-blur-sm">
@@ -118,7 +116,6 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
             <span className="font-mono text-[#f3ebd6] font-semibold bg-[#1a422f]/60 px-2 py-0.5 rounded border border-[#f3ebd6]/20">{file.name}</span>
           </div>
 
-          {/* Footer Buttons */}
           <div className="flex items-center justify-end gap-2.5 pt-4 border-t border-[#f3ebd6]/15">
             <button
               type="button"

@@ -40,10 +40,8 @@ export const LumiMascot: React.FC<LumiMascotProps> = ({
   const currentTheme = ideContext?.currentTheme;
   const activePreset: LumiColorPreset = colorPreset || ideContext?.settings?.lumiColorPreset || 'theme';
 
-  // 1. Cálculo modular de colores de cuerpo y chasis
   const bodyColors = getLumiBodyColors(activePreset, currentTheme);
 
-  // 2. Cálculo modular de colores de resplandor (protegiendo estados semánticos)
   const colors = getLumiGlowColors(state, activePreset, currentTheme);
 
   return (
@@ -53,12 +51,10 @@ export const LumiMascot: React.FC<LumiMascotProps> = ({
       style={{ cursor: onClick ? 'pointer' : 'default' }}
       title={`Lumi (${state.toUpperCase()})`}
     >
-      {/* Bocadillo de diálogo a la izquierda de Lumi */}
       {showSpeechBubble && message && (
         <LumiSpeechBubble message={message} />
       )}
 
-      {/* Gráfico vectorial animado de Lumi */}
       <div className={`relative ${isAnimated ? 'animate-lumi' : ''}`}>
         <LumiRobotSvg
           size={size}

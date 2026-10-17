@@ -19,7 +19,6 @@ export const AssistantTab: React.FC = () => {
         </p>
 
         <div className="space-y-3">
-          {/* Show Mascot */}
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Mascota Compañera Lumi</div>
@@ -35,7 +34,6 @@ export const AssistantTab: React.FC = () => {
             />
           </div>
 
-          {/* Auto-compile on Type */}
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Auto-compilación al Escribir</div>
@@ -51,7 +49,6 @@ export const AssistantTab: React.FC = () => {
             />
           </div>
 
-          {/* Sound Effects */}
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
               <div className="text-xs font-semibold text-[var(--ide-text)]">Efectos de Audio de la Interfaz</div>
@@ -68,7 +65,6 @@ export const AssistantTab: React.FC = () => {
           </div>
         </div>
 
-        {/* Personalización de Color de Lumi */}
         <div className="pt-5 mt-5 border-t border-[var(--ide-panel-border)]/60">
           <div className="flex items-center justify-between mb-3">
             <div>
@@ -80,7 +76,6 @@ export const AssistantTab: React.FC = () => {
               </p>
             </div>
 
-            {/* Mini Live Preview of Lumi */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[var(--ide-control-bg)] border border-[var(--ide-panel-border)] shadow-sm">
               <LumiMascot
                 state="ready"
