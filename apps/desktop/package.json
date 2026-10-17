@@ -1,0 +1,20 @@
+{
+  "name": "lumi-studio-desktop",
+  "private": true,
+  "type": "module",
+  "main": "dist/main.cjs",
+  "packageManager": "bun@1.4.3",
+  "scripts": {
+    "lint": "tsc --noEmit && npm --prefix renderer run lint",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "electron": "44.8.0",
+    "esbuild": "0.25.12",
+    "playwright-core": "1.64.1",
+    "typescript": "5.8.3",
+    "@types/node": "22.20.1",
+    "vitest": "4.1.11"
+  },
+  "trustedDependencies": ["electron", "esbuild"]
+}
