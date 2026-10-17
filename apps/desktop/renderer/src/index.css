@@ -1,0 +1,334 @@
+@import "tailwindcss";
+
+/* Only the existing desktop titlebar is draggable; controls remain clickable. */
+.lumi-window-drag {
+  -webkit-app-region: drag;
+  user-select: none;
+}
+.lumi-window-drag :is(button, input, select, textarea, a, [role="button"]) {
+  -webkit-app-region: no-drag;
+}
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--ide-bg, #02110c);
+    color: var(--ide-text, #f3ebd6);
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  code, pre, .font-mono {
+    font-family: 'Fira Code', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Luxury Color Tokens & Dynamic Theme Fallbacks */
+:root {
+  --color-dark-emerald: #02110c;
+  --color-olive-green: #1a422f;
+  --color-cream-beige: #f3ebd6;
+  --ide-bg: #02110c;
+  --ide-panel-bg: rgba(26, 66, 47, 0.28);
+  --ide-panel-solid: #082117;
+  --ide-panel-border: rgba(243, 235, 214, 0.18);
+  --ide-topbar-bg: rgba(2, 17, 12, 0.94);
+  --ide-text: #f3ebd6;
+  --ide-text-muted: #a89f86;
+  --ide-accent: #f3ebd6;
+  --ide-btn-bg: rgba(26, 66, 47, 0.35);
+  --ide-btn-border: rgba(243, 235, 214, 0.18);
+  --ide-dropdown-bg: rgba(2, 17, 12, 0.97);
+  --ide-backdrop-filter: blur(20px);
+  --ide-radius: 20px;
+  --ide-radius-sm: 12px;
+}
+
+/* Custom sleek scrollbar for IDE panels */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(2, 17, 12, 0.6);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(243, 235, 214, 0.22);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(243, 235, 214, 0.45);
+}
+
+/* Hide scrollbar for horizontal tab bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Glowing animations for Lumi mascot and active lines */
+@keyframes lumi-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(0.5deg);
+  }
+}
+
+@keyframes chat-popup {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(6px);
+  }
+  70% {
+    transform: scale(1.02) translateY(-1px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-chat-popup {
+  animation: chat-popup 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes lumi-pulse-glow {
+  0%, 100% {
+    opacity: 0.8;
+    filter: drop-shadow(0 0 12px rgba(243, 235, 214, 0.6));
+  }
+  50% {
+    opacity: 1;
+    filter: drop-shadow(0 0 20px rgba(243, 235, 214, 0.95));
+  }
+}
+
+.animate-lumi {
+  animation: lumi-float 3.5s ease-in-out infinite;
+}
+
+.glow-lumi-cream {
+  filter: drop-shadow(0 0 16px rgba(243, 235, 214, 0.75));
+}
+
+.glow-lumi-cyan {
+  filter: drop-shadow(0 0 14px rgba(243, 235, 214, 0.7));
+}
+
+.glow-lumi-purple {
+  filter: drop-shadow(0 0 14px rgba(216, 180, 254, 0.65));
+}
+
+.glow-lumi-green {
+  filter: drop-shadow(0 0 14px rgba(74, 222, 128, 0.7));
+}
+
+.glow-lumi-yellow {
+  filter: drop-shadow(0 0 14px rgba(250, 204, 21, 0.7));
+}
+
+.glow-lumi-red {
+  filter: drop-shadow(0 0 14px rgba(248, 113, 113, 0.7));
+}
+
+/* Glass panel glow */
+.panel-border {
+  border: 1px solid rgba(243, 235, 214, 0.12);
+  box-shadow: 0 8px 32px 0 rgba(2, 17, 12, 0.6);
+}
+
+/* ============================================================
+   GLASSMORPHISM & THEME-AWARE SURFACES
+   ============================================================ */
+
+.glass-card {
+  background: var(--ide-control-bg, rgba(255, 255, 255, 0.05));
+  backdrop-filter: var(--ide-backdrop-filter, blur(14px));
+  -webkit-backdrop-filter: var(--ide-backdrop-filter, blur(14px));
+  border-radius: var(--ide-radius-sm, 16px);
+  border: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.12));
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--ide-panel-border, rgba(255, 255, 255, 0.3)),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Glass Main IDE Panels (Project Explorer, Code Editor, Viewport 3D, Console) */
+.glass-panel {
+  background: var(--ide-active-panel-bg, var(--ide-panel-bg, rgba(255, 255, 255, 0.05)));
+  backdrop-filter: var(--ide-backdrop-filter, blur(20px));
+  -webkit-backdrop-filter: var(--ide-backdrop-filter, blur(20px));
+  border-radius: var(--ide-radius, 20px);
+  border: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.14));
+  box-shadow: 
+    0 20px 48px -10px rgba(0, 0, 0, 0.5),
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.2s ease, border-color 0.2s ease, border-radius 0.2s ease;
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--ide-panel-border, rgba(255, 255, 255, 0.35)),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Glass Panel Headers */
+.glass-panel-header {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: var(--ide-backdrop-filter, blur(16px));
+  -webkit-backdrop-filter: var(--ide-backdrop-filter, blur(16px));
+  border-bottom: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.1));
+}
+
+/* Glass Topbar Window Header */
+.glass-topbar {
+  background: var(--ide-topbar-bg, rgba(20, 20, 20, 0.95));
+  backdrop-filter: var(--ide-backdrop-filter, blur(24px));
+  -webkit-backdrop-filter: var(--ide-backdrop-filter, blur(24px));
+  border-bottom: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.12));
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+/* Glass Buttons & Interactive Elements */
+.glass-btn {
+  background: var(--ide-btn-bg, rgba(255, 255, 255, 0.08));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--ide-btn-border, rgba(255, 255, 255, 0.15));
+  color: var(--ide-text, #ffffff);
+  border-radius: var(--ide-radius-sm, 12px);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.glass-btn:hover {
+  background: var(--ide-btn-bg, rgba(255, 255, 255, 0.15));
+  filter: brightness(1.15);
+  border-color: var(--ide-accent, rgba(255, 255, 255, 0.35));
+  color: var(--ide-text, #ffffff);
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.glass-btn:active {
+  transform: scale(0.96);
+}
+
+/* Glass Tabs */
+.glass-tab-active {
+  background: var(--ide-btn-bg, rgba(255, 255, 255, 0.15));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--ide-accent, rgba(255, 255, 255, 0.35));
+  color: var(--ide-text, #ffffff);
+  border-radius: var(--ide-radius-sm, 10px);
+  box-shadow: 
+    0 4px 14px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.glass-tab-inactive {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid transparent;
+  color: var(--ide-text-muted, rgba(255, 255, 255, 0.6));
+  border-radius: var(--ide-radius-sm, 10px);
+}
+
+.glass-tab-inactive:hover {
+  background: var(--ide-btn-bg, rgba(255, 255, 255, 0.08));
+  border-color: var(--ide-panel-border, rgba(255, 255, 255, 0.12));
+  color: var(--ide-text, #ffffff);
+}
+
+/* Glass Modal Dialogs */
+.glass-modal {
+  background: var(--ide-dropdown-bg, rgba(25, 25, 25, 0.95));
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-radius: var(--ide-radius, 24px);
+  border: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.2));
+  box-shadow: 
+    0 24px 64px -12px rgba(0, 0, 0, 0.7),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  transition: background 0.2s ease, border-color 0.2s ease, border-radius 0.2s ease;
+}
+
+/* Glass Dropdown Menus */
+.glass-dropdown {
+  background: var(--ide-dropdown-bg, rgba(25, 25, 25, 0.98));
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.18));
+  border-radius: var(--ide-radius-sm, 14px);
+  box-shadow: 
+    0 20px 48px -6px rgba(0, 0, 0, 0.7),
+    0 6px 24px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: background 0.2s ease, border-color 0.2s ease, border-radius 0.2s ease;
+}
+
+/* Glass Bubble for Lumi Assistant floating messages */
+.glass-bubble {
+  background: var(--ide-panel-solid, rgba(25, 25, 25, 0.95));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--ide-radius-sm, 16px);
+  border: 1px solid var(--ide-panel-border, rgba(255, 255, 255, 0.2));
+  box-shadow: 
+    0 16px 36px -6px rgba(0, 0, 0, 0.5),
+    0 6px 16px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+}
+
+.active-line-glow {
+  background: var(--ide-active-line, rgba(255, 255, 255, 0.08));
+  border-left: 3px solid var(--ide-accent, #007acc);
+}
