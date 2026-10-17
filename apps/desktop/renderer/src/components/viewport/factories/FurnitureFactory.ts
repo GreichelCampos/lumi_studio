@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import { SpatialObject } from '../../../types';
-import { SPATIAL_THEME, resolveLumiColor } from '../../../services/spatial/SpatialVisualTheme';
+import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
+
+import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
 
 export class FurnitureFactory {
   public static createFurnitureMesh(
@@ -19,12 +21,7 @@ export class FurnitureFactory {
     const hasError = Boolean(item.isOutOfBounds || item.hasError);
     const hasWarning = Boolean(!hasError && (item.hasCollision || item.hasWarning));
 
-    const objColor = resolveLumiColor(item.color, '#64748b');
-    const isMetal = item.material?.toLowerCase().includes('metal');
-    const isWoodMat =
-      item.material?.toLowerCase().includes('madera') ||
-      item.material?.toLowerCase().includes('nogal') ||
-      item.material?.toLowerCase().includes('roble');
+    const objColor = surfaceColor(item.color, '#64748b');
 
     // Emissive tint if selected, error, warning or active debug
     let emissiveColor = '#000000';
@@ -46,14 +43,26 @@ export class FurnitureFactory {
 
     const standardMat = new THREE.MeshStandardMaterial({
       color: objColor,
-      roughness: isWoodMat ? 0.6 : isMetal ? 0.2 : 0.8,
-      metalness: isMetal ? 0.8 : 0.1,
+      ...surfaceMaterial(item.material),
       emissive: emissiveColor,
       emissiveIntensity: emissiveIntensity,
       wireframe: isWireframe,
     });
 
-    this.buildGeometryByType(objGroup, item.type.toLowerCase(), standardMat, ow, oh, od);
+    const body = new THREE.Group();
+    this.buildGeometryByType(body, item.type.toLowerCase(), standardMat, Math.max(ow, 0.25), Math.max(oh, 0.5), Math.max(od, 0.25));
+    const bounds = new THREE.Box3().setFromObject(body);
+    const size = bounds.getSize(new THREE.Vector3());
+    const center = bounds.getCenter(new THREE.Vector3());
+    body.scale.set(ow / size.x, oh / size.y, od / size.z);
+    body.position.set(-center.x * body.scale.x, -bounds.min.y * body.scale.y, -center.z * body.scale.z);
+    body.traverse(child => {
+      if (child instanceof THREE.Mesh) {
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        for (const material of materials) if ('wireframe' in material) material.wireframe = isWireframe;
+      }
+    });
+    objGroup.add(body);
 
     // Aplicar posición y rotación (en radianes)
     objGroup.position.set(ox, oy, oz);
@@ -82,6 +91,7 @@ export class FurnitureFactory {
       });
       const highlightBox = new THREE.Mesh(boxGeo, boxMat);
       highlightBox.position.set(0, oh / 2, 0);
+      highlightBox.userData.ignorePicking = true;
       objGroup.add(highlightBox);
 
       const ringColor = hasError
@@ -110,6 +120,7 @@ export class FurnitureFactory {
       const disc = new THREE.Mesh(discGeo, discMat);
       disc.rotation.x = Math.PI / 2;
       disc.position.y = 0.015;
+      disc.userData.ignorePicking = true;
       objGroup.add(disc);
 
       // Si hay error o warning Y selección o debug simultánea: agregar borde secundario
@@ -124,6 +135,7 @@ export class FurnitureFactory {
           })
         );
         dualBox.position.set(0, oh / 2, 0);
+        dualBox.userData.ignorePicking = true;
         objGroup.add(dualBox);
       }
     }
@@ -147,7 +159,7 @@ export class FurnitureFactory {
         this.buildSilla(group, standardMat, ow, oh, od);
         break;
       case 'cama':
-        this.buildCama(group, ow, oh, od);
+        this.buildCama(group, standardMat, ow, oh, od);
         break;
       case 'sofa':
         this.buildSofa(group, standardMat, ow, oh, od);
@@ -162,13 +174,13 @@ export class FurnitureFactory {
         this.buildEstante(group, standardMat, ow, oh, od);
         break;
       case 'lampara':
-        this.buildLampara(group, ow, oh, od);
+        this.buildLampara(group, standardMat, ow, oh, od);
         break;
       case 'televisor':
-        this.buildTelevisor(group, ow, oh, od);
+        this.buildTelevisor(group, standardMat, ow, oh, od);
         break;
       case 'planta':
-        this.buildPlanta(group, ow, oh, od);
+        this.buildPlanta(group, standardMat, ow, oh, od);
         break;
       default:
         this.buildGeneric(group, standardMat, ow, oh, od);
@@ -232,8 +244,8 @@ export class FurnitureFactory {
     });
   }
 
-  private static buildCama(group: THREE.Group, ow: number, oh: number, od: number): void {
-    const frameMat = new THREE.MeshStandardMaterial({ color: '#334155', roughness: 0.7 });
+  private static buildCama(group: THREE.Group, standardMat: THREE.MeshStandardMaterial, ow: number, oh: number, od: number): void {
+    const frameMat = standardMat;
     const mattressMat = new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.9 });
     const duvetMat = new THREE.MeshStandardMaterial({ color: '#0284c7', roughness: 0.7 });
 
@@ -396,11 +408,11 @@ export class FurnitureFactory {
     }
   }
 
-  private static buildLampara(group: THREE.Group, ow: number, oh: number, od: number): void {
+  private static buildLampara(group: THREE.Group, standardMat: THREE.MeshStandardMaterial, ow: number, oh: number, od: number): void {
     const baseR = Math.min(ow, od) * 0.4;
     const lBase = new THREE.Mesh(
       new THREE.CylinderGeometry(baseR, baseR, 0.04, 16),
-      new THREE.MeshStandardMaterial({ color: '#1e293b', metalness: 0.7, roughness: 0.3 })
+      standardMat
     );
     lBase.position.y = 0.02;
     lBase.castShadow = true;
@@ -419,7 +431,9 @@ export class FurnitureFactory {
     const lShade = new THREE.Mesh(
       new THREE.ConeGeometry(shadeR, shadeH, 16, 1, true),
       new THREE.MeshStandardMaterial({
-        color: '#fef08a',
+        color: standardMat.color,
+        roughness: standardMat.roughness,
+        metalness: standardMat.metalness,
         emissive: '#facc15',
         emissiveIntensity: 0.45,
         side: THREE.DoubleSide,
@@ -430,8 +444,8 @@ export class FurnitureFactory {
     group.add(lShade);
   }
 
-  private static buildTelevisor(group: THREE.Group, ow: number, oh: number, od: number): void {
-    const standMat = new THREE.MeshStandardMaterial({ color: '#0f172a', metalness: 0.7, roughness: 0.3 });
+  private static buildTelevisor(group: THREE.Group, standardMat: THREE.MeshStandardMaterial, ow: number, oh: number, od: number): void {
+    const standMat = standardMat;
     const tBase = new THREE.Mesh(new THREE.BoxGeometry(ow * 0.45, 0.02, od * 0.6), standMat);
     tBase.position.y = 0.01;
     tBase.castShadow = true;
@@ -459,12 +473,12 @@ export class FurnitureFactory {
     group.add(displayScreen);
   }
 
-  private static buildPlanta(group: THREE.Group, ow: number, oh: number, od: number): void {
+  private static buildPlanta(group: THREE.Group, standardMat: THREE.MeshStandardMaterial, ow: number, oh: number, od: number): void {
     const potH = oh * 0.35;
     const potR = Math.min(ow, od) * 0.38;
     const pot = new THREE.Mesh(
       new THREE.CylinderGeometry(potR, potR * 0.7, potH, 16),
-      new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 0.3 })
+      standardMat
     );
     pot.position.y = potH / 2;
     pot.castShadow = true;
