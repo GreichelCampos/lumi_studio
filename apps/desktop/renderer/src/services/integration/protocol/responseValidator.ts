@@ -2,6 +2,7 @@ import {
   INFRASTRUCTURE_ERROR_CODES, MAX_RESPONSE_BYTES, PROTOCOL_ERROR_CODES, PROTOCOL_VERSION,
 } from './types.ts';
 import type { ProtocolResponse, ValidationResult } from './types.ts';
+import { validateScenePayload } from './scenePayload.ts';
 import {
   hasKeys, isOperation, isPositiveInteger, isRecord, isRequestId, isText,
 } from './validationHelpers.ts';
@@ -20,7 +21,7 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
   if (!isRecord(raw) || !hasKeys(raw, [
     'entryFile', 'analysisStatus', 'stage', 'output', 'diagnostics',
     'limitations', 'executionAttempted', 'capabilities',
-  ], ['lexicalError'])) return false;
+  ], ['lexicalError', 'scenePlan'])) return false;
   const caps = raw.capabilities;
   return isText(raw.entryFile)
     && typeof raw.analysisStatus === 'string'
@@ -34,7 +35,8 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
     && typeof raw.executionAttempted === 'boolean'
     && (!Object.hasOwn(raw, 'lexicalError') || isText(raw.lexicalError))
     && isRecord(caps) && hasKeys(caps, ['scenePlan', 'debugTrace', 'interactiveInput', 'cancellation'])
-    && Object.values(caps).every((value) => value === false);
+    && typeof caps.scenePlan === 'boolean'
+    && caps.debugTrace === false && caps.interactiveInput === false && caps.cancellation === false;
 }
 
 function coherentResult(envelope: Record<string, unknown>, result: Record<string, unknown>): boolean {
@@ -92,7 +94,10 @@ export function validateProtocolResponse(raw: unknown): ValidationResult<Protoco
       errors.push('Estado inválido.');
     }
     if (!validResult(raw.result)) errors.push('Resultado inválido.');
-    else if (!coherentResult(raw, raw.result)) errors.push('Estado y resultado contradictorios.');
+    else {
+      if (!coherentResult(raw, raw.result)) errors.push('Estado y resultado contradictorios.');
+      errors.push(...validateScenePayload(raw.result, raw.status));
+    }
   }
   // This cast follows validation of every required/optional field and invariant.
   return errors.length > 0 ? { valid: false, errors } : { valid: true, value: raw as unknown as ProtocolResponse };
