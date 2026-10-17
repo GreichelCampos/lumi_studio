@@ -1,10 +1,10 @@
 # `.lumic`: referencia del candidato v1.0.0
 
-Contrato candidato v1.0.0, pendiente de revisión y acuerdo con Gaby y Grei.
+Contrato candidato v1.0.0, sujeto a validación de interoperabilidad entre Python y el IDE.
 
 El [JSON Schema Draft 7](lumic.schema.json) define la estructura existente del IDE.
-La [propuesta](../../../lumic_contract_proposal.md) registra decisiones pendientes;
-la [guía para Python](../../../lumic_python_handoff.md) explica la adaptación.
+La [guía de interoperabilidad](../../../lumic_python_handoff.md) explica la adaptación
+y los [requisitos aún no especificados](../../../lumic_python_handoff.md#requisitos-de-interoperabilidad).
 
 ## Contenedor
 
@@ -125,5 +125,5 @@ npm.cmd run test:run -- src/tests/contracts/lumicStructure.test.ts --maxWorkers=
 
 La suite comprueba campos del esquema, ausencias, valores `null`, geometría,
 referencias de origen, depuración, compatibilidad, roundtrip y referencias locales
-del esquema. Falta contrastarlo con un motor estándar de JSON Schema; la suite no
-lo sustituye y no hay uno instalado en este entorno.
+del esquema. Estas pruebas no sustituyen la validación con un motor estándar
+de JSON Schema Draft 7.

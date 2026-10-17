@@ -38,9 +38,9 @@ Los modelos públicos `LumiProject` y `LumiFile` conservan sus nombres. El adapt
 
 Los metadatos **no son portables**: copiar la carpeta a otra computadora no traslada IDs, pestañas ni principal. Allí hay que abrir la carpeta y volver a seleccionar el principal; no se infiere por el nombre `principal.lumi`. Los borradores viven en memoria y no son recuperación frente a una caída del proceso o del sistema. Un renombrado externo o una carpeta movida fuera del IDE puede requerir reabrirla y volver a establecer sus referencias locales.
 
-## Responsabilidades y seguridad
+## Arquitectura y seguridad
 
-| Módulo | Responsabilidad y comprobación independiente |
+| Módulo | Función |
 | --- | --- |
 | `electron/workspaces/WorkspaceService.ts` | Operaciones de proyecto y persistencia. Recibe modelos/rutas autorizadas y devuelve proyectos o errores. Pruebas con directorios temporales reales. |
 | `safeFiles.ts`, `projectValidation.ts`, `workspaceMetadata.ts` | Validación de nombres y rutas, límites, escritura y metadatos versionados. No interpretan Lumi. |
@@ -82,4 +82,7 @@ Desde la raíz:
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-Las pruebas de escritorio usan un perfil `userData` y carpetas temporales propios. En `test:workspace` solo se automatizan las elecciones y respuestas de los diálogos; IPC, renderer, operaciones de disco, papelera y Python son reales. Los tests de sesión y de IPC sí usan dobles controlados donde corresponde. La denegación de papelera simulada se distingue de la prueba real de archivo de solo lectura de Windows.
+Las pruebas de escritorio usan un perfil `userData` y carpetas temporales propios.
+`test:workspace` automatiza las respuestas de los diálogos y ejercita IPC, renderer,
+operaciones de disco, papelera y Python. Las pruebas unitarias de sesión e IPC
+utilizan dobles controlados para reproducir errores y condiciones de carrera.

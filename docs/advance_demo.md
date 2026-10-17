@@ -1,8 +1,9 @@
-# L-020 Semantic and Interpreter Demo
+# Semantic and Interpreter Demo
 
 ## Objective
 
-Demonstrate semantic validation and fixture-based execution without depending on a completed parser.
+Run semantic validation and interpretation using predefined fixtures. This
+demonstration bypasses source parsing and does not exercise the complete compiler pipeline.
 
 The demonstration covers:
 
@@ -36,17 +37,15 @@ No se puede asignar un valor de tipo 'entero' a una variable de tipo 'booleano'.
 Sugerencia: Utilice un valor compatible con el tipo declarado.
 ```
 
-## Run the automated evidence
+## Automated tests
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest tests\demo\test_semantic_interpreter_demo.py -v
 ```
 
-## Presentation checklist
+## Input and scope
 
-- Explain that the fixture temporarily replaces parser output.
-- Show the variable declaration in the fixture.
-- Identify the condition and loop nodes.
-- Run the valid program and compare its three output lines.
-- Show the invalid assignment and its source location.
-- Explain that parser integration will replace the fixture, not the semantic rules.
+The demonstration reads `demos/fixtures/semantic_interpreter_demo.json` through
+`demos/semantic_interpreter_demo.py`. The fixture supplies the AST-like structures
+used by the semantic analyzer and interpreter; it is not parser output produced
+from a `.lumi` source file during this command.
