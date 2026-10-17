@@ -1,105 +1,112 @@
-# `.lumic`: candidato estructural v1.0.0
+# `.lumic`: referencia del candidato v1.0.0
 
-Estado: base TypeScript autorizada por la responsable del IDE; pendiente de
-validación por Gaby y Grei. No equivale al cierre completo de L-009.
+Contrato candidato v1.0.0, pendiente de revisión y acuerdo con Gaby y Grei.
 
-El [JSON Schema Draft 7](lumic.schema.json) describe todos los campos del contenedor
-existente. No incluye AST ni una respuesta del worker. Los ejemplos son datos de
-demostración; no son evidencia de compilación espacial Python.
+El [JSON Schema Draft 7](lumic.schema.json) define la estructura existente del IDE.
+La [propuesta](../../../lumic_contract_proposal.md) registra decisiones pendientes;
+la [guía para Python](../../../lumic_python_handoff.md) explica la adaptación.
 
-## Contenedor y datos
+## Contenedor
 
-El archivo es un documento JSON con extensión `.lumic`. El IDE lo descarga como
-`application/json`, sin compresión. Los campos obligatorios son `format`,
-`schemaVersion`, `compiledAt`, `compiler`, `project`, `scenePlan` y
-`diagnosticsSummary`. `debugSteps` y `metadata` son opcionales.
+El archivo es JSON con extensión `.lumic`, descargado como `application/json`, sin
+compresión. No contiene AST ni una respuesta del worker. `?` indica un campo
+opcional; todos los demás campos de las tablas son obligatorios.
 
-- `format` es exactamente `lumic`.
-- `compiler` declara `name`, `version` y `target`, todos strings.
-- `project` declara `id`, `name`, `entryFile` como strings y `sourceFilesCount`
-  como número. `sourceChecksum` es un string opcional, sin algoritmo acordado.
-- `scenePlan` declara `version` y `rooms`. `metadata` y `debugInfo` son opcionales.
-- Cada habitación declara `id`, `name`, `dimensions`, `floor`, las cuatro `walls`,
-  arreglos `doors`, `windows`, `objects`, y `calculatedArea`, `calculatedVolume`.
-  `originOffset` es opcional.
-- Cada objeto declara `id`, `type`, `name`, `position`, `rotation`, `dimensions`.
-  Color, material, referencias de origen, flags y `roomId` son opcionales.
-- Cada abertura declara `id`, `wall`, `position`, `width`, `height`; `sourceRef`
-  es opcional. `floor.material` y el color de cada pared son obligatorios.
-- `diagnosticsSummary` contiene números `totalErrors`, `totalWarnings`,
-  `totalSpatialIssues` y booleano `hasBlockingErrors`. No contiene diagnósticos
-  completos. Los números no sustituyen decisiones sobre severidad del núcleo.
+| Campo | Tipo |
+|---|---|
+| `format` | Literal `"lumic"` |
+| `schemaVersion`, `compiledAt` | string |
+| `compiler` | `{name: string, version: string, target: string}` |
+| `project` | `{id: string, name: string, entryFile: string, sourceFilesCount: number, sourceChecksum?: string}` |
+| `scenePlan` | ScenePlan de intercambio |
+| `diagnosticsSummary` | `{totalErrors: number, totalWarnings: number, totalSpatialIssues: number, hasBlockingErrors: boolean}` |
+| `debugSteps?` | `DebugStep[]` |
+| `metadata?` | `Record<string, unknown>` |
 
-Las propiedades, tipos y campos obligatorios exactos de cada nivel están en el
-esquema. Los objetos admiten propiedades adicionales, conservando el comportamiento
-anterior y los archivos con extensiones. No se interpretan como capacidades nuevas.
-Los opcionales pueden omitirse; `null` no sustituye un campo de otro tipo.
+El exportador actual escribe `schemaVersion: "1.0.0"` y productor `lumi-compiler`,
+versión `1.0.0`, target `lumi-3d-scene`. No calcula `sourceChecksum`. Estos valores
+no implican que Python ya produzca el archivo. `diagnosticsSummary` guarda un
+resumen, no diagnósticos completos ni una equivalencia de severidad con el núcleo.
 
-## Unidades y coordenadas existentes
+## ScenePlan de intercambio
+
+| Modelo | Campos |
+|---|---|
+| `ScenePlan` | `version: string`, `rooms: RoomModel[]`, `metadata?: Record<string, unknown>`, `debugInfo?: ScenePlanDebugInfo` |
+| `RoomModel` | `id`, `name`: string; `dimensions`: tupla numérica; `floor`, `walls`, `doors[]`, `windows[]`, `objects[]`; `calculatedArea`, `calculatedVolume`: number; `originOffset?`: tupla numérica |
+| Piso | `material: string`, `color?: string` |
+| `walls` | `north`, `south`, `east`, `west`, cada una con `color: string`, `material?: string` |
+| Objeto | `id`, `type`, `name`: string; `position`, `rotation`, `dimensions`: tuplas numéricas; `color?`, `material?`, `roomId?`: string; `sourceRef?`; `hasCollision?`, `isOutOfBounds?`, `hasError?`, `hasWarning?`: boolean |
+| Puerta o ventana | `id: string`, `wall: "norte" \| "sur" \| "este" \| "oeste"`; `position`, `width`, `height`: number; `sourceRef?` |
+| `ScenePlanDebugInfo` | `totalEntities`, `collisionCount`, `warningsCount`: number; `compiledAt: string` |
+
+Los tipos y campos exactos están en el esquema. Todos los objetos admiten
+propiedades adicionales. Los opcionales pueden omitirse; `null` no sustituye
+valores de otro tipo.
+
+## Unidades y coordenadas
 
 | Dato | Convención del visor |
 |---|---|
 | Posición de objeto | `[x, y, z]`, origen en el centro del suelo |
 | Rotación | `[rx, ry, rz]` en grados; el renderer convierte a radianes |
-| Tamaño de objeto | `[ancho X, altura Y, profundidad Z]`, metros |
-| Tamaño de habitación | `[ancho X, largo Z, altura Y]` |
-| Orientación de paredes | Norte hacia -Z, sur hacia +Z, oeste hacia -X, este hacia +X |
-| Paredes | Claves `north`, `south`, `east`, `west` |
-| Pared de una abertura | Valores `norte`, `sur`, `este`, `oeste` |
+| Dimensiones de objeto | `[ancho X, altura Y, profundidad Z]`, metros |
+| Dimensiones de habitación | `[ancho X, largo Z, altura Y]` |
+| Orientación | Norte hacia -Z, sur hacia +Z, oeste hacia -X, este hacia +X |
+| Paredes y aberturas | Claves inglesas en `walls`; valores españoles en `wall` |
 
-Las dimensiones deben ser tres números finitos estrictamente positivos; posición,
-rotación y desplazamientos son números finitos. Las unidades de habitación deben
-ser coherentes con las del visor; su correspondencia con el modelo Python aún debe
-acordarse. No se convierte una unidad ni se inventa el origen de aberturas.
+Las tuplas tienen tres números finitos. Las dimensiones y los tamaños de aberturas
+son estrictamente positivos. Posición, rotación y desplazamientos admiten números
+finitos. Las unidades de habitación deben ser coherentes con el visor; falta
+acordar su correspondencia con Python y el origen del desplazamiento de aberturas.
 
-## Identificadores y referencias
+## Identificadores y origen del código
 
-Los IDs de habitaciones y objetos son strings no vacíos, igual que en el validador
-anterior. IDs de aberturas, proyecto y referencias entre entidades se comprueban
-como strings conforme a sus interfaces. La unicidad, ámbito, estabilidad y
-resolución de referencias permanecen pendientes: el perfil estructural no rechaza
-IDs repetidos ni garantiza que `roomId` o `activeObjectId` existan.
+Los IDs de habitaciones, objetos y pasos son strings no vacíos. Los IDs de
+aberturas, proyecto y las referencias entre entidades se comprueban como strings.
+No se exige todavía unicidad o estabilidad ni se resuelven `roomId` y
+`activeObjectId`: pueden aceptarse IDs repetidos o referencias sin destino.
 
-`SourceReference` conserva `file` no vacío, `line` entero >= 1 y `column` opcional
-entero >= 1. No se normalizan rutas ni se comprueba acceso al archivo. La identidad
-entre archivos, importaciones y snapshots requiere acuerdo con el núcleo.
+En `SourceReference`, `file` y `line` son obligatorios; `column` es opcional.
+`file` debe ser texto no vacío y las ubicaciones, enteros >= 1. No se normalizan
+rutas ni se comprueba acceso a archivos. La identidad entre archivos, importaciones
+y snapshots requiere acuerdo con el núcleo.
 
 ## Depuración
 
-`debugSteps`, cuando está presente, es un arreglo. Cada paso requiere `id`,
-`stepIndex` entero >= 0, `eventType`, `description`, `sourceRef`, `lineNumber`,
-`codeLine`, `actionDescription` y `sceneSnapshot`. Este último debe cumplir el mismo
-ScenePlan estructural, incluso si todavía no hay habitaciones.
+`debugSteps` es opcional. Cada `DebugStep` requiere `id`, `stepIndex` entero >= 0,
+`eventType`, `description`, `sourceRef`, `lineNumber` entero >= 1, `codeLine`,
+`actionDescription` y `sceneSnapshot`. Este último cumple el mismo ScenePlan,
+incluidas las escenas vacías. `description` y `id` no pueden estar vacíos;
+`codeLine` y `actionDescription` son strings. Los opcionales son `roomId`,
+`activeObjectId`, `assistantMessage` como strings y `spatialState` como objeto.
 
-`eventType` conserva los valores `start`, `declaration`, `assignment`, `condition`,
-`loop`, `room_create`, `place_object`, `move_object`, `rotate_object`,
-`spatial_warning`, `spatial_error`, `end`. Los opcionales son `roomId`,
-`activeObjectId`, `spatialState` y `assistantMessage`.
+`eventType` admite `start`, `declaration`, `assignment`, `condition`, `loop`,
+`room_create`, `place_object`, `move_object`, `rotate_object`, `spatial_warning`,
+`spatial_error` y `end`.
 
-Los alias `lineNumber` y `actionDescription` se conservan. Se comprueban sus tipos,
-sin imponer todavía igualdad con `sourceRef.line` y `description`, continuidad de
+`lineNumber` y `actionDescription` conservan su función de alias de `sourceRef.line`
+y `description`. Se verifican sus tipos, sin exigir aún igualdad, continuidad de
 índices, orden temporal ni resolución de entidades entre snapshots.
 
-## Versiones, fechas y consistencia pendiente
+## Compatibilidad y límites de validación
 
-El exportador actual produce `schemaVersion: "1.0.0"`. El nombre de esta carpeta
-versiona el candidato, no declara una política final de negociación.
+| Área | Comprobación actual y límite |
+|---|---|
+| Versiones | Se conserva el prefijo numérico de versión mayor 1: admite `1.0`, `01.0` y `1legacy`. No es SemVer estricto. `schemaVersion` y `scenePlan.version` se comprueban por separado. |
+| Fechas | Strings, sin exigir ISO 8601. |
+| Conteos, área y volumen | Números finitos, sin fórmulas, rangos ni consistencia de totales. |
+| Materiales y colores | Strings, sin catálogo adicional. |
+| Extensiones | Se aceptan campos desconocidos; checksum y límites de tamaño/profundidad no están definidos. |
+| Escenas vacías | Se aceptan al importar; `LumicFileService` solo exporta resultados exitosos con al menos una habitación. |
 
-El esquema reproduce la compatibilidad mayor heredada: el prefijo numérico debe
-representar 1. Por eso también se aceptan `1.0`, `01.0` y cadenas como `1legacy`.
-Esto es una limitación preservada de forma deliberada, no una definición de SemVer.
-`scenePlan.version` se comprueba por separado. Exigir SemVer estricto, una versión
-exacta o igualdad entre ambas versiones queda pendiente del equipo.
-
-Las fechas son strings, sin imponer todavía ISO 8601. Conteos, áreas y volúmenes
-son números finitos, sin imponer fórmulas, rangos o igualdad de totales. Materiales
-y colores son strings sin catálogo adicional. El esquema no fija checksum,
-límites de tamaño/profundidad ni políticas de diagnóstico espacial.
-
-Se aceptan escenas vacías al importar, como antes. `LumicFileService` mantiene su
-regla separada de exportar solo resultados exitosos con al menos una habitación.
+La carpeta versiona el candidato, no fija una política final de negociación.
+SemVer estricto, versiones exactas, igualdad entre versiones, diagnósticos
+espaciales y las demás reglas pendientes requieren acuerdo con el equipo.
 
 ## Ejemplos y comprobación
+
+Los ejemplos son datos de demostración, no salidas espaciales de Python.
 
 | Archivo | Resultado estructural |
 |---|---|
@@ -110,14 +117,13 @@ regla separada de exportar solo resultados exitosos con al menos una habitación
 | [invalid-source-reference.lumic](examples/invalid-source-reference.lumic) | Inválido: línea cero y columna de texto |
 | [invalid-debug.lumic](examples/invalid-debug.lumic) | Inválido: evento desconocido |
 
-Desde `apps/desktop/renderer`, ejecutar:
+Desde `apps/desktop/renderer`:
 
 ```powershell
 npm.cmd run test:run -- src/tests/contracts/lumicStructure.test.ts --maxWorkers=2
 ```
 
-La suite genera un documento con todos los campos del esquema y verifica rechazo
-de campos obligatorios ausentes y valores null, además de geometría, referencias,
-depuración, compatibilidad y roundtrip. Comprueba referencias locales del esquema.
-No es un motor general de JSON Schema ni sustituye su validación con una herramienta
-estándar: no hay tal motor instalado en este entorno y no se instalaron dependencias.
+La suite comprueba campos del esquema, ausencias, valores `null`, geometría,
+referencias de origen, depuración, compatibilidad, roundtrip y referencias locales
+del esquema. Falta contrastarlo con un motor estándar de JSON Schema; la suite no
+lo sustituye y no hay uno instalado en este entorno.

@@ -1,134 +1,70 @@
 # L-009: propuesta de contrato de intercambio `.lumic`
 
-Estado: alternativa A autorizada por la responsable del IDE como base candidata
-v1.0.0, con validación estructural de los campos existentes. No aprobada por Gaby
-y Grei. El cierre de L-009 está pendiente. Véanse el
-[esquema y ejemplos](contracts/lumic/v1.0.0/README.md) y la
-[entrega para Python](lumic_python_handoff.md).
+Contrato candidato v1.0.0, pendiente de revisión y acuerdo con Gaby y Grei.
 
-## Base documental
+Este documento registra la base elegida y las decisiones pendientes. Los campos,
+convenciones, ejemplos y comprobaciones están en la
+[referencia técnica](contracts/lumic/v1.0.0/README.md); la adaptación desde Python,
+en la [guía de integración](lumic_python_handoff.md).
 
-- [README: formato y arquitectura objetivo](../README.md).
-- [Contrato AST](ast_contract.md): separa expresamente el AST de ScenePlan.
-- [ScenePlan interno Python](../spatial/scene_plan.py).
-- [ScenePlan del visor](../apps/desktop/renderer/src/types/domain/spatial.ts).
-- [Contenedor del IDE](../apps/desktop/renderer/src/types/domain/contracts.ts).
-- [Eventos de depuración](../apps/desktop/renderer/src/types/domain/debug.ts).
-- [Validadores actuales](../apps/desktop/renderer/src/services/compiler/contracts/contractValidator.ts).
-- [Exportación e importación](../apps/desktop/renderer/src/services/storage/LumicFileService.ts).
-- [Ejemplo JSON existente](../apps/desktop/renderer/src/data/contracts/sampleLumicArtifact.json).
+## Estructuras y fuentes
 
-El repositorio no contiene las fichas oficiales identificadas como L-028 y L-029.
-Los efectos descritos abajo corresponden al consumo de escenas y a la depuración;
-deben contrastarse con los criterios de aceptación de esas fichas.
-
-## Estructuras que deben permanecer separadas
-
-| Estructura | Responsabilidad y situación actual |
+| Estructura | Función |
 |---|---|
-| `.lumic` | Contenedor JSON persistente: versión, productor, proyecto, escena, resumen diagnóstico y pasos opcionales. Está implementado en el IDE. |
-| ScenePlan de intercambio | Datos concretos consumidos por el visor. La propuesta reutiliza el modelo TypeScript existente, sujeto a aprobación. |
-| ScenePlan interno Python | Dataclasses con valores resueltos y ubicaciones de origen. No se propone modificarlo. |
-| AST serializado | Construcciones y expresiones del lenguaje, con ubicación. No sustituye una escena resuelta ni el contenedor compilado. |
-| Diagnósticos | Problemas de análisis o ejecución. El contenedor actual solo incluye un resumen, no los diagnósticos completos. |
-| Eventos de depuración | Secuencia opcional de `DebugStep`, con referencia de origen y `sceneSnapshot`. No es un AST ni una respuesta del protocolo del worker. |
+| `.lumic` | Contenedor JSON persistente implementado en el IDE: versión, productor, proyecto, escena, resumen diagnóstico y pasos opcionales. |
+| ScenePlan de intercambio | Modelo TypeScript que consume el visor, usado como base candidata. |
+| ScenePlan interno Python | Dataclasses de valores resueltos con ubicaciones de origen; requiere adaptación al intercambio. |
+| AST serializado | Construcciones y expresiones del lenguaje; no representa una escena resuelta. |
+| Diagnósticos | Problemas de análisis o ejecución. El archivo actual guarda solo un resumen. |
+| Eventos de depuración | Secuencia opcional de `DebugStep`, con `sourceRef` y `sceneSnapshot`, separada del AST y del protocolo del worker. |
 
-## Alternativas de formato para decidir antes de implementar
+La propuesta se apoya en la [arquitectura del proyecto](../README.md), el
+[contrato AST](ast_contract.md), el [modelo espacial Python](../spatial/scene_plan.py)
+y los tipos TypeScript de [escena](../apps/desktop/renderer/src/types/domain/spatial.ts),
+[contenedor](../apps/desktop/renderer/src/types/domain/contracts.ts) y
+[depuración](../apps/desktop/renderer/src/types/domain/debug.ts).
 
-| Alternativa | Consumo de escenas / L-028 | Depuración / L-029 |
-|---|---|---|
-| A. Reutilizar `LumiCompiledArtifact` y ScenePlan TypeScript como candidato v1.0.0 | Conserva los nombres, el visor y los archivos válidos actuales. Requiere un adaptador futuro desde Python y acordar la procedencia de campos ausentes. | Conserva `DebugStep`, `sourceRef` y `sceneSnapshot`. Requiere acordar identidad y referencias entre escenas. |
-| B. Definir un DTO nuevo basado en ScenePlan Python | Conserva la cercanía con el modelo interno, pero exige adaptar el visor y decidir migración/versionado de archivos existentes. | Exige adaptar también snapshots y referencias de los eventos. |
+## Base elegida
 
-Se trabaja sobre A por autorización de la responsable del IDE. Todavía no es una
-decisión conjunta del equipo.
-Ninguna alternativa autoriza generar escenas desde el AST en TypeScript ni modificar
+La responsable del IDE autorizó reutilizar `LumiCompiledArtifact` y el ScenePlan
+TypeScript. Esto conserva nombres, archivos válidos, visor y snapshots, y requiere
+un adaptador futuro desde Python. Falta ratificar esta base con Gaby y Grei.
+
+La alternativa de crear un DTO basado en Python acercaría el intercambio al modelo
+interno, pero exigiría adaptar el visor, los eventos y la compatibilidad de archivos.
+Ninguna opción incluye generar escenas desde el AST en TypeScript ni modificar
 unilateralmente el núcleo Python.
 
-## Contenido declarado existente
-
-La exportación actual escribe `format: "lumic"`, `schemaVersion: "1.0.0"` y
-metadatos de productor `lumi-compiler`, versión `1.0.0`, target `lumi-3d-scene`.
-Esos valores describen el exportador del IDE, no prueban la existencia de un
-productor `.lumic` en Python.
-
-| Campo del contenedor | Tipo declarado | Obligatorio |
-|---|---|---|
-| `format` | literal `"lumic"` | Sí |
-| `schemaVersion` | string | Sí |
-| `compiledAt` | string | Sí |
-| `compiler` | `{name: string, version: string, target: string}` | Sí |
-| `project` | `{id: string, name: string, entryFile: string, sourceFilesCount: number, sourceChecksum?: string}` | Sí |
-| `scenePlan` | ScenePlan de intercambio | Sí |
-| `debugSteps` | `DebugStep[]` | No |
-| `diagnosticsSummary` | `{totalErrors: number, totalWarnings: number, totalSpatialIssues: number, hasBlockingErrors: boolean}` | Sí |
-| `metadata` | `Record<string, unknown>` | No |
-
-El ejemplo enlazado es JSON válido del formato existente; todavía no certifica un
-acuerdo completo del equipo. El generador no calcula `sourceChecksum`. El validador
-del archivo ahora comprueba los campos declarados, pero no impone las reglas
-semánticas, de identidad y de versiones pendientes.
-
-## Convenciones existentes y límites
-
-- Objetos: `position = [x, y, z]`, origen en el centro del suelo;
-  `rotation = [rx, ry, rz]` en grados;
-  `dimensions = [ancho, altura, profundidad]` en metros.
-- Habitaciones: `dimensions = [ancho X, largo Z, altura Y]`. El modelo interno
-  Python conserva dimensiones por nombre, con ubicaciones de origen.
-- Paredes: claves `north`, `south`, `east`, `west`. Las aberturas usan valores
-  `norte`, `sur`, `este`, `oeste` en `wall`.
-- Fuente: el IDE declara `file`, `line` y `column` opcional en `SourceReference`.
-  Python conserva `file`, `line`, `column` en `SourceLocation`, incluso por valor.
-- Los objetos y las aberturas tienen IDs; las habitaciones también. Python no
-  declara IDs equivalentes en su ScenePlan interno.
-- Los eventos conservan `lineNumber` y `actionDescription` como alias existentes
-  de `sourceRef.line` y `description`.
-- El modelo interno Python no fija unidades ni origen mediante sus tipos. No se
-  debe asumir una conversión implícita.
-- El validador de versiones actual admite `1.0` y extrae solo la versión mayor.
-  Cambiarlo a SemVer estricto o a una versión exacta requiere decidir compatibilidad.
+Las fichas oficiales de L-028 y L-029 no están disponibles en el repositorio. El
+impacto sobre consumo de escenas y depuración debe contrastarse con esas fichas;
+este documento no les asigna responsabilidades.
 
 ## Decisiones pendientes del equipo
 
-| Decisión | Alternativas y consecuencias |
+| Tema | Acuerdo necesario |
 |---|---|
-| Base del contenedor | Elegir A o B antes de publicar un esquema canónico. |
-| Identidad | IDs únicos por escena o por habitación; estabilidad entre recompilaciones y snapshots. Cambia cómo resolver selección y eventos. |
-| Aberturas | Formalizar el origen y signo del desplazamiento `position` según pared. Una interpretación distinta desplaza geometría. |
-| Datos faltantes | Determinar quién suministra dimensiones de objetos, piso, paredes y tamaños de aberturas. Un catálogo y sus valores por defecto no pueden inventarse en el adaptador. |
-| Versiones | Conservar compatibilidad mayor, exigir SemVer o aceptar solo versiones publicadas. Acordar relación entre versión del contenedor y de escena. |
-| Referencias de origen | Identidad de archivo, ámbito de nombres y conservación de ubicaciones; no normalizar rutas unilateralmente. |
-| Diagnósticos | Mantener resumen o añadir lista completa. Python no aporta severidad equivalente a la UI; no inferirla a partir del código. |
-| Depuración | Presencia opcional, orden/continuidad de pasos, alcance de referencias y política de snapshots. No fabricar eventos desde escenas estáticas. |
-| Extensibilidad | Política de campos desconocidos y metadata; impacto en compatibilidad futura y límites de importación. |
-| Consistencia | Escenas vacías, conteos derivados, área/volumen, fechas y checksum: definir restricciones más allá de los tipos existentes. |
+| Contenedor | Ratificar la base TypeScript candidata antes de declararla canónica. |
+| Identidad | Definir ámbito y unicidad de IDs, estabilidad entre recompilaciones y resolución de entidades en escenas y snapshots. |
+| Aberturas | Fijar origen y signo de `position` según pared. |
+| Datos espaciales | Acordar unidades y quién proporciona dimensiones de objetos, piso, paredes, tamaños de aberturas y catálogo; no inventar valores por defecto en el adaptador. |
+| Versiones | Elegir compatibilidad mayor, SemVer estricto o versiones publicadas, y la relación entre versión del contenedor y de escena. |
+| Origen del código | Acordar identidad de archivo, ámbito de nombres y conservación de ubicaciones entre archivos e importaciones, sin normalizar rutas unilateralmente. |
+| Diagnósticos | Decidir si conservar solo el resumen o añadir diagnósticos completos; no inferir severidad de los códigos del núcleo. |
+| Depuración | Ratificar eventos opcionales, orden y continuidad, alias y política de snapshots; no fabricar trazas desde escenas estáticas. |
+| Extensibilidad | Acordar campos desconocidos, `metadata` y límites de tamaño y profundidad de importación. |
+| Consistencia | Definir reglas para escenas vacías, conteos, área, volumen, fechas y checksum. |
 
-## Entrega preliminar para Gaby y Grei
+## Avance y cierre de L-009
 
-Compartir este documento, el ejemplo JSON existente y las definiciones TypeScript
-del contenedor, escena, referencias de origen y depuración.
+| Estado | Trabajo |
+|---|---|
+| Implementado en el IDE | Esquema versionado, ejemplos válidos e inválidos, validación estructural y pruebas de rechazo, compatibilidad y roundtrip. |
+| Pendiente para cerrar el contrato | Revisar y registrar los acuerdos con Gaby y Grei, ajustar esquema y pruebas a ellos y contrastar el esquema con un motor estándar de JSON Schema. |
+| Dependencia del núcleo | Producción de ScenePlan y eventos reales, y adaptación de los datos espaciales faltantes. |
 
-Si se elige A, un productor Python futuro deberá entregar el contenedor y los
-campos concretos de escena declarados arriba y en los tipos enlazados. No basta
-con `asdict(ScenePlan)` ni con serializar el AST. El consumidor podrá separar
-`scenePlan` para visualizar y `debugSteps` para depurar, después de validar ambos.
+Electron ya se comunica con Python. Sigue pendiente que el backend produzca y
+entregue ScenePlan y eventos de depuración: el protocolo anuncia `scenePlan: false`
+y `debugTrace: false`, y el adaptador IDE conserva `scenePlan: null`.
 
-El protocolo actual anuncia `scenePlan: false` y `debugTrace: false`; las fachadas
-no devuelven escenas y el adaptador del renderer mantiene `scenePlan: null`.
-La conexión real, la generación desde AST y la disponibilidad de los datos
-espaciales siguen siendo dependencias pendientes, no funciones que este documento
-declare implementadas.
-
-## Criterios para completar la parte IDE de L-009
-
-1. Registrar la decisión de base y las reglas pendientes con el equipo.
-2. Publicar el JSON Schema versionado y ejemplos positivos y negativos.
-3. Completar la validación de todos los campos y las referencias acordadas.
-4. Verificar compatibilidad con los archivos actuales, visor y depurador.
-5. Probar rechazo de datos inválidos y concordancia entre esquema y validador.
-6. Entregar especificación y ejemplos a Gaby y Grei, distinguiendo el contrato
-   acordado de la implementación Python todavía pendiente.
-
-No se puede declarar cerrado L-009 ni aprobado el formato únicamente con esta
-propuesta. No se continúa con L-030 ni con otra responsabilidad.
+La guía de integración y los ejemplos permiten revisar el intercambio, pero no
+demuestran que el compilador Python ya produzca `.lumic` ni cierran L-009.
