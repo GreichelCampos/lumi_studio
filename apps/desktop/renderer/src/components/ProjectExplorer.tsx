@@ -55,7 +55,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
   const [activeMenuFileId, setActiveMenuFileId] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close context dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -71,7 +70,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
       id="project-explorer-panel"
       className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none"
     >
-      {/* Panel Header */}
       <div className="flex items-center justify-between px-4 py-3 glass-panel-header">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-[var(--ide-accent)] drop-shadow-[0_0_8px_var(--ide-accent-bg)]" />
@@ -108,7 +106,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         </div>
       </div>
 
-      {/* Project Selector / Quick Switch */}
       <div className="px-3 pt-2.5 pb-2.5 border-b border-[var(--ide-panel-border)]">
         <div className="relative">
           {currentProject ? (
@@ -184,7 +181,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         </div>
       </div>
 
-      {/* File Tree View */}
       <div className="flex-1 overflow-y-auto px-2 py-3">
         {!currentProject ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8 space-y-3">
@@ -214,7 +210,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
           </div>
         ) : (
           <div className="mb-1">
-            {/* Root Folder Item */}
             <div
               onClick={() => setFolderOpen(!folderOpen)}
               className="flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-semibold text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] cursor-pointer select-none transition-colors"
@@ -229,7 +224,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
               </span>
             </div>
 
-            {/* Child Files */}
             {folderOpen && (
               <div className="ml-3 pl-2 border-l border-[var(--ide-panel-border)] mt-1 space-y-0.5">
                 {currentProject.files.length === 0 ? (
@@ -264,7 +258,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                           <FileCode className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[var(--ide-accent)]' : 'text-[var(--ide-text-muted)]'}`} />
                           <span className="truncate">{file.name}</span>
                           
-                          {/* Unsaved changes dot indicator */}
                           {isFileDirty && (
                             <span 
                               className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0 animate-pulse" 
@@ -272,7 +265,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                             />
                           )}
 
-                          {/* Entry file badge */}
                           {isEntry && (
                             <span 
                               className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1 py-0.2 rounded tracking-tight flex-shrink-0"
@@ -283,7 +275,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                           )}
                         </div>
 
-                        {/* File Action Menu Button */}
                         <div className="relative flex items-center gap-0.5 flex-shrink-0">
                           <button
                             onClick={(e) => {
@@ -298,7 +289,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                             <MoreVertical className="w-3.5 h-3.5" />
                           </button>
 
-                          {/* Dropdown Menu */}
                           {isMenuOpen && (
                             <div
                               ref={menuRef}
@@ -352,7 +342,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         )}
       </div>
 
-      {/* Bottom info banner */}
       {currentProject && (
         <div className="p-3 bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border-t border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)]">
           <div className="flex items-center justify-between mb-1">

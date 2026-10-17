@@ -60,9 +60,7 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
 
   return (
     <div className="flex items-center justify-between glass-panel-header px-2 pt-2 border-b border-[var(--ide-panel-border)] select-none min-w-0 overflow-hidden">
-      {/* Scrollable Tabs Track with Navigation Arrows */}
       <div className="flex items-center min-w-0 flex-1 relative overflow-hidden pr-2">
-        {/* Scroll Left Chevron */}
         {canScrollLeft && (
           <button
             onClick={() => scrollTabs('left')}
@@ -74,7 +72,6 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
           </button>
         )}
 
-        {/* Tabs Container */}
         <div
           ref={tabsContainerRef}
           className="flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth min-w-0 flex-1 py-0.5"
@@ -99,14 +96,12 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
                 <FileCode className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[var(--ide-accent)]' : 'text-[var(--ide-text-muted)]'}`} />
                 <span className="truncate max-w-[120px] sm:max-w-[140px]">{file.name}</span>
 
-                {/* Entry File Star Badge */}
                 {file.isEntry && (
                   <span title="Archivo Principal" className="inline-flex">
                     <Star className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0" />
                   </span>
                 )}
 
-                {/* Dirty indicator / Close button */}
                 <div className="flex items-center ml-1">
                   {fileDirty && (
                     <span
@@ -133,7 +128,6 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
             );
           })}
 
-          {/* Add new file button in tab bar */}
           <button
             onClick={onNewFile}
             className="p-1.5 ml-0.5 rounded-lg text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] transition-colors flex-shrink-0"
@@ -144,7 +138,6 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
           </button>
         </div>
 
-        {/* Scroll Right Chevron */}
         {canScrollRight && (
           <button
             onClick={() => scrollTabs('right')}
@@ -157,7 +150,6 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
         )}
       </div>
 
-      {/* Action Buttons Slot (Save, Copy, or custom actions) */}
       {actionElements && (
         <div className="flex items-center gap-1.5 flex-shrink-0 pb-1.5 pl-2 z-10">
           {actionElements}

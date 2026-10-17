@@ -81,7 +81,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   const [ideEvents, setIdeEvents] = useState<IdeLogEvent[]>(() => ideLogger.getHistory());
   const [assistantMsg, setAssistantMsg] = useState<AssistantMessage>(() => lumiAssistant.getMessage());
 
-  // Subscribe to Lumi Assistant service
   useEffect(() => {
     const unsubscribe = lumiAssistant.subscribe((msg) => {
       setAssistantMsg(msg);
@@ -89,7 +88,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
     return unsubscribe;
   }, []);
 
-  // Subscribe to centralized IDE events
   useEffect(() => {
     const unsubscribe = ideLogger.subscribe((newEvent) => {
       setIdeEvents((prev) => [...prev.slice(-150), newEvent]);
@@ -97,7 +95,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
     return unsubscribe;
   }, []);
 
-  // Diagnostic counts
   const errorCount = useMemo(() => diagnostics.filter((d) => d.severity === 'error').length, [diagnostics]);
   const warningCount = useMemo(() => diagnostics.filter((d) => d.severity === 'warning').length, [diagnostics]);
 
@@ -116,12 +113,10 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
       id="console-panel"
       className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden"
     >
-      {/* Console Top Navigation Bar */}
       <div className="flex items-center justify-between px-3 py-1.5 glass-panel-header select-none">
         <div className="flex items-center gap-1.5">
           <Terminal className="w-4 h-4 text-[var(--ide-accent)] mr-1" />
           
-          {/* Main Tab: Salida */}
           <button
             id="tab-salida-btn"
             onClick={() => setActiveMainTab('salida')}
@@ -134,7 +129,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             <span>Salida</span>
           </button>
 
-          {/* Main Tab: Diagnósticos */}
           <button
             id="tab-diagnosticos-btn"
             onClick={() => setActiveMainTab('diagnosticos')}
@@ -160,7 +154,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             )}
           </button>
 
-          {/* Main Tab: Depurador Espacial */}
           <button
             id="tab-depurador-btn"
             onClick={() => setActiveMainTab('depurador')}
@@ -180,7 +173,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
           </button>
         </div>
 
-        {/* State / Status Indicator Badge */}
         <div className="flex items-center gap-2">
           {isStale && (
             <span className="flex items-center gap-1 text-xs text-amber-300 glass-btn border-amber-400/40 px-2.5 py-1 rounded-full font-medium" title="El código ha cambiado. Presiona Compilar (F5)">
@@ -225,11 +217,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
         </div>
       </div>
 
-      {/* Main Console Content Body */}
       <div className="flex-1 relative flex overflow-hidden min-h-0">
-        {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto p-3 pb-24 font-mono text-xs text-[var(--ide-text)] space-y-2 min-w-0">
-          {/* TAB 1: SALIDA / EVENTOS */}
           {activeMainTab === 'salida' && (
             <OutputLogView
               events={ideEvents}
@@ -243,7 +232,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             />
           )}
 
-          {/* TAB 2: DIAGNÓSTICOS NAVEGABLES */}
           {activeMainTab === 'diagnosticos' && (
             <DiagnosticsListView
               diagnostics={diagnostics}
@@ -252,7 +240,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             />
           )}
 
-          {/* TAB 3: DEPURADOR ESPACIAL */}
           {activeMainTab === 'depurador' && (
             <SpatialDebuggerView
               debugSteps={debugSteps}
@@ -274,7 +261,6 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
           )}
         </div>
 
-        {/* Right Lumi Companion Area: Mascot with speech bubble popping up to its left */}
         <div
           aria-label="Asistente Lumi"
           className="absolute right-4 bottom-2 z-20 pointer-events-auto flex items-center justify-end select-none"

@@ -48,16 +48,13 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
 
   return (
     <div className="space-y-3 font-sans">
-      {/* Debugger Control Header Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-2 glass-panel-header p-2.5 rounded-2xl border border-white/20 shadow-md">
-        {/* Step Counter & Status Badge */}
         <div className="flex items-center gap-2">
           <Bug className="w-4 h-4 text-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
           <span className="text-xs font-bold text-slate-200">
             Paso {debugSteps.length > 0 ? currentStepIndex + 1 : 0} de {debugSteps.length}
           </span>
 
-          {/* Status Indicator */}
           <span
             className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusInfo.badgeClass}`}
           >
@@ -65,7 +62,6 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
           </span>
         </div>
 
-        {/* Controls toolbar */}
         <DebuggerControls
           stepCount={debugSteps.length}
           currentStepIndex={currentStepIndex}
@@ -84,7 +80,6 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
         />
       </div>
 
-      {/* Active Step Details */}
       {debugSteps.length > 0 && currentStep ? (
         <div className="glass-card p-3.5 space-y-2 !w-auto !h-auto">
           <div className="flex items-center justify-between text-xs text-[var(--ide-accent)]">
@@ -104,7 +99,6 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             </div>
           </div>
 
-          {/* Code Line Display */}
           <div className="font-mono text-xs text-[var(--ide-text)] bg-[var(--ide-control-bg)] p-2.5 rounded-xl border border-[var(--ide-panel-border)] shadow-inner flex items-center justify-between">
             <code>{currentStep.codeLine}</code>
             <span className="text-[10px] text-[var(--ide-text-muted)] font-sans">
@@ -112,12 +106,10 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             </span>
           </div>
 
-          {/* Action Description */}
           <p className="text-xs text-[var(--ide-text)] leading-relaxed">
             {currentStep.description || currentStep.actionDescription}
           </p>
 
-          {/* Step metadata badges */}
           <div className="flex items-center gap-2 pt-1 text-[11px] text-[var(--ide-text-muted)]">
             {currentStep.roomId && (
               <span className="glass-btn px-2 py-0.5 rounded-lg border border-[var(--ide-panel-border)]">

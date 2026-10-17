@@ -161,7 +161,6 @@ export const renderHighlightedLine = (lineText: string): React.ReactNode => {
     return <span>&nbsp;</span>;
   }
 
-  // Comentario de línea completa que inicia con '--'
   if (lineText.trim().startsWith('--')) {
     return (
       <span style={{ color: 'var(--ide-syntax-comment, #6d8276)' }} className="italic">

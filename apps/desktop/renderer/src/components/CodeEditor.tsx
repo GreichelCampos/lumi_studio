@@ -59,7 +59,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const { settings } = useIdeSettings();
   const lineHeightPx = Math.round(settings.fontSize * 1.55);
 
-  // Contenido actual del archivo activo (incorporando borradores si getFileContent está presente)
   const currentContent = activeFile
     ? getFileContent
       ? getFileContent(activeFile)
@@ -69,7 +68,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const lines = currentContent ? currentContent.split('\n') : [];
   const currentFileIsDirty = activeFile && isDirty ? isDirty(activeFile.id) : false;
 
-  // Auto-guardado periódico si está configurado en los ajustes
   useEffect(() => {
     if (settings.autoSave === 'off' || !activeFile || !currentFileIsDirty || !onSaveFile) return;
     const intervalMs = settings.autoSave === '30s' ? 30000 : 60000;
@@ -116,7 +114,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       }
       syncScroll();
 
-      // Position cursor at line
       const linesArray = currentContent.split('\n');
       let charIndex = 0;
       for (let i = 0; i < Math.min(highlightedLine - 1, linesArray.length); i++) {
@@ -127,12 +124,10 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         textareaRef.current.focus();
         setCursorPos({ line: highlightedLine, col: 1 });
       } catch (err) {
-        // ignore selection errors
       }
     }
   }, [highlightedLine, currentContent, lineHeightPx]);
 
-  // Manejador de atajos de teclado en el editor (Ctrl+S, Ctrl+Shift+S)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
@@ -174,7 +169,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       id="code-editor-panel"
       className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none"
     >
-      {/* Tab Bar & Action Controls */}
       <EditorTabBar
         files={files}
         openTabIds={openTabIds}
@@ -216,7 +210,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         }
       />
 
-      {/* Editor Main Canvas / Empty State */}
       {!activeFile ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-transparent space-y-4">
           <div className="w-16 h-16 rounded-2xl glass-card border border-[var(--ide-panel-border)] flex items-center justify-center text-[var(--ide-text)] shadow-xl">
@@ -241,7 +234,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           className="relative flex-1 flex overflow-hidden font-mono"
           style={{ fontFamily: settings.fontFamily }}
         >
-          {/* Line Numbers & Breakpoints Margin */}
           {settings.lineNumbers && (
             <div
               ref={lineNumbersRef}
@@ -285,9 +277,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             </div>
           )}
 
-          {/* Code Text Area & Highlighter Overlay Container (overflow-hidden to guarantee single scrollbar) */}
           <div className="relative flex-1 h-full overflow-hidden bg-[var(--ide-panel-solid,rgba(0,0,0,0.1))]">
-            {/* Background Syntax Highlights */}
             <div
               ref={highlightRef}
               style={{ 
@@ -349,7 +339,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         </div>
       )}
 
-      {/* Editor Status Bar */}
       {activeFile && (
         <div className="flex items-center justify-between px-4 py-1.5 bg-[var(--ide-control-bg,rgba(0,0,0,0.15))] border-t border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)] font-mono">
           <div className="flex items-center gap-3">

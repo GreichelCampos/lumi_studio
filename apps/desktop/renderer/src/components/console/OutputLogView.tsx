@@ -83,15 +83,12 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
     }
   };
 
-  // Filter events based on active filter
   const filteredEvents = useMemo(() => {
     return filterLogEvents(events, { type: activeFilterType });
   }, [events, activeFilterType]);
 
-  // Primary room resolution
   const resolvedPrimaryRoom = primaryRoom || scenePlan?.rooms[0] || null;
 
-  // Auto-scroll when new events are appended
   useEffect(() => {
     if (events.length > prevEventsLength.current) {
       if (typeof autoScrollEndRef.current?.scrollIntoView === 'function') {
@@ -103,7 +100,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
 
   return (
     <div className="space-y-2" data-testid="output-log-view">
-      {/* Optional Toolbar: Filtering & Clear Controls */}
       {showControls && (
         <div className="flex items-center justify-between text-xs pb-1 select-none border-b border-[var(--ide-panel-border)]/50">
           <div className="flex items-center gap-2">
@@ -147,7 +143,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         </div>
       )}
 
-      {/* Compiler Overview Box */}
       {lastCompileResult && (
         <div className="glass-card p-3 space-y-1.5 font-sans text-xs border border-[var(--ide-panel-border)] !w-auto !h-auto">
           <div className="flex items-center justify-between text-[11px] text-[var(--ide-text-muted)]">
@@ -188,7 +183,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         </div>
       )}
 
-      {/* Centralized Event Logs stream */}
       <div className="space-y-1 pt-1" data-testid="event-logs-stream">
         {filteredEvents.length === 0 ? (
           <div className="text-[11px] text-[var(--ide-text-muted)] italic py-2 px-1">
@@ -217,7 +211,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         )}
       </div>
 
-      {/* Compiler internal stdout logs */}
       {logs.length > 0 && (
         <div className="pt-2 border-t border-[var(--ide-panel-border)] space-y-1" data-testid="stdout-logs-stream">
           <div className="text-[10px] text-[var(--ide-text-muted)] uppercase tracking-wider font-semibold">
@@ -234,7 +227,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         </div>
       )}
 
-      {/* Primary Room Spatial Overview */}
       {resolvedPrimaryRoom && (
         <div className="mt-2 pt-2 border-t border-[var(--ide-panel-border)] text-[var(--ide-text-muted)] space-y-1 font-sans text-xs">
           <div>
@@ -255,7 +247,6 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         </div>
       )}
 
-      {/* Anchor for auto-scrolling */}
       <div ref={autoScrollEndRef} />
     </div>
   );

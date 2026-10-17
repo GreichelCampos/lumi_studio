@@ -49,7 +49,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap">
-      {/* Jump to start */}
       <button
         id="btn-debug-start"
         onClick={onJumpToStart || (() => onStepChange(0))}
@@ -60,7 +59,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <ChevronsLeft className="w-3.5 h-3.5" />
       </button>
 
-      {/* Step back */}
       <button
         id="btn-debug-prev"
         onClick={onPrevStep || (() => onStepChange(Math.max(0, currentStepIndex - 1)))}
@@ -71,7 +69,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <SkipBack className="w-3.5 h-3.5" />
       </button>
 
-      {/* Play / Pause toggle */}
       <button
         id="btn-debug-play-pause"
         onClick={onTogglePlay || onStartDebugging}
@@ -83,7 +80,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <span>{isPlaying ? 'Pausar' : 'Reproducir'}</span>
       </button>
 
-      {/* Step forward */}
       <button
         id="btn-debug-next"
         onClick={onNextStep || (() => onStepChange(Math.min(stepCount - 1, currentStepIndex + 1)))}
@@ -94,7 +90,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <SkipForward className="w-3.5 h-3.5" />
       </button>
 
-      {/* Jump to end */}
       <button
         id="btn-debug-end"
         onClick={onJumpToEnd || (() => onStepChange(stepCount - 1))}
@@ -105,7 +100,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <ChevronsRight className="w-3.5 h-3.5" />
       </button>
 
-      {/* Reset */}
       <button
         id="btn-debug-reset"
         onClick={onResetDebugger || (() => onStepChange(0))}
@@ -116,7 +110,6 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
         <RotateCcw className="w-3.5 h-3.5" />
       </button>
 
-      {/* Speed Selector */}
       {onChangeSpeed && (
         <div className="flex items-center gap-1 ml-1 pl-1 border-l border-[var(--ide-panel-border)] text-xs">
           <Gauge className="w-3 h-3 text-[var(--ide-text-muted)]" />

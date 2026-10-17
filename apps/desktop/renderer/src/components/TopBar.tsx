@@ -115,7 +115,6 @@ export const TopBar: React.FC<TopBarProps> = ({
     }
   };
 
-  // Close menus on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -126,7 +125,6 @@ export const TopBar: React.FC<TopBarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Atajo de teclado Ctrl+Shift+O para importar artefacto compilado .lumic
   useEffect(() => {
     const handleShortcut = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'o' || e.key === 'O')) {
@@ -242,7 +240,6 @@ export const TopBar: React.FC<TopBarProps> = ({
       id="top-window-bar"
       className="relative z-40 glass-topbar text-[var(--ide-text)] select-none flex flex-col"
     >
-      {/* Hidden file input for .lumic import */}
       <input
         type="file"
         ref={lumicFileInputRef}
@@ -252,7 +249,6 @@ export const TopBar: React.FC<TopBarProps> = ({
         onChange={handleFileInputChange}
       />
 
-      {/* Toast Feedback Notification */}
       {(feedbackToast || windowControls.error) && (
         <div className="absolute top-12 left-1/2 -translate-x-1/2 z-50 px-4 py-2 glass-card border-[var(--ide-panel-border)] text-[var(--ide-text)] text-xs font-semibold rounded-2xl shadow-2xl animate-fade-in flex items-center gap-2">
           <Sparkles className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
@@ -260,7 +256,6 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       )}
 
-      {/* Desktop Window Titlebar (Windows/Linux/Mac Chrome style) */}
       <div data-testid="window-titlebar" className={`${windowControls.available ? 'lumi-window-drag ' : ''}flex items-center justify-between px-3 py-1 bg-white/[0.02] border-b border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)]`}>
         <div className="flex items-center gap-2">
           <LumiMascot state={lumiState} size={16} isAnimated={false} />
@@ -305,9 +300,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         </div>
       </div>
 
-      {/* Application Main Menu & Quick Actions Bar */}
       <div className="flex items-center justify-between px-3 h-9 bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border-b border-[var(--ide-panel-border)] relative z-30">
-        {/* Dropdown Menus */}
         <div className="flex items-center gap-1" ref={menuRef}>
           {menus.map((menu) => (
             <div key={menu.id} className="relative">
@@ -351,7 +344,6 @@ export const TopBar: React.FC<TopBarProps> = ({
             </div>
           ))}
 
-          {/* Quick Settings Gear button right next to 'Ayuda' */}
           {onOpenSettings && (
             <button
               id="topbar-settings-button"
@@ -365,9 +357,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           )}
         </div>
 
-        {/* Action Buttons: Compile, Run, Save & Mascot Status */}
         <div className="flex items-center gap-2">
-          {/* Save Buttons */}
           <button
             onClick={onSaveFile}
             className="flex items-center gap-1.5 px-3 py-1 rounded-xl glass-btn text-[var(--ide-text)] text-xs font-semibold hover:text-[var(--ide-text)] transition-all shadow-sm"
@@ -377,7 +367,6 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span>Guardar</span>
           </button>
 
-          {/* Quick Compile Button */}
           <button
             onClick={onCompile}
             disabled={isCompiling}
@@ -388,7 +377,6 @@ export const TopBar: React.FC<TopBarProps> = ({
             <span>{isCompiling ? 'Compilando...' : 'Compilar'}</span>
           </button>
 
-          {/* Quick Run 3D Button in Adaptive High Contrast Accent */}
           <button
             onClick={onRun}
             disabled={canRun === false || hasBlockingErrors}

@@ -34,7 +34,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
   const [severityFilter, setSeverityFilter] = useState<'all' | DiagnosticSeverity>(initialSeverityFilter);
   const [categoryFilter, setCategoryFilter] = useState<'all' | DiagnosticCategory>(initialCategoryFilter);
 
-  // Diagnostic counts
   const errorCount = useMemo(
     () => diagnostics.filter((d) => d.severity === 'error').length,
     [diagnostics]
@@ -48,7 +47,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
     [diagnostics]
   );
 
-  // Filtered diagnostics using the pure utility
   const filteredDiagnostics = useMemo(() => {
     return filterDiagnostics(diagnostics, {
       severity: severityFilter,
@@ -58,9 +56,7 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
 
   return (
     <div className="space-y-3 font-sans">
-      {/* Filter Bar */}
       <div className="flex flex-wrap items-center justify-between gap-2 p-2 glass-panel-header rounded-2xl text-xs select-none">
-        {/* Severity Filters */}
         <div className="flex items-center gap-1.5">
           <button
             id="filter-all-btn"
@@ -114,7 +110,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
           </button>
         </div>
 
-        {/* Category Filter Dropdown */}
         <div className="flex items-center gap-1.5 text-xs text-[var(--ide-text-muted)]">
           <Filter className="w-3 h-3 text-[var(--ide-accent)]" />
           <span>Categoría:</span>
@@ -135,7 +130,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
         </div>
       </div>
 
-      {/* Diagnostics List */}
       {filteredDiagnostics.length === 0 ? (
         <div className="flex flex-col items-center justify-center p-8 text-center text-[var(--ide-text-muted)] space-y-2">
           <CheckCircle2 className="w-8 h-8 text-emerald-400" />
@@ -168,7 +162,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                 }`}
                 title="Haz doble clic para abrir el archivo y resaltar la línea"
               >
-                {/* Header: Severity, Code, Category, File & Line */}
                 <div className="flex items-center justify-between text-xs pb-2 border-b border-[var(--ide-panel-border)]">
                   <div className="flex items-center gap-2">
                     {isError ? (
@@ -212,12 +205,10 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                   </span>
                 </div>
 
-                {/* Description */}
                 <p className="text-[var(--ide-text)] text-xs pt-2.5 leading-relaxed">
                   {diag.description}
                 </p>
 
-                {/* Solution if provided */}
                 {diag.solution && (
                   <div className="mt-2.5 glass-card bg-[var(--ide-control-bg)] border border-[var(--ide-panel-border)] p-2.5 text-[11px] text-[var(--ide-text)] flex items-start gap-2 !w-auto !h-auto">
                     <Sparkles className="w-3.5 h-3.5 text-[var(--ide-accent)] flex-shrink-0 mt-0.5" />
@@ -227,7 +218,6 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                   </div>
                 )}
 
-                {/* Action buttons */}
                 <div className="flex items-center gap-2 pt-2.5 text-xs">
                   <button
                     onClick={(e) => {

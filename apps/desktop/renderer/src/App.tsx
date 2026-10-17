@@ -26,7 +26,6 @@ import { BackendModeNotice } from './components/BackendModeNotice';
 import { relativePath } from './services/integration/projectInput';
 
 export default function App() {
-  // 1. Project and File Management via Abstract Storage
   const {
     projects,
     currentProject,
@@ -55,7 +54,6 @@ export default function App() {
     handleForceCloseTab,
   } = useProjectManager();
 
-  // 2. Modals Management State
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showOpenProjectModal, setShowOpenProjectModal] = useState(false);
   const [showNewFileModal, setShowNewFileModal] = useState(false);
@@ -67,7 +65,6 @@ export default function App() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [isViewportMaximized, setIsViewportMaximized] = useState(false);
 
-  // 3. Editor Interaction State
 
   const activeFileName = useMemo(() => {
     return currentProject?.files.find((f) => f.id === activeFileId)?.name || '';
@@ -83,7 +80,6 @@ export default function App() {
     setActiveObjectId,
   } = useEditorState(activeFileName);
 
-  // 4. Compiler Service & ScenePlan State
   const {
     lumiState,
     isCompiling,
@@ -114,7 +110,6 @@ export default function App() {
     return lastCompileResult !== null && lastCompileResult.success && !hasBlockingErrors && !isStale;
   }, [lastCompileResult, hasBlockingErrors, isStale, isRealBackend, currentProject, isCompiling]);
 
-  // 5. Trigger compilation
   const handleCompileCurrent = useCallback(async () => {
     if (!currentProject) {
       ideLogger.log('warning', 'No hay ningún proyecto abierto para compilar.', undefined, 'Compilador');
@@ -133,7 +128,6 @@ export default function App() {
     return await runCompile(virtualProject, activeFileId || undefined, projectRevision);
   }, [currentProject, activeFileId, getFileContent, runCompile, projectRevision]);
 
-  // 6. Trigger Run Execution
   const handleRunExecution = useCallback(async () => {
     if (!currentProject) {
       ideLogger.logExecutionAborted('No hay un proyecto abierto.');
@@ -185,12 +179,10 @@ export default function App() {
   }, [currentProject, isStale, lastCompileResult, hasBlockingErrors, setScenePlan,
     isRealBackend, runExecute, getFileContent, projectRevision]);
 
-  // 6b. Exportar artefacto compilado .lumic
   const handleExportLumic = useCallback(() => {
     return LumicFileService.exportLumic(lastCompileResult, currentProject);
   }, [lastCompileResult, currentProject]);
 
-  // 6c. Importar y cargar artefacto compilado .lumic
   const handleImportLumicFile = useCallback(
     async (file: File) => {
       const res = await LumicFileService.readAndValidateFile(file);
@@ -203,7 +195,6 @@ export default function App() {
     [loadCompiledArtifact]
   );
 
-  // Atajos de teclado globales del IDE (sin colisiones con atajos del navegador)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isViewportMaximized) {
@@ -294,14 +285,10 @@ export default function App() {
     }
   }, [lastCompileResult, diagnostics, setHighlightedLine, setActiveObjectId]);
 
-  // 7. Spatial Debugger - Stable callback
   const handleDebugStepChange = useCallback(
     (step: DebugStep) => {
-      // 1. Highlight source code line
       setHighlightedLine(step.sourceRef?.line || step.lineNumber);
-      // 2. Synchronize 3D Scene Snapshot
       setScenePlan(step.sceneSnapshot);
-      // 3. Highlight 3D active entity if present in step
       if (step.activeObjectId) {
         setActiveObjectId(step.activeObjectId);
       }
@@ -332,7 +319,6 @@ export default function App() {
     onStepChange: handleDebugStepChange,
   });
 
-  // Focus object handler
   const handleFocusObject = useCallback(
     (objectId: string | null) => {
       setActiveObjectId(objectId);
@@ -374,7 +360,6 @@ export default function App() {
     [scenePlan, setActiveObjectId, setHighlightedLine]
   );
 
-  // Navigate to Source Reference from Viewport 3D Object Card
   const handleNavigateToSource = useCallback(
     (sourceRef: SourceReference) => {
       if (!currentProject) return;
@@ -392,14 +377,12 @@ export default function App() {
     [currentProject, handleSelectFile, setHighlightedLine]
   );
 
-  // 8. Navigate from Diagnostic to Code
   const handleNavigateToDiagnostic = useCallback(
     (diag: DiagnosticItem) => {
       if (!currentProject) return;
 
       lumiAssistant.onDiagnosticFocused(diag);
 
-      // Find file by name or path
       const targetFile = currentProject.files.find(
         (f) => isRealBackend ? relativePath(f.path, currentProject.name) === diag.file
           : f.name === diag.file || f.path.endsWith(diag.file) || f.id === diag.file
@@ -418,7 +401,6 @@ export default function App() {
     [currentProject, handleSelectFile, setHighlightedLine, setActiveObjectId, isRealBackend]
   );
 
-  // 9. Inserción de código generado por "Insertar -> Habitación"
   const handleInsertRoomCode = useCallback(
     (code: string) => {
       if (!currentProject) return;
@@ -439,7 +421,6 @@ export default function App() {
     [currentProject, activeFile, entryFile, getFileContent, handleCodeChange, handleSelectFile]
   );
 
-  // Keyboard Shortcuts (F5 = Compile, F6 = Run)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'F5') {
@@ -455,7 +436,6 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
   }, [handleCompileCurrent, handleRunExecution]);
 
-  // Tab Close Handler with Unsaved Changes Guard
   const handleTabCloseRequest = useCallback(
     (fileId: string) => {
       if (isDirty(fileId)) {
@@ -468,7 +448,6 @@ export default function App() {
     [isDirty, currentProject, handleForceCloseTab]
   );
 
-  // Existing names for validation
   const existingProjectNames = useMemo(
     () => projects.map((p) => p.name),
     [projects]
@@ -479,7 +458,6 @@ export default function App() {
     [currentProject]
   );
 
-  // Error and warning lines for code editor gutter
   const errorLines = useMemo(
     () => diagnostics.filter((d) => d.severity === 'error').map((d) => d.line),
     [diagnostics]
@@ -492,7 +470,6 @@ export default function App() {
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[var(--ide-bg,#02110c)] text-[var(--ide-text,#f5ede0)] overflow-hidden font-sans select-none transition-colors duration-250">
-      {/* Top Application Window Bar */}
       <TopBar
         isRealBackend={isRealBackend}
         lumiState={lumiState}
@@ -519,9 +496,7 @@ export default function App() {
       />
       <BackendModeNotice real={isRealBackend} refresh={isCompiling} />
 
-      {/* Main IDE Body with Floating Modular Panels Layout */}
       <div className={`relative flex-1 grid ${isViewportMaximized ? 'grid-rows-[1fr]' : 'grid-rows-[1fr_235px] xl:grid-rows-[1fr_210px]'} gap-3 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250`}>
-        {/* Ambient atmospheric glow effects behind the glass panels (theme reactive) */}
         <div 
           className="absolute top-10 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none -z-10 opacity-30 transition-all duration-300"
           style={{ backgroundColor: 'var(--ide-accent-bg, rgba(26,66,47,0.4))' }}
@@ -535,11 +510,9 @@ export default function App() {
           style={{ backgroundColor: 'var(--ide-btn-bg, rgba(26,66,47,0.3))' }}
         />
 
-        {/* Top Split: Project Explorer (Left) | Code Editor (Center) | 3D Viewport (Right) */}
         <div className="grid grid-cols-12 gap-3 min-h-0 h-full">
           {!isViewportMaximized && (
             <>
-              {/* Left Panel: Project Explorer */}
               <div className="col-span-12 md:col-span-3 lg:col-span-2 xl:col-span-2 h-full min-h-0">
                 <ProjectExplorer
                   currentProject={currentProject}
@@ -558,7 +531,6 @@ export default function App() {
                 />
               </div>
 
-              {/* Center Panel: Code Editor */}
               <div className="col-span-12 md:col-span-5 lg:col-span-5 xl:col-span-4 h-full min-h-0">
                 <CodeEditor
                   files={currentProject ? currentProject.files : []}
@@ -582,7 +554,6 @@ export default function App() {
             </>
           )}
 
-          {/* Right Panel: 3D Viewport */}
           <div className={`${isViewportMaximized ? 'col-span-12' : 'col-span-12 md:col-span-4 lg:col-span-5 xl:col-span-6'} h-full min-h-0`}>
             <ErrorBoundary fallbackTitle="Error al renderizar el visualizador 3D">
               <Viewport3D
@@ -603,7 +574,6 @@ export default function App() {
           </div>
         </div>
 
-        {/* Bottom Floating Panel: Console & Spatial Debugger & Lumi Assistant */}
         {!isViewportMaximized && (
           <div className="h-full min-h-0">
             <ConsolePanel
@@ -635,7 +605,6 @@ export default function App() {
         )}
       </div>
 
-      {/* 1. Modal: Crear Proyecto */}
       <NewProjectModal
         isOpen={showNewProjectModal}
         onClose={() => setShowNewProjectModal(false)}
@@ -643,7 +612,6 @@ export default function App() {
         existingProjectNames={existingProjectNames}
       />
 
-      {/* 2. Modal: Abrir / Gestionar Proyectos */}
       <OpenProjectModal
         isOpen={showOpenProjectModal}
         onClose={() => setShowOpenProjectModal(false)}
@@ -654,7 +622,6 @@ export default function App() {
         onNewProjectClick={() => setShowNewProjectModal(true)}
       />
 
-      {/* 3. Modal: Nuevo Archivo .lumi */}
       <NewFileModal
         isOpen={showNewFileModal}
         onClose={() => setShowNewFileModal(false)}
@@ -662,7 +629,6 @@ export default function App() {
         existingFileNames={existingFileNamesInCurrentProject}
       />
 
-      {/* 4. Modal: Renombrar Archivo */}
       <RenameFileModal
         isOpen={renameTargetFile !== null}
         onClose={() => setRenameTargetFile(null)}
@@ -671,7 +637,6 @@ export default function App() {
         existingFileNames={existingFileNamesInCurrentProject}
       />
 
-      {/* 5. Modal: Confirmar Eliminación de Archivo */}
       <ConfirmDeleteModal
         isOpen={deleteTargetFile !== null}
         onClose={() => setDeleteTargetFile(null)}
@@ -687,7 +652,6 @@ export default function App() {
         onConfirmDelete={handleDeleteFile}
       />
 
-      {/* 6. Modal: Cambios sin guardar al cerrar pestaña */}
       <UnsavedChangesModal
         isOpen={unsavedTargetFile !== null}
         onClose={() => setUnsavedTargetFile(null)}
@@ -702,20 +666,17 @@ export default function App() {
         }}
       />
 
-      {/* 7. Modal: Insertar Habitación */}
       <InsertRoomModal
         isOpen={showInsertRoomModal}
         onClose={() => setShowInsertRoomModal(false)}
         onInsertRoom={handleInsertRoomCode}
       />
 
-      {/* 8. Modal: Manual y Documentación de Sintaxis Lumi */}
       <DocumentationModal
         isOpen={showDocsModal}
         onClose={() => setShowDocsModal(false)}
       />
 
-      {/* 9. Modal: Configuración del IDE (Temas de color, fuentes, visor 3D) */}
       <SettingsModal
         isOpen={showSettingsModal}
         onClose={() => setShowSettingsModal(false)}
