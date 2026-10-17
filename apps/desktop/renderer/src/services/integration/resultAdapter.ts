@@ -22,7 +22,7 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
   if (payload.limitations.length) logs.push('Capacidad pendiente: análisis semántico espacial. No se generó ScenePlan ni trazas.');
   return {
     compilationId: response.requestId, status: response.status, success: response.status === 'completed',
-    diagnostics, scenePlan: null, debugSteps: [], durationMs, logs,
+    diagnostics, scenePlan: payload.scenePlan ?? null, debugSteps: [], durationMs, logs,
     entryFileInfo: {
       id: project.entryFileId ?? project.files.find((file) => file.isEntry)?.id ?? '',
       name: payload.entryFile.split('/').at(-1) ?? payload.entryFile, path: payload.entryFile,
