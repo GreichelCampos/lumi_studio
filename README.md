@@ -58,7 +58,7 @@ heredada para las pruebas. El frontend conserva temporalmente un **compilador
 mock y depuración simulada** en navegador. Electron utiliza Python real sin fallback
 automático al mock. Electron trabaja con carpetas y archivos `.lumi` reales y guarda
 la selección del principal y las pestañas en `userData`; el navegador conserva
-`localStorage`. Consulta [proyectos y flujo multiarchivo](docs/project_workspaces.md)
+`localStorage`. Consulta [proyectos y flujo multiarchivo](docs/project_storage.md)
 para persistencia, portabilidad y pruebas con archivos reales.
 
 ### Probar la fachada Python sin interfaz
