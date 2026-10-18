@@ -13,6 +13,7 @@ from spatial.scene_plan import (
     SpatialProperty,
     Vector3,
 )
+from spatial.spatial_validator import SpatialValidator
 
 from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
@@ -149,6 +150,8 @@ class Interpreter:
         try:
             self._execute_node(normalized_program)
             self.result.scene_plan = self._scene_builder.build()
+            validation = SpatialValidator().validate(self.result.scene_plan)
+            self.result.diagnostics.extend(validation.diagnostics)
         except ScenePlanBuilderError as error:
             self.result.diagnostics.append(self._scene_builder_diagnostic(error))
             self._scene_builder = None
