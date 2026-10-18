@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0.0",
+  "compilationId": "comp-block-fixture-002",
+  "status": "blocked",
+  "success": false,
+  "diagnostics": [
+    {
+      "id": "diag-syn-001",
+      "code": "LUMI-S101",
+      "severity": "error",
+      "category": "sintactico",
+      "blocking": true,
+      "file": "principal.lumi",
+      "line": 15,
+      "column": 28,
+      "description": "Falta el terminador de instrucción '>>' al finalizar la sentencia de ubicación.",
+      "solution": "Añada '>>' al final de la línea 15.",
+      "sourceRef": {
+        "file": "principal.lumi",
+        "line": 15,
+        "column": 28
+      }
+    },
+    {
+      "id": "diag-sem-002",
+      "code": "LUMI-M204",
+      "severity": "error",
+      "category": "semantico",
+      "blocking": true,
+      "file": "principal.lumi",
+      "line": 22,
+      "column": 5,
+      "description": "Variable 'ancho_comedor' no declarada en el ámbito actual.",
+      "solution": "Declare 'decimal ancho_comedor = ...' antes de utilizarla.",
+      "sourceRef": {
+        "file": "principal.lumi",
+        "line": 22,
+        "column": 5
+      }
+    }
+  ],
+  "scenePlan": null,
+  "entryFileInfo": {
+    "id": "file-entry-01",
+    "name": "principal.lumi",
+    "path": "principal.lumi"
+  },
+  "durationMs": 18,
+  "logs": [
+    "Iniciando compilación LUMI v1.0.0",
+    "Error sintáctico en línea 15: falta terminador '>>'",
+    "Error semántico en línea 22: símbolo no resuelto 'ancho_comedor'",
+    "Compilación bloqueada debido a 2 errores."
+  ],
+  "debugSteps": [],
+  "timestamp": "2026-10-12T13:30:05.000Z"
+}

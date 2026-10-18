@@ -43,4 +43,5 @@ Other combinations produce `SEM_INVALID_UNARY_OPERATION`.
 
 ## Scope of this matrix
 
-This initial matrix covers the simple-type validation required by L-014. Collection operations and the special `nulo` value will be specified separately before their semantic validation is implemented.
+This matrix specifies simple-type compatibility. Collection operations and the
+special `nulo` value are outside its scope.

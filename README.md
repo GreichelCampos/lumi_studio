@@ -1,5 +1,93 @@
 # Lumi & Estudio Lumi
 
+## Ejecutar Estudio Lumi en Electron
+
+Requisitos: Node.js 24, npm 11 y Python 3.13. Desde la raíz:
+
+```powershell
+cd apps/desktop
+npm exec --yes --package=bun@1.4.3 -- bun install --frozen-lockfile
+cd renderer
+npm exec --yes --package=bun@1.4.3 -- bun install --frozen-lockfile
+cd ..
+npm run dev
+```
+
+Electron inicia Vite local y el worker Python real. Se prefiere `.venv` de la raíz;
+`LUMI_PYTHON` permite elegir otro ejecutable y `LUMI_PYTHON_TIMEOUT_MS` configura
+el timeout (100–120000 ms, por defecto 10000). Un timeout finaliza el worker;
+una nueva solicitud permite reiniciarlo. No existe cancelación interactiva.
+
+Desde `apps/desktop/`, las verificaciones son:
+
+```powershell
+npm test
+npm --prefix renderer run test:run
+npm run test:integration
+npm run lint
+npm run build
+```
+
+La prueba de integración abre Electron y usa Python real. ScenePlan y trazas siguen
+pendientes; este build no produce un instalador. En PowerShell puede usarse `npm.cmd`.
+
+## Ejecutar el frontend de Estudio Lumi
+
+Requisitos comprobados: Node.js 24 y npm 11. El frontend utiliza Bun 1.4.3
+para instalar las dependencias de `bun.lock`, sin requerir una instalación global:
+
+```powershell
+cd apps/desktop/renderer
+npm exec --yes --package=bun@1.4.3 -- bun install --frozen-lockfile
+npm run dev
+```
+
+Abrir `http://127.0.0.1:3000/`. En PowerShell, si la política de scripts
+bloquea `npm`, usar `npm.cmd` con los mismos argumentos.
+
+Desde esa misma carpeta:
+
+```powershell
+npm run test:run
+npm run lint
+npm run build
+```
+
+`lint` comprueba TypeScript: modo estricto para la aplicación y configuración
+heredada para las pruebas. El frontend conserva temporalmente un **compilador
+mock y depuración simulada** en navegador. Electron utiliza Python real sin fallback
+automático al mock. Electron trabaja con carpetas y archivos `.lumi` reales y guarda
+la selección del principal y las pestañas en `userData`; el navegador conserva
+`localStorage`. Consulta [proyectos y flujo multiarchivo](docs/project_storage.md)
+para persistencia, portabilidad y pruebas con archivos reales.
+
+### Probar la fachada Python sin interfaz
+
+Desde la raíz del repositorio, con Python 3.13:
+
+```powershell
+python -m demos.service_facade_demo
+```
+
+La demostración analiza y ejecuta fuentes Lumi reales, incluyendo un import y un
+diagnóstico de ejecución. Esta demostración se ejecuta sin interfaz y no genera escenas.
+
+### Probar el protocolo JSON
+
+Desde la raíz, la demostración inicia el worker y verifica una respuesta real:
+
+```powershell
+python -m demos.worker_demo
+```
+
+El proceso independiente se inicia con `python -m services.worker`: recibe una
+solicitud JSON por línea UTF-8 en stdin y responde por stdout; los registros técnicos
+van a stderr. Para sus pruebas, con pytest instalado en el entorno virtual:
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest -q tests/protocol
+```
+
 **Lumi** is a domain-specific programming language designed to create and configure independent 3D rooms through code.
 
 **Estudio Lumi** is the dedicated development environment for writing, validating, compiling, debugging, and visualizing Lumi projects.

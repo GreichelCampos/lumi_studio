@@ -1,0 +1,113 @@
+{
+  "schemaVersion": "1.0.0",
+  "compilationId": "comp-spatial-fixture-003",
+  "status": "completed_with_spatial_issues",
+  "success": true,
+  "diagnostics": [
+    {
+      "id": "diag-spat-001",
+      "code": "LUMI-W302",
+      "severity": "warning",
+      "category": "espacial",
+      "blocking": false,
+      "file": "principal.lumi",
+      "line": 24,
+      "column": 5,
+      "description": "Colisión detectada: 'silla_1' se superpone espacialmente con 'mesa_centro'.",
+      "solution": "Ajuste la posición o rotación para mantener una distancia mínima de 0.2m.",
+      "targetObjectId": "obj-silla-01",
+      "targetRoomId": "hab-sala-01",
+      "sourceRef": {
+        "file": "principal.lumi",
+        "line": 24,
+        "column": 5
+      }
+    },
+    {
+      "id": "diag-spat-002",
+      "code": "LUMI-W305",
+      "severity": "warning",
+      "category": "espacial",
+      "blocking": false,
+      "file": "principal.lumi",
+      "line": 30,
+      "column": 5,
+      "description": "Objeto 'estanteria_alta' colocado a menos de 0.1m de la puerta norte.",
+      "solution": "Reubique la estantería para evitar obstruir el arco de apertura.",
+      "targetObjectId": "obj-estanteria-01",
+      "targetRoomId": "hab-sala-01",
+      "sourceRef": {
+        "file": "principal.lumi",
+        "line": 30,
+        "column": 5
+      }
+    }
+  ],
+  "scenePlan": {
+    "version": "1.0.0",
+    "rooms": [
+      {
+        "id": "hab-sala-01",
+        "name": "sala_principal",
+        "dimensions": [5.0, 4.0, 2.7],
+        "floor": {
+          "material": "madera",
+          "color": "#92400e"
+        },
+        "walls": {
+          "north": { "color": "blanco" },
+          "south": { "color": "gris" },
+          "east": { "color": "blanco" },
+          "west": { "color": "blanco" }
+        },
+        "doors": [],
+        "windows": [],
+        "objects": [
+          {
+            "id": "obj-mesa-01",
+            "type": "mesa",
+            "name": "mesa_centro",
+            "position": [0.0, 0.0, 0.0],
+            "rotation": [0.0, 0.0, 0.0],
+            "dimensions": [1.4, 0.5, 0.8],
+            "color": "madera",
+            "hasCollision": true,
+            "roomId": "hab-sala-01"
+          },
+          {
+            "id": "obj-silla-01",
+            "type": "silla",
+            "name": "silla_1",
+            "position": [0.2, 0.0, 0.1],
+            "rotation": [0.0, 0.0, 0.0],
+            "dimensions": [0.55, 0.85, 0.55],
+            "color": "azul",
+            "hasCollision": true,
+            "roomId": "hab-sala-01"
+          }
+        ],
+        "calculatedArea": 20.0,
+        "calculatedVolume": 54.0
+      }
+    ],
+    "debugInfo": {
+      "totalEntities": 2,
+      "collisionCount": 1,
+      "warningsCount": 2,
+      "compiledAt": "2026-10-12T13:30:10.000Z"
+    }
+  },
+  "entryFileInfo": {
+    "id": "file-entry-01",
+    "name": "principal.lumi",
+    "path": "principal.lumi"
+  },
+  "durationMs": 35,
+  "logs": [
+    "Iniciando análisis espacial...",
+    "Advertencia espacial: colisión en [0.2, 0.0, 0.1]",
+    "Compilación completada con 2 observaciones espaciales."
+  ],
+  "debugSteps": [],
+  "timestamp": "2026-10-12T13:30:10.000Z"
+}
