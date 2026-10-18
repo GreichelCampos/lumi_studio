@@ -52,7 +52,8 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('No hay pasos de depuración disponibles')).toBeInTheDocument();
-    expect(screen.getByText(/Compila el proyecto sin errores bloqueantes/)).toBeInTheDocument();
+    expect(screen.getByText(/Importa un archivo .lumic que incluya pasos/)).toBeInTheDocument();
+    expect(screen.getByText(/Python todavía no genera trazas espaciales/)).toBeInTheDocument();
     expect(screen.getByText('Paso 0 de 0')).toBeInTheDocument();
     expect(screen.getByText('Inactivo')).toBeInTheDocument();
   });
@@ -93,7 +94,7 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('Paso 2 de 2')).toBeInTheDocument();
-    expect(screen.getByText('Ejecutando')).toBeInTheDocument();
+    expect(screen.getByText('Reproduciendo')).toBeInTheDocument();
 
     const objBtn = screen.getByText('Objeto activo: sofa-1');
     expect(objBtn).toBeInTheDocument();

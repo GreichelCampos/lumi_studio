@@ -134,7 +134,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             No hay pasos de depuración disponibles
           </div>
           <p className="text-xs text-[var(--ide-text-muted)] max-w-sm">
-            Compila el proyecto sin errores bloqueantes para habilitar el depurador espacial paso a paso.
+            Importa un archivo .lumic que incluya pasos para reproducirlos. En el modo de demostración los pasos son simulados; Python todavía no genera trazas espaciales.
           </p>
         </div>
       )}

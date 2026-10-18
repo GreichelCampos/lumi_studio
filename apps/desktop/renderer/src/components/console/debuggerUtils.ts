@@ -12,7 +12,7 @@ export function getDebuggerStatusInfo(status?: DebuggerStatus): DebuggerStatusIn
   switch (status) {
     case 'running':
       return {
-        label: 'Ejecutando',
+        label: 'Reproduciendo',
         badgeClass:
           'bg-purple-500/20 text-purple-300 border border-purple-400/40 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.4)]',
       };

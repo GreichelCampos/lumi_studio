@@ -39,7 +39,7 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
         {hasRoomErrors && (
           <span 
             className="flex items-center gap-1 text-[10px] text-rose-300 bg-rose-500/20 px-1.5 py-0.5 rounded-lg border border-rose-400/40"
-            title="Esta habitación contiene colisiones o elementos fuera de límites"
+            title="Los datos de esta habitación indican colisiones o elementos fuera de límites"
           >
             <AlertTriangle className="w-3 h-3 text-rose-400" />
             <span>Conflicto</span>

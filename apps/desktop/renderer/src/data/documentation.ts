@@ -11,47 +11,40 @@ export interface KeywordDoc {
 }
 
 export const LUMI_KEYWORDS: KeywordDoc[] = [
-  { word: 'principal', category: 'Estructura', desc: 'Punto de entrada obligatorio del programa' },
+  { word: 'principal', category: 'Estructura', desc: 'Define el bloque principal del programa' },
   { word: 'habitacion', category: 'Espacio', desc: 'Declara una habitación 3D con dimensiones [ancho, largo, alto]' },
-  { word: 'piso', category: 'Espacio', desc: 'Define material y textura del suelo' },
-  { word: 'pared', category: 'Espacio', desc: 'Configura propiedades de muro (norte, sur, este, oeste)' },
+  { word: 'piso', category: 'Espacio', desc: 'Declara un piso con nombre y propiedades color o material' },
+  { word: 'pared', category: 'Espacio', desc: 'Declara una pared; su orientación todavía requiere especificación' },
   { word: 'puerta', category: 'Aperturas', desc: 'Declara una apertura de acceso en un muro' },
   { word: 'ventana', category: 'Aperturas', desc: 'Declara una apertura de iluminación en un muro' },
   { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]' },
   { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad' },
-  { word: 'mover', category: 'Transformación', desc: 'Desplaza un objeto respecto a su posición actual' },
+  { word: 'mover', category: 'Transformación', desc: 'Instrucción espacial con un vector; ejecución espacial pendiente' },
   { word: 'si / sino', category: 'Control', desc: 'Estructura condicional lógica' },
   { word: 'hacer', category: 'Control', desc: 'Ciclo de iteración delimitado por cabecera con punto y coma (;)' },
   { word: 'mientras', category: 'Control', desc: 'Ciclo condicional iterativo' },
   { word: 'nulo', category: 'Valor', desc: 'Representa ausencia de valor; comparable solo con == y !=' },
   { word: 'mostrar', category: 'E/S', desc: 'Emite texto o datos a la consola del IDE' },
-  { word: 'leer', category: 'E/S', desc: 'Solicita entrada de datos al usuario' },
-  { word: 'visualizar3D', category: 'Render', desc: 'Genera el ScenePlan tridimensional para el visor' },
+  { word: 'leer', category: 'E/S', desc: 'Sintaxis de entrada; la entrada interactiva todavía no está disponible en Electron' },
+  { word: 'visualizar3D', category: 'Render', desc: 'Palabra reservada sin instrucción implementada en el parser actual' },
 ];
 
 export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '1. Estructura y Filosofía de Lumi',
-    description: 'Lumi (Lenguaje Unificado de Modelado de Interiores) es un lenguaje declarativo y procedural en español para diseñar, validar y renderizar espacios arquitectónicos 3D.',
-    code: `-- Todas las instrucciones simples finalizan con >>
--- El origen [0.0, 0.0, 0.0] se ubica en el centro del piso de la habitación.
-
-principal {
+    description: 'Ejemplo de sintaxis espacial aceptada por el parser. En esta versión integrada, Python devuelve análisis espacial incompleto, sin ScenePlan. Para visualizar una escena, importa un archivo .lumic válido.',
+    code: `principal {
   habitacion sala(5.0, 4.0, 2.7) {
-    piso material "madera">>
-    pared norte color "blanco">>
-    pared sur color "gris">>
-    
-    colocar sofa en [0.0, 0.0, -1.0]>>
-    colocar mesa en [0.0, 0.0, 0.5]>>
+    piso suelo {
+      material "madera">>
+      color "#C8A27A">>
+    }
   }
-  
-  visualizar3D(sala)>>
 }`
   },
   {
     title: '2. Tipos de Datos y Manejo de Nulo',
-    description: 'Lumi cuenta con tipos primitivos (entero, decimal, texto, booleano) y compuestos (vector, lista). "nulo" representa ausencia de valor y conserva el tipo declarado de la variable.',
+    description: 'El parser acepta tipos primitivos, listas, vectores y nulo. Las listas y los vectores todavía no se evalúan en el intérprete; este ejemplo permite comprobar su análisis, no una ejecución completa.',
     code: `-- Declaraciones de tipos primitivos y compuestos
 entero cantidad_sillas = 4>>
 decimal factor_escala = 1.25>>
@@ -69,46 +62,44 @@ si seleccion == nulo {
   },
   {
     title: '3. Elementos Arquitectónicos y Muebles',
-    description: 'Instrucciones espaciales para delimitar muros, aperturas y distribución de mobiliario con centro relativo [0,0,0].',
+    description: 'Declaraciones y vectores admitidos por la gramática. La generación de estos elementos, la orientación de paredes y los tamaños de muebles y aberturas siguen pendientes. Las propiedades color y material se escriben sin dos puntos ni signo igual.',
     code: `habitacion dormitorio(4.5, 4.0, 2.6) {
-  piso material "madera">>
-  pared norte color "azul">>
-  pared sur color "blanco">>
-  
-  puerta en norte {
-    ancho = 0.85>>
-    alto = 2.10>>
-    posicion = 1.2>>
+  piso suelo {
+    material "madera">>
   }
-  
-  ventana en sur {
-    ancho = 1.80>>
-    alto = 1.40>>
-    posicion = -0.5>>
+  pared muro {
+    color "azul">>
   }
-
-  colocar cama en [0.0, 0.0, -0.8]>>
-  colocar lampara en [-1.2, 0.0, -0.8]>>
-  colocar escritorio en [1.2, 0.0, 1.1]>>
+  puerta acceso {}
+  ventana abertura {}
+  cama cama_principal {
+    color "blanco">>
+  }
+  lampara luz {}
+  escritorio mesa_trabajo {}
+  colocar cama_principal [0.0, 0.0, -0.8]>>
+  colocar luz [-1.2, 0.0, -0.8]>>
+  colocar mesa_trabajo [1.2, 0.0, 1.1]>>
 }`
   },
   {
     title: '4. Ciclo "hacer" y Modularidad',
-    description: 'El punto y coma (;) es reservado exclusivamente como separador de cláusulas dentro del encabezado del ciclo "hacer".',
-    code: `funcion vacio colocar_hileras(entero total) {
+    description: 'El punto y coma separa las cláusulas del ciclo hacer. Compilar analiza este programa; Ejecutar Python muestra 0, 1 y 2 en la consola.',
+    code: `funcion vacio mostrar_contadores(entero total) {
   hacer entero i = 0; i < total; i = i + 1 {
-    colocar silla en [(i - 1.5) * 0.7, 0.0, 0.0]>>
+    mostrar(i)>>
   }
+}
+principal {
+  mostrar_contadores(3)>>
 }`
   },
   {
     title: '5. Depuración Espacial e Innovación',
-    description: 'Estudio Lumi valida colisiones tridimensionales, elementos fuera de límites y pasos peatonales bloqueados.',
-    code: `-- Estados del Asistente Lumi:
--- 🟢 Verde: Compilación exitosa y válida
--- 🟣 Morado: Compilando y generando ScenePlan
--- 🔵 Cian: Listo para programar
--- 🟡 Amarillo: Advertencias espaciales o de paso
--- 🔴 Rojo: Colisión o mueble fuera de la habitación`
+    description: 'El IDE reproduce pasos y snapshots de archivos .lumic o de la demostración. Python todavía no genera trazas espaciales. La detección real de colisiones, elementos fuera de límites y pasos bloqueados sigue pendiente.',
+    code: `-- Esta sección es informativa, no un programa de depuración.
+-- Los colores muestran los estados recibidos por el IDE.
+-- Un estado visual no demuestra detección automática de conflictos.
+-- Compilar analiza; Ejecutar Python ejecuta las instrucciones admitidas.`
   }
 ];

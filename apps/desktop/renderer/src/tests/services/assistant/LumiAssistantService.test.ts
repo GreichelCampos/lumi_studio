@@ -79,9 +79,14 @@ describe('LumiAssistantService', () => {
     lumiAssistant.onDebugStart();
     expect(listener).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        text: 'Voy a recorrer el proyecto paso a paso.',
+        text: 'Voy a reproducir los pasos disponibles.',
         state: 'ready',
       })
+    );
+
+    lumiAssistant.onDebugStep('principal.lumi', 7);
+    expect(listener).toHaveBeenLastCalledWith(
+      expect.objectContaining({ text: 'Paso registrado en principal.lumi:7', state: 'ready' })
     );
 
     lumiAssistant.onDebugBreakpoint('principal.lumi', 15);

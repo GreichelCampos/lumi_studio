@@ -103,7 +103,7 @@ class LumiAssistantService {
   }
 
   public onStaleDetected() {
-    this.setMessage('El código cambió. Presiona Compilar (F5) para actualizar 3D.', 'warning');
+    this.setMessage('El código cambió. Presiona Compilar (F5) para actualizar el análisis.', 'warning');
   }
 
   public onEntitySelected(nameOrId: string, type?: string) {
@@ -139,14 +139,14 @@ class LumiAssistantService {
 
 
   public onDebugStart() {
-    this.setMessage('Voy a recorrer el proyecto paso a paso.', 'ready');
+    this.setMessage('Voy a reproducir los pasos disponibles.', 'ready');
   }
 
   public onDebugStep(file: string, line: number, customMsg?: string) {
     if (customMsg) {
       this.setMessage(customMsg, 'ready');
     } else {
-      this.setMessage(`Ejecutando ${file}:${line}`, 'ready');
+      this.setMessage(`Paso registrado en ${file}:${line}`, 'ready');
     }
   }
 
@@ -167,7 +167,7 @@ class LumiAssistantService {
   }
 
   public onDebugPaused() {
-    this.setMessage('Depuración en pausa.', 'ready');
+    this.setMessage('Reproducción en pausa.', 'ready');
   }
 }
 
