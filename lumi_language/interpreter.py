@@ -5,6 +5,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from spatial.scene_builder import ScenePlanBuilder, ScenePlanBuilderError
+from spatial.scene_plan import ScenePlan, SourceLocation, SpatialNumber
+
 from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
 
@@ -15,6 +18,7 @@ class InterpreterResult:
 
     output: list[str] = field(default_factory=list)
     diagnostics: list[Diagnostic] = field(default_factory=list)
+    scene_plan: ScenePlan | None = None
 
     @property
     def succeeded(self) -> bool:
@@ -114,6 +118,7 @@ class Interpreter:
         self._call_depth = 0
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
+        self._scene_builder: ScenePlanBuilder | None = None
 
     def execute(
         self,
@@ -132,10 +137,18 @@ class Interpreter:
             for file_name, imported_program in (imported_programs or {}).items()
         }
         normalized_program = normalize_ast(program)
+        self._scene_builder = ScenePlanBuilder(
+            self._source_location(normalized_program)
+        )
         try:
             self._execute_node(normalized_program)
+            self.result.scene_plan = self._scene_builder.build()
+        except ScenePlanBuilderError as error:
+            self.result.diagnostics.append(self._scene_builder_diagnostic(error))
+            self._scene_builder = None
         except InterpreterRuntimeError as error:
             self.result.diagnostics.append(error.diagnostic)
+            self._scene_builder = None
         return self.result
 
     def _execute_node(self, node: dict[str, Any]) -> Any:
@@ -144,6 +157,8 @@ class Interpreter:
             return self._execute_statements(node.get("statements", []))
         if node_type == "MainNode":
             return self._execute_block(node.get("body", []))
+        if node_type == "RoomNode":
+            return self._execute_room(node)
         if node_type == "VariableDeclarationNode":
             self.environment.define(node["name"], self._evaluate(node["value"]))
             return None
@@ -201,6 +216,34 @@ class Interpreter:
             f"El nodo '{node_type}' no se puede ejecutar todavía.",
             "Utilice una construcción incluida en el intérprete básico.",
         )
+
+    def _execute_room(self, node: dict[str, Any]) -> None:
+        """Execute a room body and append its resolved dimensions to the scene."""
+
+        if self._scene_builder is None:
+            raise RuntimeError("ScenePlanBuilder is unavailable during execution")
+
+        width_node = node["width"]
+        length_node = node["length"]
+        height_node = node["height"]
+        self._scene_builder.begin_room(
+            name=node["name"],
+            width=SpatialNumber(
+                self._evaluate(width_node),
+                self._source_location(width_node),
+            ),
+            length=SpatialNumber(
+                self._evaluate(length_node),
+                self._source_location(length_node),
+            ),
+            height=SpatialNumber(
+                self._evaluate(height_node),
+                self._source_location(height_node),
+            ),
+            source=self._source_location(node),
+        )
+        self._execute_block(node.get("body", []))
+        self._scene_builder.end_room()
 
     def _execute_statements(self, statements: list[dict[str, Any]]) -> None:
         for statement in statements:
@@ -526,3 +569,26 @@ class Interpreter:
             suggestion=suggestion,
         )
         raise InterpreterRuntimeError(diagnostic)
+
+    @staticmethod
+    def _source_location(node: dict[str, Any]) -> SourceLocation:
+        return SourceLocation(
+            file=node.get("file", "<desconocido>"),
+            line=node.get("line", 1),
+            column=node.get("column", 1),
+        )
+
+    @staticmethod
+    def _scene_builder_diagnostic(error: ScenePlanBuilderError) -> Diagnostic:
+        return Diagnostic(
+            category=DiagnosticCategory.RUNTIME,
+            code="RUN_UNSUPPORTED_NODE",
+            file=error.source.file,
+            line=error.source.line,
+            column=error.source.column,
+            description=str(error),
+            suggestion=(
+                "Revise la estructura de las habitaciones antes de ejecutar "
+                "el programa."
+            ),
+        )

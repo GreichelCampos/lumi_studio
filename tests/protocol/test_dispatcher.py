@@ -80,14 +80,17 @@ def test_imports_and_explicit_entry_use_real_services():
     assert message == original
 
 
-@pytest.mark.parametrize("operation, expected", [("analyze", "incomplete"), ("execute", "failed")])
+@pytest.mark.parametrize(
+    "operation, expected",
+    [("analyze", "incomplete"), ("execute", "incomplete")],
+)
 def test_spatial_capability_is_not_simulated(operation, expected):
     result = RequestDispatcher().dispatch(request("habitacion sala(5, 4, 2.7) {}", operation))
     assert result["status"] == expected
     assert result["result"]["analysisStatus"] == "incomplete"
     assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]
     if operation == "execute":
-        assert result["result"]["diagnostics"][0]["code"] == "RUN_UNSUPPORTED_NODE"
+        assert result["result"]["diagnostics"] == []
 
 
 def test_input_error_is_infrastructure_and_does_not_read_protocol_stdin():

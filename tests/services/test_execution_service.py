@@ -101,20 +101,15 @@ def test_imported_runtime_error_keeps_imported_file_location():
     assert result.diagnostics[0].file == "roto.lumi"
 
 
-def test_spatial_execution_returns_real_unsupported_node_failure():
+def test_room_execution_remains_incomplete_until_scene_reaches_service_contract():
     result = ExecutionService().execute_source(
         "habitacion sala(5, 4, 2.7) {}", "principal.lumi"
     )
 
     assert result.compilation.status == CompilationStatus.INCOMPLETE
-    assert result.status == ExecutionStatus.FAILED
+    assert result.status == ExecutionStatus.INCOMPLETE
     assert not result.succeeded
-    diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "RUN_UNSUPPORTED_NODE"
-    assert diagnostic.category == DiagnosticCategory.RUNTIME
-    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
-        "principal.lumi", 1, 1,
-    )
+    assert result.diagnostics == ()
 
 
 def test_uncalled_spatial_function_is_not_misrepresented_as_complete_success():
