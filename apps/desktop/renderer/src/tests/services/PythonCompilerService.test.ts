@@ -4,7 +4,7 @@ import { projectInput } from '../../services/integration/projectInput';
 import { selectCompiler } from '../../services/integration/compilerSelection';
 import { MockCompilerService } from '../../services/compiler/MockCompilerService';
 import type { BackendReply, DesktopBridge } from '../../services/integration/desktopBridge';
-import { createMockProject } from '../fixtures/testFixtures';
+import { createMockProject, createMockRoom, createMockScenePlan } from '../fixtures/testFixtures';
 import { validateCompileResult } from '../../services/compiler/contracts/contractValidator';
 import { render, screen } from '@testing-library/react';
 import { createElement } from 'react';
@@ -45,6 +45,23 @@ describe('Real compiler adapter', () => {
     expect(result.origin).toBe('python');
     expect(result.logs).toContain('SALIDA_REAL');
     expect(result.scenePlan).toBeNull(); expect(result.debugSteps).toEqual([]);
+    expect(validateCompileResult(result).isValid).toBe(true);
+  });
+
+  it('delivers a validated backend scene to the IDE result', async () => {
+    const raw = reply();
+    if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
+    raw.response.result.analysisStatus = 'incomplete';
+    raw.response.result.limitations = ['spatial_semantics_unavailable'];
+    raw.response.result.capabilities.scenePlan = true;
+    raw.response.result.scenePlan = createMockScenePlan({ rooms: [
+      createMockRoom({ name: 'sala' }),
+    ] });
+
+    const result = await new PythonCompilerService(bridge(raw)).execute(project());
+
+    expect(result.success).toBe(true);
+    expect(result.scenePlan?.rooms[0].name).toBe('sala');
     expect(validateCompileResult(result).isValid).toBe(true);
   });
 
