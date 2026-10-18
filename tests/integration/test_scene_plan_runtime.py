@@ -147,7 +147,7 @@ def test_reports_controlled_builder_error_without_successful_scene_plan():
     assert result.scene_plan is None
     assert len(result.diagnostics) == 1
     diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "RUN_UNSUPPORTED_NODE"
+    assert diagnostic.code == "RUN_SPATIAL_OPERATION_FAILED"
     assert "ya fue construida" in diagnostic.description
     assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
         duplicate_room.file,
