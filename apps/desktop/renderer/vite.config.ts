@@ -5,7 +5,11 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    base: './',
+    plugins: [react(), tailwindcss(), {
+      name: 'offline-packaged-fonts', apply: 'build' as const,
+      transformIndexHtml: (html: string) => html.replace(/<link[^>]+href="https:\/\/fonts\.(?:googleapis|gstatic)\.com[^>]*>/g, ''),
+    }],
     html: { cspNonce: process.env.LUMI_CSP_NONCE },
     resolve: {
       alias: {

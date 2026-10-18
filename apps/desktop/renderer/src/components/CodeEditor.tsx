@@ -60,6 +60,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
 
   const { settings } = useIdeSettings();
+  const editorFontFamily = `${settings.fontFamily}, monospace`;
   const lineHeightPx = Math.round(settings.fontSize * 1.55);
 
   const currentContent = activeFile
@@ -231,7 +232,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
       ) : (
         <div 
           className="relative flex-1 flex overflow-hidden font-mono"
-          style={{ fontFamily: settings.fontFamily }}
+          style={{ fontFamily: editorFontFamily }}
         >
           {settings.lineNumbers && (
             <div
@@ -282,7 +283,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
               style={{ 
                 fontSize: `${settings.fontSize}px`, 
                 lineHeight: `${lineHeightPx}px`,
-                fontFamily: settings.fontFamily 
+                fontFamily: editorFontFamily
               }}
               className={`absolute inset-0 py-3 px-3 pointer-events-none font-mono z-0 overflow-hidden ${
                 settings.wordWrap ? 'whitespace-pre-wrap break-all' : 'whitespace-pre'
@@ -327,7 +328,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
               style={{ 
                 fontSize: `${settings.fontSize}px`, 
                 lineHeight: `${lineHeightPx}px`,
-                fontFamily: settings.fontFamily,
+                fontFamily: editorFontFamily,
                 tabSize: settings.tabSize 
               }}
               className={`absolute inset-0 py-3 px-4 w-full h-full bg-transparent text-transparent caret-[var(--ide-accent,#f3ebd6)] font-mono resize-none outline-none z-10 overflow-y-auto overflow-x-auto ${

@@ -1,0 +1,28 @@
+{
+  "appId": "org.lumi.estudio",
+  "productName": "Estudio Lumi",
+  "directories": { "output": "dist/release" },
+  "files": ["dist/main.cjs", "dist/preload.cjs", "renderer/dist/**/*", "package.json", "!node_modules/**/*"],
+  "asar": true,
+  "npmRebuild": false,
+  "extraResources": [
+    { "from": "dist/runtime/python", "to": "lumi/python" },
+    { "from": "dist/runtime/backend", "to": "lumi/backend", "filter": ["**/*.py"] },
+    { "from": "resources/lumi-taskbar-adapted.ico", "to": "lumi/lumi-taskbar-adapted.ico" }
+  ],
+  "win": {
+    "target": [{ "target": "nsis", "arch": ["x64"] }],
+    "icon": "resources/lumi-taskbar-adapted.ico",
+    "artifactName": "Estudio-Lumi-${version}-${arch}-setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "allowElevation": false,
+    "deleteAppDataOnUninstall": false,
+    "runAfterFinish": false,
+    "shortcutName": "Estudio Lumi",
+    "installerIcon": "resources/lumi-taskbar-adapted.ico",
+    "uninstallerIcon": "resources/lumi-taskbar-adapted.ico"
+  }
+}

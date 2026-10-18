@@ -6,6 +6,11 @@ import { IdeSettingsProvider } from '../../../context/IdeSettingsContext';
 import { LumiFile } from '../../../types';
 
 describe('CodeEditor y EditorTabBar (Integración)', () => {
+  it('keeps a monospace fallback when the configured web font is unavailable offline', () => {
+    renderEditor();
+    expect(screen.getByRole('textbox', { name: 'Editor de código fuente: main.lumi' }))
+      .toHaveStyle({ fontFamily: 'Fira Code, monospace' });
+  });
   it('applies a source location only after the referenced file becomes active', () => {
     const files: LumiFile[] = [
       { id: 'main', name: 'main.lumi', path: 'main.lumi', content: 'principal {}' },

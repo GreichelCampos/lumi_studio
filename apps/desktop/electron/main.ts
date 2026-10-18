@@ -1,5 +1,6 @@
-import { app, BrowserWindow, Menu, session } from 'electron';
-import { join, resolve } from 'node:path';
+import { app, BrowserWindow, Menu, session, protocol, dialog } from 'electron';
+import { appendFileSync, mkdirSync } from 'node:fs';
+import { isAbsolute, join, resolve } from 'node:path';
 import { PythonWorker } from './pythonWorker';
 import { workerTimeout } from './pythonConfig';
 import { registerIpc } from './ipc';
@@ -7,12 +8,35 @@ import { contentSecurityPolicy, localRendererUrl } from './security';
 import { registerWindowControls } from './windowControls';
 import { registerWorkspaceIpc } from './workspaceIpc';
 import { APP_USER_MODEL_ID, applicationIconPath, configureWindowsTaskbar } from './appIdentity';
+import { PACKAGED_RENDERER_URL, registerPackagedRenderer } from './packagedRenderer';
+
+protocol.registerSchemesAsPrivileged([{ scheme: 'lumi-app', privileges: {
+  standard: true, secure: true, supportFetchAPI: true, corsEnabled: true,
+} }]);
+
+const profile = app.commandLine.getSwitchValue('user-data-dir');
+if (profile) {
+  if (!isAbsolute(profile)) throw new Error('El perfil de usuario debe tener una ruta absoluta.');
+  app.setPath('userData', profile);
+}
 
 if (process.platform === 'win32') app.setAppUserModelId(APP_USER_MODEL_ID);
 
-const root = resolve(__dirname, '../../..');
-const renderer = localRendererUrl(process.env.LUMI_RENDERER_URL ?? 'http://127.0.0.1:5173/');
-const worker = new PythonWorker({ root, timeoutMs: workerTimeout(), log: (text) => process.stderr.write(text) });
+const root = app.isPackaged ? join(process.resourcesPath, 'lumi', 'backend') : resolve(__dirname, '../../..');
+const renderer = app.isPackaged ? PACKAGED_RENDERER_URL
+  : localRendererUrl(process.env.LUMI_RENDERER_URL ?? 'http://127.0.0.1:5173/');
+const worker = new PythonWorker({ root,
+  python: app.isPackaged ? join(process.resourcesPath, 'lumi', 'python', 'python.exe') : undefined,
+  isolated: app.isPackaged, timeoutMs: workerTimeout(), log: (text) => {
+    if (app.isPackaged) {
+      const directory = app.getPath('userData');
+      try {
+        mkdirSync(directory, { recursive: true });
+        appendFileSync(join(directory, 'backend.log'), text);
+      }
+      catch (error) { console.error('No se pudo guardar el registro de Python:', error); }
+    } else process.stderr.write(text);
+  } });
 let closed = false;
 let quitting = false;
 let flushWorkspace = async (): Promise<void> => undefined;
@@ -26,6 +50,7 @@ app.whenReady().then(async () => {
   const icon = applicationIconPath(app.isPackaged, app.getAppPath(), process.resourcesPath);
   Menu.setApplicationMenu(null);
   const policy = contentSecurityPolicy(renderer, process.env.LUMI_CSP_NONCE ?? '');
+  if (app.isPackaged) registerPackagedRenderer(join(app.getAppPath(), 'renderer', 'dist'), policy);
   session.defaultSession.setPermissionRequestHandler((_contents, _permission, callback) => callback(false));
   session.defaultSession.setPermissionCheckHandler(() => false);
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => callback({
@@ -54,7 +79,12 @@ app.whenReady().then(async () => {
   try { await worker.start(); } catch (error) { console.error('Backend Python no disponible:', error); }
   await window.loadURL(renderer.href);
   console.log('Estudio Lumi iniciado.');
-}).catch((error: unknown) => { console.error(error); app.quit(); });
+}).catch((error: unknown) => {
+  console.error(error);
+  if (app.isPackaged) dialog.showErrorBox('No se pudo iniciar Estudio Lumi',
+    `${error instanceof Error ? error.message : String(error)}\nReinstala la aplicación para restaurar sus recursos.`);
+  app.quit();
+});
 
 app.on('window-all-closed', () => app.quit());
 app.on('before-quit', (event) => {

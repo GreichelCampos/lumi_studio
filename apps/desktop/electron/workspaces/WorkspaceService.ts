@@ -19,15 +19,24 @@ export class WorkspaceService {
   private readonly locations = new Set<string>();
   private queue: Promise<unknown> = Promise.resolve();
 
-  constructor(directory: string, private readonly dialogs: WorkspaceDialogs, private readonly protectedPaths: string[] = [directory]) {
+  constructor(directory: string, private readonly dialogs: WorkspaceDialogs, private readonly protectedPaths: string[] = [directory],
+    private readonly installationPaths: string[] = []) {
     this.metadata = new WorkspaceMetadata(directory);
   }
 
   private checkRoot(root: string): void {
+    this.checkInstallationPath(root);
     if (parse(root).root === root || this.protectedPaths.some(path => {
       const child = relative(root.toLowerCase(), resolve(path).toLowerCase());
       return !child || (!child.startsWith(`..${sep}`) && child !== '..' && !isAbsolute(child));
     })) throw new Error('No se puede usar una carpeta del sistema o de la aplicación como proyecto.');
+  }
+
+  private checkInstallationPath(root: string): void {
+    if (this.installationPaths.some(directory => {
+      const child = relative(resolve(directory).toLowerCase(), resolve(root).toLowerCase());
+      return !child || (!child.startsWith(`..${sep}`) && child !== '..' && !isAbsolute(child));
+    })) throw new Error('Guarda los proyectos fuera de la carpeta de instalación para conservarlos al desinstalar.');
   }
 
   serial<T>(operation: () => Promise<T>): Promise<T> {
@@ -81,6 +90,7 @@ export class WorkspaceService {
     const chosen = await this.dialogs.chooseFolder();
     if (!chosen) return null;
     const path = await fs.realpath(chosen);
+    this.checkInstallationPath(path);
     this.locations.add(path);
     return path;
   }
@@ -110,6 +120,7 @@ export class WorkspaceService {
     if (await fs.realpath(data.location) !== data.location) throw new Error('La ubicación elegida cambió. Selecciónela nuevamente.');
     await this.metadata.load();
     const root = join(data.location, data.name);
+    this.checkInstallationPath(root);
     await fs.mkdir(root);
     await fs.writeFile(join(root, 'principal.lumi'), 'principal {\n}\n', { flag: 'wx' });
     const record: WorkspaceRecord = {
@@ -129,6 +140,7 @@ export class WorkspaceService {
     if (await fs.realpath(location) !== location) throw new Error('La ubicación elegida cambió. Selecciónela nuevamente.');
     await this.metadata.load();
     const root = join(location, project.name);
+    this.checkInstallationPath(root);
     await fs.mkdir(root);
     for (const file of project.files) {
       const path = join(root, file.path);
