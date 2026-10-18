@@ -1,6 +1,8 @@
 import * as fs from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { randomUUID } from 'node:crypto';
+import { setTimeout } from 'node:timers/promises';
+import { createWriteGuard } from './writeGuard';
 
 export const MAX_PROJECT_FILES = 128;
 export const MAX_SOURCE_BYTES = 262144;
@@ -70,18 +72,60 @@ export async function readSources(root: string): Promise<Record<string, string>>
   return result;
 }
 
-export async function atomicWrite(path: string, content: string): Promise<void> {
+const REPLACE_DELAYS_MS = [25, 50, 100, 200, 400];
+
+async function replaceFile(temp: string, path: string, validate: () => Promise<void>): Promise<void> {
+  for (let attempt = 0;; attempt++) {
+    await validate();
+    try { await fs.rename(temp, path); return; }
+    catch (error) {
+      if (process.platform !== 'win32' || attempt >= REPLACE_DELAYS_MS.length
+        || !(error instanceof Error) || !('code' in error)
+        || !['EPERM', 'EACCES', 'EBUSY'].includes(String(error.code))) throw error;
+      const target = await fs.lstat(path).catch(statError => { if (!isMissing(statError)) throw error; return null; });
+      if (target && (target.mode & 0o222) === 0) throw error;
+      await setTimeout(REPLACE_DELAYS_MS[attempt]);
+    }
+  }
+}
+
+export async function atomicWrite(path: string, content: string, validate?: () => Promise<void>): Promise<void> {
+  await validate?.();
+  const guard = await createWriteGuard(path);
   const temp = join(dirname(path), `.${basename(path)}.${randomUUID()}.tmp`);
   let handle;
+  let identity: { dev: bigint; ino: bigint } | undefined;
+  let failed = false;
+  let failure: unknown;
   try {
     handle = await fs.open(temp, 'wx');
+    identity = await handle.stat({ bigint: true });
     await handle.writeFile(content, 'utf8');
     await handle.sync();
     await handle.close();
     handle = undefined;
-    await fs.rename(temp, path);
+    await replaceFile(temp, path, async () => { await guard.validate(); await validate?.(); });
+  } catch (error) {
+    failed = true;
+    failure = error;
+    throw error;
   } finally {
-    await handle?.close();
-    await fs.unlink(temp).catch((error: unknown) => { if (!isMissing(error)) throw error; });
+    let cleanupError: unknown;
+    try { await handle?.close(); } catch (error) { cleanupError = error; }
+    try {
+      if (identity) {
+        try { await guard.validateDirectory(); }
+        catch (error) { throw new Error(`No se pudo limpiar el temporal porque cambió su carpeta: ${temp}`, { cause: error }); }
+        const current = await fs.lstat(temp, { bigint: true }).catch(error => { if (!isMissing(error)) throw error; return null; });
+        if (current) {
+          if (current.dev !== identity.dev || current.ino !== identity.ino || current.isSymbolicLink()) {
+            throw new Error('El temporal cambió de identidad; no se eliminará un archivo ajeno.');
+          }
+          await fs.unlink(temp);
+        }
+      }
+    } catch (error) { if (!isMissing(error)) cleanupError ??= error; }
+    if (failed && cleanupError && failure instanceof Error && failure.cause === undefined) failure.cause = cleanupError;
+    if (!failed && cleanupError) throw cleanupError;
   }
 }

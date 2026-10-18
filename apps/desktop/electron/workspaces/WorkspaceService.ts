@@ -166,26 +166,47 @@ export class WorkspaceService {
     const previous = this.snapshots.get(project.id);
     if (!previous) throw new Error('Debe abrir el proyecto antes de guardarlo.');
     const actions: Array<() => Promise<void>> = [];
+    const updateSnapshot = (file: LumiProject['files'][number]) => {
+      const current = this.snapshots.get(project.id)!;
+      const files = current.files.some(old => old.id === file.id)
+        ? current.files.map(old => old.id === file.id ? structuredClone(file) : old)
+        : [...current.files, structuredClone(file)];
+      this.snapshots.set(project.id, { ...current, files });
+    };
+    const writeSource = async (file: LumiProject['files'][number], expected: string) => {
+      const target = await inside(record.root, file.path);
+      await atomicWrite(target, file.content, async () => {
+        if (await inside(record.root, file.path) !== target || await fs.readFile(target, 'utf8') !== expected) {
+          throw new Error(`El archivo ${file.path} cambió en disco. Reábralo antes de sobrescribirlo.`);
+        }
+      });
+      updateSnapshot(file);
+    };
     for (const old of previous.files) {
       const next = project.files.find(f => f.id === old.id);
       if (next && next.path === old.path && next.content === old.content) continue;
       const path = await inside(record.root, old.path);
       if (await fs.readFile(path, 'utf8') !== old.content) throw new Error(`El archivo ${old.path} cambió en disco. Reábralo antes de sobrescribirlo.`);
-      if (!next) actions.push(() => this.dialogs.trash(path));
+      if (!next) actions.push(async () => {
+        await this.dialogs.trash(path);
+        const current = this.snapshots.get(project.id)!;
+        this.snapshots.set(project.id, { ...current, files: current.files.filter(file => file.id !== old.id) });
+      });
       else if (next.path !== old.path) {
         const target = await inside(record.root, next.path, true);
         try { await fs.lstat(target); throw new Error('El destino ya existe.'); } catch (error) { if (!isMissing(error)) throw error; }
         actions.push(async () => {
           await fs.link(path, target);
           await fs.unlink(path);
-          if (next.content !== old.content) await atomicWrite(target, next.content);
+          updateSnapshot({ ...next, content: old.content });
+          if (next.content !== old.content) await writeSource(next, old.content);
         });
-      } else actions.push(() => atomicWrite(path, next.content));
+      } else actions.push(() => writeSource(next, old.content));
     }
     for (const file of project.files.filter(f => !previous.files.some(old => old.id === f.id))) {
       const path = await inside(record.root, file.path, true);
       try { await fs.lstat(path); throw new Error('El archivo ya existe.'); } catch (error) { if (!isMissing(error)) throw error; }
-      actions.push(() => fs.writeFile(path, file.content, { flag: 'wx' }));
+      actions.push(async () => { await fs.writeFile(path, file.content, { flag: 'wx' }); updateSnapshot(file); });
     }
     for (const action of actions) await action();
     const pathOf = (id?: string) => project.files.find(f => f.id === id)?.path;

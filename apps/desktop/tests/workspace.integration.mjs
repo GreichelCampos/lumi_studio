@@ -30,7 +30,8 @@ async function menu(page, label) {
 async function save(page, path, expected) {
   await page.locator('textarea').focus();
   await page.keyboard.press('Control+s');
-  await eventually(async () => await readFile(path, 'utf8') === expected, `Content was not saved: ${path}`);
+  await page.getByText('Guardado', { exact: true }).waitFor();
+  assert.equal(await readFile(path, 'utf8'), expected, `Content was not saved: ${path}`);
 }
 try {
   desktop = await launchDesktop(env, workspace);

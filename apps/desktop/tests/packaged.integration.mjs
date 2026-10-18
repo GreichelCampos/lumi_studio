@@ -49,7 +49,7 @@ try {
   await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await page.getByText('PAQUETE_PYTHON_REAL', { exact: true }).waitFor();
   await editor.press('Control+s');
-  await page.waitForTimeout(400);
+  await page.getByText('Guardado', { exact: true }).waitFor();
   assert.equal(await readFile(join(workspace.project, 'principal.lumi'), 'utf8'), 'mostrar("PAQUETE_PYTHON_REAL")>>');
   const analyzed = await page.evaluate(() => window.lumiDesktop.analyze({
     entryFile: 'principal.lumi', files: { 'principal.lumi': 'principal { habitacion sala(5,4,2.7) {} }' },
