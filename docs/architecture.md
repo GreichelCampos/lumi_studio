@@ -10,15 +10,15 @@ estáticos para distribución.
 
 ```mermaid
 flowchart LR
-    UI[React y TypeScript] --> PRE[Preload: API limitada]
-    PRE --> MAIN[Electron main]
-    MAIN --> DISK[Proyectos y metadatos locales]
+    UI[React y TypeScript] <--> PRE[Preload: API limitada]
+    PRE <--> MAIN[Electron main]
+    MAIN <--> DISK[Proyectos y metadatos locales]
     MAIN -->|JSON por stdin| WORKER[Worker Python]
     WORKER -->|JSON por stdout| MAIN
     WORKER --> CORE[Lexer, parser, semántica e intérprete]
     ART[Archivo .lumic] --> VAL[Validación del artefacto]
     VAL --> VIEW[Three.js]
-    UI --> VIEW
+    UI -->|Selección y cámara| VIEW
 ```
 
 El diagrama no conecta el núcleo con el visor: el protocolo actual todavía no
@@ -107,6 +107,17 @@ ese recorrido: análisis/ejecución Python por un lado e importación `.lumic` p
 El prototipo web se reutiliza mediante componentes y servicios, con adaptadores
 para procesos y disco en Electron. Las carpetas Python heredadas no son el frontend
 empaquetado de esta aplicación.
+
+| Planteamiento inicial | Aplicación distribuida actual |
+|---|---|
+| Interfaz Python con PySide6 y visualización con Ursina | Ventana Electron, interfaz React/TypeScript y visor Three.js. |
+| Dependencias gráficas Python junto al entorno del lenguaje | El worker usa los módulos Python necesarios para las fachadas; el paquete no instala toda la lista histórica de `requirements.txt`. |
+| Código → compilación espacial → escena y depuración | Análisis/ejecución Python disponibles; escena y reproducción mediante artefactos importados mientras se acuerda el transporte espacial real. |
+
+`requirements.txt` conserva PySide6, Ursina y Panda3D. Su presencia no prueba que
+sean el frontend de Electron ni que esas pruebas históricas se hayan ejecutado.
+La adopción práctica de otra tecnología y su justificación deben distinguirse de
+una eventual aprobación académica formal, que no se documenta aquí como realizada.
 
 Electron permite conservar React y Three.js y proporcionar acceso local mediante
 main/preload. TypeScript expresa los contratos de UI, aunque los datos externos

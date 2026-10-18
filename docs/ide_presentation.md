@@ -64,3 +64,80 @@ Si una operación falla, muestra el error y describe el límite en lugar de camb
 a datos simulados sin indicarlo. No elimines ni desinstales una instalación de
 trabajo para realizar la demostración. Las capturas pendientes y sus pies están
 en el [manual de usuario](user_manual.md#capturas-auténticas-por-incorporar).
+
+## Explicación técnica oral
+
+«Estudio Lumi separa la interfaz del lenguaje. React organiza los componentes y
+TypeScript expresa sus datos; Three.js construye el visor. Electron aporta la
+ventana y el acceso local mediante main y una API limitada en preload. El renderer
+no tiene Node.js. Las operaciones de archivos pasan por validaciones y una cola.
+
+»El worker Python recibe JSON por stdin y responde por stdout. Sus fachadas usan
+el lexer, parser, análisis e intérprete existentes. Compilar solicita análisis;
+Ejecutar solicita ejecución y devuelve salida o diagnósticos. El archivo principal
+es una selección del proyecto, independiente de la pestaña activa.
+
+»La integración espacial tiene otro límite. El visor carga `.lumic` validados,
+pero el protocolo actual no devuelve ScenePlan. Tampoco produce trazas Python:
+los controles reproducen eventos importados. Por eso mostramos ejecución real y
+visualización de un artefacto por separado. El paquete Windows incluye Python
+para que el usuario no tenga que instalarlo. Las pruebas automatizadas locales
+pasaron; la validación manual en un equipo limpio sigue pendiente».
+
+## Preguntas técnicas y respuestas
+
+| Pregunta | Respuesta sustentada en el código |
+|---|---|
+| ¿Por qué Electron y React? | Permiten reutilizar los componentes del IDE web y añadir procesos, disco y distribución mediante main/preload. La separación actual está en [main.ts](../apps/desktop/electron/main.ts) y [preload.ts](../apps/desktop/electron/preload.ts). No implica una comparación experimental de rendimiento con otros frameworks. |
+| ¿TypeScript garantiza que Python envía datos válidos? | No. Sus tipos no validan JSON en ejecución. El [validador de respuestas](../apps/desktop/renderer/src/services/integration/protocol/responseValidator.ts) comprueba datos externos antes de adaptarlos. |
+| ¿Por qué no evaluar Lumi en JavaScript? | Duplicaría reglas y podría producir resultados distintos del núcleo. [CompilerService](../services/compiler_service.py) y [ExecutionService](../services/execution_service.py) llaman a la implementación Python existente. |
+| ¿La comunicación usa una API web? | No: un proceso local supervisado intercambia líneas JSON UTF-8 por stdin/stdout. Los registros van a stderr. [PythonWorker](../apps/desktop/electron/pythonWorker.ts) administra solicitudes y cierre. |
+| ¿Qué impide leer cualquier archivo desde React? | El renderer carece de Node; preload ofrece operaciones concretas. Main valida origen, argumentos y rutas. [workspaceIpc.ts](../apps/desktop/electron/workspaceIpc.ts) y [safeFiles.ts](../apps/desktop/electron/workspaces/safeFiles.ts) implementan esa frontera. No es un sandbox completo del núcleo Python. |
+| ¿Se ejecuta la pestaña activa? | Se envían el principal explícito y el mapa de fuentes del proyecto. Los borradores participan en la solicitud. Véase [projectInput.ts](../apps/desktop/renderer/src/services/integration/projectInput.ts). |
+| ¿Guardar es una transacción? | Cada reemplazo usa un temporal; Guardar todos no es una transacción global. Se conserva progreso parcial y el borrador ante fallo. Los reintentos Windows son limitados y no ignoran cambios externos. Véase [almacenamiento](project_storage.md). |
+| ¿Un error de Python siempre es un error del alumno? | No. El [protocolo](../services/protocol/models.py) separa resultados del programa de errores de infraestructura. No se inventan severidades ni ubicaciones ausentes. |
+| ¿El AST es el `.lumic`? | No. AST, ScenePlan interno, DTO del visor y contenedor persistente cumplen funciones distintas. El [contrato candidato](contracts/lumic/v1.0.0/README.md) requiere todavía validación de interoperabilidad. |
+| ¿La habitación visible salió de ese código? | Solo se puede afirmar si existe evidencia del recorrido completo con un productor real. En esta versión se muestra un fixture importado y se señala su procedencia; [resultAdapter.ts](../apps/desktop/renderer/src/services/integration/resultAdapter.ts) devuelve escena nula para Python. |
+| ¿Pausar el depurador pausa Python? | No. [useSpatialDebugger](../apps/desktop/renderer/src/hooks/useSpatialDebugger.ts) reproduce una secuencia ya disponible. Los puntos locales no controlan el intérprete. |
+| ¿Cómo se libera la GPU? | El gestor desmonta escena y recursos mediante [ThreeResourceDisposer](../apps/desktop/renderer/src/components/viewport/resources/ThreeResourceDisposer.ts); también se liberan controles y renderer. Un canvas visible no prueba por sí solo ausencia de fugas. |
+| ¿Cómo maneja la cámara las dimensiones? | Es ortográfica, usa OrbitControls y ajusta el encuadre a habitación y aspecto del contenedor. Véase [CameraController](../apps/desktop/renderer/src/components/viewport/camera/CameraController.ts). |
+| ¿Necesita Python instalado? | Desarrollo sí necesita un runtime accesible; el paquete incluye CPython fijado/verificado y los módulos del worker. No incluye indiscriminadamente todo requirements.txt. Véase [empaquetado](windows_packaging.md). |
+| ¿Está lista la distribución general? | Se generó y probó un NSIS por usuario, pero faltan validación manual en Windows limpio y firma de confianza. No hay actualización automática configurada. |
+
+## Tres ejercicios de lectura y diseño
+
+Estos ejercicios preparan una modificación explicable; no indican que se haya
+realizado ni autorizan cambios sobre la versión de demostración.
+
+1. **Cámara:** localizar `zoomCamera` y sus límites en `CameraController.ts`.
+   Explicar cómo se cambiaría el máximo sin alterar geometría o contratos, qué
+   controles lo usan y qué prueba verificaría el límite y valores no finitos.
+2. **Persistencia:** recorrer `ProjectSession.save` → IPC → `WorkspaceService` →
+   `atomicWrite`. Explicar qué ocurre si el segundo archivo falla, qué borrador
+   queda y cómo probar una edición nueva mientras el primer guardado está en vuelo.
+3. **Reproducción:** seguir `handleDebugStepChange` y `resolveDebugStep`. Explicar
+   por qué un paso sin snapshot o con ruta externa limpia el estado en vez de
+   conservar el resaltado anterior. Identificar la prueba multiarchivo y la
+   diferencia respecto a instrumentar el intérprete.
+
+Si se requiere un cambio durante una evaluación, ensayarlo previamente en una
+copia de trabajo aislada y autorizada, con sus pruebas; no improvisarlo en el
+ejecutable o proyecto de demostración. La práctica efectiva debe verificarse aparte.
+
+## Recuperación durante el recorrido
+
+| Fallo | Respuesta prevista |
+|---|---|
+| No inicia la aplicación o falta el runtime | Mostrar el mensaje y registrar el fallo. Utilizar solo un paquete de respaldo previamente probado en el equipo de prueba. No instalar encima de una versión personal durante la defensa. |
+| Falla el análisis o la ejecución | Conservar el diagnóstico y utilizar el ejemplo mínimo verificado. No presentar un fixture como resultado alternativo de compilación. |
+| Falla WebGL | Revisar el mensaje y pasar a una captura o grabación auténtica identificada como evidencia anterior, si está disponible; no afirmar que se acaba de renderizar. |
+| Falla Guardar | Mantener abierto el borrador, copiar su contenido a un respaldo propio y resolver el bloqueo. No descartar, borrar el destino ni forzar permisos. |
+| No hay fuentes de un paso importado | Mostrar el snapshot y explicar que la navegación exige referencias coincidentes con archivos del proyecto. |
+| Se agota el tiempo | Priorizar proyecto, salida Python y diagnóstico; explicar el visor importado y los límites sin simular integración real. |
+
+Preparar una copia sin editar del proyecto de demostración fuera de la instalación,
+los dos `.lumic` y una copia del instalador con hash registrado. Tras copiar, abrir
+el proyecto de respaldo y volver a elegir el principal si es necesario. Las
+capturas o grabaciones de reserva no se consideran disponibles hasta generarlas
+y comprobarlas. Las instrucciones de usuario y límites permanecen en el
+[manual](user_manual.md) y la [guía Windows](installation_windows.md).
