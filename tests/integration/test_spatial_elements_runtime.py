@@ -251,3 +251,54 @@ def test_builds_elements_and_final_state_in_multiple_rooms():
     assert sala.elements[0].position.z.value == 1
     assert oficina.elements[0].position.z.value == -1
     assert oficina.elements[0].rotation.y.value == 90
+
+
+def test_preserves_complete_backend_contract_for_all_spatial_declarations():
+    source = """habitacion sala(6, 5, 3) {
+    piso suelo { material "madera">> }
+    pared norte { color "blanco">> }
+    puerta entrada { material "metal">> }
+    ventana ventanal { color "azul">> }
+    mesa mesa1 { color "rojo">> material "madera">> }
+    colocar mesa1 [1, 0, -1]>>
+    rotar mesa1 [0, 90, 0]>>
+}"""
+    program = parse_source(source, "contrato_espacial.lumi")
+    declarations = program.statements[0].body[:5]
+
+    result = Interpreter().execute(program)
+
+    assert result.succeeded
+    room = result.scene_plan.rooms[0]
+    assert tuple(
+        (element.name, element.element_kind, element.object_type)
+        for element in room.elements
+    ) == (
+        ("suelo", "floor", None),
+        ("norte", "wall", None),
+        ("entrada", "door", None),
+        ("ventanal", "window", None),
+        ("mesa1", "object", "mesa"),
+    )
+    assert tuple(element.source for element in room.elements) == tuple(
+        SourceLocation(node.file, node.line, node.column)
+        for node in declarations
+    )
+    assert tuple(
+        (prop.name, prop.value, prop.source)
+        for element in room.elements
+        for prop in element.properties
+    ) == tuple(
+        (
+            prop.name,
+            prop.value.value,
+            SourceLocation(prop.file, prop.line, prop.column),
+        )
+        for node in declarations
+        for prop in node.properties
+    )
+    assert (room.elements[-1].position.x.value, room.elements[-1].position.z.value) == (
+        1,
+        -1,
+    )
+    assert room.elements[-1].rotation.y.value == 90

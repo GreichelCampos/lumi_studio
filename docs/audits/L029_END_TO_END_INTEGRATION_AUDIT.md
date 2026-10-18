@@ -391,3 +391,42 @@ Para cerrar L-029 se requiere:
 3. Revisar las decisiones de `docs/integration/SCENEPLAN_OPEN_DECISIONS.md`.
 
 No se hizo commit, push, merge, rebase, cherry-pick ni cambio de rama.
+
+## M. Cierre técnico del backend de la integrante 2
+
+La revisión del contrato interno confirmó que pared, puerta y ventana ya se
+registran sin pérdida como `SpatialElement` dentro de su habitación. Conservan
+nombre, categoría, propiedades y ubicación de origen. El contrato aprobado no
+contiene la geometría adicional exigida por el DTO visual; por tanto, su ausencia
+en Three.js no constituye un defecto del generador interno.
+
+No fue necesario modificar producción. Se añadieron pruebas Python para demostrar
+en una cadena `Lexer -> Parser -> Interpreter` la coexistencia ordenada de piso,
+pared, puerta, ventana y mueble, incluyendo propiedades, ubicaciones y estado final.
+También se verificó en `ExecutionService` que los elementos reservados llegan a
+`ExecutionResult` y que una escena espacialmente inválida no se publica.
+
+La revisión detallada y las decisiones que requieren aprobación están en
+`docs/audits/L029_BACKEND_GEOMETRY_CONTRACT_REVIEW.md`. Con esta delimitación, la
+responsabilidad backend de la integrante 2 queda completa dentro del contrato
+vigente. L-029 global continúa parcial por la geometría visual no especificada y
+la verificación Electron/Three.js, responsabilidades coordinadas con el equipo y
+la integrante 3.
+
+Verificación final de este cierre backend:
+
+```text
+ScenePlanBuilder + L-026:       85 passed
+Integración y servicio:         39 passed
+Integración L-029 agrupada:     78 passed
+Suite Python completa:         538 passed
+```
+
+Se añadieron tres pruebas: una integración completa de declaraciones espaciales y
+dos verificaciones de `ExecutionResult` para propagación válida y supresión del
+plan inválido. No se modificó código de producción. El cumplimiento de la parte
+backend se estima en **100 % (10 de 10 responsabilidades verificadas)**: generación
+por ejecución, cinco categorías de elementos, operaciones/estado final, L-026,
+contrato interno, propagación, aislamiento, diagnósticos, pruebas y documentación.
+Este porcentaje no mide el cierre global de L-029 ni convierte las decisiones
+geométricas pendientes en funcionalidad aprobada.
