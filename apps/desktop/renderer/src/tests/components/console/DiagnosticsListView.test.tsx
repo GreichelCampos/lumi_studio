@@ -55,6 +55,15 @@ const mockDiagnostics: DiagnosticItem[] = [
 ];
 
 describe('DiagnosticsListView', () => {
+  it('shows only supplied spatial references without inventing severity or a focus target', () => {
+    const diagnostic: DiagnosticItem = { ...mockDiagnostics[2], severity: 'unspecified',
+      targetRoomId: 'provided-room', targetObjectId: undefined };
+    render(<DiagnosticsListView diagnostics={[diagnostic]} onNavigateToDiagnostic={vi.fn()} onFocusObject={vi.fn()} />);
+    expect(screen.getByText('SIN SEVERIDAD PROPORCIONADA')).toBeInTheDocument();
+    expect(screen.getByText('Habitación: provided-room')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Enfocar en 3D' })).not.toBeInTheDocument();
+    expect(screen.queryByText('3D Disponible')).not.toBeInTheDocument();
+  });
   it('renderiza la lista de diagnósticos con sus badges, códigos y ubicaciones', () => {
     const handleNavigate = vi.fn();
     render(
@@ -92,7 +101,7 @@ describe('DiagnosticsListView', () => {
     expect(screen.getByText('Bloqueante')).toBeInTheDocument();
 
     // El error espacial es blocking: false, category: 'espacial'
-    expect(screen.getByText('3D Disponible')).toBeInTheDocument();
+    expect(screen.getByText('Diagnóstico espacial')).toBeInTheDocument();
   });
 
   it('filtra por severidad al pulsar los botones de filtro', () => {

@@ -6,6 +6,22 @@ import { IdeSettingsProvider } from '../../../context/IdeSettingsContext';
 import { LumiFile } from '../../../types';
 
 describe('CodeEditor y EditorTabBar (Integración)', () => {
+  it('applies a source location only after the referenced file becomes active', () => {
+    const files: LumiFile[] = [
+      { id: 'main', name: 'main.lumi', path: 'main.lumi', content: 'principal {}' },
+      { id: 'other', name: 'other.lumi', path: 'lib/other.lumi', content: 'primera\nsegunda\ntercera' },
+    ];
+    const props = { files, openTabIds: ['main', 'other'], onSelectFile: vi.fn(), onCloseTab: vi.fn(),
+      onNewFile: vi.fn(), onCodeChange: vi.fn(), highlightedLine: 2,
+      sourceNavigation: { fileId: 'other', line: 2, column: 3 } };
+    const view = render(<IdeSettingsProvider><CodeEditor {...props} activeFileId="main" /></IdeSettingsProvider>);
+    view.rerender(<IdeSettingsProvider><CodeEditor {...props} activeFileId="other" /></IdeSettingsProvider>);
+    const input = screen.getByRole('textbox', { name: 'Editor de código fuente: other.lumi' }) as HTMLTextAreaElement;
+    expect(input).toHaveFocus();
+    expect(input.selectionStart).toBe('primera\nse'.length);
+    expect(input.selectionEnd).toBe(input.selectionStart);
+    expect(screen.getByTestId('tab-other')).toHaveAttribute('data-active-tab', 'true');
+  });
   const sampleFiles: LumiFile[] = [
     { id: 'file-1', name: 'main.lumi', path: '/main.lumi', content: 'escena {\n  habitacion Sala\n}', isEntry: true },
     { id: 'file-2', name: 'modulo.lumi', path: '/modulo.lumi', content: 'habitacion Modulo {\n}', isEntry: false },

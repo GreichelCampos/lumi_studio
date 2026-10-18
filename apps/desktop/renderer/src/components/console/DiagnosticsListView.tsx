@@ -195,7 +195,7 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                       </span>
                     ) : diag.category === 'espacial' ? (
                       <span className="text-[9px] uppercase font-bold text-[var(--ide-accent)] bg-[var(--ide-accent-bg)] border border-[var(--ide-accent)]/40 px-2 py-0.5 rounded-full">
-                        3D Disponible
+                        Diagnóstico espacial
                       </span>
                     ) : null}
                   </div>
@@ -208,6 +208,13 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                 <p className="text-[var(--ide-text)] text-xs pt-2.5 leading-relaxed">
                   {diag.description}
                 </p>
+                {diag.category === 'espacial' && (diag.targetRoomId || diag.roomId || objectId) && (
+                  <p className="text-xs text-[var(--ide-text-muted)]">
+                    {(diag.targetRoomId || diag.roomId) && `Habitación: ${diag.targetRoomId || diag.roomId}`}
+                    {(diag.targetRoomId || diag.roomId) && objectId && ' · '}
+                    {objectId && `Objeto: ${objectId}`}
+                  </p>
+                )}
 
                 {diag.solution && (
                   <div className="mt-2.5 glass-card bg-[var(--ide-control-bg)] border border-[var(--ide-panel-border)] p-2.5 text-[11px] text-[var(--ide-text)] flex items-start gap-2 !w-auto !h-auto">

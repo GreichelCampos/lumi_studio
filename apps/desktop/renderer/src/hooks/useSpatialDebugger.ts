@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { DebugStep, DebuggerStatus, PlaybackSpeed, Breakpoint } from '../types';
+import { validDebugSource } from '../services/editor/debugStepNavigation';
 import { lumiAssistant } from '../services/assistant/LumiAssistantService';
 
 interface UseSpatialDebuggerProps {
   debugSteps: DebugStep[];
   breakpoints?: Breakpoint[];
-  onStepChange?: (step: DebugStep) => void;
+  onStepChange?: (step: DebugStep | null) => void;
   onBreakpointHit?: (step: DebugStep) => void;
 }
 
@@ -22,7 +23,17 @@ export function useSpatialDebugger({
   onBreakpointHit,
 }: UseSpatialDebuggerProps) {
   const [status, setStatus] = useState<DebuggerStatus>('idle');
-  const [currentStepIndex, setCurrentStepIndex] = useState<number>(0);
+  const [cursor, setCursor] = useState({ steps: debugSteps, index: 0 });
+  const currentStepIndex = cursor.steps === debugSteps ? cursor.index : 0;
+  const stepsRef = useRef(debugSteps);
+  stepsRef.current = debugSteps;
+  const setCurrentStepIndex = useCallback((value: number | ((index: number) => number)) => {
+    if (stepsRef.current !== debugSteps) return;
+    setCursor(previous => {
+      const index = previous.steps === debugSteps ? previous.index : 0;
+      return { steps: debugSteps, index: typeof value === 'function' ? value(index) : value };
+    });
+  }, [debugSteps]);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
 
   const onStepChangeRef = useRef(onStepChange);
@@ -31,36 +42,34 @@ export function useSpatialDebugger({
   const onBreakpointHitRef = useRef(onBreakpointHit);
   onBreakpointHitRef.current = onBreakpointHit;
 
-  const prevStepIndexRef = useRef<number | null>(null);
+  const previousStepRef = useRef<DebugStep | null | undefined>(undefined);
   const breakpointsRef = useRef<Breakpoint[]>(breakpoints);
   breakpointsRef.current = breakpoints;
 
   useEffect(() => {
     if (debugSteps.length > 0) {
-      setCurrentStepIndex(0);
-      prevStepIndexRef.current = null;
       setStatus('ready');
     } else {
-      setCurrentStepIndex(0);
-      prevStepIndexRef.current = null;
       setStatus('idle');
     }
   }, [debugSteps]);
 
   useEffect(() => {
     if (debugSteps.length > 0 && debugSteps[currentStepIndex] !== undefined) {
-      if (prevStepIndexRef.current !== currentStepIndex) {
-        prevStepIndexRef.current = currentStepIndex;
+      if (previousStepRef.current !== debugSteps[currentStepIndex]) {
         const activeStep = debugSteps[currentStepIndex];
+        previousStepRef.current = activeStep;
         onStepChangeRef.current?.(activeStep);
 
+        const source = validDebugSource(activeStep.sourceRef) ? activeStep.sourceRef : null;
         if (activeStep.assistantMessage) {
           if (activeStep.eventType === 'spatial_error') {
             lumiAssistant.onDebugSpatialError(activeStep.assistantMessage);
           } else if (activeStep.eventType === 'spatial_warning') {
             lumiAssistant.onDebugSpatialWarning(activeStep.assistantMessage);
           } else {
-            lumiAssistant.onDebugStep(activeStep.sourceRef.file, activeStep.sourceRef.line, activeStep.assistantMessage);
+            if (source) lumiAssistant.onDebugStep(source.file, source.line, activeStep.assistantMessage);
+            else lumiAssistant.setMessage(activeStep.assistantMessage, 'ready');
           }
         } else {
           if (activeStep.eventType === 'spatial_error') {
@@ -70,10 +79,14 @@ export function useSpatialDebugger({
           } else if (activeStep.eventType === 'end') {
             lumiAssistant.onDebugFinished();
           } else {
-            lumiAssistant.onDebugStep(activeStep.sourceRef.file, activeStep.sourceRef.line);
+            if (source) lumiAssistant.onDebugStep(source.file, source.line);
+            else lumiAssistant.setMessage('Paso sin referencia de código disponible.', 'ready');
           }
         }
       }
+    } else if (previousStepRef.current) {
+      previousStepRef.current = null;
+      onStepChangeRef.current?.(null);
     }
   }, [currentStepIndex, debugSteps]);
 
@@ -95,7 +108,7 @@ export function useSpatialDebugger({
         const nextStep = debugSteps[nextIndex];
 
         // Check if next step hits any breakpoint (file + line match)
-        const isBreakpoint = breakpointsRef.current.some(
+        const isBreakpoint = validDebugSource(nextStep.sourceRef) && breakpointsRef.current.some(
           (bp) => bp.line === nextStep.sourceRef.line && (bp.file === nextStep.sourceRef.file || !bp.file)
         );
 
@@ -111,14 +124,14 @@ export function useSpatialDebugger({
     }, intervalMs);
 
     return () => clearInterval(timer);
-  }, [status, debugSteps, playbackSpeed]);
+  }, [status, debugSteps, playbackSpeed, setCurrentStepIndex]);
 
   const startDebugging = useCallback(() => {
     if (debugSteps.length === 0) return;
     setCurrentStepIndex(0);
     setStatus('running');
     lumiAssistant.onDebugStart();
-  }, [debugSteps.length]);
+  }, [debugSteps.length, setCurrentStepIndex]);
 
   const play = useCallback(() => {
     if (debugSteps.length === 0) return;
@@ -126,7 +139,7 @@ export function useSpatialDebugger({
       setCurrentStepIndex(0);
     }
     setStatus('running');
-  }, [currentStepIndex, debugSteps.length, status]);
+  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
 
   const pause = useCallback(() => {
     setStatus('paused');
@@ -150,7 +163,7 @@ export function useSpatialDebugger({
     } else if (currentStepIndex === debugSteps.length - 1) {
       setStatus('finished');
     }
-  }, [currentStepIndex, debugSteps.length, status]);
+  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
 
   const prevStep = useCallback(() => {
     if (currentStepIndex > 0) {
@@ -159,35 +172,35 @@ export function useSpatialDebugger({
         setStatus('paused');
       }
     }
-  }, [currentStepIndex, status]);
+  }, [currentStepIndex, status, setCurrentStepIndex]);
 
   const jumpToStart = useCallback(() => {
     setCurrentStepIndex(0);
     setStatus('ready');
-  }, []);
+  }, [setCurrentStepIndex]);
 
   const jumpToEnd = useCallback(() => {
     if (debugSteps.length > 0) {
       setCurrentStepIndex(debugSteps.length - 1);
       setStatus('finished');
     }
-  }, [debugSteps.length]);
+  }, [debugSteps.length, setCurrentStepIndex]);
 
   const resetDebugger = useCallback(() => {
     setCurrentStepIndex(0);
     setStatus(debugSteps.length > 0 ? 'ready' : 'idle');
-  }, [debugSteps.length]);
+  }, [debugSteps.length, setCurrentStepIndex]);
 
   const jumpToStep = useCallback(
     (index: number) => {
-      if (index >= 0 && index < debugSteps.length) {
+      if (Number.isInteger(index) && index >= 0 && index < debugSteps.length) {
         setCurrentStepIndex(index);
         if (status === 'running') {
           setStatus('paused');
         }
       }
     },
-    [debugSteps.length, status]
+    [debugSteps.length, status, setCurrentStepIndex]
   );
 
   const changeSpeed = useCallback((speed: PlaybackSpeed) => {

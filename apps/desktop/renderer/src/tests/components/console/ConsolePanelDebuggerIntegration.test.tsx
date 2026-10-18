@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ConsolePanel } from '../../../components/ConsolePanel';
 import { DebugStep } from '../../../types';
+import { createMockRoom, createMockSpatialObject } from '../../fixtures/testFixtures';
 
 const sampleDebugSteps: DebugStep[] = [
   {
@@ -34,7 +35,7 @@ const sampleDebugSteps: DebugStep[] = [
     activeObjectId: 'mesa-1',
     sceneSnapshot: {
       version: '1.0',
-      rooms: [],
+      rooms: [createMockRoom({ id: 'room-main', objects: [createMockSpatialObject({ id: 'mesa-1' })] })],
       metadata: { totalRooms: 1, totalObjects: 1, estimatedBuildTimeMs: 12 },
     },
   },

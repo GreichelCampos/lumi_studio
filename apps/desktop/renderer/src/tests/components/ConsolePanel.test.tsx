@@ -53,7 +53,7 @@ describe('ConsolePanel (Diagnósticos y Filtros)', () => {
     expect(screen.getByText('LUMI-W301')).toBeInTheDocument();
 
     expect(screen.getByText(/bloqueante/i)).toBeInTheDocument();
-    expect(screen.getByText(/3d disponible/i)).toBeInTheDocument();
+    expect(screen.getByText('Diagnóstico espacial')).toBeInTheDocument();
   });
 
   it('debe filtrar diagnósticos por categoría correctamente', () => {
