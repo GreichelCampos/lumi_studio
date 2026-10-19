@@ -1,9 +1,13 @@
 # Manual de usuario de Estudio Lumi
 
 Estudio Lumi permite editar proyectos Lumi, analizarlos y ejecutarlos con Python.
-También permite visualizar archivos `.lumic` validados. La compilación espacial y
-las trazas reales de Python todavía no están integradas: una habitación escrita en
-el editor no genera actualmente una escena 3D.
+Al ejecutar puede visualizar habitaciones, pisos y muebles colocados a partir de
+ScenePlan producido por el intérprete. También permite importar `.lumic` validados
+de forma independiente. No hay trazas de depuración Python reales.
+
+El flujo espacial se comprobó en Electron de desarrollo. El instalador combinado
+todavía no se ha generado ni aceptado; un instalador anterior puede carecer de
+esta integración. La prueba manual en Windows limpio sigue pendiente.
 
 Este manual describe la aplicación Electron. El frontend abierto directamente en
 el navegador usa demostraciones y no sustituye las pruebas con Python real.
@@ -13,8 +17,8 @@ Consulta la [instalación en Windows](installation_windows.md) antes de comenzar
 
 La barra superior reúne Archivo, Compilar, Ejecutar, Ayuda y Ajustes. El explorador
 organiza las fuentes; las pestañas identifican el archivo editado. La consola
-presenta resultados y diagnósticos. El visor muestra una escena importada o de
-demostración y permite inspeccionarla sin editar el programa.
+presenta resultados y diagnósticos. El visor muestra la escena recibida de Python
+o una escena importada y permite inspeccionarla sin editar el programa.
 
 ```mermaid
 flowchart LR
@@ -24,6 +28,9 @@ flowchart LR
     D --> E[Revisar diagnósticos]
     E --> B
     D --> F[Ejecutar con Python]
+    F --> I[ScenePlan real compatible]
+    I --> J[Explorar habitación y muebles]
+    F --> E
     G[Importar .lumic válido] --> H[Explorar escena y pasos incluidos]
 ```
 
@@ -106,10 +113,43 @@ de las últimas modificaciones.
 | Análisis incompleto | Hay una capacidad pendiente, como semántica espacial. No equivale a validar completamente la habitación. |
 | Bloqueado | No se pudo iniciar la ejecución con el análisis disponible. |
 
-Por ejemplo, `principal { habitacion sala(5.0, 4.0, 2.7) {} }` es reconocido
-sintácticamente, pero el flujo actual informa análisis incompleto y no genera
-ScenePlan ni trazas. No intentes corregir ese límite cambiando dimensiones válidas.
+Compilar una habitación puede informar análisis incompleto sin escena; Ejecutar
+puede completar el programa y entregar ScenePlan aunque el análisis conserve esa
+limitación. No intentes corregir ese estado cambiando dimensiones válidas.
 No hay entrada interactiva disponible ni depuración en vivo del intérprete.
+
+## Generar una escena mediante Python
+
+En el archivo principal escribe:
+
+```lumi
+principal {
+    habitacion sala(6, 5, 3) {
+        piso suelo { material "madera">> color "beige">> }
+        mesa mesa1 { color "rojo">> }
+        colocar mesa1 [0, 0, 0]>>
+        mover mesa1 [1, 0, -1]>>
+        rotar mesa1 [0, 90, 0]>>
+    }
+}
+```
+
+Pulsa **Ejecutar Python**. El visor debe indicar **ScenePlan recibido de Python**:
+habitación de 6×5×3, piso de madera y una mesa con posición final `[1,0,-1]` y
+rotación `[0,90,0]`. Es una escena final, no una secuencia de depuración. La prueba
+E2E también comprueba expresiones, función, condición y ciclo en operaciones reales.
+
+`colocar` establece la posición inicial una vez; usa `mover` para reemplazarla.
+Mover y rotar usan valores absolutos. El visor usa X/Z en el piso y Y vertical;
+la rotación de intercambio está en grados. Las dimensiones de muebles proceden
+de un catálogo visual provisional, no de medidas físicas definidas en el código.
+
+Las paredes visibles son cerramientos derivados de la habitación. Las
+declaraciones `pared`, `puerta` y `ventana` todavía no pueden convertirse a su
+geometría: devuelven `SERIALIZATION_ERROR`. Un mueble declarado pero sin colocar
+también impide publicar la escena; no se le asigna posición cero. Estos casos no
+se solucionan inventando propiedades o modificando la sintaxis. Un error retira la
+escena anterior para no presentarla como resultado actual.
 
 ## Leer diagnósticos y volver al código
 
@@ -130,7 +170,7 @@ Algunos errores léxicos llegan como texto sin ubicación estructurada.
 2. Elige un artefacto compatible. El IDE valida su estructura antes de visualizarlo.
 3. Para una demostración reproducible desde el repositorio, utiliza
    [valid-basic.lumic](contracts/lumic/v1.0.0/examples/valid-basic.lumic).
-   Es un fixture, no un resultado del compilador Python actual.
+   Es un fixture publicado, no el resultado de ejecutar tu código.
 4. Elige una habitación cuando el archivo contenga varias. Haz clic en un mueble
    para seleccionarlo y consultar sus propiedades disponibles.
 
@@ -148,8 +188,10 @@ garantiza que todas sus referencias o relaciones espaciales sean correctas.
 Importar una escena tampoco importa sus fuentes al proyecto.
 
 **Exportar compilación (.lumic)...** requiere un resultado compatible exitoso con
-habitaciones. El análisis Python actual no lo proporciona; la opción no completa
-la generación espacial pendiente.
+habitaciones. Una ejecución Python compatible puede proporcionar ese resultado;
+Compilar por sí solo no lo hace. El roundtrip de exportar y reimportar una escena
+Python real todavía requiere validación específica; la prueba de importación con
+fixtures no demuestra ese recorrido ni ratifica el contrato candidato.
 
 ## Reproducir pasos importados
 
@@ -171,7 +213,8 @@ los controles permanecen sin una secuencia que reproducir.
 
 | Problema | Acción |
 |---|---|
-| Compilo una habitación y el visor está vacío | La generación espacial Python está pendiente; importa un `.lumic` válido para probar el visor por separado. |
+| Compilo una habitación y el visor está vacío | Compilar analiza. Usa Ejecutar Python con el principal correcto; revisa salida y diagnósticos. Un paquete anterior puede no incluir la integración nueva. |
+| SERIALIZATION_ERROR al ejecutar una escena | Comprueba si hay objetos sin colocar o declaraciones de pared, puerta o ventana sin representación acordada. Conserva el código y el mensaje; no fuerces coordenadas ficticias. |
 | Ejecuto otra pestaña y no cambia el programa | Comprueba cuál es el archivo principal y los cambios pendientes del proyecto. |
 | No puedo guardar o renombrar | Revisa permisos, nombres, conflictos externos y ubicación. Renombrar requiere un sistema compatible con enlaces duros, como NTFS. |
 | El import dejó de funcionar tras renombrar | Ajusta manualmente la ruta usada por el código; el IDE no reescribe imports. |
@@ -194,8 +237,11 @@ los controles permanecen sin una secuencia que reproducir.
 | 6 | Importación de `valid-basic.lumic`, selección y controles; rotular «fixture importado». |
 | 7 | Pasos de `valid-debug.lumic`, snapshot y aviso de reproducción; rotular «fixture importado». |
 | 8 | Aplicación en la lista de Windows para desinstalar y conservación de un proyecto externo. |
+| 9 | Código de habitación/piso/mueble y escena con indicador «ScenePlan recibido de Python»; identificar desarrollo hasta validar el paquete combinado. |
+| 10 | Dimensión inválida, diagnóstico espacial real y ausencia de la escena anterior. |
 
 Las figuras están pendientes de selección y revisión visual. Deben capturarse en
 la aplicación real con el mismo estado documentado, sin datos personales ni
-afirmaciones de generación espacial. Para la presentación consulta el
+afirmaciones que excedan la evidencia. Las capturas de desarrollo no prueban el
+instalador combinado; las de instalación deben esperar a su validación. Para la presentación consulta el
 [recorrido demostrativo](ide_presentation.md).

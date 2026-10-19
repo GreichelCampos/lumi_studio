@@ -65,13 +65,13 @@ compilador Python actual.
 | Modelo interno | Intercambio y requisito |
 |---|---|
 | `ScenePlan.rooms` | Arreglo `scenePlan.rooms`, conservando el orden. |
-| `RoomPlan.name` | `RoomModel.name`; falta definir `id`. |
+| `RoomPlan.name` | `RoomModel.name`; el adaptador runtime genera `id` a partir de archivo, línea, columna y nombre. Su estabilidad contractual sigue pendiente. |
 | `width.value`, `length.value`, `height.value` | `[ancho X, largo Z, altura Y]`, tras acordar unidades. |
-| `elements` y `element_kind` | Clasificar piso, paredes, aberturas y objetos; falta el mapeo completo. |
-| `object_type` | Tipo del objeto del visor; faltan dimensiones resueltas o catálogo acordado. |
-| `properties` | Color y material, sin inventar valores ausentes ni asumir equivalencias. |
-| Vectores de `SpatialNumber` | Tuplas numéricas; acordar unidades y tratamiento de valores opcionales. |
-| `SourceLocation` | Conservar `file`, `line` y `column`, incluso las ubicaciones por valor; acordar su correspondencia con `SourceReference`. |
+| `elements` y `element_kind` | El adaptador publica un piso y objetos colocados. Rechaza paredes y aberturas declaradas y más de un piso. |
+| `object_type` | Tipo del visor y catálogo visual provisional de dimensiones; requiere ratificación. |
+| `properties` | Color y material del piso/objetos; hay estilos neutrales de presentación para superficies ausentes. No se escriben como semántica en ScenePlan interno. |
+| Vectores de `SpatialNumber` | Tuplas numéricas finitas; rotación ausente se presenta como cero, posición indefinida impide publicar el objeto. Acordar unidades y política completa. |
+| `SourceLocation` | Se publica `sourceRef` de declaración en objetos; los valores conservan sus fuentes en el modelo interno. La habitación no tiene sourceRef explícito en el DTO. |
 
 `asdict(ScenePlan)` y la serialización del AST no producen este contenedor. No se
 implementa generación desde AST en TypeScript ni se modifica unilateralmente el
@@ -81,14 +81,19 @@ código. Tampoco se generan eventos a partir de una escena estática.
 
 ## Estado de la integración
 
-Electron ya se comunica con Python, pero las fachadas aún no devuelven escenas ni
-trazas. El protocolo anuncia `scenePlan: false` y `debugTrace: false`; el adaptador
-del IDE mantiene `scenePlan: null`.
+`ExecutionService` devuelve la escena producida por el intérprete cuando la
+ejecución es correcta. [scene_adapter.py](../services/protocol/scene_adapter.py)
+convierte el plan interno al DTO; el protocolo publica `scenePlan` y
+`capabilities.scenePlan: true` si hay habitaciones. El IDE valida y conserva ese
+resultado. Sin escena el campo se omite y se adapta a `null`. Compilar solo analiza;
+`debugTrace` sigue en `false` y no se generan eventos desde un plan final.
 
 El IDE valida campos, ubicaciones, dimensiones y snapshots. Esa validación
 estructural no garantiza integridad referencial ni validez semántica espacial.
-La producción de escenas y eventos reales desde Python requiere resolver los
-siguientes requisitos; importar fixtures no demuestra esa integración.
+El E2E de Electron de desarrollo comprobó escena real, transformaciones y limpieza
+tras error. No demuestra exportación/reimportación del contenedor `.lumic`, trazas
+Python, geometría de aberturas declaradas ni aceptación del instalador combinado.
+Los siguientes acuerdos siguen pendientes; importar fixtures no los ratifica.
 
 ## Requisitos de interoperabilidad
 
@@ -100,7 +105,7 @@ el contrato candidato. No describen garantías adicionales de los validadores ac
 | Contenedor | Confirmar la compatibilidad de la base TypeScript con los productores y consumidores Python. |
 | Identidad | Ámbito y unicidad de IDs, estabilidad entre recompilaciones y resolución de entidades en escenas y snapshots. |
 | Aberturas | Origen y signo de `position` según pared. |
-| Datos espaciales | Unidades, procedencia de dimensiones de objetos, piso y paredes, tamaños de aberturas y catálogo; el adaptador no debe inventar valores por defecto. |
+| Datos espaciales | Ratificar unidades y catálogo visual provisional, separar estilos neutrales de semántica y definir tamaños/ubicación de aberturas sin fabricar datos faltantes. |
 | Versiones | Compatibilidad por versión mayor, SemVer estricto o versiones publicadas, y relación entre versiones del contenedor y de la escena. |
 | Origen del código | Identidad de archivo, ámbito de nombres y conservación de ubicaciones entre archivos e importaciones, sin normalización implícita de rutas. |
 | Diagnósticos | Alcance del resumen y posible intercambio de diagnósticos completos; la severidad no se infiere de los códigos del núcleo. |

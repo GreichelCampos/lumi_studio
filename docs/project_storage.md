@@ -90,10 +90,12 @@ npm.cmd run test:workspace
 Desde la raíz:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -B -m pytest tests -q -p no:cacheprovider
 ```
 
 Las pruebas de escritorio usan un perfil `userData` y carpetas temporales propios.
+La ruta `tests` limita la colección a la suite oficial, sin recoger copias locales
+de pruebas guardadas en informes ignorados.
 `test:workspace` automatiza las respuestas de los diálogos y ejercita IPC, renderer,
 operaciones de disco, papelera y Python. Las pruebas unitarias de sesión e IPC
 utilizan dobles controlados para reproducir errores y condiciones de carrera.

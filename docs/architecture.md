@@ -15,14 +15,22 @@ flowchart LR
     MAIN <--> DISK[Proyectos y metadatos locales]
     MAIN -->|JSON por stdin| WORKER[Worker Python]
     WORKER -->|JSON por stdout| MAIN
-    WORKER --> CORE[Lexer, parser, semántica e intérprete]
+    WORKER --> ANALYSIS[Lexer, parser y análisis]
+    WORKER --> EXEC[ExecutionService e intérprete]
+    EXEC --> BUILD[ScenePlanBuilder y SpatialValidator]
+    BUILD --> DTO[ScenePlan interno a DTO JSON]
+    DTO -->|Respuesta del worker| MAIN
+    UI --> CHECK[Validación TypeScript y adaptación]
+    CHECK --> VIEW[Three.js]
     ART[Archivo .lumic] --> VAL[Validación del artefacto]
     VAL --> VIEW[Three.js]
     UI -->|Selección y cámara| VIEW
 ```
 
-El diagrama no conecta el núcleo con el visor: el protocolo actual todavía no
-transporta ScenePlan ni eventos de depuración producidos por Python.
+La ejecución produce ScenePlan en Python; el worker lo adapta y transporta hasta
+el renderer mediante main y preload. TypeScript valida la respuesta antes de
+entregarla al visor. La importación `.lumic` es otra entrada al mismo visor.
+No se transportan eventos de depuración producidos por Python.
 
 | Capa y rutas desde la raíz | Responsabilidad |
 |---|---|
@@ -32,7 +40,8 @@ transporta ScenePlan ni eventos de depuración producidos por Python.
 | `apps/desktop/electron/workspaces/`, `workspaceIpc.ts` | Acceso autorizado a carpetas, escrituras y metadatos del perfil. |
 | `services/compiler_service.py`, `execution_service.py` | Fachadas que reutilizan las API del núcleo; separan analizar de ejecutar. |
 | `services/worker.py`, `services/protocol/` | Mensajes JSON, validación y errores de protocolo o infraestructura. |
-| `lumi_language/`, `spatial/` | Implementación del lenguaje y modelos espaciales internos. Su existencia no implica producción de escenas desde el worker. |
+| `lumi_language/`, `spatial/` | El intérprete evalúa el programa y usa ScenePlanBuilder para acumular valores resueltos; SpatialValidator comprueba el plan. |
+| `services/protocol/scene_adapter.py` | Convierte el ScenePlan interno al DTO del visor, sin evaluar expresiones ni modificar el modelo interno. |
 | `apps/desktop/renderer/src/components/viewport/` | Geometrías, materiales, cámara, selección y liberación de recursos Three.js. |
 
 ## Comunicación y errores
@@ -50,9 +59,15 @@ archivo, línea, columna, descripción y sugerencia opcional. Python no declara 
 severidad equivalente a la UI: el adaptador usa `unspecified` y separa el bloqueo
 de la operación. Los errores léxicos sin ubicación estructurada se muestran como texto.
 
-Las capacidades actuales son `scenePlan: false`, `debugTrace: false`,
-`interactiveInput: false` y `cancellation: false`. El adaptador devuelve
-`scenePlan: null` y `debugSteps: []`. Se correlacionan solicitudes y se descartan
+`analyze` no ejecuta instrucciones ni genera escena. `execute` llama al intérprete
+y puede devolver `result.scenePlan` con `capabilities.scenePlan: true` si termina
+correctamente y hay habitaciones. Sin escena, el campo se omite y el adaptador
+lo representa como `null`. El análisis puede conservar `analysisStatus: incomplete`
+y su limitación espacial aunque la ejecución tenga `status: completed` y escena.
+No equivale a validar colisiones o todas las reglas espaciales.
+
+`debugTrace`, `interactiveInput` y `cancellation` permanecen en `false`; los
+resultados Python contienen `debugSteps: []` en el IDE. Se correlacionan solicitudes y se descartan
 resultados reemplazados para evitar actualizar el proyecto con respuestas antiguas.
 El timeout termina el worker; una nueva solicitud puede reiniciarlo. No existe una
 sesión interactiva de entrada ni cancelación desde el programa.
@@ -70,7 +85,7 @@ validación de interoperabilidad. Contenedor, ScenePlan de intercambio, ScenePla
 interno Python, AST y diagnósticos son estructuras diferentes. Consulta la
 [guía Python–IDE](lumic_python_handoff.md) para los mapeos todavía pendientes.
 
-Three.js consume ScenePlan de intercambio y snapshots importados. Las fábricas
+Three.js consume ScenePlan de ejecución, escenas de `.lumic` y snapshots importados. Las fábricas
 construyen habitaciones, aberturas y muebles, aplican propiedades y permiten
 selección. La cámara ortográfica usa OrbitControls; el gestor atiende cambios de
 tamaño y libera geometrías, materiales, controles y renderer al desmontar.
@@ -78,6 +93,19 @@ Los indicadores de colisión o límites recibidos no constituyen un nuevo valida
 espacial. El depurador reproduce eventos importados o de demostración; no controla
 el intérprete Python. Navega solo a archivos reconocidos del proyecto y limpia
 selecciones o resaltados cuando el paso carece de datos válidos.
+
+La escena runtime comprobada incluye habitaciones, pisos y muebles colocados,
+con posiciones y rotaciones absolutas evaluadas por Python. Las cuatro paredes
+neutrales son cerramientos visuales derivados de la habitación. Las declaraciones
+`pared`, `puerta` y `ventana` carecen de geometría suficiente para el DTO; el
+adaptador las rechaza con `SERIALIZATION_ERROR`. También rechaza objetos sin
+colocar, aunque el plan interno conserva su posición indefinida. No inventa
+coordenadas ni omite esos elementos. Las aberturas de un `.lumic` compatible sí
+pueden visualizarse: no demuestra generación desde el lenguaje.
+
+El catálogo de dimensiones de muebles es visual y provisional. Unidades, ámbito
+y estabilidad de IDs, pivotes y geometría de aberturas siguen sujetos a acuerdo;
+véanse las [decisiones de interoperabilidad](integration/SCENEPLAN_OPEN_DECISIONS.md).
 
 ## Desarrollo, distribución y seguridad
 
@@ -99,20 +127,27 @@ dependencias incluidas y pruebas del ejecutable instalado están en
 [empaquetado](windows_packaging.md). No hay actualizaciones automáticas configuradas
 ni firma de editor de confianza.
 
+La prueba [runtime-scene.integration.mjs](../apps/desktop/tests/runtime-scene.integration.mjs)
+se ejecutó con Python real y WebGL en Electron de desarrollo, incluyendo errores
+y retirada de la escena anterior. También se comprobaron proyectos e importación
+independiente. El instalador existente corresponde a una versión anterior: el
+paquete combinado aún no se ha regenerado ni aceptado y falta Windows limpio.
+
 ## Decisiones tecnológicas y planteamiento inicial
 
 La propuesta general del [README](../README.md#initial-design-and-project-goals)
-describe el objetivo código → escena compilada → visor. El estado actual divide
-ese recorrido: análisis/ejecución Python por un lado e importación `.lumic` por otro.
+describe el objetivo código → escena compilada → visor. Actualmente la ejecución
+Python entrega una escena final al visor para el subconjunto soportado; Compilar
+realiza análisis y la importación `.lumic` conserva su recorrido independiente.
 El prototipo web se reutiliza mediante componentes y servicios, con adaptadores
 para procesos y disco en Electron. Las carpetas Python heredadas no son el frontend
 empaquetado de esta aplicación.
 
-| Planteamiento inicial | Aplicación distribuida actual |
+| Planteamiento inicial | Implementación actual |
 |---|---|
 | Interfaz Python con PySide6 y visualización con Ursina | Ventana Electron, interfaz React/TypeScript y visor Three.js. |
 | Dependencias gráficas Python junto al entorno del lenguaje | El worker usa los módulos Python necesarios para las fachadas; el paquete no instala toda la lista histórica de `requirements.txt`. |
-| Código → compilación espacial → escena y depuración | Análisis/ejecución Python disponibles; escena y reproducción mediante artefactos importados mientras se acuerda el transporte espacial real. |
+| Código → compilación espacial → escena y depuración | Escena final producida por ejecución Python y verificada en desarrollo; reproducción de eventos importados, sin trazas Python reales. El paquete combinado sigue sin aceptación. |
 
 `requirements.txt` conserva PySide6, Ursina y Panda3D. Su presencia no prueba que
 sean el frontend de Electron ni que esas pruebas históricas se hayan ejecutado.

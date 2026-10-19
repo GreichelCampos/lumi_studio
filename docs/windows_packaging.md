@@ -3,8 +3,11 @@
 El paquete utiliza Electron 44.8.0, electron-builder 26.15.3 y CPython embebido
 3.13.14 para Windows x64. El instalador NSIS es por usuario, no requiere instalar
 Python ni Node.js y conserva los proyectos y los metadatos al desinstalar.
-La versión inicial del paquete es 0.1.0; no implica disponibilidad de generación
-espacial desde Python.
+La versión declarada sigue siendo 0.1.0. El instalador existente es anterior al
+flujo espacial combinado: no se ha regenerado ni aceptado ese paquete. La escena
+Python real está verificada en Electron de desarrollo; esas pruebas no certifican
+el artefacto instalado. Registrar revisión de código y SHA-256 para distinguir builds
+con el mismo nombre antes de distribuirlos.
 
 ## Generación
 
@@ -41,6 +44,12 @@ cachés, referencias locales y mapas de código fuente no se distribuyen.
 | `resources/lumi/python` | CPython embebido, biblioteca estándar y licencia |
 | `resources/lumi/backend` | Módulos originales `services`, `lumi_language` y `spatial` |
 | `resources/lumi/lumi-taskbar-adapted.ico` | Ícono oficial del IDE |
+
+El backend combinado debe incluir `spatial/scene_builder.py` y
+`services/protocol/scene_adapter.py`, junto al intérprete y los servicios/protocolo
+actualizados. El script copia estos directorios; verificar su contenido contra la
+revisión de origen después de generar, no asumir que una carpeta de salida antigua
+contiene la integración.
 
 `packaging/python-runtime.json` fija la URL, versión y SHA-256 de CPython.
 `scripts/prepare-runtime.mjs` verifica los bytes antes de extraerlos; el valor
@@ -85,6 +94,14 @@ La primera prueba abre el ejecutable real con un perfil temporal y variables de
 Python externas inválidas. Comprueba ejecución, análisis, diagnósticos, guardado,
 reapertura, importación `.lumic`, WebGL, ícono y error de runtime ausente. Los
 ejemplos `.lumic` son fixtures, no escenas generadas por Python.
+
+La prueba actual del paquete no sustituye el E2E de escena runtime: comprueba
+análisis de habitación sin escena y visualización de un fixture importado, pero
+no ejecuta una habitación hasta el visor. Antes de aceptar el paquete combinado
+debe ampliarse esa cobertura o realizarse y registrarse el recorrido real contra
+el ejecutable empaquetado: habitación, piso, mueble colocado, mover/rotar, error
+espacial y retirada de escena anterior. El script runtime de desarrollo usa Vite
+y no puede contabilizarse como prueba del paquete sin adaptar su lanzamiento.
 
 La segunda instala silenciosamente en una carpeta temporal, ejecuta las pruebas
 del paquete instalado y desinstala. Se niega a ejecutarse si encuentra una

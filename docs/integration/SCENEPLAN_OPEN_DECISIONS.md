@@ -26,7 +26,7 @@ La ruta end-to-end ya tiene un único generador basado en ejecución y un DTO co
 2. `scene_plan_dto` rechaza esas declaraciones mediante `SceneAdapterError`; no están completadas end-to-end.
 3. Los cuatro muros que sí aparecen en el JSON son cerramientos visuales derivados de la habitación, no declaraciones del lenguaje.
 4. No hay contrato global para organizar simultáneamente varias habitaciones.
-5. La prueba E2E Electron/Three.js sigue pendiente; las pruebas Python, TypeScript y de frontera JSON no sustituyen una ejecución Electron real.
+5. El E2E de escena real pasó en Electron de desarrollo; sigue pendiente repetir el recorrido contra el paquete combinado y después Windows limpio. La importación de fixtures no cubre ese recorrido.
 
 ## Separación con L-035
 
@@ -50,12 +50,12 @@ Los campos opcionales del frontend asociados a estos estados no significan que L
 
 ## Verificación pendiente antes de declarar integración completa
 
-- Ejecutar el flujo Electron real con el worker Python instalado.
-- Renderizar los ejemplos A-C y comprobar escala, ejes y conversión angular visualmente.
+- Validar el flujo con el worker Python incluido en el paquete combinado. En desarrollo ya se verificaron habitación, piso, mueble, función, condición, ciclo y rotación final; conservar esta distinción de entorno.
+- Ampliar la revisión visual de escala y ejes a más ejemplos; la prueba actual comprueba dimensiones, posiciones y conversión de 90° a radianes, no todas las composiciones angulares.
 - Verificar selección de objeto y navegación por `sourceRef`.
 - Verificar importación/exportación `.lumic` con una escena producida por Python, no solo fixtures.
 - Acordar y probar el contrato geométrico antes de habilitar pared, puerta o ventana declaradas.
 
 ## Recomendación inmediata
 
-Compartir `SCENEPLAN_CONTRACT.md`, `SCENEPLAN_THREEJS_INTEGRATION_GUIDE.md` y los ejemplos con ambas integrantes. La integración segura consiste en conservar `ScenePlan` como única entrada del viewport, mantener el adaptador en la frontera Python y coordinar cualquier cambio de tipos compartidos antes de tocar AST, protocolo o Three.js.
+La referencia técnica está en `SCENEPLAN_CONTRACT.md`, `SCENEPLAN_THREEJS_INTEGRATION_GUIDE.md` y los ejemplos. La integración conserva `ScenePlan` como única entrada del viewport y el adaptador en la frontera Python. Cualquier cambio de tipos compartidos requiere coordinación antes de tocar AST, protocolo o Three.js.

@@ -33,8 +33,13 @@ npm run lint
 npm run build
 ```
 
-La prueba de integración abre Electron y usa Python real. ScenePlan y trazas siguen
-pendientes. `build` compila la aplicación; `dist:win` genera el instalador con Python
+La ejecución Python entrega ScenePlan de habitaciones, pisos y muebles colocados;
+Compilar solo analiza. El flujo real hasta Three.js está verificado en Electron de
+desarrollo con `node tests/runtime-scene.integration.mjs` desde `apps/desktop`.
+Las declaraciones de pared/puerta/ventana y objetos sin colocar todavía no son
+publicables por el adaptador; no hay trazas Python reales. `build` compila la aplicación;
+el instalador combinado aún no se ha regenerado ni aceptado y falta Windows limpio.
+`dist:win` genera el instalador con Python
 incluido, según la [guía de empaquetado](docs/windows_packaging.md).
 En PowerShell puede usarse `npm.cmd`.
 

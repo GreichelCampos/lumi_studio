@@ -6,7 +6,7 @@ La fuente de verdad espacial es la ejecución Python:
 
 `Interpreter -> ScenePlanBuilder -> SpatialValidator -> ExecutionService -> scene_plan_dto -> protocolo JSON`
 
-El IDE no debe reconstruir la escena desde el AST. Recibe un `ScenePlan` de intercambio ya resuelto. Este documento describe el estado real de la rama `feature/l029-end-to-end-integration`; no amplía el lenguaje.
+El IDE no debe reconstruir la escena desde el AST. Recibe un `ScenePlan` de intercambio ya resuelto. Este documento describe la implementación integrada; no amplía el lenguaje ni ratifica las decisiones abiertas del contrato.
 
 ## Modelos y transformaciones
 
@@ -158,4 +158,4 @@ Las paredes visuales derivadas de las dimensiones de la habitación sí se rende
 - Falta acordar unidades como contrato transversal, disposición global de varias habitaciones y estabilidad requerida de IDs.
 - El catálogo de dimensiones de muebles es una decisión de presentación provisional.
 - L-035 sigue siendo responsable de colisiones, fuera de límites y puertas bloqueadas.
-- La cadena Python-JSON-TypeScript está probada; la verificación Electron/Three.js E2E real permanece pendiente porque el binario Electron no estaba disponible en el entorno de auditoría.
+- La cadena Python-JSON-TypeScript-Three.js se verificó en Electron de desarrollo mediante [runtime-scene.integration.mjs](../../apps/desktop/tests/runtime-scene.integration.mjs), con escena real y limpieza tras error. Falta validar el instalador combinado y Windows limpio; no se declara soporte de trazas ni geometría de aberturas declaradas.

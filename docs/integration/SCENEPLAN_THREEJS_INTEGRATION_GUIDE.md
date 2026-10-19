@@ -2,13 +2,13 @@
 
 ## Objetivo
 
-La integrante 3 debe consumir la escena resuelta por Python, no construir otra desde el código Lumi. La ruta vigente es:
+El IDE consume la escena resuelta por Python, sin construir otra desde el código Lumi. La ruta vigente es:
 
 ```text
 Python worker
   -> PythonCompilerService
   -> validateProtocolResponse
-  -> adaptProtocolResult
+  -> adaptBackendResult
   -> useCompiler.scenePlan
   -> App / Viewport3D
   -> ThreeSceneManager
@@ -19,7 +19,7 @@ Python worker
 
 1. El IDE envía una operación `execute` mediante `PythonCompilerService`.
 2. `responseValidator.ts` valida la respuesta completa; `scenePayload.ts` revisa la coherencia de la escena y `sceneStructure.ts` su estructura.
-3. `resultAdapter.ts`, función `adaptProtocolResult`, convierte el payload al `CompileResult` de dominio y asigna `scenePlan: payload.scenePlan ?? null`.
+3. `resultAdapter.ts`, función `adaptBackendResult`, convierte el payload al `CompileResult` de dominio y asigna `scenePlan: payload.scenePlan ?? null`.
 4. `useCompiler.ts` guarda `scenePlan` y su origen (`python` o `simulation`).
 5. `App.tsx` y `ConsolePanel.tsx` entregan el estado a `Viewport3D.tsx`.
 6. `Viewport3D` vuelve a validar la escena, selecciona una habitación y entrega el modelo a `ThreeSceneManager`.
@@ -81,12 +81,11 @@ Una importación válida entrega `artifact.scenePlan` con el mismo tipo TypeScri
 3. Implementar navegación `sourceRef` sin cambiar el DTO.
 4. Mantener selector de habitaciones mientras no exista una disposición global aprobada.
 5. Posponer paredes declaradas, puertas y ventanas hasta aprobar su geometría.
-6. Agregar E2E Electron cuando el binario esté disponible: ejecutar código, recibir payload, renderizar y verificar transformaciones.
+6. Conservar el [E2E runtime](../../apps/desktop/tests/runtime-scene.integration.mjs), ya ejecutado en Electron de desarrollo con transformaciones y limpieza tras error. Ampliar la verificación al paquete combinado y Windows limpio; el script actual lanza Vite y no valida por sí solo una instalación.
 
 ## Estrategia para minimizar conflictos de ramas
 
-- Backend: propietaria de L-029 mantiene intérprete, builder, validación, servicio, protocolo y adaptador Python.
-- Frontend: integrante 3 mantiene estado del IDE, viewport y fábricas Three.js.
+- Separar cambios de intérprete, builder y frontera Python de cambios de estado del IDE y fábricas Three.js; coordinar las API antes de modificarlas.
 - Archivos de contrato TypeScript y validadores se coordinan antes de editarse porque son la frontera compartida.
 - Integrar mediante commits pequeños: contrato/validación, transporte, consumo del estado y finalmente prueba E2E.
 - No copiar el generador experimental al frontend; comparar comportamientos y conservar únicamente componentes visuales o de protocolo compatibles.

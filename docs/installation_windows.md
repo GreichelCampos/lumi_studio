@@ -9,8 +9,12 @@ controlador gráfico compatible; no se ha establecido una versión mínima de Wi
 mediante una matriz de equipos de prueba.
 
 El artefacto no tiene firma de editor de confianza. La instalación y desinstalación
-se han ejercitado mediante automatización local en Windows x64; siguen pendientes
-las comprobaciones interactivas en una computadora limpia sin Python.
+de la versión anterior se ejercitaron mediante automatización local en Windows
+x64. La integración espacial nueva está comprobada en Electron de desarrollo,
+pero el instalador combinado aún no se ha regenerado ni aceptado. Siguen pendientes
+sus pruebas automatizadas y las comprobaciones manuales en Windows limpio sin
+Python ni Node.js. El nombre y número 0.1.0 no bastan para distinguir los builds:
+debe registrarse el SHA-256 y la revisión de código del paquete que se entregue.
 
 ## Instalar y abrir
 
