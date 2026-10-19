@@ -19,7 +19,7 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
   { word: 'ventana', category: 'Aperturas', desc: 'Declara una apertura de iluminación en un muro' },
   { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]' },
   { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad' },
-  { word: 'mover', category: 'Transformación', desc: 'Instrucción espacial con un vector; ejecución espacial pendiente' },
+  { word: 'mover', category: 'Transformación', desc: 'Reemplaza la posición absoluta de un objeto previamente colocado' },
   { word: 'si / sino', category: 'Control', desc: 'Estructura condicional lógica' },
   { word: 'hacer', category: 'Control', desc: 'Ciclo de iteración delimitado por cabecera con punto y coma (;)' },
   { word: 'mientras', category: 'Control', desc: 'Ciclo condicional iterativo' },
@@ -32,7 +32,7 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
 export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '1. Estructura y Filosofía de Lumi',
-    description: 'Ejemplo de sintaxis espacial aceptada por el parser. En esta versión integrada, Python devuelve análisis espacial incompleto, sin ScenePlan. Para visualizar una escena, importa un archivo .lumic válido.',
+    description: 'Compilar puede informar análisis espacial incompleto. Ejecutar Python genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
     code: `principal {
   habitacion sala(5.0, 4.0, 2.7) {
     piso suelo {

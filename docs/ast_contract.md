@@ -336,6 +336,7 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `RUN_IMPORT_SYMBOL_NOT_FUNCTION`: el símbolo solicitado no es una función ejecutable.
 * `RUN_IMPORT_NAME_CONFLICT`: la importación intenta reemplazar una función ya registrada.
 * `RUN_IMPORT_INVALID_AST`: el AST importado no posee la estructura mínima necesaria para ejecutarse.
+* `RUN_SPATIAL_OPERATION_FAILED`: una operación controlada de construcción espacial no pudo completarse. La descripción conserva la causa específica informada por `ScenePlanBuilder` y el diagnóstico utiliza la ubicación de la instrucción que falló.
 
 **Validación espacial:**
 

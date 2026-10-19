@@ -18,7 +18,7 @@ try {
   await page.getByLabel('Modo Python real').waitFor();
   await page.locator('textarea').waitFor();
   const viewport = page.locator('#viewport-3d-main');
-  await viewport.getByText('Generación de ScenePlan pendiente', { exact: true }).waitFor();
+  await viewport.getByText('Sin ScenePlan en esta respuesta', { exact: true }).waitFor();
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   let basic;
   for (const name of ['valid-basic', 'valid-debug']) {

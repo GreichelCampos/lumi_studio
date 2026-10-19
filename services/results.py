@@ -7,6 +7,7 @@ from typing import Mapping
 
 from lumi_language.ast_nodes import ProgramNode
 from lumi_language.diagnostics import Diagnostic
+from spatial.scene_plan import ScenePlan
 
 
 class AnalysisStage(str, Enum):
@@ -77,6 +78,7 @@ class ExecutionResult:
     status: ExecutionStatus
     output: tuple[str, ...] = ()
     diagnostics: tuple[Diagnostic, ...] = ()
+    scene_plan: ScenePlan | None = None
 
     @property
     def succeeded(self) -> bool:

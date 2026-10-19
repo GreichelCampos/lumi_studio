@@ -1,7 +1,7 @@
 import {
   booleanValue, compatibleVersion, finiteNumber, integerAtLeast, listOf,
   nonemptyText, objectFields, oneOf, positiveNumber, text, tupleOf,
-} from './structureChecks';
+} from './structureChecks.ts';
 
 export const sourceReferenceStructure = objectFields({
   file: nonemptyText, line: integerAtLeast(1),

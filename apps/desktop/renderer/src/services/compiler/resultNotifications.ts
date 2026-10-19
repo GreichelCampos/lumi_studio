@@ -8,7 +8,9 @@ export function notifyCompileResult(result: CompileResult, setLumiState: (state:
     const state = result.status === 'completed' ? 'success' : result.status === 'incomplete' ? 'warning' : 'error';
     setLumiState(state);
     lumiAssistant.setMessage(result.status === 'completed'
-      ? 'Python terminó correctamente. ScenePlan y trazas todavía no están disponibles.'
+      ? result.scenePlan
+        ? 'Python terminó correctamente. ScenePlan recibido; las trazas todavía no están disponibles.'
+        : 'Python terminó correctamente. Esta respuesta no contiene ScenePlan ni trazas.'
       : result.status === 'incomplete' ? 'El análisis espacial todavía está incompleto.'
       : 'Python encontró un problema. Revisa la consola y los diagnósticos.', state);
     return;

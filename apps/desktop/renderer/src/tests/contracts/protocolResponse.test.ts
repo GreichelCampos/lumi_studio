@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseProtocolResponse, validateProtocolResponse } from '../../services/integration/protocol/responseValidator';
 import { MAX_RESPONSE_BYTES } from '../../services/integration/protocol/types';
 import type { CoreDiagnostic, ResultResponse } from '../../services/integration/protocol/types';
+import { createMockRoom, createMockScenePlan } from '../fixtures/testFixtures';
 
 function response(): ResultResponse {
   return {
@@ -65,6 +66,27 @@ describe('Python integration protocol responses', () => {
     raw.result.output = [];
     expect(validateProtocolResponse(raw).valid).toBe(true);
     raw.status = 'completed';
+    expect(validateProtocolResponse(raw).valid).toBe(false);
+  });
+
+  it('accepts a validated runtime scene while analysis remains incomplete', () => {
+    const raw = response();
+    raw.result.analysisStatus = 'incomplete';
+    raw.result.limitations = ['spatial_semantics_unavailable'];
+    raw.result.capabilities.scenePlan = true;
+    raw.result.scenePlan = createMockScenePlan({ rooms: [createMockRoom()] });
+    expect(validateProtocolResponse(raw).valid).toBe(true);
+  });
+
+  it('rejects malformed scenes and scenes attached to failed operations', () => {
+    const raw = response();
+    raw.result.capabilities.scenePlan = true;
+    raw.result.scenePlan = createMockScenePlan({ rooms: [createMockRoom()] });
+    raw.result.scenePlan.rooms[0].dimensions[0] = 0;
+    expect(validateProtocolResponse(raw).valid).toBe(false);
+    raw.result.scenePlan = createMockScenePlan({ rooms: [createMockRoom()] });
+    raw.status = 'failed';
+    raw.result.diagnostics = [{ ...diagnostic }];
     expect(validateProtocolResponse(raw).valid).toBe(false);
   });
 

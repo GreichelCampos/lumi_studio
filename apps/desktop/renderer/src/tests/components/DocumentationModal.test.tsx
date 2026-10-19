@@ -9,7 +9,7 @@ describe('DocumentationModal', () => {
     render(<DocumentationModal isOpen onClose={vi.fn()} />);
     expect(screen.getByRole('heading', { name: 'Ayuda de Lumi' })).toBeInTheDocument();
     expect(screen.queryByText('Manual y Especificación Oficial de Lumi')).not.toBeInTheDocument();
-    expect(screen.getByText(/Los ejemplos espaciales siguientes muestran sintaxis aceptada, no escenas generadas/)).toBeInTheDocument();
+    expect(screen.getByText(/Ejecutar Python puede generar escenas con habitaciones, pisos y muebles colocados/)).toBeInTheDocument();
     expect(screen.getByText(/Python todavía no genera trazas espaciales/)).toBeInTheDocument();
     expect(screen.getByText(/La detección real de colisiones.*sigue pendiente/)).toBeInTheDocument();
     expect(screen.getByText(/este ejemplo permite comprobar su análisis, no una ejecución completa/)).toBeInTheDocument();

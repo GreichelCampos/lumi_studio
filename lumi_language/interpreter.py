@@ -5,6 +5,16 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from spatial.scene_builder import ScenePlanBuilder, ScenePlanBuilderError
+from spatial.scene_plan import (
+    ScenePlan,
+    SourceLocation,
+    SpatialNumber,
+    SpatialProperty,
+    Vector3,
+)
+from spatial.spatial_validator import SpatialValidator
+
 from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
 
@@ -15,6 +25,7 @@ class InterpreterResult:
 
     output: list[str] = field(default_factory=list)
     diagnostics: list[Diagnostic] = field(default_factory=list)
+    scene_plan: ScenePlan | None = None
 
     @property
     def succeeded(self) -> bool:
@@ -114,6 +125,7 @@ class Interpreter:
         self._call_depth = 0
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
+        self._scene_builder: ScenePlanBuilder | None = None
 
     def execute(
         self,
@@ -132,10 +144,20 @@ class Interpreter:
             for file_name, imported_program in (imported_programs or {}).items()
         }
         normalized_program = normalize_ast(program)
+        self._scene_builder = ScenePlanBuilder(
+            self._source_location(normalized_program)
+        )
         try:
             self._execute_node(normalized_program)
+            self.result.scene_plan = self._scene_builder.build()
+            validation = SpatialValidator().validate(self.result.scene_plan)
+            self.result.diagnostics.extend(validation.diagnostics)
+        except ScenePlanBuilderError as error:
+            self.result.diagnostics.append(self._scene_builder_diagnostic(error))
+            self._scene_builder = None
         except InterpreterRuntimeError as error:
             self.result.diagnostics.append(error.diagnostic)
+            self._scene_builder = None
         return self.result
 
     def _execute_node(self, node: dict[str, Any]) -> Any:
@@ -144,6 +166,32 @@ class Interpreter:
             return self._execute_statements(node.get("statements", []))
         if node_type == "MainNode":
             return self._execute_block(node.get("body", []))
+        if node_type == "RoomNode":
+            return self._execute_room(node)
+        if node_type == "SpatialObjectDeclarationNode":
+            return self._declare_spatial_element(
+                node,
+                element_kind="object",
+                object_type=node["object_type"],
+            )
+        reserved_element_kinds = {
+            "FloorNode": "floor",
+            "WallNode": "wall",
+            "DoorNode": "door",
+            "WindowNode": "window",
+        }
+        if node_type in reserved_element_kinds:
+            return self._declare_spatial_element(
+                node,
+                element_kind=reserved_element_kinds[node_type],
+                object_type=None,
+            )
+        if node_type == "PlaceObjectNode":
+            return self._place_spatial_element(node)
+        if node_type == "MoveObjectNode":
+            return self._move_spatial_element(node)
+        if node_type == "RotateObjectNode":
+            return self._rotate_spatial_element(node)
         if node_type == "VariableDeclarationNode":
             self.environment.define(node["name"], self._evaluate(node["value"]))
             return None
@@ -201,6 +249,96 @@ class Interpreter:
             f"El nodo '{node_type}' no se puede ejecutar todavía.",
             "Utilice una construcción incluida en el intérprete básico.",
         )
+
+    def _execute_room(self, node: dict[str, Any]) -> None:
+        """Execute a room body and append its resolved dimensions to the scene."""
+
+        if self._scene_builder is None:
+            raise RuntimeError("ScenePlanBuilder is unavailable during execution")
+
+        width_node = node["width"]
+        length_node = node["length"]
+        height_node = node["height"]
+        self._scene_builder.begin_room(
+            name=node["name"],
+            width=SpatialNumber(
+                self._evaluate(width_node),
+                self._source_location(width_node),
+            ),
+            length=SpatialNumber(
+                self._evaluate(length_node),
+                self._source_location(length_node),
+            ),
+            height=SpatialNumber(
+                self._evaluate(height_node),
+                self._source_location(height_node),
+            ),
+            source=self._source_location(node),
+        )
+        self._execute_block(node.get("body", []))
+        self._scene_builder.end_room()
+
+    def _declare_spatial_element(
+        self,
+        node: dict[str, Any],
+        *,
+        element_kind: str,
+        object_type: str | None,
+    ) -> None:
+        builder = self._require_scene_builder()
+        properties = tuple(
+            SpatialProperty(
+                name=property_node["name"],
+                value=self._evaluate(property_node["value"]),
+                source=self._source_location(property_node),
+            )
+            for property_node in node.get("properties", [])
+        )
+        builder.declare_element(
+            name=node["name"],
+            element_kind=element_kind,
+            object_type=object_type,
+            properties=properties,
+            source=self._source_location(node),
+        )
+
+    def _place_spatial_element(self, node: dict[str, Any]) -> None:
+        self._require_scene_builder().place_element(
+            name=node["object_name"],
+            position=self._evaluate_vector(node["position"]),
+            source=self._source_location(node),
+        )
+
+    def _move_spatial_element(self, node: dict[str, Any]) -> None:
+        self._require_scene_builder().move_element(
+            name=node["object_name"],
+            position=self._evaluate_vector(node["position"]),
+            source=self._source_location(node),
+        )
+
+    def _rotate_spatial_element(self, node: dict[str, Any]) -> None:
+        self._require_scene_builder().rotate_element(
+            name=node["object_name"],
+            rotation=self._evaluate_vector(node["rotation"]),
+            source=self._source_location(node),
+        )
+
+    def _evaluate_vector(self, node: dict[str, Any]) -> Vector3:
+        components = []
+        for component_name in ("x", "y", "z"):
+            component = node[component_name]
+            components.append(
+                SpatialNumber(
+                    value=self._evaluate(component),
+                    source=self._source_location(component),
+                )
+            )
+        return Vector3(*components, source=self._source_location(node))
+
+    def _require_scene_builder(self) -> ScenePlanBuilder:
+        if self._scene_builder is None:
+            raise RuntimeError("ScenePlanBuilder is unavailable during execution")
+        return self._scene_builder
 
     def _execute_statements(self, statements: list[dict[str, Any]]) -> None:
         for statement in statements:
@@ -526,3 +664,26 @@ class Interpreter:
             suggestion=suggestion,
         )
         raise InterpreterRuntimeError(diagnostic)
+
+    @staticmethod
+    def _source_location(node: dict[str, Any]) -> SourceLocation:
+        return SourceLocation(
+            file=node.get("file", "<desconocido>"),
+            line=node.get("line", 1),
+            column=node.get("column", 1),
+        )
+
+    @staticmethod
+    def _scene_builder_diagnostic(error: ScenePlanBuilderError) -> Diagnostic:
+        return Diagnostic(
+            category=DiagnosticCategory.RUNTIME,
+            code="RUN_SPATIAL_OPERATION_FAILED",
+            file=error.source.file,
+            line=error.source.line,
+            column=error.source.column,
+            description=str(error),
+            suggestion=(
+                "Revise la estructura de las habitaciones antes de ejecutar "
+                "el programa."
+            ),
+        )
