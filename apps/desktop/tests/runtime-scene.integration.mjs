@@ -4,9 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { setTimeout } from 'node:timers/promises';
 import { startVite } from '../scripts/development.mjs';
 import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
+import { RUNTIME_SCENE_SOURCE, assertRuntimeRoom } from './runtimeSceneCase.mjs';
+import { verifyRuntimeScene } from './packagedRuntimeScene.mjs';
 
 const workspace = await temporaryWorkspace();
-const evidence = new URL('../../../implementation_tools/integration_reports/l029_combined_evidence/', import.meta.url);
+const evidence = new URL(`../../../implementation_tools/integration_reports/runtime-scene-${Date.now()}-${process.pid}/`, import.meta.url);
 await mkdir(evidence, { recursive: true });
 const vite = await startVite(Number(process.env.LUMI_TEST_PORT ?? 5181));
 const env = { ...process.env, LUMI_RENDERER_URL: vite.url, LUMI_CSP_NONCE: vite.nonce };
@@ -49,19 +51,7 @@ try {
     };
   });
 
-  const source = [
-    'funcion decimal destino(decimal valor) { retornar valor + 1>> }',
-    'principal {',
-    'habitacion sala(6, 5, 3) {',
-    '  piso suelo { material "madera">> color "beige">> }',
-    '  mesa mesa1 { color "rojo">> }',
-    '  colocar mesa1 [0, 0, 0]>>',
-    '  si verdadero { mover mesa1 [destino(2), 0, -1]>> }',
-    '  entero angulo = 0>>',
-    '  mientras angulo < 90 { angulo = angulo + 30>> rotar mesa1 [0, angulo, 0]>> }',
-    '}',
-    '}',
-  ].join('\n');
+  const source = RUNTIME_SCENE_SOURCE;
   await editor.fill(source);
   await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await eventually(
@@ -69,14 +59,7 @@ try {
     'La escena producida por el intérprete no llegó a Three.js',
   );
   const rendered = await page.evaluate(() => window.__runtimeSceneAudit);
-  assert.equal(rendered.room.name, 'sala');
-  assert.deepEqual(rendered.room.dimensions, [6, 5, 3]);
-  assert.equal(rendered.room.floor.material, 'madera');
-  assert.equal(rendered.room.floor.color, 'beige');
-  assert.equal(rendered.room.objects.length, 1);
-  assert.deepEqual(rendered.room.objects[0].position, [3, 0, -1]);
-  assert.deepEqual(rendered.room.objects[0].rotation, [0, 90, 0]);
-  assert.deepEqual(rendered.room.objects[0].dimensions, [1.2, 0.5, 0.8]);
+  assertRuntimeRoom(rendered.room);
   assert.equal(rendered.hasFloor, true);
   assert.equal(rendered.furniture.name, rendered.room.objects[0].id);
   assert.deepEqual(rendered.furniture.position, [3, 0, -1]);
@@ -106,6 +89,8 @@ try {
   await page.locator('#tab-salida-btn').click();
   await page.getByText('SIN_ESCENA_REAL', { exact: true }).waitFor();
   assert.equal(await page.locator('#room-selector-single, #room-selector-multi').count(), 0);
+  assert.deepEqual(errors, []);
+  await verifyRuntimeScene(page, fileURLToPath(new URL('shared-checks-development/', evidence)));
   assert.deepEqual(errors, []);
   console.log('Lexer -> Parser -> Interpreter -> ScenePlan -> protocolo -> Three.js verificado con estado final y limpieza tras error.');
 } finally {

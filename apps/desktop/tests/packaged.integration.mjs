@@ -1,13 +1,17 @@
 import { _electron } from 'playwright-core';
 import assert from 'node:assert/strict';
-import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { temporaryWorkspace } from './workspaceHarness.mjs';
+import { verifyRuntimeScene } from './packagedRuntimeScene.mjs';
 
 const directory = resolve(process.env.LUMI_PACKAGED_DIR ?? 'dist/release/win-unpacked');
 const executable = join(directory, 'Estudio Lumi.exe');
 const runtime = join(directory, 'resources/lumi/python/python.exe');
+const evidence = fileURLToPath(new URL('../../../implementation_tools/integration_reports/', import.meta.url));
+const evidenceDirectory = join(evidence, `packaged-runtime-${Date.now()}-${process.pid}`);
 const workspace = await temporaryWorkspace();
 const env = { ...process.env, LUMI_PYTHON: 'Z:\\missing-python.exe',
   LUMI_RENDERER_URL: 'https://invalid.example/', PYTHONPATH: 'Z:\\untrusted', PYTHONHOME: 'Z:\\missing' };
@@ -61,13 +65,14 @@ try {
     entryFile: 'principal.lumi', files: { 'principal.lumi': 'mostrar(4 / 0)>>' },
   }));
   assert.equal(failed.response.result.diagnostics[0].code, 'RUN_DIVISION_BY_ZERO');
+  await verifyRuntimeScene(page, evidenceDirectory);
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   await input.setInputFiles(resolve('../../docs/contracts/lumic/v1.0.0/examples/valid-basic.lumic'));
   await page.getByText(/Archivo .lumic importado/).waitFor();
+  assert.equal(await page.getByText('ScenePlan recibido de Python', { exact: true }).count(), 0);
   assert.ok(await page.locator('canvas').count() > 0);
   assert.equal(await page.getByText('Error al inicializar WebGL').count(), 0);
-  await mkdir('test-results', { recursive: true });
-  await page.screenshot({ path: 'test-results/packaged-lumic.png', fullPage: true });
+  await page.screenshot({ path: join(evidenceDirectory, 'imported-lumic.png'), fullPage: true });
   assert.equal(requests.some(url => /^https?:/.test(url)), false);
   assert.deepEqual(failures, []);
   await desktop.close(); desktop = undefined;
@@ -89,7 +94,8 @@ try {
   await missing.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await missing.getByText(/Reinstala Estudio Lumi/).first().waitFor();
   assert.equal(await missing.getByLabel('Modo de demostración').count(), 0);
-  console.log('Packaged Windows x64: isolated bundled Python, output, analysis, diagnostics, save/reopen, lumic/WebGL, icon and missing-runtime error verified.');
+  console.log('Packaged Windows x64: bundled Python, runtime ScenePlan/WebGL, absolute transforms, scene cleanup, diagnostics, save/reopen, independent lumic import, icon and missing-runtime error verified.');
+  console.log(`Runtime evidence: ${evidenceDirectory}`);
 } finally {
   if (desktop) await desktop.close();
   if (runtimeMoved) await rename(runtime + '.unavailable', runtime);
