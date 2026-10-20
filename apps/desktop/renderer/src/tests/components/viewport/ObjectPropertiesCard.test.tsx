@@ -105,7 +105,7 @@ describe('ObjectPropertiesCard', () => {
       />
     );
 
-    expect(screen.getByText(/colisión detectada con otro elemento espacial/i)).toBeInTheDocument();
+    expect(screen.getByText('Conflicto espacial indicado en los datos recibidos')).toBeInTheDocument();
 
     const outOfBoundsObj = createMockSpatialObject({ isOutOfBounds: true });
     rerender(

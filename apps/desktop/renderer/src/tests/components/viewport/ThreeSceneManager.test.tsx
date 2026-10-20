@@ -25,6 +25,18 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('ThreeSceneManager lifecycle', () => {
+  it('switches to the debug room even when a step has no active spatial entity', () => {
+    const rooms = [createMockRoom({ id: 'first' }), createMockRoom({ id: 'second', objects: [] })];
+    const plan = createMockScenePlan({ rooms });
+    const draw = vi.spyOn(ThreeSceneManager.prototype, 'renderRoom');
+    const view = render(<Viewport3D scenePlan={plan} sceneSource="artifact" debugRoomId="second" />);
+    expect(draw).toHaveBeenLastCalledWith(rooms[1], null, null);
+    view.rerender(<Viewport3D scenePlan={plan} sceneSource="artifact" debugRoomId="first" />);
+    view.rerender(<Viewport3D scenePlan={plan} sceneSource="artifact" debugRoomId="second" />);
+    expect(draw).toHaveBeenLastCalledWith(rooms[1], null, null);
+    view.rerender(<Viewport3D scenePlan={null} sceneSource="artifact" debugRoomId={null} />);
+    expect(screen.queryByText(/Objeto seleccionado/)).not.toBeInTheDocument();
+  });
   it('releases partially initialized resources when observing the canvas fails', () => {
     vi.stubGlobal('ResizeObserver', class { observe() { throw new Error('Resize observer unavailable'); } disconnect = vi.fn(); });
     const container = document.createElement('div');

@@ -19,15 +19,24 @@ export class WorkspaceService {
   private readonly locations = new Set<string>();
   private queue: Promise<unknown> = Promise.resolve();
 
-  constructor(directory: string, private readonly dialogs: WorkspaceDialogs, private readonly protectedPaths: string[] = [directory]) {
+  constructor(directory: string, private readonly dialogs: WorkspaceDialogs, private readonly protectedPaths: string[] = [directory],
+    private readonly installationPaths: string[] = []) {
     this.metadata = new WorkspaceMetadata(directory);
   }
 
   private checkRoot(root: string): void {
+    this.checkInstallationPath(root);
     if (parse(root).root === root || this.protectedPaths.some(path => {
       const child = relative(root.toLowerCase(), resolve(path).toLowerCase());
       return !child || (!child.startsWith(`..${sep}`) && child !== '..' && !isAbsolute(child));
     })) throw new Error('No se puede usar una carpeta del sistema o de la aplicación como proyecto.');
+  }
+
+  private checkInstallationPath(root: string): void {
+    if (this.installationPaths.some(directory => {
+      const child = relative(resolve(directory).toLowerCase(), resolve(root).toLowerCase());
+      return !child || (!child.startsWith(`..${sep}`) && child !== '..' && !isAbsolute(child));
+    })) throw new Error('Guarda los proyectos fuera de la carpeta de instalación para conservarlos al desinstalar.');
   }
 
   serial<T>(operation: () => Promise<T>): Promise<T> {
@@ -81,6 +90,7 @@ export class WorkspaceService {
     const chosen = await this.dialogs.chooseFolder();
     if (!chosen) return null;
     const path = await fs.realpath(chosen);
+    this.checkInstallationPath(path);
     this.locations.add(path);
     return path;
   }
@@ -110,6 +120,7 @@ export class WorkspaceService {
     if (await fs.realpath(data.location) !== data.location) throw new Error('La ubicación elegida cambió. Selecciónela nuevamente.');
     await this.metadata.load();
     const root = join(data.location, data.name);
+    this.checkInstallationPath(root);
     await fs.mkdir(root);
     await fs.writeFile(join(root, 'principal.lumi'), 'principal {\n}\n', { flag: 'wx' });
     const record: WorkspaceRecord = {
@@ -129,6 +140,7 @@ export class WorkspaceService {
     if (await fs.realpath(location) !== location) throw new Error('La ubicación elegida cambió. Selecciónela nuevamente.');
     await this.metadata.load();
     const root = join(location, project.name);
+    this.checkInstallationPath(root);
     await fs.mkdir(root);
     for (const file of project.files) {
       const path = join(root, file.path);
@@ -154,26 +166,47 @@ export class WorkspaceService {
     const previous = this.snapshots.get(project.id);
     if (!previous) throw new Error('Debe abrir el proyecto antes de guardarlo.');
     const actions: Array<() => Promise<void>> = [];
+    const updateSnapshot = (file: LumiProject['files'][number]) => {
+      const current = this.snapshots.get(project.id)!;
+      const files = current.files.some(old => old.id === file.id)
+        ? current.files.map(old => old.id === file.id ? structuredClone(file) : old)
+        : [...current.files, structuredClone(file)];
+      this.snapshots.set(project.id, { ...current, files });
+    };
+    const writeSource = async (file: LumiProject['files'][number], expected: string) => {
+      const target = await inside(record.root, file.path);
+      await atomicWrite(target, file.content, async () => {
+        if (await inside(record.root, file.path) !== target || await fs.readFile(target, 'utf8') !== expected) {
+          throw new Error(`El archivo ${file.path} cambió en disco. Reábralo antes de sobrescribirlo.`);
+        }
+      });
+      updateSnapshot(file);
+    };
     for (const old of previous.files) {
       const next = project.files.find(f => f.id === old.id);
       if (next && next.path === old.path && next.content === old.content) continue;
       const path = await inside(record.root, old.path);
       if (await fs.readFile(path, 'utf8') !== old.content) throw new Error(`El archivo ${old.path} cambió en disco. Reábralo antes de sobrescribirlo.`);
-      if (!next) actions.push(() => this.dialogs.trash(path));
+      if (!next) actions.push(async () => {
+        await this.dialogs.trash(path);
+        const current = this.snapshots.get(project.id)!;
+        this.snapshots.set(project.id, { ...current, files: current.files.filter(file => file.id !== old.id) });
+      });
       else if (next.path !== old.path) {
         const target = await inside(record.root, next.path, true);
         try { await fs.lstat(target); throw new Error('El destino ya existe.'); } catch (error) { if (!isMissing(error)) throw error; }
         actions.push(async () => {
           await fs.link(path, target);
           await fs.unlink(path);
-          if (next.content !== old.content) await atomicWrite(target, next.content);
+          updateSnapshot({ ...next, content: old.content });
+          if (next.content !== old.content) await writeSource(next, old.content);
         });
-      } else actions.push(() => atomicWrite(path, next.content));
+      } else actions.push(() => writeSource(next, old.content));
     }
     for (const file of project.files.filter(f => !previous.files.some(old => old.id === f.id))) {
       const path = await inside(record.root, file.path, true);
       try { await fs.lstat(path); throw new Error('El archivo ya existe.'); } catch (error) { if (!isMissing(error)) throw error; }
-      actions.push(() => fs.writeFile(path, file.content, { flag: 'wx' }));
+      actions.push(async () => { await fs.writeFile(path, file.content, { flag: 'wx' }); updateSnapshot(file); });
     }
     for (const action of actions) await action();
     const pathOf = (id?: string) => project.files.find(f => f.id === id)?.path;

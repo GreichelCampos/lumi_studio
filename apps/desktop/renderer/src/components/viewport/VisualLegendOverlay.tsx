@@ -53,7 +53,7 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           <span className="w-3 h-3 rounded-sm bg-[var(--ide-accent)] opacity-60 border border-[var(--ide-panel-border)] flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-[var(--ide-text)] font-medium leading-none">Normal</span>
-            <span className="text-[10px] text-[var(--ide-text-muted)]">Mueble colocado sin conflictos</span>
+            <span className="text-[10px] text-[var(--ide-text-muted)]">Sin conflictos indicados en los datos recibidos</span>
           </div>
         </div>
 
@@ -69,7 +69,7 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           <span className="w-3 h-3 rounded-sm bg-amber-500 border border-amber-300 flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-amber-300 font-medium leading-none">Advertencia</span>
-            <span className="text-[10px] text-[var(--ide-text-muted)]">Holgura ajustada o cota límite</span>
+            <span className="text-[10px] text-[var(--ide-text-muted)]">Advertencia indicada en los datos recibidos</span>
           </div>
         </div>
 
@@ -77,7 +77,7 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           <span className="w-3 h-3 rounded-sm bg-rose-500 border border-rose-300 shadow-sm shadow-rose-500/50 flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-rose-400 font-medium leading-none">Error espacial</span>
-            <span className="text-[10px] text-[var(--ide-text-muted)]">Colisión o fuera de límites</span>
+            <span className="text-[10px] text-[var(--ide-text-muted)]">Conflicto indicado en los datos recibidos</span>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
           <span className="w-3 h-3 rounded-sm bg-purple-500 border border-purple-300 shadow-sm flex-shrink-0" />
           <div className="flex flex-col">
             <span className="text-purple-300 font-medium leading-none">Objeto activo (Depurador)</span>
-            <span className="text-[10px] text-[var(--ide-text-muted)]">Línea de código en ejecución</span>
+            <span className="text-[10px] text-[var(--ide-text-muted)]">Objeto asociado al paso seleccionado</span>
           </div>
         </div>
       </div>

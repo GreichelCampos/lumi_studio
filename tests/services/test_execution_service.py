@@ -101,28 +101,66 @@ def test_imported_runtime_error_keeps_imported_file_location():
     assert result.diagnostics[0].file == "roto.lumi"
 
 
-def test_room_execution_remains_incomplete_until_scene_reaches_service_contract():
+def test_room_execution_publishes_runtime_scene_despite_analysis_limitation():
     result = ExecutionService().execute_source(
         "habitacion sala(5, 4, 2.7) {}", "principal.lumi"
     )
 
     assert result.compilation.status == CompilationStatus.INCOMPLETE
-    assert result.status == ExecutionStatus.INCOMPLETE
-    assert not result.succeeded
+    assert result.status == ExecutionStatus.COMPLETED
+    assert result.succeeded
     assert result.diagnostics == ()
+    assert result.scene_plan is not None
+    assert result.scene_plan.rooms[0].name == "sala"
 
 
-def test_uncalled_spatial_function_is_not_misrepresented_as_complete_success():
+def test_execution_result_preserves_reserved_spatial_elements():
+    result = ExecutionService().execute_source(
+        'habitacion sala(5, 4, 3) { piso suelo { material "madera">> } '
+        'pared norte { color "blanco">> } puerta entrada { material "metal">> } '
+        'ventana ventanal { color "azul">> } }',
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.COMPLETED
+    assert result.scene_plan is not None
+    assert tuple(
+        (element.name, element.element_kind)
+        for element in result.scene_plan.rooms[0].elements
+    ) == (
+        ("suelo", "floor"),
+        ("norte", "wall"),
+        ("entrada", "door"),
+        ("ventanal", "window"),
+    )
+
+
+def test_execution_result_does_not_publish_spatially_invalid_scene():
+    result = ExecutionService().execute_source(
+        "habitacion invalida(0, 4, 3) { }",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.FAILED
+    assert result.scene_plan is None
+    assert result.diagnostics[0].category == DiagnosticCategory.SPATIAL
+    assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
+
+
+def test_uncalled_spatial_function_keeps_analysis_limitation_but_execution_succeeds():
     result = ExecutionService().execute_source(
         "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} } mostrar(1)>>",
         "principal.lumi",
     )
 
-    assert result.status == ExecutionStatus.INCOMPLETE
+    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.status == ExecutionStatus.COMPLETED
     assert result.execution_attempted
-    assert not result.succeeded
+    assert result.succeeded
     assert result.output == ("1",)
     assert result.diagnostics == ()
+    assert result.scene_plan is not None
+    assert result.scene_plan.rooms == ()
 
 
 def test_injected_input_provider_is_only_used_during_execution():

@@ -21,6 +21,18 @@ function deferred() {
 }
 
 describe('ProjectSession', () => {
+  it('serializes captured saves and retains edits made after both requests', async () => {
+    const { session, storage, a } = setup(); await session.initialize();
+    const wait = deferred(); vi.mocked(storage.saveProject).mockReturnValueOnce(wait.promise);
+    session.edit(a.activeFileId, 'first');
+    const first = session.save(); await Promise.resolve();
+    session.edit(a.activeFileId, 'second'); const second = session.save();
+    session.edit(a.activeFileId, 'third'); wait.resolve();
+    expect(await first).toBe(true); expect(await second).toBe(true);
+    expect(vi.mocked(storage.saveProject).mock.calls.map(([project]) => project.files[0].content)).toEqual(['first', 'second']);
+    expect(session.current!.files[0].content).toBe('second');
+    expect(session.state.drafts[a.id][a.activeFileId]).toBe('third');
+  });
   it('retains separate drafts through rapid project changes, even with shared file IDs', async () => {
     const { session, a, b } = setup(); await session.initialize();
     session.edit(a.activeFileId, 'draft A');

@@ -55,6 +55,17 @@ Límites de disco: 128 fuentes, 256 KiB por fuente y exploración acotada a 2048
 
 Las escrituras de contenido y metadatos usan temporales y reemplazo de archivo. **Guardar todos no es una transacción de varios archivos**: si una escritura posterior falla, las anteriores pueden haber terminado. El IDE conserva los borradores y muestra el error; reabrir la carpeta permite reconciliar el disco. Antes de reemplazar, renombrar o eliminar una fuente se comprueba que no cambió externamente. No hay sincronización automática con otros editores ni garantía frente a modificaciones concurrentes del sistema de archivos entre comprobación y operación.
 
+En Windows, el reemplazo atómico admite hasta seis intentos ante contención, con
+pausas de 25, 50, 100, 200 y 400 ms. Antes de cada intento se comprueban contenido,
+identidad y ruta; un conflicto externo detiene el guardado. Los errores permanentes
+se muestran y no se modifican permisos. El servicio conserva el progreso de las
+operaciones físicas exitosas para permitir reintentar un guardado parcial; los
+borradores solo se confirman al terminar la operación solicitada. Los metadatos
+también rechazan cambios externos desde su última carga o escritura confirmada.
+Si otro proceso sustituye la carpeta de un temporal, la limpieza evita eliminar
+archivos ajenos y puede requerir intervención manual. El error de limpieza no
+sustituye al fallo original.
+
 El renombrado de fuentes utiliza creación exclusiva de un enlace duro y retirada del nombre anterior para evitar sobrescribir un destino existente. Requiere un sistema de archivos que admita enlaces duros, como NTFS; en otros sistemas se informa el error sin reemplazar el destino. Los cambios únicamente de mayúsculas/minúsculas que Windows resuelve como el mismo destino se rechazan. No se ofrece una transacción completa ante fallos de disco o de permisos durante una operación compuesta.
 
 ## Validación
@@ -79,10 +90,12 @@ npm.cmd run test:workspace
 Desde la raíz:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe -B -m pytest tests -q -p no:cacheprovider
 ```
 
 Las pruebas de escritorio usan un perfil `userData` y carpetas temporales propios.
+La ruta `tests` limita la colección a la suite oficial, sin recoger copias locales
+de pruebas guardadas en informes ignorados.
 `test:workspace` automatiza las respuestas de los diálogos y ejercita IPC, renderer,
 operaciones de disco, papelera y Python. Las pruebas unitarias de sesión e IPC
 utilizan dobles controlados para reproducir errores y condiciones de carrera.

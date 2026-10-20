@@ -10,6 +10,7 @@ from services.execution_service import ExecutionService, InputUnavailableError
 from .adapters import adapt_result
 from .errors import ProtocolError, error_response
 from .models import MAX_SESSION_REQUESTS, Response
+from .scene_adapter import SceneAdapterError
 from .validation import correlation, validate_request
 
 
@@ -50,6 +51,14 @@ class RequestDispatcher:
             return error_response(
                 "INPUT_UNAVAILABLE", "La entrada interactiva no está disponible en este protocolo.",
                 kind="infrastructure", request_id=request.request_id, operation=request.operation,
+            )
+        except SceneAdapterError as error:
+            return error_response(
+                "SERIALIZATION_ERROR",
+                str(error),
+                kind="infrastructure",
+                request_id=request.request_id,
+                operation=request.operation,
             )
         except Exception:
             # Deliberate final boundary: preserve the traceback on stderr, never

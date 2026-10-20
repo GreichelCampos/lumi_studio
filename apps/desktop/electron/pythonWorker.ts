@@ -14,6 +14,7 @@ interface Pending {
 }
 export interface WorkerOptions {
   root: string; python?: string; timeoutMs?: number; stopTimeoutMs?: number;
+  isolated?: boolean;
   log?(message: string): void;
   createProcess?(): ChildProcessWithoutNullStreams;
 }
@@ -38,7 +39,8 @@ export class PythonWorker {
     if (this.ready) return;
     if (this.starting) return this.starting;
     this.starting = new Promise<void>((resolve, reject) => {
-      const child = this.options.createProcess?.() ?? spawn(pythonExecutable(this.options.root, this.options.python), ['-u', '-m', 'services.worker'], {
+      const args = [...(this.options.isolated ? ['-I', '-B'] : []), '-u', '-m', 'services.worker'];
+      const child = this.options.createProcess?.() ?? spawn(pythonExecutable(this.options.root, this.options.python), args, {
         cwd: this.options.root, stdio: 'pipe', shell: false, windowsHide: true,
         env: { ...process.env, PYTHONIOENCODING: 'utf-8' },
       });
@@ -48,7 +50,8 @@ export class PythonWorker {
         this.ready = true; this.message = 'Proceso Python iniciado.'; resolve();
       });
       child.on('error', (error) => {
-        const failure = new WorkerError('PYTHON_UNAVAILABLE', `No se pudo iniciar Python: ${error.message}`);
+        const detail = this.options.isolated ? ' Reinstala Estudio Lumi para restaurar el runtime incluido.' : '';
+        const failure = new WorkerError('PYTHON_UNAVAILABLE', `No se pudo iniciar Python: ${error.message}${detail}`);
         this.message = failure.message; this.ready = false;
         this.rejectPending(failure); reject(failure);
       });

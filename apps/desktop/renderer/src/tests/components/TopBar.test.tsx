@@ -94,5 +94,27 @@ describe('TopBar Component', () => {
     const importBtn = screen.getByText(/abrir compilación \(\.lumic\)/i);
     expect(importBtn).toBeInTheDocument();
   });
+
+  it('describes Python menu actions without promising scene generation or live debugging', () => {
+    const onCompile = vi.fn();
+    const onRun = vi.fn();
+    render(<TopBar {...defaultProps} isRealBackend onCompile={onCompile} onRun={onRun} />);
+    fireEvent.click(screen.getAllByRole('button', { name: 'Compilar' })[0]);
+    expect(screen.queryByText('Generar AST & ScenePlan')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Analizar archivo principal'));
+    expect(onCompile).toHaveBeenCalledTimes(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Ejecutar' }));
+    expect(screen.queryByText('Modo Depuración Espacial')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText('Ejecutar archivo principal'));
+    expect(onRun).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports that formatting is unavailable without claiming to change the source', () => {
+    render(<TopBar {...defaultProps} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+    fireEvent.click(screen.getByText('Formatear código Lumi (no disponible)'));
+    expect(screen.getByText('El formateador de código Lumi todavía no está implementado.')).toBeInTheDocument();
+    expect(screen.queryByText('Código formateado con indentación oficial Lumi')).not.toBeInTheDocument();
+  });
 });
 

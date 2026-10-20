@@ -7,6 +7,7 @@ import {
 import { Bug, Compass } from 'lucide-react';
 import { DebuggerControls } from './DebuggerControls';
 import { getDebuggerStatusInfo } from './debuggerUtils';
+import { validDebugSource, resolveDebugStep } from '../../services/editor/debugStepNavigation';
 
 export interface SpatialDebuggerViewProps {
   debugSteps: DebugStep[];
@@ -45,9 +46,14 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
 }) => {
   const currentStep = debugSteps.length > 0 ? debugSteps[currentStepIndex] : undefined;
   const statusInfo = getDebuggerStatusInfo(debuggerStatus);
+  const source = validDebugSource(currentStep?.sourceRef) ? currentStep.sourceRef : null;
+  const objectId = resolveDebugStep(null, currentStep ?? null).activeObjectId;
 
   return (
     <div className="space-y-3 font-sans">
+      <p className="text-xs text-[var(--ide-text-muted)]">
+        Reproducción de pasos importados o de demostración. No son trazas de Python.
+      </p>
       <div className="flex flex-wrap items-center justify-between gap-2 glass-panel-header p-2.5 rounded-2xl border border-white/20 shadow-md">
         <div className="flex items-center gap-2">
           <Bug className="w-4 h-4 text-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
@@ -86,7 +92,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             <span className="font-semibold flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[var(--ide-accent)] animate-ping" />
               <span>
-                Línea {currentStep.sourceRef.line} ({currentStep.sourceRef.file}):
+                {source ? `Línea ${source.line} (${source.file}):` : 'Sin referencia de código disponible'}
               </span>
             </span>
             <div className="flex items-center gap-1.5">
@@ -102,7 +108,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
           <div className="font-mono text-xs text-[var(--ide-text)] bg-[var(--ide-control-bg)] p-2.5 rounded-xl border border-[var(--ide-panel-border)] shadow-inner flex items-center justify-between">
             <code>{currentStep.codeLine}</code>
             <span className="text-[10px] text-[var(--ide-text-muted)] font-sans">
-              Col {currentStep.sourceRef.column}
+              {source?.column !== undefined ? `Col ${source.column}` : 'Sin columna disponible'}
             </span>
           </div>
 
@@ -116,9 +122,9 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
                 Habitación: <strong className="text-[var(--ide-text)]">{currentStep.roomId}</strong>
               </span>
             )}
-            {currentStep.activeObjectId && (
+            {objectId && (
               <button
-                onClick={() => onFocusObject(currentStep.activeObjectId!)}
+                onClick={() => onFocusObject(objectId)}
                 className="glass-btn bg-[var(--ide-accent-bg)] hover:bg-[var(--ide-btn-bg)] text-[var(--ide-accent)] px-2.5 py-0.5 rounded-lg border border-[var(--ide-accent)]/40 flex items-center gap-1 transition-colors"
               >
                 <Compass className="w-3 h-3 text-[var(--ide-accent)]" />
@@ -134,7 +140,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             No hay pasos de depuración disponibles
           </div>
           <p className="text-xs text-[var(--ide-text-muted)] max-w-sm">
-            Compila el proyecto sin errores bloqueantes para habilitar el depurador espacial paso a paso.
+            Importa un archivo .lumic que incluya pasos para reproducirlos. En el modo de demostración los pasos son simulados; Python todavía no genera trazas espaciales.
           </p>
         </div>
       )}

@@ -171,9 +171,9 @@ export const TopBar: React.FC<TopBarProps> = ({
       label: 'Editar',
       items: [
         { 
-          label: 'Formatear código Lumi', 
-          action: () => showToast('Código formateado con indentación oficial Lumi'), 
-          shortcut: 'Shift+Alt+F' 
+          label: 'Formatear código Lumi (no disponible)',
+          action: () => showToast('El formateador de código Lumi todavía no está implementado.'),
+          shortcut: ''
         },
         { 
           label: 'Guardar espacio de trabajo', 
@@ -218,7 +218,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       label: 'Compilar',
       items: [
         { label: 'Compilar código Lumi (F5)', action: onCompile, shortcut: 'F5' },
-        { label: 'Generar AST & ScenePlan', action: onCompile, shortcut: 'Ctrl+B' },
+        { label: isRealBackend ? 'Analizar archivo principal' : 'Compilación de demostración', action: onCompile, shortcut: '' },
       ]
     },
     {
@@ -226,17 +226,17 @@ export const TopBar: React.FC<TopBarProps> = ({
       label: 'Ejecutar',
       items: [
         { label: isRealBackend ? 'Ejecutar con Python' : 'Ejecutar y renderizar 3D', action: onRun, shortcut: 'F6' },
-        { label: 'Modo Depuración Espacial', action: onRun, shortcut: 'F9' },
+        { label: isRealBackend ? 'Ejecutar archivo principal' : 'Mostrar escena de demostración', action: onRun, shortcut: '' },
       ]
     },
     {
       id: 'ayuda',
       label: 'Ayuda',
       items: [
-        { label: 'Manual de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1' },
+        { label: 'Ayuda de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1' },
         { label: 'Configuración del IDE', action: () => onOpenSettings && onOpenSettings(), shortcut: 'Ctrl+,' },
         { divider: true },
-        { label: 'Acerca de Estudio Lumi (PySide6 Mockup)', action: onOpenDocs, shortcut: '' },
+        { label: 'Acerca de Estudio Lumi', action: onOpenDocs, shortcut: '' },
       ]
     }
   ];

@@ -80,17 +80,27 @@ def test_imports_and_explicit_entry_use_real_services():
     assert message == original
 
 
-@pytest.mark.parametrize(
-    "operation, expected",
-    [("analyze", "incomplete"), ("execute", "incomplete")],
-)
-def test_spatial_capability_is_not_simulated(operation, expected):
-    result = RequestDispatcher().dispatch(request("habitacion sala(5, 4, 2.7) {}", operation))
-    assert result["status"] == expected
+def test_spatial_analysis_remains_incomplete_without_execution():
+    result = RequestDispatcher().dispatch(
+        request("habitacion sala(5, 4, 2.7) {}", "analyze")
+    )
+    assert result["status"] == "incomplete"
     assert result["result"]["analysisStatus"] == "incomplete"
     assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]
-    if operation == "execute":
-        assert result["result"]["diagnostics"] == []
+    assert result["result"]["capabilities"]["scenePlan"] is False
+    assert "scenePlan" not in result["result"]
+
+
+def test_spatial_execution_publishes_validated_runtime_scene():
+    result = RequestDispatcher().dispatch(
+        request("habitacion sala(5, 4, 2.7) {}", "execute")
+    )
+    assert result["status"] == "completed"
+    assert result["result"]["analysisStatus"] == "incomplete"
+    assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]
+    assert result["result"]["diagnostics"] == []
+    assert result["result"]["capabilities"]["scenePlan"] is True
+    assert result["result"]["scenePlan"]["rooms"][0]["name"] == "sala"
 
 
 def test_input_error_is_infrastructure_and_does_not_read_protocol_stdin():

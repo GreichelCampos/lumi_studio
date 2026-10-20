@@ -31,6 +31,7 @@ interface Viewport3DProps {
   sceneSource?: 'simulation' | 'artifact' | 'python' | null;
   activeObjectId?: string | null;
   debugActiveObjectId?: string | null;
+  debugRoomId?: string | null;
   onSelectObject?: (objectId: string | null) => void;
   onNavigateToSource?: (sourceRef: SourceReference) => void;
   onCompile?: () => void;
@@ -47,6 +48,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   sceneSource = 'simulation',
   activeObjectId = null,
   debugActiveObjectId = null,
+  debugRoomId = null,
   onSelectObject,
   onNavigateToSource,
   onCompile,
@@ -68,6 +70,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   const spatialBackground = ideContext?.settings?.spatialBackground;
 
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+
 
   const [showDimensions, setShowDimensions] = useState(true);
   const [showAxes, setShowAxes] = useState(true);
@@ -93,13 +96,13 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   useEffect(() => {
     if (scenePlan?.rooms && scenePlan.rooms.length > 0) {
-      if (!selectedRoomId || !scenePlan.rooms.some((r) => r.id === selectedRoomId)) {
-        setSelectedRoomId(scenePlan.rooms[0].id);
-      }
+      setSelectedRoomId(previous =>
+        debugRoomId && scenePlan.rooms.some(room => room.id === debugRoomId) ? debugRoomId
+          : previous && scenePlan.rooms.some(room => room.id === previous) ? previous : scenePlan.rooms[0].id);
     } else {
       setSelectedRoomId(null);
     }
-  }, [scenePlan, selectedRoomId]);
+  }, [scenePlan, debugRoomId]);
 
   // Si se selecciona un objeto externamente (ej: desde panel de diagnósticos o editor o depurador), asegurar que la habitación correspondiente esté activa
   useEffect(() => {

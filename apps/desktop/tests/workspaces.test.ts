@@ -7,6 +7,19 @@ import { sourcePath } from '../electron/workspaces/safeFiles';
 import type { LumiProject } from '../renderer/src/types/domain/project';
 
 describe('real workspace persistence', () => {
+  it('refuses project storage inside the installation tree before writing sources', async () => {
+    const installation = join(root, 'installed');
+    const nested = join(installation, 'nested');
+    await fs.mkdir(nested, { recursive: true });
+    const guarded = new WorkspaceService(join(root, 'metadata'), dialogs, [], [installation]);
+    chosen = nested;
+    await expect(guarded.chooseLocation()).rejects.toThrow('fuera de la carpeta de instalación');
+    await expect(guarded.open()).rejects.toThrow('fuera de la carpeta de instalación');
+    expect(await fs.readdir(nested)).toEqual([]);
+    chosen = root;
+    await guarded.chooseLocation();
+    await expect(guarded.create({ name: 'External', location: root })).resolves.toHaveProperty('name', 'External');
+  });
   let root: string;
   let chosen: string | null;
   let savePath: string | null;

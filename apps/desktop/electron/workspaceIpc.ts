@@ -1,5 +1,6 @@
 import { app, dialog, ipcMain, shell, type BrowserWindow } from 'electron';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { realpathSync } from 'node:fs';
 import { WorkspaceService } from './workspaces/WorkspaceService';
 import { trustedFrame } from './security';
 
@@ -21,7 +22,7 @@ export function registerWorkspaceIpc(window: BrowserWindow, renderer: URL): { di
       buttons: ['Cancelar', 'Mover a la papelera'], defaultId: 0, cancelId: 0,
     })).response === 1,
     trash: path => shell.trashItem(path),
-  }, [app.getPath('userData'), app.getAppPath()]);
+  }, [app.getPath('userData'), app.getAppPath()], app.isPackaged ? [realpathSync.native(resolve(process.resourcesPath, '..'))] : []);
   const channels = ['list', 'chooseLocation', 'open', 'create', 'save', 'rename', 'saveAs', 'remove', 'lastActive', 'importProject'] as const;
   for (const operation of channels) {
     ipcMain.handle(`lumi:workspace:${operation}`, async (event, ...args: unknown[]) => {

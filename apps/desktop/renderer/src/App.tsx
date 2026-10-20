@@ -25,6 +25,7 @@ import { LumicFileService } from './services/storage/LumicFileService';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { BackendModeNotice } from './components/BackendModeNotice';
 import { findSourceFile } from './services/editor/sourceNavigation';
+import { resolveDebugStep } from './services/editor/debugStepNavigation';
 
 export default function App() {
   const {
@@ -303,14 +304,18 @@ export default function App() {
     isRealBackend, handleSelectFile, navigateToLocation]);
 
   const handleDebugStepChange = useCallback(
-    (step: DebugStep) => {
-      setHighlightedLine(step.sourceRef?.line || step.lineNumber);
-      setScenePlan(step.sceneSnapshot);
-      if (step.activeObjectId) {
-        setActiveObjectId(step.activeObjectId);
+    (step: DebugStep | null) => {
+      const state = resolveDebugStep(currentProject, step);
+      if (state.navigation) {
+        handleSelectFile(state.navigation.fileId);
+        navigateToLocation(state.navigation.fileId, state.navigation.line, state.navigation.column);
+      } else {
+        setHighlightedLine(null);
       }
+      if (step) setScenePlan(state.scenePlan);
+      setActiveObjectId(state.activeObjectId);
     },
-    [setHighlightedLine, setScenePlan, setActiveObjectId]
+    [currentProject, handleSelectFile, navigateToLocation, setHighlightedLine, setScenePlan, setActiveObjectId]
   );
 
   const {
@@ -335,6 +340,8 @@ export default function App() {
     breakpoints: allBreakpoints,
     onStepChange: handleDebugStepChange,
   });
+
+  const debugSelection = useMemo(() => resolveDebugStep(null, currentStep), [currentStep]);
 
   const handleFocusObject = useCallback(
     (objectId: string | null) => {
@@ -569,7 +576,8 @@ export default function App() {
                 sceneGenerationUnavailable={isRealBackend}
                 scenePlan={scenePlan}
                 activeObjectId={activeObjectId}
-                debugActiveObjectId={currentStep?.activeObjectId || null}
+                debugActiveObjectId={debugSelection.activeObjectId}
+                debugRoomId={currentStep?.roomId ?? null}
                 onSelectObject={handleFocusObject}
                 onNavigateToSource={handleNavigateToSource}
                 onCompile={handleCompileCurrent}

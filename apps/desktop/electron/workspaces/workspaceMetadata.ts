@@ -17,12 +17,14 @@ interface WorkspaceState { version: 1; projects: WorkspaceRecord[]; lastActive: 
 export class WorkspaceMetadata {
   state: WorkspaceState = { version: 1, projects: [], lastActive: null };
   private loaded = false;
+  private persistedContent: string | null = null;
   constructor(private readonly directory: string) {}
 
   async load(): Promise<void> {
     if (this.loaded) return;
     try {
-      const raw: unknown = JSON.parse(await fs.readFile(join(this.directory, 'workspaces.json'), 'utf8'));
+      const content = await fs.readFile(join(this.directory, 'workspaces.json'), 'utf8');
+      const raw: unknown = JSON.parse(content);
       if (!raw || typeof raw !== 'object' || !('version' in raw) || raw.version !== 1
         || !('projects' in raw) || !Array.isArray(raw.projects) || !('lastActive' in raw)
         || (raw.lastActive !== null && typeof raw.lastActive !== 'string')) throw new Error('Metadatos del IDE no válidos.');
@@ -38,12 +40,20 @@ export class WorkspaceMetadata {
         if (record.activePath !== undefined) sourcePath(record.activePath);
       }
       this.state = raw as WorkspaceState;
+      this.persistedContent = content;
     } catch (error) { if (!isMissing(error)) throw error; }
     this.loaded = true;
   }
 
   async persist(): Promise<void> {
     await fs.mkdir(this.directory, { recursive: true });
-    await atomicWrite(join(this.directory, 'workspaces.json'), JSON.stringify(this.state, null, 2));
+    const path = join(this.directory, 'workspaces.json');
+    const content = JSON.stringify(this.state, null, 2);
+    await atomicWrite(path, content, async () => {
+      let current: string | null = null;
+      try { current = await fs.readFile(path, 'utf8'); } catch (error) { if (!isMissing(error)) throw error; }
+      if (current !== this.persistedContent) throw new Error('Los metadatos cambiaron en disco. Reinicia el IDE antes de sobrescribirlos.');
+    });
+    this.persistedContent = content;
   }
 }

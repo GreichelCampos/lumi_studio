@@ -3,6 +3,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { SpatialDebuggerView } from '../../../components/console/SpatialDebuggerView';
 import { DebugStep } from '../../../types';
+import { createMockRoom, createMockSpatialObject } from '../../fixtures/testFixtures';
 
 const mockDebugSteps: DebugStep[] = [
   {
@@ -34,13 +35,21 @@ const mockDebugSteps: DebugStep[] = [
     activeObjectId: 'sofa-1',
     sceneSnapshot: {
       version: '1.0',
-      rooms: [],
+      rooms: [createMockRoom({ id: 'room-1', objects: [createMockSpatialObject({ id: 'sofa-1' })] })],
       metadata: { totalRooms: 1, totalObjects: 1, estimatedBuildTimeMs: 12 },
     },
   },
 ];
 
 describe('SpatialDebuggerView', () => {
+  it('renders missing source and snapshot without offering an invalid entity target', () => {
+    const incomplete = { ...mockDebugSteps[1], sourceRef: undefined, sceneSnapshot: undefined } as unknown as DebugStep;
+    render(<SpatialDebuggerView debugSteps={[incomplete]} currentStepIndex={0} onStepChange={vi.fn()} onFocusObject={vi.fn()} />);
+    expect(screen.getByText('Sin referencia de código disponible')).toBeInTheDocument();
+    expect(screen.getByText('Sin columna disponible')).toBeInTheDocument();
+    expect(screen.queryByText('Objeto activo: sofa-1')).not.toBeInTheDocument();
+    expect(screen.getByText(/No son trazas de Python/)).toBeInTheDocument();
+  });
   it('renderiza el estado vacío cuando no hay pasos disponibles', () => {
     render(
       <SpatialDebuggerView
@@ -52,7 +61,8 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('No hay pasos de depuración disponibles')).toBeInTheDocument();
-    expect(screen.getByText(/Compila el proyecto sin errores bloqueantes/)).toBeInTheDocument();
+    expect(screen.getByText(/Importa un archivo .lumic que incluya pasos/)).toBeInTheDocument();
+    expect(screen.getByText(/Python todavía no genera trazas espaciales/)).toBeInTheDocument();
     expect(screen.getByText('Paso 0 de 0')).toBeInTheDocument();
     expect(screen.getByText('Inactivo')).toBeInTheDocument();
   });
@@ -93,7 +103,7 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('Paso 2 de 2')).toBeInTheDocument();
-    expect(screen.getByText('Ejecutando')).toBeInTheDocument();
+    expect(screen.getByText('Reproduciendo')).toBeInTheDocument();
 
     const objBtn = screen.getByText('Objeto activo: sofa-1');
     expect(objBtn).toBeInTheDocument();

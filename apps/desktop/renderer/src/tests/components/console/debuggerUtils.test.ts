@@ -6,7 +6,7 @@ describe('debuggerUtils', () => {
   describe('getDebuggerStatusInfo', () => {
     it('retorna la información correcta para el estado "running"', () => {
       const info = getDebuggerStatusInfo('running');
-      expect(info.label).toBe('Ejecutando');
+      expect(info.label).toBe('Reproduciendo');
       expect(info.badgeClass).toContain('bg-purple-500/20');
       expect(info.badgeClass).toContain('animate-pulse');
     });

@@ -107,8 +107,8 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           <AlertTriangle className="w-4 h-4 text-rose-300 flex-shrink-0" />
           <span className="font-medium">
             {entity.data.isOutOfBounds
-              ? 'Objeto fuera de los límites de la habitación'
-              : 'Colisión detectada con otro elemento espacial'}
+              ? 'Objeto fuera de los límites de la habitación según los datos recibidos'
+              : 'Conflicto espacial indicado en los datos recibidos'}
           </span>
         </div>
       )}

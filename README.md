@@ -1,5 +1,10 @@
 # Lumi & Estudio Lumi
 
+Documentación del IDE actual: [manual de usuario](docs/user_manual.md),
+[instalación en Windows](docs/installation_windows.md),
+[arquitectura](docs/architecture.md) y
+[presentación y recorrido demostrativo](docs/ide_presentation.md).
+
 ## Ejecutar Estudio Lumi en Electron
 
 Requisitos: Node.js 24, npm 11 y Python 3.13. Desde la raíz:
@@ -28,8 +33,15 @@ npm run lint
 npm run build
 ```
 
-La prueba de integración abre Electron y usa Python real. ScenePlan y trazas siguen
-pendientes; este build no produce un instalador. En PowerShell puede usarse `npm.cmd`.
+La ejecución Python entrega ScenePlan de habitaciones, pisos y muebles colocados;
+Compilar solo analiza. El flujo real hasta Three.js está verificado en Electron de
+desarrollo con `node tests/runtime-scene.integration.mjs` desde `apps/desktop`.
+Las declaraciones de pared/puerta/ventana y objetos sin colocar todavía no son
+publicables por el adaptador; no hay trazas Python reales. `build` compila la aplicación;
+el instalador combinado aún no se ha regenerado ni aceptado y falta Windows limpio.
+`dist:win` genera el instalador con Python
+incluido, según la [guía de empaquetado](docs/windows_packaging.md).
+En PowerShell puede usarse `npm.cmd`.
 
 ## Ejecutar el frontend de Estudio Lumi
 
@@ -87,6 +99,14 @@ van a stderr. Para sus pruebas, con pytest instalado en el entorno virtual:
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q tests/protocol
 ```
+
+## Initial design and project goals
+
+The following sections describe the language proposal and target workflow, not a
+feature-completion report. In the current desktop IDE, Python analysis and execution
+are available, while spatial scene generation and Python debug traces are pending.
+The viewer loads validated `.lumic` artifacts independently of source compilation.
+See the [current architecture](docs/architecture.md) for implemented boundaries.
 
 **Lumi** is a domain-specific programming language designed to create and configure independent 3D rooms through code.
 

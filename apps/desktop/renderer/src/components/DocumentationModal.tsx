@@ -41,7 +41,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             <LumiMascot state="ready" size={34} />
             <div>
               <h2 className="text-base font-bold text-[#f3ebd6] drop-shadow-[0_0_8px_rgba(243,235,214,0.4)]">
-                Manual y Especificación Oficial de Lumi
+                Ayuda de Lumi
               </h2>
               <p className="text-xs text-[#d5cbb2]">Lenguaje Unificado de Modelado de Interiores</p>
             </div>
@@ -63,7 +63,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
               <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Estudio LUMI</span>
               <h3 className="text-lg font-extrabold text-[#f3ebd6] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
               <p className="text-xs text-[#d5cbb2] mt-1 max-w-xl leading-relaxed">
-                Lumi es un lenguaje en español diseñado para describir, validar espacialmente y renderizar habitaciones tridimensionales mediante código estructurado con terminación en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code> y origen centrado <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">[0,0,0]</code>.
+                En Electron, Compilar analiza el código y Ejecutar Python puede generar escenas con habitaciones, pisos y muebles colocados mediante el intérprete real. El visor también importa archivos .lumic. Paredes y aberturas declaradas todavía requieren geometría acordada; Python no produce trazas de depuración. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
               </p>
             </div>
             <div className="hidden sm:block">
@@ -130,7 +130,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
               <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-rose-400/30">
                 <LumiMascot state="error" size={40} isAnimated={false} />
                 <span className="font-bold text-rose-300 mt-1">Rojo</span>
-                <span className="text-[10px] text-[#d5cbb2]">Error Espacial</span>
+                <span className="text-[10px] text-[#d5cbb2]">Error recibido</span>
               </div>
             </div>
           </div>

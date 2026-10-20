@@ -5,9 +5,7 @@ from typing import Callable, Mapping
 from lumi_language.interpreter import Interpreter
 
 from .compiler_service import CompilerService
-from .results import (
-    CompilationResult, CompilationStatus, ExecutionResult, ExecutionStatus,
-)
+from .results import CompilationResult, ExecutionResult, ExecutionStatus
 
 
 class InputUnavailableError(RuntimeError):
@@ -66,9 +64,10 @@ class ExecutionService:
         status = ExecutionStatus.COMPLETED
         if runtime.diagnostics:
             status = ExecutionStatus.FAILED
-        elif compilation.status == CompilationStatus.INCOMPLETE:
-            # An uncalled spatial function may not trigger a runtime diagnostic.
-            status = ExecutionStatus.INCOMPLETE
         return ExecutionResult(
-            compilation, status, tuple(runtime.output), tuple(runtime.diagnostics)
+            compilation,
+            status,
+            tuple(runtime.output),
+            tuple(runtime.diagnostics),
+            runtime.scene_plan if status is ExecutionStatus.COMPLETED else None,
         )
