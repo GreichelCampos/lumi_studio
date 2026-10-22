@@ -113,7 +113,8 @@ class Lexer:
 
         if self.is_at_end():
             raise LexerError(
-                f"{self.file}:{self.start_line}:{self.start_column}: texto sin cerrar"
+                f"{self.file}:{self.start_line}:{self.start_column}: texto sin cerrar",
+                file=self.file, line=self.start_line, column=self.start_column,
             )
 
         lexeme += self.advance()
@@ -139,7 +140,8 @@ class Lexer:
 
         raise LexerError(
             f"{self.file}:{self.start_line}:{self.start_column}: "
-            "comentario multilínea sin cerrar"
+            "comentario multilínea sin cerrar",
+            file=self.file, line=self.start_line, column=self.start_column,
         )
 
     def scan_identifier(self, first_char: str) -> Token:
@@ -192,7 +194,8 @@ class Lexer:
             else:
                 raise LexerError(
                     f"{self.file}:{self.start_line}:{self.start_column}: "
-                    f"carácter inválido '{char}'"
+                    f"carácter inválido '{char}'",
+                    file=self.file, line=self.start_line, column=self.start_column,
                 )
 
         return tokens

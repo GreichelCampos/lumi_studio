@@ -50,7 +50,8 @@ class ParserError(ValueError):
 
 
 class Parser:
-    def __init__(self, tokens: list[Token], import_resolver=None):
+    def __init__(self, tokens: list[Token], import_resolver=None, *, file: str = ""):
+        self.file = tokens[0].file if tokens else file
         self.tokens = tokens
         self.current = 0
         self.import_resolver = import_resolver
@@ -70,7 +71,7 @@ class Parser:
             return self.tokens[self.current - 1]
         if self.tokens:
             return self.tokens[0]
-        return Token(TokenType.TERMINATOR, "", "", 1, 1)
+        return Token(TokenType.TERMINATOR, "", self.file, 1, 1)
 
     def peek_next(self) -> Token | None:
         if self.current + 1 >= len(self.tokens):
@@ -563,7 +564,7 @@ class Parser:
             raise ParserError(diagnostic)
 
         tokens = Lexer(source, node.file_name).tokenize()
-        imported_parser = Parser(tokens, import_resolver=self.import_resolver)
+        imported_parser = Parser(tokens, import_resolver=self.import_resolver, file=node.file_name)
         program = imported_parser.parse()
         self.diagnostics.extend(imported_parser.diagnostics)
         self.imported_programs[node.file_name] = program
@@ -1054,7 +1055,7 @@ class Parser:
                 column=first_statement.column,
             )
 
-        return ProgramNode(statements=[], file="", line=1, column=1)
+        return ProgramNode(statements=[], file=self.file, line=1, column=1)
 
     def parse_with_recovery(self):
         statements = []
@@ -1074,7 +1075,7 @@ class Parser:
                 column=first_statement.column,
             )
 
-        return ProgramNode(statements=[], file="", line=1, column=1)
+        return ProgramNode(statements=[], file=self.file, line=1, column=1)
 
     def parse_list(self):
         left_bracket = self.consume(

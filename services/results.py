@@ -7,6 +7,7 @@ from typing import Mapping
 
 from lumi_language.ast_nodes import ProgramNode
 from lumi_language.diagnostics import Diagnostic
+from lumi_language.lexer_error import LexicalErrorLocation
 from spatial.scene_plan import ScenePlan
 
 
@@ -30,8 +31,9 @@ class AnalysisLimitation(str, Enum):
 class CompilationResult:
     """An analysis snapshot, not a scene or a transport DTO.
 
-    ``lexical_error`` preserves the exception text because LexerError has no
-    structured diagnostic. Never infer a code or location from that message.
+    ``lexical_error`` preserves the exception text. ``lexical_error_location``
+    carries the lexer origin internally without introducing a Diagnostic.
+    Never infer a code or location from the message.
     AST nodes remain mutable core objects: callers must treat this snapshot as
     read-only and recompile changed source instead of editing the returned AST.
     """
@@ -46,6 +48,7 @@ class CompilationResult:
         default_factory=lambda: MappingProxyType({})
     )
     limitations: tuple[AnalysisLimitation, ...] = ()
+    lexical_error_location: LexicalErrorLocation | None = None
 
     @property
     def succeeded(self) -> bool:

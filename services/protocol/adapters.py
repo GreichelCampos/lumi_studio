@@ -2,28 +2,18 @@
 
 from typing import cast
 
-from lumi_language.diagnostics import Diagnostic
+from lumi_language.diagnostics import Diagnostic, serialize_diagnostic
 from services.results import CompilationResult, ExecutionResult
 from .scene_adapter import scene_plan_dto
 
 from .models import (
-    AnalysisStatus, Category, DiagnosticDTO, Limitation, PROTOCOL_VERSION,
+    AnalysisStatus, DiagnosticDTO, Limitation, PROTOCOL_VERSION,
     ProgramStatus, Request, ResultPayload, ResultResponse, Stage,
 )
 
 
 def diagnostic_dto(diagnostic: Diagnostic) -> DiagnosticDTO:
-    result: DiagnosticDTO = {
-        "category": cast(Category, diagnostic.category.value),
-        "code": diagnostic.code,
-        "file": diagnostic.file,
-        "line": diagnostic.line,
-        "column": diagnostic.column,
-        "description": diagnostic.description,
-    }
-    if diagnostic.suggestion is not None:
-        result["suggestion"] = diagnostic.suggestion
-    return result
+    return cast(DiagnosticDTO, serialize_diagnostic(diagnostic))
 
 
 def adapt_result(

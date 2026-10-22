@@ -59,9 +59,10 @@ class CompilerService:
             return CompilationResult(
                 file, CompilationStatus.FAILED, AnalysisStage.LEXICAL,
                 lexical_error=str(error),
+                lexical_error_location=error.location,
             )
 
-        parser = Parser(tokens, import_resolver=InMemoryImportResolver(snapshot))
+        parser = Parser(tokens, import_resolver=InMemoryImportResolver(snapshot), file=file)
         try:
             program = parser.parse()
         except LexerError as error:
@@ -69,6 +70,7 @@ class CompilerService:
             return CompilationResult(
                 file, CompilationStatus.FAILED, AnalysisStage.LEXICAL,
                 diagnostics=tuple(parser.diagnostics), lexical_error=str(error),
+                lexical_error_location=error.location,
             )
         except ParserError as error:
             diagnostics = list(parser.diagnostics)

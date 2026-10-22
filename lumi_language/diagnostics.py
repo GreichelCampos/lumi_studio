@@ -26,3 +26,18 @@ class Diagnostic:
     column: int
     description: str
     suggestion: str | None = None
+
+
+def serialize_diagnostic(diagnostic: Diagnostic) -> dict[str, str | int]:
+    """Preserve core fields; omit only an absent suggestion."""
+    result: dict[str, str | int] = {
+        "category": diagnostic.category.value,
+        "code": diagnostic.code,
+        "file": diagnostic.file,
+        "line": diagnostic.line,
+        "column": diagnostic.column,
+        "description": diagnostic.description,
+    }
+    if diagnostic.suggestion is not None:
+        result["suggestion"] = diagnostic.suggestion
+    return result
