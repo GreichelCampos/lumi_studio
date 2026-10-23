@@ -1,7 +1,7 @@
 """Adapt validated runtime ScenePlan values to the IDE wire contract."""
 
 from math import isfinite
-from typing import TypedDict
+from typing import NotRequired, TypedDict
 
 from spatial.scene_plan import RoomPlan, ScenePlan, SourceLocation, SpatialElement
 
@@ -44,15 +44,16 @@ class WallDTO(TypedDict):
     material: str
 
 
-class SpatialObjectDTO(TypedDict, total=False):
+class SpatialObjectDTO(TypedDict):
     id: str
     type: str
     name: str
-    position: list[int | float]
+    placed: bool
+    position: NotRequired[list[int | float]]
     rotation: list[int | float]
     dimensions: list[int | float]
-    color: str
-    material: str
+    color: NotRequired[str]
+    material: NotRequired[str]
     sourceRef: SourceReferenceDTO
     roomId: str
 
@@ -108,17 +109,13 @@ def _vector(vector) -> list[int | float]:
 
 
 def _object_dto(element: SpatialElement, room_id: str) -> SpatialObjectDTO:
-    if element.position is None:
-        raise SceneAdapterError(
-            f"El objeto '{element.name}' debe colocarse antes de publicarse en el IDE."
-        )
     object_type = element.object_type or element.name
     properties = _properties(element)
     result: SpatialObjectDTO = {
         "id": _identifier("element", element.source, element.name),
         "type": object_type,
         "name": element.name,
-        "position": _vector(element.position),
+        "placed": element.position is not None,
         "rotation": _vector(element.rotation) if element.rotation else [0, 0, 0],
         "dimensions": list(
             FURNITURE_DIMENSIONS.get(
@@ -128,6 +125,8 @@ def _object_dto(element: SpatialElement, room_id: str) -> SpatialObjectDTO:
         "sourceRef": _source_reference(element.source),
         "roomId": room_id,
     }
+    if element.position is not None:
+        result["position"] = _vector(element.position)
     if "color" in properties:
         result["color"] = properties["color"]
     if "material" in properties:

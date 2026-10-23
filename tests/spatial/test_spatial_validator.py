@@ -78,6 +78,18 @@ def element(
     )
 
 
+def floor(name: str, line: int, column: int = 5) -> SpatialElement:
+    return SpatialElement(
+        name=name,
+        element_kind="floor",
+        object_type=None,
+        properties=(),
+        position=None,
+        rotation=None,
+        source=location(line, column),
+    )
+
+
 def spatial_property(
     name: str,
     value: object,
@@ -97,6 +109,49 @@ def test_valid_room_succeeds():
 
     assert result.succeeded
     assert result.diagnostics == ()
+
+
+def test_room_allows_zero_or_one_floor():
+    assert SpatialValidator().validate(scene(room())).succeeded
+    assert SpatialValidator().validate(
+        scene(room(elements=(floor("principal", 2),)))
+    ).succeeded
+
+
+def test_second_floor_is_reported_at_its_source_location():
+    plan = scene(
+        room(
+            elements=(
+                floor("principal", 2, 5),
+                floor("secundario", 4, 9),
+            )
+        )
+    )
+
+    result = SpatialValidator().validate(plan)
+
+    assert not result.succeeded
+    assert len(result.diagnostics) == 1
+    diagnostic = result.diagnostics[0]
+    assert diagnostic.category is DiagnosticCategory.SPATIAL
+    assert diagnostic.code == "SPA_MULTIPLE_FLOORS"
+    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
+        "principal.lumi",
+        4,
+        9,
+    )
+    assert "sala" in diagnostic.description
+
+
+def test_floor_limit_is_scoped_to_each_room():
+    result = SpatialValidator().validate(
+        scene(
+            room("sala", elements=(floor("sala_piso", 2),)),
+            room("cocina", line=5, elements=(floor("cocina_piso", 6),)),
+        )
+    )
+
+    assert result.succeeded
 
 
 @pytest.mark.parametrize(

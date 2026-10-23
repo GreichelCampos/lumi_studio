@@ -36,6 +36,7 @@ class SpatialValidator:
         diagnostics: list[Diagnostic] = []
         for room in scene_plan.rooms:
             diagnostics.extend(self._validate_room_dimensions(room))
+            diagnostics.extend(self._validate_room_floor_count(room))
             for element in room.elements:
                 diagnostics.extend(self._validate_element_vectors(element))
                 diagnostics.extend(self._validate_element_properties(element))
@@ -56,6 +57,35 @@ class SpatialValidator:
             )
             if diagnostic is not None:
                 diagnostics.append(diagnostic)
+        return diagnostics
+
+    @staticmethod
+    def _validate_room_floor_count(room: RoomPlan) -> list[Diagnostic]:
+        diagnostics = []
+        floor_found = False
+        for element in room.elements:
+            if element.element_kind != "floor":
+                continue
+            if not floor_found:
+                floor_found = True
+                continue
+            source = element.source
+            diagnostics.append(
+                Diagnostic(
+                    category=DiagnosticCategory.SPATIAL,
+                    code="SPA_MULTIPLE_FLOORS",
+                    file=source.file,
+                    line=source.line,
+                    column=source.column,
+                    description=(
+                        f"La habitación '{room.name}' contiene más de un piso."
+                    ),
+                    suggestion=(
+                        "Conserve como máximo una declaración de piso "
+                        "por habitación."
+                    ),
+                )
+            )
         return diagnostics
 
     @staticmethod
