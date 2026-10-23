@@ -1,0 +1,10 @@
+principal {
+    entero cantidad = 2 + 3 * 4>>
+    decimal mitad = (cantidad - 2) / 2.0>>
+    texto nombre = leer("Nombre:")>>
+    booleano activo = no falso y cantidad >= 10 o falso>>
+    lista datos = [1, [2, 3], nulo]>>
+    vector origen = [-1, 0, cantidad + 1]>>
+    cantidad = cantidad + 1>>
+    mostrar(nombre)>>
+}

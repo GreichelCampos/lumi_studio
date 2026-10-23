@@ -11,6 +11,16 @@ from .lexer_config import (
 from .lexer_error import LexerError
 
 
+class TokenStream(list[Token]):
+    """A token list carrying the source end, including discarded trivia."""
+
+    def __init__(self, tokens: list[Token], *, file: str, line: int, column: int):
+        super().__init__(tokens)
+        self.eof_file = file
+        self.eof_line = line
+        self.eof_column = column
+
+
 class Lexer:
     def __init__(self, source: str, file: str):
         self.source = source
@@ -198,4 +208,4 @@ class Lexer:
                     file=self.file, line=self.start_line, column=self.start_column,
                 )
 
-        return tokens
+        return TokenStream(tokens, file=self.file, line=self.line, column=self.column)

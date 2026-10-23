@@ -2,7 +2,7 @@
 
 from .token import Token
 from .token_type import TokenType
-from .lexer import Lexer
+from .lexer import Lexer, TokenStream
 from .diagnostics import Diagnostic, DiagnosticCategory
 from .ast_nodes import (
     AssignmentNode,
@@ -51,7 +51,9 @@ class ParserError(ValueError):
 
 class Parser:
     def __init__(self, tokens: list[Token], import_resolver=None, *, file: str = ""):
-        self.file = tokens[0].file if tokens else file
+        self.file = tokens[0].file if tokens else (
+            tokens.eof_file if isinstance(tokens, TokenStream) else file
+        )
         self.tokens = tokens
         self.current = 0
         self.import_resolver = import_resolver
@@ -111,9 +113,16 @@ class Parser:
         *,
         code: str = "SYN_UNEXPECTED_TOKEN",
     ) -> ParserError:
+        at_eof = token is None and self.is_at_end()
         if token is None:
-            token = self.peek()
-        found = "fin de archivo" if self.is_at_end() else f"'{token.lexeme}'"
+            if at_eof and isinstance(self.tokens, TokenStream):
+                token = Token(
+                    TokenType.TERMINATOR, "", self.tokens.eof_file,
+                    self.tokens.eof_line, self.tokens.eof_column,
+                )
+            else:
+                token = self.peek()
+        found = "fin de archivo" if at_eof else f"'{token.lexeme}'"
         diagnostic = Diagnostic(
             category=DiagnosticCategory.SYNTACTIC,
             code=code,

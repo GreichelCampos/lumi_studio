@@ -1,0 +1,21 @@
+Command: C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe -B -m pytest tests/parser/test_l031_programs.py -v -p no:cacheprovider
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe
+rootdir: C:\Proyectos\estudio_lumi
+collecting ... collected 10 items
+
+tests/parser/test_l031_programs.py::test_V01_variables PASSED            [ 10%]
+tests/parser/test_l031_programs.py::test_V02_control PASSED              [ 20%]
+tests/parser/test_l031_programs.py::test_V03_funciones PASSED            [ 30%]
+tests/parser/test_l031_programs.py::test_V04_importacion PASSED          [ 40%]
+tests/parser/test_l031_programs.py::test_V05_espacial PASSED             [ 50%]
+tests/parser/test_l031_programs.py::test_invalid_program[E01] PASSED     [ 60%]
+tests/parser/test_l031_programs.py::test_invalid_program[E02] PASSED     [ 70%]
+tests/parser/test_l031_programs.py::test_invalid_program[E03] PASSED     [ 80%]
+tests/parser/test_l031_programs.py::test_invalid_program[E04] PASSED     [ 90%]
+tests/parser/test_l031_programs.py::test_invalid_program[E05] PASSED     [100%]
+
+============================= 10 passed in 0.11s ==============================
+
+Exit code: 0

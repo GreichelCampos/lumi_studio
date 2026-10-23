@@ -1,0 +1,41 @@
+Command: C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe -B -m pytest tests/parser/test_frontend_programs.py tests/parser/test_syntax_diagnostics.py -v -p no:cacheprovider
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe
+rootdir: C:\Proyectos\estudio_lumi
+collecting ... collected 30 items
+
+tests/parser/test_frontend_programs.py::test_variables_expressions PASSED [  3%]
+tests/parser/test_frontend_programs.py::test_control_structures PASSED   [  6%]
+tests/parser/test_frontend_programs.py::test_functions PASSED            [ 10%]
+tests/parser/test_frontend_programs.py::test_imports PASSED              [ 13%]
+tests/parser/test_frontend_programs.py::test_spatial_declarations PASSED [ 16%]
+tests/parser/test_frontend_programs.py::test_invalid_program[missing_parenthesis] PASSED [ 20%]
+tests/parser/test_frontend_programs.py::test_invalid_program[unclosed_block] PASSED [ 23%]
+tests/parser/test_frontend_programs.py::test_invalid_program[incomplete_expression] PASSED [ 26%]
+tests/parser/test_frontend_programs.py::test_invalid_program[invalid_vector] PASSED [ 30%]
+tests/parser/test_frontend_programs.py::test_invalid_program[invalid_import] PASSED [ 33%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-final-newline] PASSED [ 36%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-no-final-newline] PASSED [ 40%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-trailing-spaces] PASSED [ 43%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-spaces-after-newline] PASSED [ 46%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-line-comment] PASSED [ 50%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-line-comment-newline] PASSED [ 53%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-multiline-comment] PASSED [ 56%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-final-newline] PASSED [ 60%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-no-final-newline] PASSED [ 63%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-trailing-spaces] PASSED [ 66%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-spaces-after-newline] PASSED [ 70%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-line-comment] PASSED [ 73%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-line-comment-newline] PASSED [ 76%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-multiline-comment] PASSED [ 80%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = >>-1-12->>] PASSED [ 83%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = )-1-12-)] PASSED [ 86%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = ]\n   -1-12-]] PASSED [ 90%]
+tests/parser/test_syntax_diagnostics.py::test_token_list_and_ast_locations_remain_compatible PASSED [ 93%]
+tests/parser/test_syntax_diagnostics.py::test_empty_stream_keeps_file_and_real_end PASSED [ 96%]
+tests/parser/test_syntax_diagnostics.py::test_plain_token_list_keeps_legacy_eof_fallback PASSED [100%]
+
+============================= 30 passed in 0.13s ==============================
+
+Exit code: 0

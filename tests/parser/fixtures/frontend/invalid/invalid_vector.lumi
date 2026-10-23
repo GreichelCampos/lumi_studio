@@ -1,0 +1,4 @@
+habitacion sala(5, 4, 3) {
+    mesa mesa1 {}
+    colocar mesa1 [1, 0]>>
+}

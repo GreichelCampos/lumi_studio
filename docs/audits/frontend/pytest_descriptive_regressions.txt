@@ -1,0 +1,32 @@
+Final verification after descriptive identifier cleanup
+Command: C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe -B -m pytest tests/parser/test_syntax_diagnostics.py -v -p no:cacheprovider
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe
+rootdir: C:\Proyectos\estudio_lumi
+collecting ... collected 20 items
+
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-final-newline] PASSED [  5%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-no-final-newline] PASSED [ 10%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-trailing-spaces] PASSED [ 15%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-spaces-after-newline] PASSED [ 20%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-line-comment] PASSED [ 25%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-line-comment-newline] PASSED [ 30%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[entry-multiline-comment] PASSED [ 35%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-final-newline] PASSED [ 40%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-no-final-newline] PASSED [ 45%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-trailing-spaces] PASSED [ 50%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-spaces-after-newline] PASSED [ 55%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-line-comment] PASSED [ 60%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-line-comment-newline] PASSED [ 65%]
+tests/parser/test_syntax_diagnostics.py::test_real_eof_location[imported-multiline-comment] PASSED [ 70%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = >>-1-12->>] PASSED [ 75%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = )-1-12-)] PASSED [ 80%]
+tests/parser/test_syntax_diagnostics.py::test_last_consumed_token_is_described_as_token[entero x = ]\n   -1-12-]] PASSED [ 85%]
+tests/parser/test_syntax_diagnostics.py::test_token_list_and_ast_locations_remain_compatible PASSED [ 90%]
+tests/parser/test_syntax_diagnostics.py::test_empty_stream_keeps_file_and_real_end PASSED [ 95%]
+tests/parser/test_syntax_diagnostics.py::test_plain_token_list_keeps_legacy_eof_fallback PASSED [100%]
+
+============================= 20 passed in 0.07s ==============================
+
+Exit code: 0

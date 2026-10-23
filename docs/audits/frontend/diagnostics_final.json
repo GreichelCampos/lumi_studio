@@ -1,0 +1,82 @@
+[
+  {
+    "case": "E01",
+    "expected": {
+      "line": 2,
+      "column": 14
+    },
+    "actual": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "E01_parentesis.lumi",
+      "line": 2,
+      "column": 14,
+      "description": "Se esperaba ')' despues de la expresion. Encontrado: '>>'.",
+      "suggestion": null
+    }
+  },
+  {
+    "case": "E02",
+    "expected": {
+      "line": 3,
+      "column": 1
+    },
+    "actual": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "E02_llave_eof.lumi",
+      "line": 3,
+      "column": 1,
+      "description": "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.",
+      "suggestion": null
+    }
+  },
+  {
+    "case": "E03",
+    "expected": {
+      "line": 2,
+      "column": 24
+    },
+    "actual": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "E03_expresion.lumi",
+      "line": 2,
+      "column": 24,
+      "description": "Se esperaba una expresion. Encontrado: '>>'.",
+      "suggestion": null
+    }
+  },
+  {
+    "case": "E04",
+    "expected": {
+      "line": 3,
+      "column": 24
+    },
+    "actual": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "E04_vector.lumi",
+      "line": 3,
+      "column": 24,
+      "description": "Se esperaba ',' despues del componente y. Encontrado: ']'.",
+      "suggestion": null
+    }
+  },
+  {
+    "case": "E05",
+    "expected": {
+      "line": 1,
+      "column": 31
+    },
+    "actual": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "E05_importacion.lumi",
+      "line": 1,
+      "column": 31,
+      "description": "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.",
+      "suggestion": null
+    }
+  }
+]

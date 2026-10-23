@@ -1,0 +1,62 @@
+[
+  {
+    "case": "incomplete_expression",
+    "diagnostic": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "incomplete_expression.lumi",
+      "line": 2,
+      "column": 24,
+      "description": "Se esperaba una expresion. Encontrado: '>>'."
+    },
+    "suggestion": null
+  },
+  {
+    "case": "invalid_import",
+    "diagnostic": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "invalid_import.lumi",
+      "line": 1,
+      "column": 27,
+      "description": "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'."
+    },
+    "suggestion": null
+  },
+  {
+    "case": "invalid_vector",
+    "diagnostic": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "invalid_vector.lumi",
+      "line": 3,
+      "column": 24,
+      "description": "Se esperaba ',' despues del componente y. Encontrado: ']'."
+    },
+    "suggestion": null
+  },
+  {
+    "case": "missing_parenthesis",
+    "diagnostic": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "missing_parenthesis.lumi",
+      "line": 2,
+      "column": 14,
+      "description": "Se esperaba ')' despues de la expresion. Encontrado: '>>'."
+    },
+    "suggestion": null
+  },
+  {
+    "case": "unclosed_block",
+    "diagnostic": {
+      "category": "SYNTACTIC",
+      "code": "SYN_UNEXPECTED_TOKEN",
+      "file": "unclosed_block.lumi",
+      "line": 3,
+      "column": 1,
+      "description": "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo."
+    },
+    "suggestion": null
+  }
+]

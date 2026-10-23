@@ -1,0 +1,20 @@
+principal {
+    entero contador = 0>>
+    mientras contador < 2 {
+        contador = contador + 1>>
+    }
+    si contador == 2 {
+        mostrar("Completo")>>
+    } sino {
+        mostrar("Pendiente")>>
+    }
+    repetir 2 { mostrar(contador)>> }
+    hacer entero i = 0; i < 2; i = i + 1 {
+        mostrar(i)>>
+    }
+    segun contador {
+        caso 1: mostrar("Uno")>>
+        caso 2: mostrar("Dos")>>
+        defecto: mostrar("Otro")>>
+    }
+}

@@ -1,0 +1,4 @@
+importar "functions.lumi" usar sumar>>
+principal {
+    mostrar(sumar(4, 5))>>
+}

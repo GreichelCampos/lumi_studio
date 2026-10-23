@@ -1,0 +1,11 @@
+funcion entero sumar(entero a, entero b) {
+    retornar a + b>>
+}
+funcion vacio saludar() {
+    mostrar("Hola")>>
+}
+principal {
+    entero resultado = sumar(1, sumar(2, 3))>>
+    saludar()>>
+    mostrar(resultado)>>
+}

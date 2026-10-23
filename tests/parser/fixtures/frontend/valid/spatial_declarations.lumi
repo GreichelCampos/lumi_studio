@@ -1,0 +1,13 @@
+habitacion sala(5, 4, 2.7) {
+    piso base { material "madera">> }
+    pared norte { color "blanco">> }
+    puerta entrada { material "madera">> }
+    ventana lateral { color "azul">> }
+    mesa mesa1 {
+        color "rojo">>
+        material "metal">>
+    }
+    colocar mesa1 [0, 0, 0]>>
+    mover mesa1 [1 + 1, 0, -1]>>
+    rotar mesa1 [0, 90, 0]>>
+}

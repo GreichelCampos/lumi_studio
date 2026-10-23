@@ -1,0 +1,193 @@
+============================= test session starts =============================
+platform win32 -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0 -- C:\Proyectos\estudio_lumi\.venv\Scripts\python.exe
+rootdir: C:\Proyectos\estudio_lumi
+collecting ... collected 10 items
+
+tests/parser/test_l031_programs.py::test_V01_variables PASSED            [ 10%]
+tests/parser/test_l031_programs.py::test_V02_control PASSED              [ 20%]
+tests/parser/test_l031_programs.py::test_V03_funciones PASSED            [ 30%]
+tests/parser/test_l031_programs.py::test_V04_importacion PASSED          [ 40%]
+tests/parser/test_l031_programs.py::test_V05_espacial PASSED             [ 50%]
+tests/parser/test_l031_programs.py::test_invalid_program[E01] PASSED     [ 60%]
+tests/parser/test_l031_programs.py::test_invalid_program[E02] FAILED     [ 70%]
+tests/parser/test_l031_programs.py::test_invalid_program[E03] PASSED     [ 80%]
+tests/parser/test_l031_programs.py::test_invalid_program[E04] FAILED     [ 90%]
+tests/parser/test_l031_programs.py::test_invalid_program[E05] FAILED     [100%]
+
+================================== FAILURES ===================================
+__________________________ test_invalid_program[E02] __________________________
+
+name = 'E02_llave_eof.lumi', line = 3, column = 1
+description = "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo."
+
+    @pytest.mark.parametrize(
+        "name,line,column,description",
+        [
+            pytest.param("E01_parentesis.lumi", 2, 14,
+                         "Se esperaba ')' despues de la expresion. Encontrado: '>>'.", id="E01"),
+            pytest.param("E02_llave_eof.lumi", 3, 1,
+                         "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", id="E02"),
+            pytest.param("E03_expresion.lumi", 2, 24,
+                         "Se esperaba una expresion. Encontrado: '>>'.", id="E03"),
+            pytest.param("E04_vector.lumi", 3, 23,
+                         "Se esperaba ',' despues del componente y. Encontrado: ']'.", id="E04"),
+            pytest.param("E05_importacion.lumi", 1, 29,
+                         "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", id="E05"),
+        ],
+    )
+    def test_invalid_program(name, line, column, description):
+        source = read_fixture("invalid", name)
+        parser = Parser(Lexer(source, name).tokenize(), file=name)
+        with pytest.raises(ParserError) as raised:
+            parser.parse()
+        diagnostic = raised.value.diagnostic
+        assert parser.diagnostics == [diagnostic]
+        # One comparison reports all fields even when EOF coordinates are incorrect.
+>       assert {
+            "category": diagnostic.category,
+            "code": diagnostic.code,
+            "file": diagnostic.file,
+            "line": diagnostic.line,
+            "column": diagnostic.column,
+            "description": diagnostic.description,
+            "suggestion": diagnostic.suggestion,
+        } == {
+            "category": DiagnosticCategory.SYNTACTIC,
+            "code": "SYN_UNEXPECTED_TOKEN",
+            "file": name,
+            "line": line,
+            "column": column,
+            "description": description,
+            "suggestion": None,
+        }
+E       AssertionError: assert {'category': ...line': 2, ...} == {'category': ...line': 3, ...}
+E         
+E         Omitting 5 identical items, use -vv to show
+E         Differing items:
+E         {'column': 15} != {'column': 1}
+E         {'line': 2} != {'line': 3}
+E         
+E         Full diff:...
+E         
+E         ...Full output truncated (14 lines hidden), use '-vv' to show
+
+tests\parser\test_l031_programs.py:223: AssertionError
+__________________________ test_invalid_program[E04] __________________________
+
+name = 'E04_vector.lumi', line = 3, column = 23
+description = "Se esperaba ',' despues del componente y. Encontrado: ']'."
+
+    @pytest.mark.parametrize(
+        "name,line,column,description",
+        [
+            pytest.param("E01_parentesis.lumi", 2, 14,
+                         "Se esperaba ')' despues de la expresion. Encontrado: '>>'.", id="E01"),
+            pytest.param("E02_llave_eof.lumi", 3, 1,
+                         "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", id="E02"),
+            pytest.param("E03_expresion.lumi", 2, 24,
+                         "Se esperaba una expresion. Encontrado: '>>'.", id="E03"),
+            pytest.param("E04_vector.lumi", 3, 23,
+                         "Se esperaba ',' despues del componente y. Encontrado: ']'.", id="E04"),
+            pytest.param("E05_importacion.lumi", 1, 29,
+                         "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", id="E05"),
+        ],
+    )
+    def test_invalid_program(name, line, column, description):
+        source = read_fixture("invalid", name)
+        parser = Parser(Lexer(source, name).tokenize(), file=name)
+        with pytest.raises(ParserError) as raised:
+            parser.parse()
+        diagnostic = raised.value.diagnostic
+        assert parser.diagnostics == [diagnostic]
+        # One comparison reports all fields even when EOF coordinates are incorrect.
+>       assert {
+            "category": diagnostic.category,
+            "code": diagnostic.code,
+            "file": diagnostic.file,
+            "line": diagnostic.line,
+            "column": diagnostic.column,
+            "description": diagnostic.description,
+            "suggestion": diagnostic.suggestion,
+        } == {
+            "category": DiagnosticCategory.SYNTACTIC,
+            "code": "SYN_UNEXPECTED_TOKEN",
+            "file": name,
+            "line": line,
+            "column": column,
+            "description": description,
+            "suggestion": None,
+        }
+E       AssertionError: assert {'category': ...line': 3, ...} == {'category': ...line': 3, ...}
+E         
+E         Omitting 6 identical items, use -vv to show
+E         Differing items:
+E         {'column': 24} != {'column': 23}
+E         
+E         Full diff:
+E           {...
+E         
+E         ...Full output truncated (11 lines hidden), use '-vv' to show
+
+tests\parser\test_l031_programs.py:223: AssertionError
+__________________________ test_invalid_program[E05] __________________________
+
+name = 'E05_importacion.lumi', line = 1, column = 29
+description = "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'."
+
+    @pytest.mark.parametrize(
+        "name,line,column,description",
+        [
+            pytest.param("E01_parentesis.lumi", 2, 14,
+                         "Se esperaba ')' despues de la expresion. Encontrado: '>>'.", id="E01"),
+            pytest.param("E02_llave_eof.lumi", 3, 1,
+                         "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", id="E02"),
+            pytest.param("E03_expresion.lumi", 2, 24,
+                         "Se esperaba una expresion. Encontrado: '>>'.", id="E03"),
+            pytest.param("E04_vector.lumi", 3, 23,
+                         "Se esperaba ',' despues del componente y. Encontrado: ']'.", id="E04"),
+            pytest.param("E05_importacion.lumi", 1, 29,
+                         "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", id="E05"),
+        ],
+    )
+    def test_invalid_program(name, line, column, description):
+        source = read_fixture("invalid", name)
+        parser = Parser(Lexer(source, name).tokenize(), file=name)
+        with pytest.raises(ParserError) as raised:
+            parser.parse()
+        diagnostic = raised.value.diagnostic
+        assert parser.diagnostics == [diagnostic]
+        # One comparison reports all fields even when EOF coordinates are incorrect.
+>       assert {
+            "category": diagnostic.category,
+            "code": diagnostic.code,
+            "file": diagnostic.file,
+            "line": diagnostic.line,
+            "column": diagnostic.column,
+            "description": diagnostic.description,
+            "suggestion": diagnostic.suggestion,
+        } == {
+            "category": DiagnosticCategory.SYNTACTIC,
+            "code": "SYN_UNEXPECTED_TOKEN",
+            "file": name,
+            "line": line,
+            "column": column,
+            "description": description,
+            "suggestion": None,
+        }
+E       AssertionError: assert {'category': ...line': 1, ...} == {'category': ...line': 1, ...}
+E         
+E         Omitting 6 identical items, use -vv to show
+E         Differing items:
+E         {'column': 31} != {'column': 29}
+E         
+E         Full diff:
+E           {...
+E         
+E         ...Full output truncated (11 lines hidden), use '-vv' to show
+
+tests\parser\test_l031_programs.py:223: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/parser/test_l031_programs.py::test_invalid_program[E02] - Assert...
+FAILED tests/parser/test_l031_programs.py::test_invalid_program[E04] - Assert...
+FAILED tests/parser/test_l031_programs.py::test_invalid_program[E05] - Assert...
+========================= 3 failed, 7 passed in 0.16s =========================
