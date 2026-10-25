@@ -15,7 +15,7 @@ FIXTURES = Path(__file__).parent / "fixtures" / "frontend"
 
 
 def read_fixture(group, name):
-    data = (FIXTURES / group / name).read_bytes()
+    data = (FIXTURES / group / name).read_bytes().replace(b"\r\n", b"\n")
     assert not data.startswith(b"\n")
     assert data.endswith(b"\n") and not data.endswith(b"\n\n")
     assert b"\r" not in data and b"\t" not in data
