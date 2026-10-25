@@ -95,6 +95,7 @@ export default function App() {
     lastCompileResult,
     scenePlan,
     sceneSource,
+    legacyPlacement,
     setScenePlan,
     diagnostics,
     logs,
@@ -305,7 +306,7 @@ export default function App() {
 
   const handleDebugStepChange = useCallback(
     (step: DebugStep | null) => {
-      const state = resolveDebugStep(currentProject, step);
+      const state = resolveDebugStep(currentProject, step, legacyPlacement);
       if (state.navigation) {
         handleSelectFile(state.navigation.fileId);
         navigateToLocation(state.navigation.fileId, state.navigation.line, state.navigation.column);
@@ -315,7 +316,7 @@ export default function App() {
       if (step) setScenePlan(state.scenePlan);
       setActiveObjectId(state.activeObjectId);
     },
-    [currentProject, handleSelectFile, navigateToLocation, setHighlightedLine, setScenePlan, setActiveObjectId]
+    [currentProject, handleSelectFile, navigateToLocation, setHighlightedLine, setScenePlan, setActiveObjectId, legacyPlacement]
   );
 
   const {
@@ -341,7 +342,7 @@ export default function App() {
     onStepChange: handleDebugStepChange,
   });
 
-  const debugSelection = useMemo(() => resolveDebugStep(null, currentStep), [currentStep]);
+  const debugSelection = useMemo(() => resolveDebugStep(null, currentStep, legacyPlacement), [currentStep, legacyPlacement]);
 
   const handleFocusObject = useCallback(
     (objectId: string | null) => {
@@ -572,6 +573,7 @@ export default function App() {
           <div className={`${isViewportMaximized ? 'col-span-12' : 'col-span-12 md:col-span-4 lg:col-span-5 xl:col-span-6'} h-full min-h-0`}>
             <ErrorBoundary fallbackTitle="Error al renderizar el visualizador 3D">
               <Viewport3D
+                legacyPlacement={legacyPlacement}
                 sceneSource={sceneSource}
                 sceneGenerationUnavailable={isRealBackend}
                 scenePlan={scenePlan}

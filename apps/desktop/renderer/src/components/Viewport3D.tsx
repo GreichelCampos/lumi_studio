@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { ScenePlan, SourceReference } from '../types';
+import { ScenePlan, SourceReference, isPlacedSpatialObject } from '../types';
 import { ThreeSceneManager } from './viewport/ThreeSceneManager';
 import { validateViewportScene } from './viewport/helpers/validateViewportScene';
 import { RoomSelector } from './viewport/RoomSelector';
@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 
 interface Viewport3DProps {
+  legacyPlacement?: boolean;
   sceneGenerationUnavailable?: boolean;
   scenePlan: ScenePlan | null;
   sceneSource?: 'simulation' | 'artifact' | 'python' | null;
@@ -43,6 +44,7 @@ interface Viewport3DProps {
 }
 
 export const Viewport3D: React.FC<Viewport3DProps> = ({
+  legacyPlacement = false,
   sceneGenerationUnavailable = false,
   scenePlan: inputScenePlan,
   sceneSource = 'simulation',
@@ -60,7 +62,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneManagerRef = useRef<ThreeSceneManager | null>(null);
-  const validationError = useMemo(() => inputScenePlan === null ? null : validateViewportScene(inputScenePlan), [inputScenePlan]);
+  const validationError = useMemo(() => inputScenePlan === null ? null : validateViewportScene(inputScenePlan, legacyPlacement), [inputScenePlan, legacyPlacement]);
   const scenePlan = validationError ? null : inputScenePlan;
   const onSelectRef = useRef(onSelectObject);
   onSelectRef.current = onSelectObject;
@@ -144,6 +146,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     return null;
   }, [activeObjectId, activeRoom]);
 
+  const canFocusEntity = Boolean(activeObjectId) && !(selectedEntityData?.kind === 'object'
+    && !isPlacedSpatialObject(selectedEntityData.data));
+
   const handleEntityClicked = useCallback(
     (entityId: string | null) => {
       onSelectRef.current?.(entityId);
@@ -213,13 +218,14 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   useEffect(() => {
     if (!sceneManagerRef.current) return;
+    sceneManagerRef.current.setLegacyPlacement(legacyPlacement);
 
     if (activeRoom) {
       sceneManagerRef.current.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
       
       // Si se acaba de seleccionar un objeto nuevo, enfocar suavemente
       if (activeObjectId && activeObjectId !== prevFocusedIdRef.current) {
-        if (selectedEntityData && selectedEntityData.kind === 'object') {
+        if (selectedEntityData && selectedEntityData.kind === 'object' && isPlacedSpatialObject(selectedEntityData.data)) {
           sceneManagerRef.current.focusObject(selectedEntityData.data.position);
         }
       }
@@ -228,7 +234,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
       sceneManagerRef.current.clearRoom();
       prevFocusedIdRef.current = null;
     }
-  }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData]);
+  }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData, legacyPlacement]);
 
   const handleRoomSelect = useCallback(
     (newRoomId: string) => {
@@ -286,7 +292,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   const handleFocusSelectedObject = () => {
     if (selectedEntityData && selectedEntityData.kind === 'object') {
-      sceneManagerRef.current?.focusObject(selectedEntityData.data.position);
+      if (isPlacedSpatialObject(selectedEntityData.data)) {
+        sceneManagerRef.current?.focusObject(selectedEntityData.data.position);
+      }
     } else {
       sceneManagerRef.current?.focusObject();
     }
@@ -349,13 +357,13 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
           <button
             id="btn-focus-object"
             onClick={handleFocusSelectedObject}
-            disabled={!activeObjectId}
+            disabled={!canFocusEntity}
             className={`p-1.5 rounded-xl text-xs transition-all ${
-              activeObjectId
+              canFocusEntity
                 ? 'glass-btn text-[var(--ide-accent)] border-[var(--ide-accent)]/50 cursor-pointer bg-[var(--ide-accent-bg)]'
                 : 'bg-white/5 text-[var(--ide-text-muted)]/50 border border-white/5 cursor-not-allowed'
             }`}
-            title={activeObjectId ? 'Enfocar objeto seleccionado' : 'Selecciona un objeto para enfocarlo'}
+            title={canFocusEntity ? 'Enfocar objeto seleccionado' : 'Selecciona un objeto colocado para enfocarlo'}
           >
             <Crosshair className="w-3.5 h-3.5" />
           </button>

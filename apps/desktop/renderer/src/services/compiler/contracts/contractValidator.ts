@@ -14,10 +14,11 @@ import {
   LumiCompiledArtifact,
   ContractValidationError,
   ContractValidationResult,
-  LUMI_PROTOCOL_VERSION,
+  LUMIC_SCHEMA_VERSION,
   LUMI_SUPPORTED_MAJOR_VERSIONS,
 } from '../../../types';
 import { validateLumicStructure } from './lumicStructure';
+import { spatialObjectStructure } from './sceneStructure';
 
 /**
  * Comprueba si una versión semántica es compatible con las versiones mayores soportadas.
@@ -185,105 +186,12 @@ export function validateSpatialObject(
   pathPrefix = 'spatialObject'
 ): ContractValidationResult<SpatialObject> {
   const errors: ContractValidationError[] = [];
-  const warnings: string[] = [];
-
-  if (!raw || typeof raw !== 'object') {
-    return {
-      isValid: false,
-      data: null,
-      errors: [
-        {
-          path: pathPrefix,
-          code: 'INVALID_FIELD_TYPE',
-          message: `Se esperaba un objeto para SpatialObject en ${pathPrefix}.`,
-          receivedValue: raw,
-        },
-      ],
-      warnings,
-    };
-  }
-
-  const obj = raw as Record<string, unknown>;
-
-  if (typeof obj.id !== 'string' || !obj.id.trim()) {
-    errors.push({
-      path: `${pathPrefix}.id`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'El ID del objeto espacial es obligatorio.',
-      receivedValue: obj.id,
-      expected: 'string',
-    });
-  }
-
-  if (typeof obj.type !== 'string' || !obj.type.trim()) {
-    errors.push({
-      path: `${pathPrefix}.type`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'El tipo del objeto espacial es obligatorio (ej. "sofa", "mesa").',
-      receivedValue: obj.type,
-      expected: 'string',
-    });
-  }
-
-  if (typeof obj.name !== 'string' || !obj.name.trim()) {
-    errors.push({
-      path: `${pathPrefix}.name`,
-      code: 'MISSING_REQUIRED_FIELD',
-      message: 'El nombre del objeto espacial es obligatorio.',
-      receivedValue: obj.name,
-      expected: 'string',
-    });
-  }
-
-  // Validación de posición: [x, y, z] con números finitos
-  if (!isValid3DTuple(obj.position)) {
-    errors.push({
-      path: `${pathPrefix}.position`,
-      code: 'INVALID_SPATIAL_REFERENCE',
-      message: 'La posición debe ser una tupla de 3 números finitos [x, y, z].',
-      receivedValue: obj.position,
-      expected: '[number, number, number]',
-    });
-  }
-
-  // Validación de rotación: [rx, ry, rz]
-  if (!isValid3DTuple(obj.rotation)) {
-    errors.push({
-      path: `${pathPrefix}.rotation`,
-      code: 'INVALID_SPATIAL_REFERENCE',
-      message: 'La rotación debe ser una tupla de 3 números finitos [rx, ry, rz].',
-      receivedValue: obj.rotation,
-      expected: '[number, number, number]',
-    });
-  }
-
-  // Validación de dimensiones: [ancho, altura, profundidad] > 0
-  if (!isValid3DTuple(obj.dimensions)) {
-    errors.push({
-      path: `${pathPrefix}.dimensions`,
-      code: 'INVALID_SPATIAL_REFERENCE',
-      message: 'Las dimensiones deben ser una tupla de 3 números [ancho, altura, profundidad].',
-      receivedValue: obj.dimensions,
-      expected: '[number, number, number]',
-    });
-  } else {
-    const [w, h, d] = obj.dimensions;
-    if (w <= 0 || h <= 0 || d <= 0) {
-      errors.push({
-        path: `${pathPrefix}.dimensions`,
-        code: 'INVALID_SPATIAL_REFERENCE',
-        message: `Las dimensiones físicas deben ser mayores a 0 (recibido: [${w}, ${h}, ${d}]).`,
-        receivedValue: obj.dimensions,
-        expected: 'dimensiones estrictamente positivas',
-      });
-    }
-  }
-
+  spatialObjectStructure(raw, pathPrefix, errors);
   return {
     isValid: errors.length === 0,
-    data: errors.length === 0 ? (obj as unknown as SpatialObject) : null,
+    data: errors.length === 0 ? raw as SpatialObject : null,
     errors,
-    warnings,
+    warnings: [],
   };
 }
 
@@ -1143,7 +1051,7 @@ export function createLumicArtifactFromCompileResult(
 
   return {
     format: 'lumic',
-    schemaVersion: LUMI_PROTOCOL_VERSION,
+    schemaVersion: LUMIC_SCHEMA_VERSION,
     compiledAt: result.timestamp,
     compiler: {
       name: 'lumi-compiler',

@@ -3,7 +3,7 @@ import {
   LumiFile,
   ScenePlan,
   RoomModel,
-  SpatialObject,
+  PlacedSpatialObject,
   DoorModel,
   WindowModel,
   DiagnosticItem,
@@ -36,7 +36,7 @@ export const createMockProject = (overrides?: Partial<LumiProject>): LumiProject
   };
 };
 
-export const createMockSpatialObject = (overrides?: Partial<SpatialObject>): SpatialObject => ({
+export const createMockSpatialObject = (overrides?: Partial<PlacedSpatialObject>): PlacedSpatialObject => ({
   id: 'obj-mesa-1',
   name: 'mesa',
   type: 'mesa',

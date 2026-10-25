@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { SpatialObject } from '../../../types';
+import { SpatialObject, isPlacedSpatialObject } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 
 import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
@@ -13,6 +13,8 @@ export class FurnitureFactory {
   ): THREE.Group {
     const objGroup = new THREE.Group();
     objGroup.name = item.id;
+
+    if (!isPlacedSpatialObject(item)) return objGroup;
 
     const [ox, oy, oz] = item.position;
     const [rx, ry, rz] = item.rotation;

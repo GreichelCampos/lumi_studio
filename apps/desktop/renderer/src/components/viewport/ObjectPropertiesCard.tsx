@@ -1,5 +1,5 @@
 import React from 'react';
-import { SpatialObject, DoorModel, WindowModel, SourceReference } from '../../types';
+import { SpatialObject, DoorModel, WindowModel, SourceReference, isPlacedSpatialObject } from '../../types';
 import { 
   Box, 
   X, 
@@ -49,7 +49,9 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
     : `Abertura • Ventana (${entity.data.wall})`;
 
   const positionStr = isObject
-    ? `X: ${entity.data.position[0].toFixed(2)}m, Y: ${entity.data.position[1].toFixed(2)}m, Z: ${entity.data.position[2].toFixed(2)}m`
+    ? isPlacedSpatialObject(entity.data)
+      ? `X: ${entity.data.position[0].toFixed(2)}m, Y: ${entity.data.position[1].toFixed(2)}m, Z: ${entity.data.position[2].toFixed(2)}m`
+      : 'Sin colocar'
     : `Posición pared: ${entity.data.position.toFixed(2)}m`;
 
   const rotationStr = isObject

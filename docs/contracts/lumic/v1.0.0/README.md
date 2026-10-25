@@ -23,10 +23,17 @@ opcional; todos los demás campos de las tablas son obligatorios.
 | `debugSteps?` | `DebugStep[]` |
 | `metadata?` | `Record<string, unknown>` |
 
-El exportador actual escribe `schemaVersion: "1.0.0"` y productor `lumi-compiler`,
+El exportador que originó este formato escribía `schemaVersion: "1.0.0"` y productor `lumi-compiler`,
 versión `1.0.0`, target `lumi-3d-scene`. No calcula `sourceChecksum`. Estos valores
 no implican que Python ya produzca el archivo. `diagnosticsSummary` guarda un
 resumen, no diagnósticos completos ni una equivalencia de severidad con el núcleo.
+
+El IDE conserva la importación de estos archivos sin modificarlos. Las nuevas
+exportaciones usan [1.1.0](../v1.1.0/README.md), que permite objetos sin colocar.
+En 1.0.0 la posición sigue siendo obligatoria. `placed` era una propiedad adicional
+sin semántica: el importador histórico la conserva, pero no la usa para decidir
+si dibuja un objeto con posición. Las reglas estrictas de colocación se aplican
+a 1.1.0 y a la validación de respuestas nuevas de Python, sin cambiar la versión del protocolo.
 
 ## ScenePlan de intercambio
 

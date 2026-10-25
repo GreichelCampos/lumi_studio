@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { resolveDebugStep } from '../../../services/editor/debugStepNavigation';
-import { createMockDebugSteps, createMockFile, createMockProject } from '../../fixtures/testFixtures';
+import { createMockDebugSteps, createMockFile, createMockProject, createMockSpatialObject } from '../../fixtures/testFixtures';
 import type { DebugStep } from '../../../types';
 
 const file = createMockFile({ id: 'other', name: 'other.lumi', path: 'ProyectoTest/lib/other.lumi' });
@@ -8,6 +8,26 @@ const project = createMockProject({ files: [createMockFile(), file] });
 const step = { ...createMockDebugSteps()[1], sourceRef: { file: 'lib/other.lumi', line: 2, column: 3 } };
 
 describe('debug step project boundaries', () => {
+  it('preserves historical positioned entities in snapshots without interpreting extra placed metadata', () => {
+    const object = { ...createMockSpatialObject(), placed: false };
+    const snapshot = structuredClone(step.sceneSnapshot);
+    snapshot.rooms[0].objects = [object];
+    const current = { ...step, sceneSnapshot: snapshot, activeObjectId: object.id, roomId: snapshot.rooms[0].id };
+    expect(resolveDebugStep(project, current, true).activeObjectId).toBe(object.id);
+    expect(resolveDebugStep(project, current, true).scenePlan).toEqual(snapshot);
+    expect(resolveDebugStep(project, current).scenePlan).toBeNull();
+  });
+  it('retains unplaced snapshot data and source navigation without activating a spatial entity', () => {
+    const { position, ...properties } = createMockSpatialObject();
+    const snapshot = structuredClone(step.sceneSnapshot);
+    snapshot.rooms[0].objects = [{ ...properties, placed: false }];
+    const current = { ...step, sceneSnapshot: snapshot, activeObjectId: properties.id, roomId: snapshot.rooms[0].id };
+    const result = resolveDebugStep(project, current);
+    expect(result.navigation?.fileId).toBe(file.id);
+    expect(result.activeObjectId).toBeNull();
+    expect(result.scenePlan).toEqual(snapshot);
+    expect(result.scenePlan?.rooms[0].objects[0]).not.toHaveProperty('position');
+  });
   it('resolves an existing relative file without reading the disk', () => {
     expect(resolveDebugStep(project, step).navigation).toEqual({ fileId: 'other', line: 2, column: 3 });
   });

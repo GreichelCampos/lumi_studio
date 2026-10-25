@@ -8,6 +8,7 @@ import { LumiProject, LumiFile, EntryFileInfo } from './project';
  * Schema version for presentation contracts and compiled demo artifacts.
  */
 export const LUMI_PROTOCOL_VERSION = '1.0.0';
+export const LUMIC_SCHEMA_VERSION = '1.1.0';
 export const LUMI_SUPPORTED_MAJOR_VERSIONS = [1];
 
 /**

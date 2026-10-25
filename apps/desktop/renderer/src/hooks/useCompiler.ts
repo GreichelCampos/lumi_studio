@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { LumiProject, ScenePlan, DiagnosticItem, DebugStep, LumiState, CompileResult, LumiCompiledArtifact } from '../types';
+import { LumiProject, ScenePlan, DiagnosticItem, DebugStep, LumiState, CompileResult, LumiCompiledArtifact, LUMIC_SCHEMA_VERSION } from '../types';
 import { CompilerService } from '../services/compiler/CompilerService';
 import { defaultCompiler } from '../services/integration/compilerSelection';
 import { notifyCompileResult } from '../services/compiler/resultNotifications';
@@ -27,6 +27,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   const [lastCompileResult, setLastCompileResult] = useState<CompileResult | null>(null);
   const [scenePlan, setScenePlan] = useState<ScenePlan | null>(null);
   const [sceneSource, setSceneSource] = useState<'simulation' | 'artifact' | 'python' | null>(null);
+  const [legacyPlacement, setLegacyPlacement] = useState(false);
   const [diagnostics, setDiagnostics] = useState<DiagnosticItem[]>([]);
   const [logs, setLogs] = useState<string[]>([]);
   const [debugSteps, setDebugSteps] = useState<DebugStep[]>([]);
@@ -44,6 +45,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   useEffect(() => {
     setLastCompileResult(null); setScenePlan(null); setDiagnostics([]);
     setSceneSource(null);
+    setLegacyPlacement(false);
     setLogs([]); setDebugSteps([]); setLastCompiledRevision(null);
   }, [options?.scopeKey]);
 
@@ -94,6 +96,7 @@ export function useCompiler(options?: UseCompilerOptions) {
         ideLogger.logCompilationStarted(result.compilationId, result.entryFileInfo?.name || targetEntry);
 
         setLastCompileResult(result);
+        setLegacyPlacement(false);
         setScenePlan(result.scenePlan);
         setSceneSource(result.scenePlan ? compilerService.mode === 'python' ? 'python' : 'simulation' : null);
         setDiagnostics(result.diagnostics);
@@ -112,6 +115,7 @@ export function useCompiler(options?: UseCompilerOptions) {
         setLastCompileResult(null);
         setScenePlan(null);
         setSceneSource(null);
+        setLegacyPlacement(false);
         setDebugSteps([]);
         setDiagnostics([]);
         const message = `[Infraestructura] ${err instanceof Error ? err.message : String(err)}`;
@@ -142,6 +146,7 @@ export function useCompiler(options?: UseCompilerOptions) {
   }, []);
 
   const loadCompiledArtifact = useCallback((artifact: LumiCompiledArtifact) => {
+    setLegacyPlacement(artifact.schemaVersion !== LUMIC_SCHEMA_VERSION);
     setSceneSource('artifact');
     // Invalidar cualquier compilación en vuelo previa
     latestCompilationRequestIdRef.current++;
@@ -202,6 +207,7 @@ export function useCompiler(options?: UseCompilerOptions) {
     lastCompileResult,
     scenePlan,
     sceneSource,
+    legacyPlacement,
     setScenePlan,
     diagnostics,
     logs,

@@ -23,7 +23,7 @@ describe('LumicFileService (.lumic Export and Import)', () => {
       expect(res.canExport).toBe(true);
       expect(res.artifact).toBeDefined();
       expect(res.artifact?.format).toBe('lumic');
-      expect(res.artifact?.schemaVersion).toBe('1.0.0');
+      expect(res.artifact?.schemaVersion).toBe('1.1.0');
       expect(res.artifact?.project.name).toBe('Departamento Moderno');
       expect(res.artifact?.scenePlan.rooms).toHaveLength(1);
     });

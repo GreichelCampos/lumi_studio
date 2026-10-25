@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { RoomModel } from '../../types';
+import { RoomModel, isPlacedSpatialObject } from '../../types';
 import { SPATIAL_THEME, applyIdeThemeToSpatialTheme } from '../../services/spatial/SpatialVisualTheme';
 import { CameraController } from './camera/CameraController';
 import { RoomFactory, WallMeshRecord } from './factories/RoomFactory';
@@ -29,6 +29,7 @@ export class ThreeSceneManager {
 
   private animationFrameId: number | null = null;
   private disposed = false;
+  private legacyPlacement = false;
   private resizeObserver: ResizeObserver | null = null;
 
   private isWireframe = false;
@@ -210,13 +211,17 @@ export class ThreeSceneManager {
     }
   }
 
+  public setLegacyPlacement(enabled: boolean): void {
+    this.legacyPlacement = enabled;
+  }
+
   public renderRoom(
     room: RoomModel,
     activeEntityId: string | null,
     debugActiveObjectId: string | null = null
   ): void {
     if (this.disposed) return;
-    const validationError = validateViewportScene({ version: '1.0.0', rooms: [room] });
+    const validationError = validateViewportScene({ version: '1.0.0', rooms: [room] }, this.legacyPlacement);
     if (validationError) throw new Error(`Escena no válida: ${validationError}`);
     this.activeEntityId = activeEntityId;
     this.debugActiveObjectId = debugActiveObjectId;
@@ -263,7 +268,7 @@ export class ThreeSceneManager {
       roomRoot.add(winGroup);
     });
 
-    room.objects.forEach((item) => {
+    room.objects.filter(isPlacedSpatialObject).forEach((item) => {
       const isSelected = activeEntityId === item.id;
       const isDebugActive = debugActiveObjectId === item.id;
       const objGroup = FurnitureFactory.createFurnitureMesh(

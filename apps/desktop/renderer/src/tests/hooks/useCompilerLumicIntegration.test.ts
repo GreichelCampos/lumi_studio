@@ -5,6 +5,20 @@ import { FIXTURE_LUMIC_ARTIFACT } from '../../data/contracts';
 import { LumiCompiledArtifact } from '../../types';
 
 describe('useCompiler - Integración de Artefactos .lumic', () => {
+  it('selects compatibility by container version without rewriting scene data', () => {
+    const { result } = renderHook(() => useCompiler());
+    const old = structuredClone(FIXTURE_LUMIC_ARTIFACT);
+    old.scenePlan.rooms[0].objects[0].placed = false;
+    const before = structuredClone(old);
+    act(() => result.current.loadCompiledArtifact(old));
+    expect(result.current.legacyPlacement).toBe(true);
+    expect(result.current.scenePlan).toEqual(old.scenePlan);
+    expect(old).toEqual(before);
+    const modern = { ...FIXTURE_LUMIC_ARTIFACT, schemaVersion: '1.1.0' };
+    act(() => result.current.loadCompiledArtifact(modern));
+    expect(result.current.legacyPlacement).toBe(false);
+    expect(result.current.scenePlan).toEqual(modern.scenePlan);
+  });
   it('carga y proyecta un artefacto .lumic en el estado del compilador sin alterar proyectos fuente', () => {
     const { result } = renderHook(() => useCompiler());
 

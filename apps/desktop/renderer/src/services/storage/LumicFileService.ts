@@ -179,7 +179,7 @@ export class LumicFileService {
 
     if (!validation.isValid) {
       const mainError = validation.errors[0];
-      let humanMessage = 'El archivo no cumple con el formato .lumic v1.0.0 compatible con este IDE.';
+      let humanMessage = 'El archivo no cumple con los formatos .lumic compatibles con este IDE (1.0.0 y 1.1.0).';
 
       if (mainError) {
         if (mainError.code === 'MALFORMED_JSON') {

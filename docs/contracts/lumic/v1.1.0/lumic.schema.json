@@ -1,0 +1,543 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:lumi:lumic:1.1.0:candidate",
+  "title": "Estudio Lumi .lumic 1.1.0",
+  "description": "Contenedor de escenas con objetos colocados y sin colocar. No es el protocolo del worker ni una instantanea AST.",
+  "type": "object",
+  "required": [
+    "format",
+    "schemaVersion",
+    "compiledAt",
+    "compiler",
+    "project",
+    "scenePlan",
+    "diagnosticsSummary"
+  ],
+  "properties": {
+    "format": {
+      "const": "lumic"
+    },
+    "schemaVersion": {
+      "const": "1.1.0"
+    },
+    "compiledAt": {
+      "type": "string"
+    },
+    "compiler": {
+      "$ref": "#/definitions/Compiler"
+    },
+    "project": {
+      "$ref": "#/definitions/Project"
+    },
+    "scenePlan": {
+      "$ref": "#/definitions/ScenePlan"
+    },
+    "debugSteps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/DebugStep"
+      }
+    },
+    "diagnosticsSummary": {
+      "$ref": "#/definitions/DiagnosticsSummary"
+    },
+    "metadata": {
+      "type": "object",
+      "required": [],
+      "properties": {},
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true,
+  "definitions": {
+    "SourceReference": {
+      "type": "object",
+      "required": [
+        "file",
+        "line"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "column": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "WallFace": {
+      "type": "object",
+      "required": [
+        "color"
+      ],
+      "properties": {
+        "color": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Floor": {
+      "type": "object",
+      "required": [
+        "material"
+      ],
+      "properties": {
+        "material": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Opening": {
+      "type": "object",
+      "required": [
+        "id",
+        "wall",
+        "position",
+        "width",
+        "height"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "wall": {
+          "enum": [
+            "norte",
+            "sur",
+            "este",
+            "oeste"
+          ]
+        },
+        "position": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "sourceRef": {
+          "$ref": "#/definitions/SourceReference"
+        }
+      },
+      "additionalProperties": true
+    },
+    "SpatialObject": {
+      "type": "object",
+      "required": [
+        "id",
+        "type",
+        "name",
+        "rotation",
+        "dimensions"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "type": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "position": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "rotation": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "color": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        },
+        "sourceRef": {
+          "$ref": "#/definitions/SourceReference"
+        },
+        "hasCollision": {
+          "type": "boolean"
+        },
+        "isOutOfBounds": {
+          "type": "boolean"
+        },
+        "hasError": {
+          "type": "boolean"
+        },
+        "hasWarning": {
+          "type": "boolean"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "placed": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true,
+      "oneOf": [
+        {
+          "required": [
+            "position"
+          ],
+          "properties": {
+            "placed": {
+              "const": true
+            }
+          }
+        },
+        {
+          "required": [
+            "placed"
+          ],
+          "properties": {
+            "placed": {
+              "const": false
+            }
+          },
+          "not": {
+            "required": [
+              "position"
+            ]
+          }
+        }
+      ]
+    },
+    "Room": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "dimensions",
+        "floor",
+        "walls",
+        "doors",
+        "windows",
+        "objects",
+        "calculatedArea",
+        "calculatedVolume"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "dimensions": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "floor": {
+          "$ref": "#/definitions/Floor"
+        },
+        "walls": {
+          "type": "object",
+          "required": [
+            "north",
+            "south",
+            "east",
+            "west"
+          ],
+          "properties": {
+            "north": {
+              "$ref": "#/definitions/WallFace"
+            },
+            "south": {
+              "$ref": "#/definitions/WallFace"
+            },
+            "east": {
+              "$ref": "#/definitions/WallFace"
+            },
+            "west": {
+              "$ref": "#/definitions/WallFace"
+            }
+          },
+          "additionalProperties": true
+        },
+        "doors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Opening"
+          }
+        },
+        "windows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Opening"
+          }
+        },
+        "objects": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SpatialObject"
+          }
+        },
+        "calculatedArea": {
+          "type": "number"
+        },
+        "calculatedVolume": {
+          "type": "number"
+        },
+        "originOffset": {
+          "type": "array",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 3,
+          "maxItems": 3
+        }
+      },
+      "additionalProperties": true
+    },
+    "ScenePlanDebugInfo": {
+      "type": "object",
+      "required": [
+        "totalEntities",
+        "collisionCount",
+        "warningsCount",
+        "compiledAt"
+      ],
+      "properties": {
+        "totalEntities": {
+          "type": "number"
+        },
+        "collisionCount": {
+          "type": "number"
+        },
+        "warningsCount": {
+          "type": "number"
+        },
+        "compiledAt": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "ScenePlan": {
+      "type": "object",
+      "required": [
+        "version",
+        "rooms"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^0*1($|[^0-9])",
+          "description": "Compatibilidad mayor heredada; no es una política SemVer definitiva."
+        },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Room"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "required": [],
+          "properties": {},
+          "additionalProperties": true
+        },
+        "debugInfo": {
+          "$ref": "#/definitions/ScenePlanDebugInfo"
+        }
+      },
+      "additionalProperties": true
+    },
+    "DebugStep": {
+      "type": "object",
+      "required": [
+        "id",
+        "stepIndex",
+        "eventType",
+        "description",
+        "sourceRef",
+        "lineNumber",
+        "codeLine",
+        "actionDescription",
+        "sceneSnapshot"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "stepIndex": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "eventType": {
+          "enum": [
+            "start",
+            "declaration",
+            "assignment",
+            "condition",
+            "loop",
+            "room_create",
+            "place_object",
+            "move_object",
+            "rotate_object",
+            "spatial_warning",
+            "spatial_error",
+            "end"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "sourceRef": {
+          "$ref": "#/definitions/SourceReference"
+        },
+        "roomId": {
+          "type": "string"
+        },
+        "activeObjectId": {
+          "type": "string"
+        },
+        "spatialState": {
+          "type": "object",
+          "required": [],
+          "properties": {},
+          "additionalProperties": true
+        },
+        "assistantMessage": {
+          "type": "string"
+        },
+        "lineNumber": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "codeLine": {
+          "type": "string"
+        },
+        "actionDescription": {
+          "type": "string"
+        },
+        "sceneSnapshot": {
+          "$ref": "#/definitions/ScenePlan"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Compiler": {
+      "type": "object",
+      "required": [
+        "name",
+        "version",
+        "target"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "Project": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "entryFile",
+        "sourceFilesCount"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "entryFile": {
+          "type": "string"
+        },
+        "sourceFilesCount": {
+          "type": "number"
+        },
+        "sourceChecksum": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "DiagnosticsSummary": {
+      "type": "object",
+      "required": [
+        "totalErrors",
+        "totalWarnings",
+        "totalSpatialIssues",
+        "hasBlockingErrors"
+      ],
+      "properties": {
+        "totalErrors": {
+          "type": "number"
+        },
+        "totalWarnings": {
+          "type": "number"
+        },
+        "totalSpatialIssues": {
+          "type": "number"
+        },
+        "hasBlockingErrors": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

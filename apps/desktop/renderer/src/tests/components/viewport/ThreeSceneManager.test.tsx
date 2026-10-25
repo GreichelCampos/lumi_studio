@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
-import { createMockRoom, createMockScenePlan } from '../../fixtures/testFixtures';
+import { createMockRoom, createMockScenePlan, createMockSpatialObject } from '../../fixtures/testFixtures';
+import { FurnitureFactory } from '../../../components/viewport/factories/FurnitureFactory';
+import type { UnplacedSpatialObject } from '../../../types';
 
 const renderers = vi.hoisted(() => [] as Array<{ domElement: HTMLCanvasElement; dispose: ReturnType<typeof vi.fn>; render: ReturnType<typeof vi.fn>; setSize: ReturnType<typeof vi.fn> }>);
 vi.mock('three', async importOriginal => {
@@ -25,6 +27,57 @@ beforeEach(() => {
 afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 
 describe('ThreeSceneManager lifecycle', () => {
+  it.each([false, null, 'legacy metadata'])('keeps positioned historical objects visible when placed=%s', marker => {
+    const object = { ...createMockSpatialObject(), placed: marker };
+    const room = createMockRoom({ objects: [object] });
+    const plan = createMockScenePlan({ rooms: [room] });
+    const before = structuredClone(plan);
+    const focus = vi.spyOn(ThreeSceneManager.prototype, 'focusObject');
+    const view = render(<Viewport3D scenePlan={plan} legacyPlacement activeObjectId={object.id} />);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+    expect(screen.queryByText('Sin colocar')).not.toBeInTheDocument();
+    expect(document.querySelector('#btn-focus-object')).not.toBeDisabled();
+    expect(focus).toHaveBeenCalledWith(object.position);
+    const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
+    manager.setLegacyPlacement(true);
+    manager.renderRoom(room, object.id);
+    expect(manager['scene'].getObjectByName(object.id)).toBeDefined();
+    expect(plan).toEqual(before);
+    manager.dispose();
+    view.unmount();
+  });
+  it.each([false, true])('keeps the room visible without drawing unplaced furniture (mixed=%s)', mixed => {
+    const placed = createMockSpatialObject();
+    const { position, ...properties } = placed;
+    const unplaced: UnplacedSpatialObject = { ...properties, id: 'unplaced', placed: false };
+    const room = createMockRoom({ objects: mixed ? [placed, unplaced] : [unplaced] });
+    const before = structuredClone(room);
+    const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
+    manager.renderRoom(room, unplaced.id, unplaced.id);
+    expect(manager['scene'].getObjectByName(`room-${room.id}`)).toBeDefined();
+    expect(manager['scene'].getObjectByName('floor')).toBeDefined();
+    expect(manager['scene'].getObjectByName(unplaced.id)).toBeUndefined();
+    expect(Boolean(manager['scene'].getObjectByName(placed.id))).toBe(mixed);
+    expect(FurnitureFactory.createFurnitureMesh(unplaced, true, false).children).toHaveLength(0);
+    expect(room).toEqual(before);
+    manager.dispose();
+  });
+
+  it('shows unplaced properties without focusing the camera, including after placement changes', () => {
+    const placed = createMockSpatialObject();
+    const { position, ...properties } = placed;
+    const unplaced: UnplacedSpatialObject = { ...properties, placed: false };
+    const room = createMockRoom({ objects: [unplaced] });
+    const plan = createMockScenePlan({ rooms: [room] });
+    const focus = vi.spyOn(ThreeSceneManager.prototype, 'focusObject');
+    const view = render(<Viewport3D scenePlan={plan} activeObjectId={unplaced.id} />);
+    expect(screen.getByText('Sin colocar')).toBeInTheDocument();
+    expect(document.querySelector('#btn-focus-object')).toBeDisabled();
+    expect(focus).not.toHaveBeenCalled();
+    view.rerender(<Viewport3D scenePlan={createMockScenePlan({ rooms: [{ ...room, objects: [placed] }] })} activeObjectId={placed.id} />);
+    expect(document.querySelector('#btn-focus-object')).not.toBeDisabled();
+    view.unmount();
+  });
   it('switches to the debug room even when a step has no active spatial entity', () => {
     const rooms = [createMockRoom({ id: 'first' }), createMockRoom({ id: 'second', objects: [] })];
     const plan = createMockScenePlan({ rooms });

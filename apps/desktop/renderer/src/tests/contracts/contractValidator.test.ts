@@ -256,7 +256,7 @@ describe('Contract Validator (Fase de Contratos de Integración)', () => {
 
       expect(artifact).not.toBeNull();
       expect(artifact?.format).toBe('lumic');
-      expect(artifact?.schemaVersion).toBe('1.0.0');
+      expect(artifact?.schemaVersion).toBe('1.1.0');
       expect(artifact?.project.name).toBe('DemoProyecto');
 
       const val = validateLumicArtifact(artifact);

@@ -9,6 +9,17 @@ import {
 } from '../../fixtures/testFixtures';
 
 describe('ObjectPropertiesCard', () => {
+  it('preserves details and source navigation for an unplaced object without displaying invented coordinates', () => {
+    const { position, ...properties } = createMockSpatialObject();
+    const navigate = vi.fn();
+    render(<ObjectPropertiesCard entity={{ kind: 'object', data: { ...properties, placed: false } }}
+      onClose={vi.fn()} onNavigateToSource={navigate} />);
+    expect(screen.getByText('Sin colocar')).toBeInTheDocument();
+    expect(screen.getByText(properties.id)).toBeInTheDocument();
+    expect(screen.queryByText(/X: 0.00m/)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Ir al código' }));
+    expect(navigate).toHaveBeenCalledWith(properties.sourceRef);
+  });
   it('no debe renderizar nada cuando entity es null', () => {
     const { container } = render(
       <ObjectPropertiesCard entity={null} onClose={vi.fn()} />

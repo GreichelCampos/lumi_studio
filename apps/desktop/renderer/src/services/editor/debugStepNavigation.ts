@@ -1,8 +1,9 @@
 import type { ContractValidationError, DebugStep, LumiProject, ScenePlan, SourceReference } from '../../types';
+import { isPlacedSpatialObject } from '../../types';
 import type { SourceNavigation } from './sourceNavigation';
 import { findSourceFile } from './sourceNavigation';
 import { relativePath } from '../integration/projectInput';
-import { sceneStructure } from '../compiler/contracts/sceneStructure';
+import { legacySceneStructure, sceneStructure } from '../compiler/contracts/sceneStructure';
 
 export function validDebugSource(source: SourceReference | undefined): source is SourceReference {
   if (!source || typeof source.file !== 'string' || !source.file
@@ -12,16 +13,16 @@ export function validDebugSource(source: SourceReference | undefined): source is
     && (source.column === undefined || (Number.isInteger(source.column) && source.column >= 1));
 }
 
-export function resolveDebugStep(project: LumiProject | null, step: DebugStep | null): {
+export function resolveDebugStep(project: LumiProject | null, step: DebugStep | null, legacyPlacement = false): {
   navigation: SourceNavigation | null; scenePlan: ScenePlan | null; activeObjectId: string | null;
 } {
   const snapshot = step?.sceneSnapshot;
   const errors: ContractValidationError[] = [];
-  if (snapshot) sceneStructure(snapshot, 'sceneSnapshot', errors);
+  if (snapshot) (legacyPlacement ? legacySceneStructure : sceneStructure)(snapshot, 'sceneSnapshot', errors);
   const scenePlan = snapshot && errors.length === 0 ? snapshot : null;
   const objectId = step?.activeObjectId;
   const matches = scenePlan?.rooms.filter(room => !step?.roomId || room.id === step.roomId)
-    .flatMap(room => [...room.objects, ...room.doors, ...room.windows].filter(entity => entity.id === objectId));
+    .flatMap(room => [...room.objects.filter(isPlacedSpatialObject), ...room.doors, ...room.windows].filter(entity => entity.id === objectId));
   const activeObjectId = objectId && matches?.length === 1 ? objectId : null;
   const source = step?.sourceRef;
   let navigation: SourceNavigation | null = null;

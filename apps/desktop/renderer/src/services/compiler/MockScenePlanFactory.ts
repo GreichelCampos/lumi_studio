@@ -1,4 +1,4 @@
-import { ScenePlan, RoomModel, SpatialObject, DiagnosticItem } from '../../types';
+import { ScenePlan, RoomModel, SpatialObject, DiagnosticItem, isPlacedSpatialObject } from '../../types';
 import { MockDiagnosticFactory } from './MockDiagnosticFactory';
 
 /**
@@ -31,6 +31,7 @@ export class MockScenePlanFactory {
     compilationId: string,
     diagnostics: DiagnosticItem[]
   ): void {
+    if (!isPlacedSpatialObject(newObj)) return;
     const [posX, posY, posZ] = newObj.position;
     const dims = newObj.dimensions;
     const roomHalfW = currentRoom.dimensions[0] / 2;
@@ -63,6 +64,7 @@ export class MockScenePlanFactory {
 
     // 2. Collision with existing objects in room (spatial warning, non-blocking)
     for (const existing of currentRoom.objects) {
+      if (!isPlacedSpatialObject(existing)) continue;
       const dx = Math.abs(existing.position[0] - posX);
       const dz = Math.abs(existing.position[2] - posZ);
       const minRequiredX = (existing.dimensions[0] + dims[0]) / 2.1;

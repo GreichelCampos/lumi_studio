@@ -21,8 +21,8 @@ try {
   await viewport.getByText('Sin ScenePlan en esta respuesta', { exact: true }).waitFor();
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   let basic;
-  for (const name of ['valid-basic', 'valid-debug']) {
-    const path = fileURLToPath(new URL(`../../../docs/contracts/lumic/v1.0.0/examples/${name}.lumic`, import.meta.url));
+  for (const [version, name] of [['1.0.0', 'valid-basic'], ['1.0.0', 'valid-debug'], ['1.1.0', 'valid-mixed']]) {
+    const path = fileURLToPath(new URL(`../../../docs/contracts/lumic/v${version}/examples/${name}.lumic`, import.meta.url));
     const artifact = JSON.parse(await readFile(path, 'utf8')); basic ??= artifact;
     await input.setInputFiles(path);
     await viewport.getByText(/Archivo .lumic importado/).waitFor();
@@ -37,6 +37,12 @@ try {
     await page.getByLabel('Alejar cámara', { exact: true }).click();
     await page.getByLabel('Restablecer cámara isométrica', { exact: true }).click();
   }
+  const historical = structuredClone(basic);
+  for (const item of historical.scenePlan.rooms[0].objects) item.placed = false;
+  await input.setInputFiles({ name: 'fixture-legacy-metadata.lumic', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(historical)) });
+  await page.getByText('Artefacto .lumic cargado: fixture-legacy-metadata.lumic', { exact: true }).waitFor();
+  assert.equal(await viewport.getByRole('alert').count(), 0);
+  assert.equal(await viewport.locator('canvas').count(), 1);
   const fixtureScene = await page.evaluate(async () => {
     const fixtures = await import('/src/data/scenePlanFixtures.ts');
     return fixtures.fixtureDoorsAndWindowsRoom;
@@ -115,11 +121,34 @@ try {
   await setTimeout(150);
   const resized = await harness.evaluate(value => ({ width: value.renderer.domElement.clientWidth, height: value.renderer.domElement.clientHeight }));
   assert.deepEqual(resized, { width: 400, height: 800 });
+  const mixedFixture = JSON.parse(await readFile(new URL('../../../docs/contracts/lumic/v1.1.0/examples/valid-mixed.lumic', import.meta.url), 'utf8'));
+  const placement = await harness.evaluate((value, artifact) => {
+    const room = artifact.scenePlan.rooms[0];
+    const unplaced = room.objects.find(item => item.placed === false);
+    const placed = room.objects.find(item => item.placed !== false);
+    value.manager.renderRoom(room, unplaced.id, unplaced.id);
+    const mixed = {
+      room: Boolean(value.scene.getObjectByName(`room-${room.id}`)),
+      placed: Boolean(value.scene.getObjectByName(placed.id)),
+      unplaced: Boolean(value.scene.getObjectByName(unplaced.id)),
+    };
+    value.manager.renderRoom({ ...room, objects: [unplaced] }, unplaced.id, unplaced.id);
+    return { mixed, allUnplaced: {
+      room: Boolean(value.scene.getObjectByName(`room-${room.id}`)),
+      floor: Boolean(value.scene.getObjectByName('floor')),
+      unplaced: Boolean(value.scene.getObjectByName(unplaced.id)),
+      positionAdded: Object.hasOwn(unplaced, 'position'),
+    } };
+  }, mixedFixture);
+  assert.deepEqual(placement.mixed, { room: true, placed: true, unplaced: false });
+  assert.deepEqual(placement.allUnplaced, { room: true, floor: true, unplaced: false, positionAdded: false });
   await harness.evaluate(value => { value.manager.clearRoom(); value.manager.dispose(); value.manager.dispose(); });
   assert.equal(await harness.evaluate(value => value.container.querySelectorAll('canvas').length), 0);
   await harness.evaluate(value => value.container.remove());
   assert.deepEqual(errors, []);
   console.log('Real WebGL: both published lumic files, a fixture-derived lumic with openings, and all five simulated scenes rendered.');
+  console.log('Imported .lumic 1.1.0 fixture; mixed and all-unplaced scenes preserve the room without generating unplaced geometry.');
+  console.log('Historical .lumic metadata remains readable without applying new placement semantics.');
   console.log(`Selection, orbit, pan, wheel zoom, ResizeObserver and cleanup verified; memory after 30 rebuilds: ${JSON.stringify(stats.last)}.`);
 } finally {
   if (desktop) await desktop.close();

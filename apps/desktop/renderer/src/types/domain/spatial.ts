@@ -1,10 +1,9 @@
 import { SourceReference } from './diagnostics';
 
-export interface SpatialObject {
+interface SpatialObjectProperties {
   id: string;
   type: string;
   name: string;
-  position: [number, number, number]; // [x, y, z] centered at floor center [0,0,0]
   rotation: [number, number, number]; // [rx, ry, rz] in degrees
   dimensions: [number, number, number]; // [width, height, depth] in meters
   color?: string;
@@ -15,6 +14,27 @@ export interface SpatialObject {
   hasError?: boolean;
   hasWarning?: boolean;
   roomId?: string;
+}
+
+export type PlacedSpatialObject = SpatialObjectProperties & {
+  placed?: true;
+  position: [number, number, number]; // [x, y, z] centered at floor center [0,0,0]
+};
+
+export type UnplacedSpatialObject = SpatialObjectProperties & {
+  placed: false;
+  position?: never;
+};
+
+export type LegacySpatialObject = SpatialObjectProperties & {
+  placed?: unknown;
+  position: [number, number, number];
+};
+
+export type SpatialObject = PlacedSpatialObject | UnplacedSpatialObject | LegacySpatialObject;
+
+export function isPlacedSpatialObject(object: SpatialObject): object is PlacedSpatialObject | LegacySpatialObject {
+  return object.position !== undefined;
 }
 
 export interface WallFace {
