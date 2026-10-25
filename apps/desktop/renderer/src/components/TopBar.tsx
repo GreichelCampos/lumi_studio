@@ -91,7 +91,7 @@ export const TopBar: React.FC<TopBarProps> = ({
     if (onExportLumic) {
       const res = onExportLumic();
       if (res.success) {
-        showToast(`Artefacto exportado: ${res.fileName}`);
+        showToast(`Descarga iniciada: ${res.fileName}`);
       } else {
         showToast(res.error || 'No se pudo exportar');
       }
@@ -155,12 +155,12 @@ export const TopBar: React.FC<TopBarProps> = ({
         { label: 'Abrir proyecto...', action: onOpenProjectModal, shortcut: 'Ctrl+O' },
         { divider: true },
         { 
-          label: 'Exportar compilación (.lumic)...', 
+          label: 'Exportar escena (.lumic)...',
           action: handleExport, 
           shortcut: 'Ctrl+E' 
         },
         { 
-          label: 'Abrir compilación (.lumic)...', 
+          label: 'Abrir escena (.lumic)...',
           action: handleTriggerImport, 
           shortcut: 'Ctrl+Shift+O' 
         },

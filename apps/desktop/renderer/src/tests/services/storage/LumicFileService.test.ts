@@ -31,13 +31,14 @@ describe('LumicFileService (.lumic Export and Import)', () => {
     it('impide la exportación si no existe un resultado de compilación previo', () => {
       const res = LumicFileService.validateForExport(null, mockProject);
       expect(res.canExport).toBe(false);
-      expect(res.error).toContain('No hay ninguna compilación disponible');
+      expect(res.error).toContain('No hay ningún resultado disponible');
+      expect(res.error).toContain('Compilar solo analiza');
     });
 
     it('impide la exportación si la compilación contiene errores bloqueantes', () => {
       const res = LumicFileService.validateForExport(FIXTURE_COMPILATION_BLOCKING, mockProject);
       expect(res.canExport).toBe(false);
-      expect(res.error).toContain('errores bloqueantes');
+      expect(res.error).toContain('resultado fallido o incompleto');
     });
 
     it('impide la exportación si la compilación no contiene habitaciones en el ScenePlan', () => {
@@ -63,6 +64,36 @@ describe('LumicFileService (.lumic Export and Import)', () => {
       expect(res.rawJson).toContain('"format": "lumic"');
       expect(spyDownload).toHaveBeenCalledWith(res.rawJson, 'departamento_moderno.lumic');
     });
+
+    it('reports a failed download without claiming a successful export', () => {
+      vi.spyOn(LumicFileService, 'downloadInBrowser').mockReturnValue(false);
+      const res = LumicFileService.exportLumic(FIXTURE_COMPILATION_SUCCESS, mockProject);
+      expect(res.success).toBe(false);
+      expect(res.error).toContain('No se pudo iniciar la descarga');
+      expect(res.fileName).toBeUndefined();
+    });
+
+    it('exports and reimports a successful Python scene without changing its data', () => {
+      const result: CompileResult = {
+        ...FIXTURE_COMPILATION_SUCCESS, origin: 'python', operation: 'execute', debugSteps: [],
+      };
+      vi.spyOn(LumicFileService, 'downloadInBrowser').mockReturnValue(true);
+      const exported = LumicFileService.exportLumic(result, mockProject);
+      expect(exported.success).toBe(true);
+      const imported = LumicFileService.parseAndValidateContent(exported.rawJson!);
+      expect(imported.success).toBe(true);
+      expect(imported.artifact?.scenePlan).toEqual(result.scenePlan);
+      expect(imported.artifact?.debugSteps).toEqual([]);
+    });
+
+    it('explains that a successful analysis without a scene cannot be exported', () => {
+      const res = LumicFileService.validateForExport({
+        ...FIXTURE_COMPILATION_SUCCESS, origin: 'python', operation: 'analyze', scenePlan: null,
+      }, mockProject);
+      expect(res.canExport).toBe(false);
+      expect(res.error).toContain('Compilar solo analiza');
+      expect(res.error).toContain('ejecuta un programa');
+    });
   });
 
   describe('Importación (.lumic)', () => {
@@ -72,6 +103,7 @@ describe('LumicFileService (.lumic Export and Import)', () => {
       expect(res.artifact?.format).toBe('lumic');
       expect(res.artifact?.project.name).toBe('ApartamentoMinimalista');
       expect(res.artifact?.scenePlan.rooms).toHaveLength(1);
+      expect(res.artifact?.scenePlan.rooms[0].objects[0]).not.toHaveProperty('placed');
     });
 
     it('presenta un error comprensible cuando el archivo tiene sintaxis JSON corrupta', () => {

@@ -79,10 +79,27 @@ describe('TopBar Component', () => {
     const menuArchivo = screen.getByRole('button', { name: /^archivo$/i });
     fireEvent.click(menuArchivo);
 
-    const exportBtn = screen.getByText(/exportar compilación \(\.lumic\)/i);
+    const exportBtn = screen.getByText(/exportar escena \(\.lumic\)/i);
     fireEvent.click(exportBtn);
 
     expect(handleExportLumic).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not report a successful export when the download fails', () => {
+    const onExportLumic = vi.fn().mockReturnValue({ success: false, error: 'No se pudo iniciar la descarga' });
+    render(<TopBar {...defaultProps} onExportLumic={onExportLumic} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Archivo' }));
+    fireEvent.click(screen.getByText('Exportar escena (.lumic)...'));
+    expect(onExportLumic).toHaveBeenCalledTimes(1);
+    expect(screen.getByText('No se pudo iniciar la descarga')).toBeInTheDocument();
+    expect(screen.queryByText(/Descarga iniciada:/)).not.toBeInTheDocument();
+  });
+
+  it('reports that export is unavailable when no action is connected', () => {
+    render(<TopBar {...defaultProps} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Archivo' }));
+    fireEvent.click(screen.getByText('Exportar escena (.lumic)...'));
+    expect(screen.getByText('Exportación no disponible')).toBeInTheDocument();
   });
 
   it('debe disparar la apertura de archivo para importar compilación .lumic', () => {
@@ -91,7 +108,7 @@ describe('TopBar Component', () => {
     const menuArchivo = screen.getByRole('button', { name: /^archivo$/i });
     fireEvent.click(menuArchivo);
 
-    const importBtn = screen.getByText(/abrir compilación \(\.lumic\)/i);
+    const importBtn = screen.getByText(/abrir escena \(\.lumic\)/i);
     expect(importBtn).toBeInTheDocument();
   });
 

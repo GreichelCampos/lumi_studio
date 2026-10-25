@@ -7,12 +7,18 @@ export function notifyCompileResult(result: CompileResult, setLumiState: (state:
   if (result.origin === 'python') {
     const state = result.status === 'completed' ? 'success' : result.status === 'incomplete' ? 'warning' : 'error';
     setLumiState(state);
-    lumiAssistant.setMessage(result.status === 'completed'
-      ? result.scenePlan
-        ? 'Python terminó correctamente. ScenePlan recibido; las trazas todavía no están disponibles.'
-        : 'Python terminó correctamente. Esta respuesta no contiene ScenePlan ni trazas.'
-      : result.status === 'incomplete' ? 'El análisis espacial todavía está incompleto.'
-      : 'Python encontró un problema. Revisa la consola y los diagnósticos.', state);
+    const message = result.status === 'completed'
+      ? result.operation === 'analyze'
+        ? 'El análisis terminó correctamente. Compilar no ejecuta el programa ni genera una escena; usa Ejecutar Python para obtenerla.'
+        : result.scenePlan
+          ? 'La ejecución Python terminó correctamente. ScenePlan recibido; las trazas todavía no están disponibles.'
+          : 'La ejecución Python terminó correctamente. Esta respuesta no contiene ScenePlan ni trazas.'
+      : result.status === 'incomplete'
+        ? 'El análisis espacial todavía está incompleto. Compilar no ejecuta el programa; Ejecutar Python puede generar una escena con las construcciones compatibles.'
+        : result.operation === 'analyze'
+          ? 'El análisis encontró un problema. Revisa la consola y los diagnósticos.'
+          : 'La ejecución Python no pudo completarse. Revisa la consola y los diagnósticos.';
+    lumiAssistant.setMessage(message, state);
     return;
   }
   const blockingErrors = result.diagnostics.filter((d) => d.blocking === true);

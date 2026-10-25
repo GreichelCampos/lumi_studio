@@ -42,21 +42,21 @@ export class LumicFileService {
     if (!compileResult) {
       return {
         canExport: false,
-        error: 'No hay ninguna compilación disponible. Compile el proyecto primero antes de exportar.',
+        error: 'No hay ningún resultado disponible. Ejecuta un programa con habitaciones para obtener una escena exportable. Compilar solo analiza el código.',
       };
     }
 
     if (!compileResult.success || compileResult.status === 'blocked') {
       return {
         canExport: false,
-        error: 'No se puede exportar un artefacto con errores bloqueantes de compilación. Corrija los errores y compile nuevamente.',
+        error: 'No se puede exportar un resultado fallido o incompleto. Revisa la consola y los diagnósticos; después ejecuta el programa para obtener una escena válida.',
       };
     }
 
     if (!compileResult.scenePlan || !compileResult.scenePlan.rooms || compileResult.scenePlan.rooms.length === 0) {
       return {
         canExport: false,
-        error: 'La compilación actual no contiene habitaciones ni elementos espaciales válidos en el ScenePlan.',
+        error: 'El resultado actual no contiene habitaciones ni elementos espaciales exportables. Compilar solo analiza el código; ejecuta un programa con habitaciones para generar una escena.',
       };
     }
 
@@ -118,11 +118,13 @@ export class LumicFileService {
       .replace(/[^a-z0-9_-]/gi, '_');
     const fileName = `${sanitizedBase}.lumic`;
 
-    this.downloadInBrowser(rawJson, fileName);
+    if (!this.downloadInBrowser(rawJson, fileName)) {
+      return { success: false, error: 'No se pudo iniciar la descarga del archivo .lumic. Intenta exportarlo nuevamente.' };
+    }
 
     ideLogger.log(
       'success',
-      `Artefacto compilado guardado como "${fileName}" (${artifact.scenePlan.rooms.length} hab., ${
+      `Descarga de "${fileName}" iniciada (${artifact.scenePlan.rooms.length} hab., ${
         artifact.scenePlan.rooms.reduce((acc, r) => acc + r.objects.length, 0)
       } obj.).`,
       undefined,
@@ -177,7 +179,7 @@ export class LumicFileService {
 
     if (!validation.isValid) {
       const mainError = validation.errors[0];
-      let humanMessage = 'El archivo no cumple con el contrato oficial de artefacto .lumic v1.0.0.';
+      let humanMessage = 'El archivo no cumple con el formato .lumic v1.0.0 compatible con este IDE.';
 
       if (mainError) {
         if (mainError.code === 'MALFORMED_JSON') {
