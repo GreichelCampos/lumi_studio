@@ -58,9 +58,10 @@ class ExecutionService:
                 diagnostics=compilation.diagnostics,
             )
 
-        runtime = self._interpreter_factory().execute(
-            program, dict(compilation.imported_programs)
-        )
+        catalog = compilation._compiled_programs
+        if catalog is None:
+            catalog = compilation.imported_programs
+        runtime = self._interpreter_factory().execute(program, dict(catalog))
         status = ExecutionStatus.COMPLETED
         if runtime.diagnostics:
             status = ExecutionStatus.FAILED

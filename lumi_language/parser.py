@@ -1,5 +1,6 @@
 """Parsing responsibilities for Lumi source code."""
 
+from .import_context import _ImportResolutionContext, ModuleRecord, ModuleState
 from .token import Token
 from .token_type import TokenType
 from .lexer import Lexer, TokenStream
@@ -50,7 +51,14 @@ class ParserError(ValueError):
 
 
 class Parser:
-    def __init__(self, tokens: list[Token], import_resolver=None, *, file: str = ""):
+    def __init__(
+        self,
+        tokens: list[Token],
+        import_resolver=None,
+        *,
+        file: str = "",
+        _import_context: _ImportResolutionContext | None = None,
+    ):
         self.file = tokens[0].file if tokens else (
             tokens.eof_file if isinstance(tokens, TokenStream) else file
         )
@@ -58,7 +66,12 @@ class Parser:
         self.current = 0
         self.import_resolver = import_resolver
         self.diagnostics: list[Diagnostic] = []
+        self._own_diagnostics: list[Diagnostic] = []
         self.imported_programs: dict[str, ProgramNode] = {}
+        self._import_context = (
+            _import_context if _import_context is not None
+            else _ImportResolutionContext()
+        )
 
     def is_at_end(self) -> bool:
         return self.current >= len(self.tokens)
@@ -131,6 +144,7 @@ class Parser:
             column=token.column,
             description=f"{message} Encontrado: {found}.",
         )
+        self._own_diagnostics.append(diagnostic)
         self.diagnostics.append(diagnostic)
         return ParserError(diagnostic)
 
@@ -554,12 +568,38 @@ class Parser:
         return node
 
     def resolve_import(self, node: ImportNode) -> None:
+        self._import_context.record_import(self.file, node)
         if self.import_resolver is None:
+            return
+
+        active_files = self._import_context.active_files
+        if node.file_name in active_files:
+            start = active_files.index(node.file_name)
+            cycle = " → ".join(active_files[start:] + [node.file_name])
+            diagnostic = Diagnostic(
+                category=DiagnosticCategory.IMPORT,
+                code="IMPORT_CIRCULAR_DEPENDENCY",
+                file=node.file,
+                line=node.line,
+                column=node.column,
+                description=f"Se detectó una importación circular: {cycle}.",
+                suggestion="Elimine una de las importaciones que forman el ciclo.",
+            )
+            self._own_diagnostics.append(diagnostic)
+            self.diagnostics.append(diagnostic)
+            raise ParserError(diagnostic)
+
+        program = self._import_context.reusable_program(node.file_name)
+        if program is not None:
+            self.imported_programs[node.file_name] = program
             return
 
         try:
             source = self.import_resolver.resolve(node.file_name)
         except FileNotFoundError:
+            self._import_context.modules[node.file_name] = ModuleRecord(
+                node.file_name, ModuleState.FAILED, failure_kind="FileNotFoundError",
+            )
             diagnostic = Diagnostic(
                 category=DiagnosticCategory.IMPORT,
                 code="IMPORT_FILE_NOT_FOUND",
@@ -569,13 +609,33 @@ class Parser:
                 description=f"No se encontro el archivo importado '{node.file_name}'.",
                 suggestion="Verifique el nombre del archivo importado.",
             )
+            self._own_diagnostics.append(diagnostic)
             self.diagnostics.append(diagnostic)
             raise ParserError(diagnostic)
 
-        tokens = Lexer(source, node.file_name).tokenize()
-        imported_parser = Parser(tokens, import_resolver=self.import_resolver, file=node.file_name)
-        program = imported_parser.parse()
-        self.diagnostics.extend(imported_parser.diagnostics)
+        except Exception as error:
+            self._import_context.modules[node.file_name] = ModuleRecord(
+                node.file_name, ModuleState.FAILED, failure_kind=type(error).__name__,
+            )
+            raise
+
+        try:
+            tokens = Lexer(source, node.file_name).tokenize()
+        except Exception as error:
+            self._import_context.modules[node.file_name] = ModuleRecord(
+                node.file_name, ModuleState.FAILED, failure_kind=type(error).__name__,
+            )
+            raise
+        imported_parser = Parser(
+            tokens,
+            import_resolver=self.import_resolver,
+            file=node.file_name,
+            _import_context=self._import_context,
+        )
+        try:
+            program = imported_parser.parse()
+        finally:
+            self.diagnostics.extend(imported_parser.diagnostics)
         self.imported_programs[node.file_name] = program
 
     def parse_block(self):
@@ -1050,6 +1110,42 @@ class Parser:
         raise self.error("Se esperaba una instruccion valida.")
 
     def parse(self):
+        return self._parse_with_import_context(recover=False)
+
+    def parse_with_recovery(self):
+        return self._parse_with_import_context(recover=True)
+
+    def _parse_with_import_context(self, *, recover: bool):
+        file_name = self.file
+        context = self._import_context
+        context.modules[file_name] = ModuleRecord(file_name, ModuleState.PROCESSING)
+        if file_name:
+            context.active_files.append(file_name)
+        program = None
+        failure_kind = None
+        try:
+            program = (
+                self._parse_recovering_program() if recover else self._parse_program()
+            )
+            return program
+        except BaseException as error:
+            failure_kind = type(error).__name__
+            raise
+        finally:
+            if file_name:
+                context.active_files.pop()
+            completed = program is not None
+            valid = completed and not self.diagnostics
+            state = (
+                ModuleState.SUCCEEDED if valid else
+                ModuleState.PARTIAL if completed else ModuleState.FAILED
+            )
+            context.modules[file_name] = ModuleRecord(
+                file_name, state, program if valid else None,
+                tuple(self._own_diagnostics), completed, failure_kind,
+            )
+
+    def _parse_program(self):
         statements = []
 
         while not self.is_at_end():
@@ -1066,7 +1162,7 @@ class Parser:
 
         return ProgramNode(statements=[], file=self.file, line=1, column=1)
 
-    def parse_with_recovery(self):
+    def _parse_recovering_program(self):
         statements = []
 
         while not self.is_at_end():

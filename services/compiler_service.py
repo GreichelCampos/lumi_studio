@@ -1,8 +1,10 @@
 """Analyze source through public core APIs; never execute or generate a scene."""
 
+from dataclasses import replace
 from types import MappingProxyType
 from typing import Mapping
 
+from lumi_language.import_context import _ImportResolutionContext, ModuleRecord, ModuleState
 from lumi_language.import_resolver import InMemoryImportResolver
 from lumi_language.lexer import Lexer
 from lumi_language.lexer_error import LexerError
@@ -44,7 +46,25 @@ class CompilerService:
     def compile(
         self, source: str, file: str, *, sources: Mapping[str, str] | None = None
     ) -> CompilationResult:
-        """Analyze without executing; missing imports are resolved by the core."""
+        """Analyze without executing; retain the existing public result contract."""
+        result, _ = self._compile_with_dependencies(source, file, sources=sources)
+        return result
+
+    def _compile_with_dependencies(
+        self, source: str, file: str, *, sources: Mapping[str, str] | None = None
+    ) -> tuple[CompilationResult, _ImportResolutionContext]:
+        """Internal entry: return reached dependencies, including partial failures."""
+        context = _ImportResolutionContext()
+        result = self._compile(source, file, sources=sources, context=context)
+        result = replace(
+            result, _compiled_programs=MappingProxyType(context.successful_programs),
+        )
+        return result, context
+
+    def _compile(
+        self, source: str, file: str, *, sources: Mapping[str, str] | None,
+        context: _ImportResolutionContext,
+    ) -> CompilationResult:
         if not isinstance(source, str):
             raise TypeError("El código fuente debe ser texto.")
         if not isinstance(file, str) or not file:
@@ -56,13 +76,19 @@ class CompilerService:
         try:
             tokens = Lexer(source, file).tokenize()
         except LexerError as error:
+            context.modules[file] = ModuleRecord(
+                file, ModuleState.FAILED, failure_kind="LexerError",
+            )
             return CompilationResult(
                 file, CompilationStatus.FAILED, AnalysisStage.LEXICAL,
                 lexical_error=str(error),
                 lexical_error_location=error.location,
             )
 
-        parser = Parser(tokens, import_resolver=InMemoryImportResolver(snapshot), file=file)
+        parser = Parser(
+            tokens, import_resolver=InMemoryImportResolver(snapshot), file=file,
+            _import_context=context,
+        )
         try:
             program = parser.parse()
         except LexerError as error:
@@ -89,8 +115,10 @@ class CompilerService:
                 imported_programs=imports,
             )
 
-        semantic = SemanticAnalyzer().analyze(program, dict(imports))
-        limitations = analysis_limitations((program, *imports.values()))
+        # The catalog supports explicit imports inside imported bodies. It does
+        # not define symbols; the public import map remains direct imports.
+        semantic = SemanticAnalyzer().analyze(program, context.successful_programs)
+        limitations = analysis_limitations(context.successful_programs.values())
         status = CompilationStatus.COMPLETED
         if semantic.diagnostics:
             status = CompilationStatus.FAILED

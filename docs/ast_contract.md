@@ -230,6 +230,14 @@ Interpreter().execute(program, imported_programs=None)
 
 Los programas que no contienen importaciones continúan funcionando sin proporcionar este argumento.
 
+Cada compilación mantiene un contexto interno con el grafo de importaciones observado y un registro de módulos alcanzados. El grafo conserva las relaciones en orden de encuentro, incluidos los imports fallidos y la arista que cierra un ciclo. La pila de archivos activos detecta ciclos antes de consultar la caché y produce `IMPORT_CIRCULAR_DEPENDENCY`. Si el recorrido falla, el grafo describe únicamente las dependencias alcanzadas; no garantiza descubrir las instrucciones posteriores al error.
+
+La caché reutiliza únicamente módulos cuyo análisis sintáctico terminó sin diagnósticos. El registro conserva los AST exitosos directos y transitivos; los módulos fallidos, parciales o sin resolver no constituyen AST válidos reutilizables. El contexto pertenece a una compilación y no introduce estado global. Véase `docs/import_graph.md` para el contrato interno del grafo y la caché.
+
+Los servicios proporcionan ese catálogo de AST exitosos al analizador semántico y, mediante transporte privado del resultado, al intérprete. El mapa público `imported_programs` conserva únicamente imports directos; ni la serialización pública ni el protocolo Python–IDE incorporan campos nuevos. La disponibilidad de un AST no otorga visibilidad a sus símbolos: cada `ImportNode` incorpora exclusivamente el símbolo solicitado.
+
+La clasificación de limitaciones espaciales inspecciona todos los AST exitosos alcanzados, incluidos los transitivos, y conserva el motivo `spatial_semantics_unavailable` sin duplicarlo por dependencias compartidas. Esta política detecta construcciones por su presencia en el AST, incluso dentro de funciones no solicitadas o no ejecutadas; no afirma que esas construcciones se ejecuten ni valida su corrección espacial. Por ello, un módulo transitivo puede producir estado `incomplete` aunque la función importada no use sus construcciones espaciales. Los errores semánticos conservan la precedencia de `failed`.
+
 ## 5. Contrato de Diagnostic
 
 `Diagnostic` será la estructura común utilizada por Lumi para representar los errores detectados durante las diferentes etapas del procesamiento de un proyecto.
@@ -323,6 +331,7 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `IMPORT_DUPLICATE_SYMBOL`: el mismo símbolo ya fue importado en el alcance.
 * `IMPORT_SYMBOL_CONFLICT`: el nombre importado entra en conflicto con otro símbolo visible.
 * `IMPORT_INVALID_SIGNATURE`: la función importada posee una firma o estructura mínima inválida.
+* `IMPORT_CIRCULAR_DEPENDENCY`: un import solicita un archivo que ya está en la pila activa de resolución; el diagnóstico corresponde a la instrucción que cierra el ciclo.
 
 **Ejecución:**
 
@@ -443,9 +452,11 @@ El símbolo registrado conserva la ubicación original de su declaración y util
 
 El analizador detecta importaciones duplicadas y conflictos con símbolos visibles. Los errores propios de la instrucción de importación utilizan `file`, `line` y `column` del `ImportNode`; los errores encontrados dentro del cuerpo importado utilizan la ubicación original de los nodos del archivo importado.
 
+Un import explícito dentro del cuerpo solicitado puede consultar un AST transitivo del catálogo. El cuerpo se analiza en cada alcance permitido; las predeclaraciones de funciones anidadas se registran por nodo y alcance. Los diagnósticos semánticos se deduplican por nodo de origen, causa y diagnóstico completo, conservando errores distintos. Las instrucciones de importación conservan sus propios diagnósticos por ocurrencia.
+
 ### 6.6 Runtime de funciones importadas
 
-`Interpreter` recibe opcionalmente el mismo contexto `imported_programs`, procesa `ImportNode` y registra únicamente la `FunctionDeclarationNode` cuyo nombre coincide con `symbol_name`. No registra automáticamente las demás funciones del archivo.
+`Interpreter` recibe opcionalmente un contexto de AST, procesa `ImportNode` y registra únicamente la `FunctionDeclarationNode` cuyo nombre coincide con `symbol_name`. El servicio utiliza el catálogo exitoso conservado en la compilación, incluidos los AST transitivos; si ese transporte privado no está disponible, utiliza `imported_programs` como compatibilidad. No registra automáticamente las demás funciones del archivo ni recompila fuentes al ejecutar.
 
 Después del registro, la función importada reutiliza el mismo mecanismo de `FunctionCallNode` empleado por las funciones locales: evaluación de argumentos, entorno léxico local, asociación de parámetros, retorno anticipado y aislamiento de variables. La declaración conserva su archivo de origen para diagnósticos y depuración.
 
@@ -453,9 +464,8 @@ Después del registro, la función importada reutiliza el mismo mecanismo de `Fu
 
 La integración actual no implementa todavía:
 
-* Propagación de importaciones transitivas.
-* Detección de importaciones circulares.
-* Construcción de un grafo completo de dependencias.
+* Visibilidad automática de funciones auxiliares o de imports de nivel superior del módulo importado. La conservación de AST transitivos y su consulta mediante imports explícitos sí están implementadas.
+* Análisis semántico exhaustivo de funciones no solicitadas de módulos importados. La clasificación espacial por AST puede detectar sus construcciones sin analizar semánticamente sus cuerpos.
 * Un límite propio para la profundidad de recursión.
 * Análisis exhaustivo de todos los caminos de control de una función.
 

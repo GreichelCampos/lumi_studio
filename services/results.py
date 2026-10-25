@@ -49,6 +49,9 @@ class CompilationResult:
     )
     limitations: tuple[AnalysisLimitation, ...] = ()
     lexical_error_location: LexicalErrorLocation | None = None
+    _compiled_programs: Mapping[str, ProgramNode] | None = field(
+        default=None, repr=False, compare=False, kw_only=True,
+    )
 
     @property
     def succeeded(self) -> bool:

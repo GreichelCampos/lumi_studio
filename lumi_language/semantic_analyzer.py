@@ -177,10 +177,11 @@ class SemanticAnalyzer:
     def __init__(self) -> None:
         self.type_checker = TypeChecker()
         self.result = SemanticAnalysisResult()
+        self._seen_semantic_diagnostics: set[tuple] = set()
         self.current_scope = SymbolTable()
         self.current_function: Symbol | None = None
-        self._function_symbols: dict[int, Symbol] = {}
-        self._processed_function_nodes: set[int] = set()
+        self._function_symbols: dict[tuple[SymbolTable, int], Symbol] = {}
+        self._processed_function_nodes: set[tuple[SymbolTable, int]] = set()
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
 
@@ -192,6 +193,7 @@ class SemanticAnalyzer:
         """Analyze a parsed ProgramNode or a compatible AST fixture."""
 
         self.result = SemanticAnalysisResult()
+        self._seen_semantic_diagnostics: set[tuple] = set()
         self.current_scope = SymbolTable()
         self.current_function = None
         self._function_symbols = {}
@@ -280,6 +282,7 @@ class SemanticAnalyzer:
                 "SEM_DUPLICATE_SYMBOL",
                 f"El símbolo '{node['name']}' ya está declarado en este alcance.",
                 "Utilice un nombre diferente o elimine la declaración duplicada.",
+                cause=(symbol, self.current_scope.resolve(node["name"])),
             )
             return
 
@@ -289,7 +292,7 @@ class SemanticAnalyzer:
                 value_type,
                 **self._location(node),
             )
-            self._append(diagnostic)
+            self._append(diagnostic, node, cause=(declared_type, value_type))
 
     def _analyze_assignment(self, node: dict[str, Any]) -> None:
         symbol = self.current_scope.resolve(node["name"])
@@ -303,7 +306,7 @@ class SemanticAnalyzer:
                 value_type,
                 **self._location(node),
             )
-            self._append(diagnostic)
+            self._append(diagnostic, node, cause=(symbol, value_type))
 
     def _infer_expression(self, node: dict[str, Any]) -> DataType | None:
         node_type = node["node"]
@@ -330,7 +333,7 @@ class SemanticAnalyzer:
                 right_type,
                 **self._location(node),
             )
-            self._append(check.diagnostic)
+            self._append(check.diagnostic, node, cause=(left_type, node["operator"], right_type))
             return check.result_type
         if node_type == "UnaryExpressionNode":
             operand_type = self._infer_expression(node["operand"])
@@ -341,7 +344,7 @@ class SemanticAnalyzer:
                 operand_type,
                 **self._location(node),
             )
-            self._append(check.diagnostic)
+            self._append(check.diagnostic, node, cause=(node["operator"], operand_type))
             return check.result_type
         if node_type == "ReadNode":
             self._infer_expression(node["message"])
@@ -359,6 +362,7 @@ class SemanticAnalyzer:
                         "SEM_VECTOR_COMPONENT_NOT_NUMERIC",
                         "Los componentes de un vector deben ser numéricos.",
                         "Utilice valores de tipo entero o decimal.",
+                        cause=(component_type,),
                     )
             return DataType.VECTOR
         return None
@@ -371,6 +375,7 @@ class SemanticAnalyzer:
                 "SEM_CONDITION_NOT_BOOLEAN",
                 "La condición debe producir un valor booleano.",
                 "Utilice una expresión lógica o relacional.",
+                cause=(expression_type,),
             )
 
     def _require_integer(self, expression: dict[str, Any], code: str) -> None:
@@ -381,6 +386,7 @@ class SemanticAnalyzer:
                 code,
                 "La cantidad de repeticiones debe ser de tipo entero.",
                 "Utilice una expresión de tipo entero.",
+                cause=(expression_type,),
             )
 
     def _analyze_switch(self, node: dict[str, Any]) -> None:
@@ -394,7 +400,7 @@ class SemanticAnalyzer:
                     case_type,
                     **self._location(case),
                 )
-                self._append(check.diagnostic)
+                self._append(check.diagnostic, case, cause=(expression_type, "==", case_type))
             self._analyze_block(case.get("body", []), "case")
         self._analyze_block(node.get("default_body", []), "default")
 
@@ -413,12 +419,13 @@ class SemanticAnalyzer:
         for statement in statements:
             if (
                 statement["node"] == "FunctionDeclarationNode"
-                and id(statement) not in self._processed_function_nodes
+                and (self.current_scope, id(statement)) not in self._processed_function_nodes
             ):
                 self._register_function(statement)
 
     def _register_function(self, node: dict[str, Any]) -> Symbol | None:
-        self._processed_function_nodes.add(id(node))
+        # Keep the scope alive: its identity must not be reused during analysis.
+        self._processed_function_nodes.add((self.current_scope, id(node)))
         return_type = self._data_type(node["return_type"], node)
         parameters: list[tuple[str, DataType]] = []
         signature_is_valid = return_type is not None
@@ -448,15 +455,17 @@ class SemanticAnalyzer:
                 "SEM_DUPLICATE_SYMBOL",
                 f"El símbolo '{node['name']}' ya está declarado en este alcance.",
                 "Utilice un nombre diferente.",
+                cause=(symbol, self.current_scope.resolve(node["name"])),
             )
             return None
 
-        self._function_symbols[id(node)] = symbol
+        self._function_symbols[(self.current_scope, id(node))] = symbol
         return symbol
 
     def _analyze_function(self, node: dict[str, Any]) -> None:
-        symbol = self._function_symbols.get(id(node))
-        if symbol is None and id(node) not in self._processed_function_nodes:
+        key = (self.current_scope, id(node))
+        symbol = self._function_symbols.get(key)
+        if symbol is None and key not in self._processed_function_nodes:
             symbol = self._register_function(node)
         if symbol is None:
             return
@@ -495,6 +504,7 @@ class SemanticAnalyzer:
                         "SEM_DUPLICATE_SYMBOL",
                         f"El parámetro '{parameter['name']}' está duplicado.",
                         "Utilice un nombre diferente para cada parámetro.",
+                        cause=(parameter_symbol, self.current_scope.resolve(parameter["name"])),
                     )
             self._analyze_statements(node.get("body", []))
             if (
@@ -509,6 +519,7 @@ class SemanticAnalyzer:
                         f"retornar un valor de tipo '{symbol.return_type.value}'."
                     ),
                     "Asegure que todos los caminos de la función retornen un valor.",
+                    cause=(symbol.return_type,),
                 )
         finally:
             self.current_scope = previous
@@ -554,6 +565,7 @@ class SemanticAnalyzer:
                 "SEM_UNDECLARED_FUNCTION",
                 f"La función '{node['name']}' no ha sido declarada.",
                 "Declare la función antes de utilizarla.",
+                cause=(node["name"],),
             )
             return None
 
@@ -563,6 +575,7 @@ class SemanticAnalyzer:
                 "SEM_SYMBOL_NOT_CALLABLE",
                 f"El símbolo '{node['name']}' no es una función.",
                 "Utilice el nombre de una función declarada.",
+                cause=(symbol,),
             )
             return None
 
@@ -576,6 +589,7 @@ class SemanticAnalyzer:
                     f"{len(arguments)}."
                 ),
                 "Proporcione la cantidad de argumentos definida por la función.",
+                cause=(symbol, len(arguments)),
             )
 
         for argument, argument_type, (_, parameter_type) in zip(
@@ -595,6 +609,7 @@ class SemanticAnalyzer:
                         f"'{parameter_type.value}'."
                     ),
                     "Utilice un argumento compatible con el tipo del parámetro.",
+                    cause=(symbol, argument_type, parameter_type),
                 )
 
         return symbol.return_type
@@ -609,6 +624,7 @@ class SemanticAnalyzer:
                 "SEM_RETURN_OUTSIDE_FUNCTION",
                 "La instrucción 'retornar' solo puede utilizarse en una función.",
                 "Mueva la instrucción dentro del cuerpo de una función.",
+                cause=(),
             )
             return
 
@@ -620,6 +636,7 @@ class SemanticAnalyzer:
                     "SEM_RETURN_TYPE_MISMATCH",
                     "Una función 'vacio' no debe retornar un valor.",
                     "Elimine el valor retornado o cambie el tipo de la función.",
+                    cause=(expected_type, value_type),
                 )
             return
 
@@ -632,6 +649,7 @@ class SemanticAnalyzer:
                     f"'{expected_type.value}'."
                 ),
                 "Retorne un valor compatible con el tipo declarado.",
+                cause=(expected_type, value_type),
             )
             return
 
@@ -647,6 +665,7 @@ class SemanticAnalyzer:
                     f"pero declaró el tipo '{expected_type.value}'."
                 ),
                 "Retorne un valor compatible con el tipo declarado.",
+                cause=(expected_type, value_type),
             )
 
     def _analyze_import(self, node: dict[str, Any]) -> None:
@@ -811,6 +830,7 @@ class SemanticAnalyzer:
                 "SEM_UNKNOWN_TYPE",
                 f"El tipo '{type_name}' no está definido en Lumi.",
                 "Utilice un tipo reconocido por el lenguaje.",
+                cause=(type_name,),
             )
             return None
 
@@ -820,6 +840,7 @@ class SemanticAnalyzer:
             "SEM_UNDECLARED_VARIABLE",
             f"La variable '{name}' no ha sido declarada.",
             "Declare la variable antes de utilizarla.",
+            cause=(name,),
         )
 
     def _add_diagnostic(
@@ -828,15 +849,19 @@ class SemanticAnalyzer:
         code: str,
         description: str,
         suggestion: str,
+        *,
+        cause: tuple,
     ) -> None:
-        self.result.diagnostics.append(
+        self._append(
             Diagnostic(
                 category=DiagnosticCategory.SEMANTIC,
                 code=code,
                 description=description,
                 suggestion=suggestion,
                 **self._location(node),
-            )
+            ),
+            node,
+            cause=cause,
         )
 
     def _add_import_diagnostic(
@@ -856,9 +881,21 @@ class SemanticAnalyzer:
             )
         )
 
-    def _append(self, diagnostic: Diagnostic | None) -> None:
+    def _append(
+        self, diagnostic: Diagnostic | None, node: dict[str, Any], *, cause: tuple,
+    ) -> None:
+        """Aggregate the same source node and rule cause once per analysis.
+
+        Normalized module trees stay alive throughout analyze(), so node identity
+        distinguishes even fixture nodes with equal locations and messages.
+        The diagnostic is also part of the key to preserve every output field.
+        Import-instruction errors deliberately bypass this aggregation.
+        """
         if diagnostic is not None:
-            self.result.diagnostics.append(diagnostic)
+            key = (id(node), cause, diagnostic)
+            if key not in self._seen_semantic_diagnostics:
+                self._seen_semantic_diagnostics.add(key)
+                self.result.diagnostics.append(diagnostic)
 
     @staticmethod
     def _location(node: dict[str, Any]) -> dict[str, str | int]:
