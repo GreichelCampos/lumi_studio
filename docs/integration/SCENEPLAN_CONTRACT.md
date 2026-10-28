@@ -53,7 +53,8 @@ interface SpatialObject {
   id: string;
   type: string;
   name: string;
-  position: [number, number, number];
+  placed: boolean;
+  position?: [number, number, number];
   rotation: [number, number, number];
   dimensions: [number, number, number];
   color?: string;
@@ -72,12 +73,18 @@ Los campos de la definición TypeScript relacionados con L-035 (`hasCollision`, 
 - `dimensions` de habitación significa `[ancho X, largo Z, altura Y]`.
 - `calculatedArea = width * length`; `calculatedVolume = width * length * height`.
 - Los valores del wire deben poder representarse como números JSON finitos.
-- Todo objeto publicable debe haber sido colocado. Una rotación ausente se serializa como `[0, 0, 0]`.
+- Todo objeto declarado se publica. Un objeto colocado usa `placed: true` y una
+  `position` válida; uno sin colocar usa `placed: false` y omite por completo
+  `position`, sin inventar coordenadas. Una rotación ausente se serializa como
+  `[0, 0, 0]`.
 - `color` y `material` se copian cuando existen.
 - El piso declarado reemplaza los valores visuales predeterminados. Sin piso declarado se usa `material: standard`, `color: #e2e8f0`.
 - Se generan cuatro caras visuales neutrales (`north`, `south`, `east`, `west`). No representan declaraciones `WallNode`.
 - El catálogo visual de `scene_adapter.py` aporta dimensiones para los tipos conocidos. Un tipo desconocido recibe `[1, 1, 1]`. Esto es presentación, no semántica del lenguaje.
-- Más de un piso, elementos no colocados, tipos espaciales desconocidos y declaraciones de pared/puerta/ventana no representables provocan `SceneAdapterError`.
+- Cero o un piso por habitación son válidos. Una segunda declaración produce
+  `SPA_MULTIPLE_FLOORS` en `SpatialValidator`, antes de adaptar el plan.
+- Tipos espaciales desconocidos y declaraciones de pared/puerta/ventana no
+  representables provocan `SceneAdapterError`.
 
 ## Identidad y trazabilidad
 

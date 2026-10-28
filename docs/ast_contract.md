@@ -352,6 +352,7 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `SPA_INVALID_DIMENSION`: una dimensión de habitación no es numérica, no es finita o no es mayor que cero.
 * `SPA_INVALID_VECTOR`: un vector resuelto contiene un componente no numérico o no finito.
 * `SPA_INVALID_PROPERTY`: una propiedad espacial es desconocida, está duplicada o contiene un valor incompatible.
+* `SPA_MULTIPLE_FLOORS`: una habitación contiene una segunda declaración de piso. El diagnóstico se ubica en esa segunda declaración; cero o un piso son válidos.
 * `SPA_OBJECT_OUT_OF_BOUNDS`: un objeto se encuentra fuera de los límites permitidos de la habitación.
 * `SPA_OBJECT_COLLISION`: dos objetos espaciales presentan una colisión.
 * `SPA_BLOCKED_DOOR`: una puerta se encuentra bloqueada por un elemento espacial.
