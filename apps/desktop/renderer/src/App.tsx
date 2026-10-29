@@ -616,6 +616,7 @@ export default function App() {
               onNavigateToDiagnostic={handleNavigateToDiagnostic}
               onFocusObject={handleFocusObject}
               scenePlan={scenePlan}
+              legacyPlacement={legacyPlacement}
               onLumiClick={() => setShowDocsModal(true)}
               isStale={isStale}
               lastCompileResult={lastCompileResult}

@@ -36,6 +36,22 @@ function setup() {
 }
 
 describe('Backend scene lifecycle with explicit response fixtures', () => {
+  it('shows unsupported geometry guidance with the original error and clears the previous scene', async () => {
+    const { result, execute, project } = setup();
+    act(() => result.current.loadCompiledArtifact(playbackArtifact));
+    const message = "El elemento 'muro' de tipo 'wall' no contiene todavía la geometría requerida por el IDE.";
+    execute.mockResolvedValueOnce({ ok: true, response: {
+      protocolVersion: '1.0.0', requestId: 'geometry-fixture', operation: 'execute', status: 'error',
+      error: { kind: 'infrastructure', code: 'SERIALIZATION_ERROR', message },
+    } });
+    await act(async () => { await result.current.runExecute(project); });
+    expect(result.current.logs.join('\n')).toContain(`[SERIALIZATION_ERROR] ${message}`);
+    expect(result.current.logs.join('\n')).toContain('La geometría de este elemento declarado todavía no puede publicarse');
+    expect(result.current.scenePlan).toBeNull();
+    expect(result.current.diagnostics).toEqual([]);
+    expect(result.current.debugSteps).toEqual([]);
+  });
+
   it('replaces imported playback with the validated Python result', async () => {
     const { result, execute, project } = setup();
     act(() => result.current.loadCompiledArtifact(playbackArtifact));

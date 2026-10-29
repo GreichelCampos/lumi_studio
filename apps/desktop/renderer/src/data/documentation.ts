@@ -1,5 +1,6 @@
 export interface DocumentationSection {
   title: string;
+  exampleKind: 'executable' | 'syntax-only' | 'informational';
   description: string;
   code: string;
 }
@@ -15,8 +16,8 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
   { word: 'habitacion', category: 'Espacio', desc: 'Declara una habitación 3D con dimensiones [ancho, largo, alto]' },
   { word: 'piso', category: 'Espacio', desc: 'Declara un piso con nombre y propiedades color o material' },
   { word: 'pared', category: 'Espacio', desc: 'Declara una pared; su orientación todavía requiere especificación' },
-  { word: 'puerta', category: 'Aperturas', desc: 'Declara una apertura de acceso en un muro' },
-  { word: 'ventana', category: 'Aperturas', desc: 'Declara una apertura de iluminación en un muro' },
+  { word: 'puerta', category: 'Aperturas', desc: 'Sintaxis admitida; su geometría declarada todavía no puede publicarse' },
+  { word: 'ventana', category: 'Aperturas', desc: 'Sintaxis admitida; su geometría declarada todavía no puede publicarse' },
   { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]' },
   { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad' },
   { word: 'mover', category: 'Transformación', desc: 'Reemplaza la posición absoluta de un objeto previamente colocado' },
@@ -32,6 +33,7 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
 export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '1. Estructura y Filosofía de Lumi',
+    exampleKind: 'executable',
     description: 'Compilar puede informar análisis espacial incompleto. Ejecutar Python genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
     code: `principal {
   habitacion sala(5.0, 4.0, 2.7) {
@@ -44,7 +46,8 @@ export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   },
   {
     title: '2. Tipos de Datos y Manejo de Nulo',
-    description: 'El parser acepta tipos primitivos, listas, vectores y nulo. Las listas y los vectores todavía no se evalúan en el intérprete; este ejemplo permite comprobar su análisis, no una ejecución completa.',
+    exampleKind: 'syntax-only',
+    description: 'El parser acepta tipos primitivos, listas, vectores y nulo. Las listas y los vectores declarados como variables todavía no se evalúan en el intérprete; este ejemplo permite comprobar su análisis, no una ejecución completa. Los vectores de colocar, mover y rotar sí se evalúan en operaciones espaciales.',
     code: `-- Declaraciones de tipos primitivos y compuestos
 entero cantidad_sillas = 4>>
 decimal factor_escala = 1.25>>
@@ -62,7 +65,8 @@ si seleccion == nulo {
   },
   {
     title: '3. Elementos Arquitectónicos y Muebles',
-    description: 'Declaraciones y vectores admitidos por la gramática. La generación de estos elementos, la orientación de paredes y los tamaños de muebles y aberturas siguen pendientes. Las propiedades color y material se escriben sin dos puntos ni signo igual.',
+    exampleKind: 'syntax-only',
+    description: 'Los muebles colocados sí se generan mediante un catálogo visual provisional. Este ejemplo también declara pared, puerta y ventana: su geometría todavía no puede publicarse y la ejecución devuelve SERIALIZATION_ERROR, sin escena. Se puede comprobar su sintaxis con Compilar. Las propiedades color y material se escriben sin dos puntos ni signo igual; las medidas físicas del catálogo y la geometría de las aberturas siguen pendientes.',
     code: `habitacion dormitorio(4.5, 4.0, 2.6) {
   piso suelo {
     material "madera">>
@@ -84,6 +88,7 @@ si seleccion == nulo {
   },
   {
     title: '4. Ciclo "hacer" y Modularidad',
+    exampleKind: 'executable',
     description: 'El punto y coma separa las cláusulas del ciclo hacer. Compilar analiza este programa; Ejecutar Python muestra 0, 1 y 2 en la consola.',
     code: `funcion vacio mostrar_contadores(entero total) {
   hacer entero i = 0; i < total; i = i + 1 {
@@ -96,6 +101,7 @@ principal {
   },
   {
     title: '5. Depuración Espacial e Innovación',
+    exampleKind: 'informational',
     description: 'El IDE reproduce pasos y snapshots de archivos .lumic o de la demostración. Python todavía no genera trazas espaciales. La detección real de colisiones, elementos fuera de límites y pasos bloqueados sigue pendiente.',
     code: `-- Esta sección es informativa, no un programa de depuración.
 -- Los colores muestran los estados recibidos por el IDE.

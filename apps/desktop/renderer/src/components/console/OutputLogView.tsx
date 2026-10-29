@@ -7,7 +7,7 @@ import {
   RoomModel 
 } from '../../types';
 import { Clock, Filter, Trash2 } from 'lucide-react';
-import { getLogEventStyle, filterLogEvents, getCompileResultSummary } from './outputLogUtils';
+import { getLogEventStyle, filterLogEvents, getCompileResultSummary, countPlacedObjects } from './outputLogUtils';
 
 export interface OutputLogViewProps {
   /**
@@ -26,6 +26,7 @@ export interface OutputLogViewProps {
    * Active scene plan.
    */
   scenePlan?: ScenePlan | null;
+  legacyPlacement?: boolean;
   /**
    * Primary room plan override.
    */
@@ -61,6 +62,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
   logs = [],
   lastCompileResult = null,
   scenePlan = null,
+  legacyPlacement = false,
   primaryRoom = null,
   errorCount = 0,
   warningCount = 0,
@@ -88,6 +90,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
   }, [events, activeFilterType]);
 
   const resolvedPrimaryRoom = primaryRoom || scenePlan?.rooms[0] || null;
+  const placedCount = countPlacedObjects(resolvedPrimaryRoom?.objects ?? [], legacyPlacement);
   const resultSummary = lastCompileResult ? getCompileResultSummary(lastCompileResult) : null;
 
   useEffect(() => {
@@ -246,7 +249,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
           <div>
             Entidades colocadas:{' '}
             <span className="text-[var(--ide-text)] font-semibold font-mono">
-              {resolvedPrimaryRoom.objects.length} objetos
+              {placedCount} {placedCount === 1 ? 'objeto' : 'objetos'}
             </span>
           </div>
         </div>

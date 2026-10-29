@@ -3,8 +3,26 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { OutputLogView } from '../../../components/console/OutputLogView';
 import { IdeLogEvent, CompileResult, ScenePlan } from '../../../types';
+import { createMockRoom, createMockScenePlan, createMockSpatialObject } from '../../fixtures/testFixtures';
 
 describe('OutputLogView', () => {
+  it('updates placed counts without counting unplaced or rewriting legacy metadata', () => {
+    const placed = createMockSpatialObject();
+    const { position: _position, ...properties } = placed;
+    const scene = createMockScenePlan({ rooms: [createMockRoom({ objects: [placed, { ...properties, placed: false }] })] });
+    const view = render(<OutputLogView events={[]} scenePlan={scene} />);
+    expect(screen.getByText('1 objeto')).toBeInTheDocument();
+
+    const unplacedScene = createMockScenePlan({ rooms: [createMockRoom({ objects: [{ ...properties, placed: false }] })] });
+    view.rerender(<OutputLogView events={[]} scenePlan={unplacedScene} />);
+    expect(screen.getByText('0 objetos')).toBeInTheDocument();
+
+    const legacyScene = createMockScenePlan({ rooms: [createMockRoom({ objects: [{ ...placed, placed: false }] })] });
+    view.rerender(<OutputLogView events={[]} scenePlan={legacyScene} legacyPlacement />);
+    expect(screen.getByText('1 objeto')).toBeInTheDocument();
+    expect(legacyScene.rooms[0].objects[0].placed).toBe(false);
+  });
+
   const mockEvents: IdeLogEvent[] = [
     { id: 'evt-1', timestamp: '12:00:01', type: 'info', message: 'Sistema iniciado correctamente', source: 'Sistema' },
     { id: 'evt-2', timestamp: '12:00:02', type: 'compile', message: 'Compilación #1 iniciada', source: 'Compilador' },
@@ -131,7 +149,7 @@ describe('OutputLogView', () => {
     expect(screen.getByText('stdout: habitación generada con 1 objeto')).toBeInTheDocument();
     expect(screen.getByText('stdout: compilación finalizada')).toBeInTheDocument();
     expect(screen.getByText(/Sala Experimental/i)).toBeInTheDocument();
-    expect(screen.getByText('1 objetos')).toBeInTheDocument();
+    expect(screen.getByText('1 objeto')).toBeInTheDocument();
   });
 
   it('no debe duplicar eventos al volver a renderizar con las mismas props', () => {

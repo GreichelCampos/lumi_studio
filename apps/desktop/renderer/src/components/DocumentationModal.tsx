@@ -8,6 +8,12 @@ interface DocumentationModalProps {
   onClose: () => void;
 }
 
+const exampleKindLabels = {
+  executable: 'Ejemplo ejecutable con Python',
+  'syntax-only': 'Ejemplo sintáctico · ejecución no soportada',
+  informational: 'Información · no es un programa ejecutable',
+};
+
 export const DocumentationModal: React.FC<DocumentationModalProps> = ({
   isOpen,
   onClose,
@@ -93,6 +99,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             {LUMI_DOCUMENTATION_SECTIONS.map((sec, idx) => (
               <div key={idx} className="glass-card p-4 space-y-2 !w-auto !h-auto">
                 <h4 className="text-sm font-bold text-[#f3ebd6] drop-shadow-sm">{sec.title}</h4>
+                <p className="text-xs font-semibold text-[#f3ebd6]">{exampleKindLabels[sec.exampleKind]}</p>
                 <p className="text-xs text-[#d5cbb2] leading-relaxed">{sec.description}</p>
                 <pre className="bg-[#02110c]/60 p-3 rounded-xl text-xs font-mono text-[#f3ebd6] overflow-x-auto border border-[#f3ebd6]/15 shadow-inner">
                   {sec.code}

@@ -18,8 +18,10 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
     ...(diagnostic.suggestion !== undefined ? { solution: diagnostic.suggestion } : {}),
   }));
   const logs = [`[Python · ${response.operation === 'analyze' ? 'Análisis' : 'Ejecución'}] ${response.status}`, ...payload.output];
+  if (response.operation === 'execute') logs.push(`[Python · Análisis] ${payload.analysisStatus}`);
   if (payload.lexicalError !== undefined) logs.push(`[Error léxico sin ubicación estructurada] ${payload.lexicalError}`);
   if (payload.limitations.length) logs.push('Capacidad pendiente: análisis semántico espacial.');
+  for (const limitation of payload.limitations) logs.push(`Limitación del backend: ${limitation}`);
   return {
     compilationId: response.requestId, status: response.status, success: response.status === 'completed',
     diagnostics, scenePlan: payload.scenePlan ?? null, debugSteps: [], durationMs, logs,

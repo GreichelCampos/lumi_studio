@@ -57,11 +57,16 @@ describe('Real compiler adapter', () => {
     raw.response.result.scenePlan = createMockScenePlan({ rooms: [
       createMockRoom({ name: 'sala' }),
     ] });
+    const before = structuredClone(raw);
 
     const result = await new PythonCompilerService(bridge(raw)).execute(project());
 
     expect(result.success).toBe(true);
     expect(result.scenePlan?.rooms[0].name).toBe('sala');
+    expect(result.logs).toContain('[Python · Análisis] incomplete');
+    expect(result.logs).toContain('Capacidad pendiente: análisis semántico espacial.');
+    expect(result.logs).toContain('Limitación del backend: spatial_semantics_unavailable');
+    expect(raw).toEqual(before);
     expect(validateCompileResult(result).isValid).toBe(true);
   });
 
@@ -109,6 +114,31 @@ describe('Real compiler adapter', () => {
     await expect(new PythonCompilerService(bridge({ ok: false, error: {
       code: 'PYTHON_UNAVAILABLE', message: 'No hay Python',
     } })).compile(project())).rejects.toThrow('No hay Python');
+  });
+
+  it.each(['wall', 'door', 'window'])('explains unsupported %s geometry without hiding the backend error', async type => {
+    const message = `El elemento 'elemento' de tipo '${type}' no contiene todavía la geometría requerida por el IDE.`;
+    const raw: BackendReply = { ok: true, response: {
+      protocolVersion: '1.0.0', requestId: 'geometry-fixture', operation: 'execute', status: 'error',
+      error: { kind: 'infrastructure', code: 'SERIALIZATION_ERROR', message },
+    } };
+    const before = structuredClone(raw);
+    const request = new PythonCompilerService(bridge(raw)).execute(project());
+    await expect(request).rejects.toThrow(`[SERIALIZATION_ERROR] ${message}`);
+    await expect(request).rejects.toThrow('La geometría de este elemento declarado todavía no puede publicarse');
+    await expect(request).rejects.toThrow('No se recibió ScenePlan');
+    expect(raw).toEqual(before);
+  });
+
+  it('does not mislabel other serialization errors as unsupported geometry', async () => {
+    const message = "El valor de 'sala.width' no puede representarse como número JSON finito.";
+    const raw: BackendReply = { ok: true, response: {
+      protocolVersion: '1.0.0', requestId: 'number-fixture', operation: 'execute', status: 'error',
+      error: { kind: 'infrastructure', code: 'SERIALIZATION_ERROR', message },
+    } };
+    await expect(new PythonCompilerService(bridge(raw)).execute(project())).rejects.toThrow(
+      new Error(`[SERIALIZATION_ERROR] ${message}`)
+    );
   });
 
   it('rejects a wrong operation or malformed response', async () => {

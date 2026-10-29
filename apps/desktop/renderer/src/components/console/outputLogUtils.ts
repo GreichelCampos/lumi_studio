@@ -1,4 +1,12 @@
-import { CompileResult, IdeEventType, IdeLogEvent } from '../../types';
+import { CompileResult, IdeEventType, IdeLogEvent, SpatialObject } from '../../types';
+
+export function countPlacedObjects(objects: SpatialObject[], legacyPlacement = false): number {
+  return objects.filter(object => {
+    const position = object.position;
+    return Array.isArray(position) && position.length === 3 && position.every(Number.isFinite)
+      && (legacyPlacement || object.placed === undefined || object.placed === true);
+  }).length;
+}
 
 export function getCompileResultSummary(result: CompileResult): { label: string; tone: 'error' | 'warning' | 'success' } {
   const tone = result.status === 'failed' || result.status === 'blocked' ? 'error'

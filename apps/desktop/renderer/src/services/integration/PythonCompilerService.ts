@@ -7,6 +7,13 @@ import { projectInput } from './projectInput';
 import { adaptBackendResult } from './resultAdapter';
 import { isRecord } from './protocol/validationHelpers';
 
+function backendErrorMessage(code: string, message: string): string {
+  const explanation = code === 'SERIALIZATION_ERROR' && /de tipo '(wall|door|window)'.*geometría/.test(message)
+    ? ' La geometría de este elemento declarado todavía no puede publicarse en el visor. No se recibió ScenePlan; las paredes automáticas de la habitación sí pueden mostrarse.'
+    : '';
+  return `[${code}] ${message}${explanation}`;
+}
+
 export class PythonCompilerService implements CompilerService {
   readonly mode = 'python' as const;
   constructor(private readonly bridge: DesktopBridge | undefined) {}
@@ -22,7 +29,7 @@ export class PythonCompilerService implements CompilerService {
     if (!isRecord(reply) || reply.ok !== true) {
       if (isRecord(reply) && reply.ok === false && isRecord(reply.error)
         && typeof reply.error.code === 'string' && typeof reply.error.message === 'string') {
-        throw new Error(`[${reply.error.code}] ${reply.error.message}`);
+        throw new Error(backendErrorMessage(reply.error.code, reply.error.message));
       }
       throw new Error('Respuesta IPC inválida.');
     }
@@ -30,7 +37,7 @@ export class PythonCompilerService implements CompilerService {
     if (validation.valid === false) throw new Error(`Contrato Python inválido: ${validation.errors.join(' ')}`);
     const response = validation.value;
     if (response.operation !== operation) throw new Error('La operación recibida no coincide con la solicitud.');
-    if (response.status === 'error') throw new Error(`[${response.error.code}] ${response.error.message}`);
+    if (response.status === 'error') throw new Error(backendErrorMessage(response.error.code, response.error.message));
     if (response.result.entryFile !== input.entryFile) throw new Error('El archivo principal recibido no coincide.');
     return adaptBackendResult(response, project, performance.now() - started);
   }

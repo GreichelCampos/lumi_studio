@@ -3,8 +3,20 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { OutputLogView } from '../../../components/console/OutputLogView';
 import { ConsolePanel } from '../../../components/ConsolePanel';
 import type { CompileResult } from '../../../types';
+import { createMockRoom, createMockScenePlan, createMockSpatialObject } from '../../fixtures/testFixtures';
 
 describe('Python result presentation', () => {
+  it('passes legacy placement context through the console without modifying the imported scene', () => {
+    const scene = createMockScenePlan({ rooms: [createMockRoom({ objects: [{ ...createMockSpatialObject(), placed: false }] })] });
+    const before = structuredClone(scene);
+    const props = { lumiState: 'ready' as const, logs: [], diagnostics: [], debugSteps: [], currentStepIndex: 0,
+      onStepChange: () => {}, onNavigateToDiagnostic: () => {}, onFocusObject: () => {}, scenePlan: scene };
+    const view = render(<ConsolePanel {...props} legacyPlacement />);
+    expect(screen.getByText('1 objeto')).toBeInTheDocument();
+    view.rerender(<ConsolePanel {...props} legacyPlacement={false} />);
+    expect(screen.getByText('0 objetos')).toBeInTheDocument();
+    expect(scene).toEqual(before);
+  });
   it.each([
     ['analyze', 'completed', 'Análisis terminado'],
     ['analyze', 'incomplete', 'Análisis incompleto'],

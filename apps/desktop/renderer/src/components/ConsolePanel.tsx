@@ -48,6 +48,7 @@ interface ConsolePanelProps {
   onNavigateToDiagnostic: (diag: DiagnosticItem) => void;
   onFocusObject: (objectId: string) => void;
   scenePlan: ScenePlan | null;
+  legacyPlacement?: boolean;
   onLumiClick?: () => void;
   isStale?: boolean;
   lastCompileResult?: CompileResult | null;
@@ -74,6 +75,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   onNavigateToDiagnostic,
   onFocusObject,
   scenePlan,
+  legacyPlacement = false,
   onLumiClick,
   isStale = false,
   lastCompileResult = null,
@@ -227,6 +229,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
               logs={logs}
               lastCompileResult={lastCompileResult}
               scenePlan={scenePlan}
+              legacyPlacement={legacyPlacement}
               primaryRoom={primaryRoom}
               errorCount={errorCount}
               warningCount={warningCount}

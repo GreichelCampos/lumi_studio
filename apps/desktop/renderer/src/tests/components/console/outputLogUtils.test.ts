@@ -2,9 +2,40 @@ import { describe, it, expect } from 'vitest';
 import { 
   getLogEventStyle, 
   formatLogTimestamp, 
-  filterLogEvents 
+  filterLogEvents,
+  countPlacedObjects
 } from '../../../components/console/outputLogUtils';
-import { IdeLogEvent } from '../../../types';
+import { IdeLogEvent, SpatialObject } from '../../../types';
+import { createMockSpatialObject } from '../../fixtures/testFixtures';
+
+describe('placed entity counts', () => {
+  const base = createMockSpatialObject();
+  const { position: _position, ...properties } = base;
+
+  it('counts explicit and legacy positions but preserves unplaced objects', () => {
+    const objects: SpatialObject[] = [base, { ...base, placed: true }, { ...properties, placed: false }];
+    const before = structuredClone(objects);
+    expect(countPlacedObjects(objects)).toBe(2);
+    expect(countPlacedObjects([{ ...properties, placed: false }])).toBe(0);
+    expect(countPlacedObjects([])).toBe(0);
+    expect(objects).toEqual(before);
+  });
+
+  it.each([false, null, 'historical metadata'])('counts historical metadata %s only in legacy mode', placed => {
+    const object = { ...base, placed };
+    expect(countPlacedObjects([object])).toBe(0);
+    expect(countPlacedObjects([object], true)).toBe(1);
+  });
+
+  it.each([undefined, null, [0, 0], [0, 0, 0, 0], [0, NaN, 0], [Infinity, 0, 0], ['0', 0, 0]]
+    .map(position => ({ position })))(
+    'does not count malformed positions $position, including in legacy mode', ({ position }) => {
+      const object = { ...base, position } as unknown as SpatialObject;
+      expect(countPlacedObjects([object])).toBe(0);
+      expect(countPlacedObjects([object], true)).toBe(0);
+    }
+  );
+});
 
 describe('outputLogUtils', () => {
   describe('getLogEventStyle', () => {
