@@ -7,6 +7,7 @@ import { OpeningFactory } from './factories/OpeningFactory';
 import { FurnitureFactory } from './factories/FurnitureFactory';
 import { ObjectSelectionController } from './interaction/ObjectSelectionController';
 import { ThreeResourceDisposer } from './resources/ThreeResourceDisposer';
+import { calculateSceneBounds, calculateVisualScale } from './helpers/sceneScale';
 import { calculateWallOcclusion } from './helpers/spatialMath';
 import { IdeThemeDefinition, SpatialBackgroundMode } from '../../types/settings';
 import { validateViewportScene } from './helpers/validateViewportScene';
@@ -95,6 +96,8 @@ export class ThreeSceneManager {
       const grid = new THREE.GridHelper(40, 40, new THREE.Color(centerColor), new THREE.Color(linesColor));
       grid.position.y = -0.05;
       grid.name = 'gridHelper';
+      grid.userData.centerColor = centerColor;
+      grid.userData.linesColor = linesColor;
       this.scene.add(grid);
 
       this.roomGroup = new THREE.Group();
@@ -243,9 +246,9 @@ export class ThreeSceneManager {
     const isNewRoom = !this.currentRoom || this.currentRoom.id !== room.id || dimensionsChanged;
     this.currentRoom = room;
 
-    if (isNewRoom) {
-      this.cameraController.adaptCameraToRoom(room);
-    }
+    if (isNewRoom) this.cameraController.adaptCameraToRoom(room);
+    else this.cameraController.updateRoom(room);
+    this.adaptVisualScale(room);
 
     const { group: roomRoot, wallRecords } = RoomFactory.createRoomStructure(room, {
       isWireframe: this.isWireframe,
@@ -284,6 +287,38 @@ export class ThreeSceneManager {
     this.roomGroup.add(roomRoot);
   }
 
+  private adaptVisualScale(room: RoomModel): void {
+    const bounds = calculateSceneBounds(room);
+    const scale = calculateVisualScale(bounds);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const grid = this.scene.getObjectByName('gridHelper') as THREE.GridHelper;
+    if (grid && grid.userData.scaleKey !== `${scale.gridSize}/${scale.divisions}`) {
+      const centerColor = new THREE.Color(grid.userData.centerColor);
+      const lineColor = new THREE.Color(grid.userData.linesColor);
+      const replacement = new THREE.GridHelper(scale.gridSize, scale.divisions, centerColor, lineColor);
+      grid.geometry.dispose();
+      grid.geometry = replacement.geometry;
+      ThreeResourceDisposer.disposeMaterial(replacement.material as THREE.Material);
+      grid.userData.scaleKey = `${scale.gridSize}/${scale.divisions}`;
+    }
+    if (grid) grid.position.set(center.x, -scale.step * 0.02, center.z);
+    const light = this.scene.getObjectByName('dirLight') as THREE.DirectionalLight;
+    light.target.position.copy(center);
+    if (!light.target.parent) this.scene.add(light.target);
+    light.position.copy(center).add(new THREE.Vector3(1, 1.6, 1).normalize().multiplyScalar(scale.distance));
+    Object.assign(light.shadow.camera, { left: -scale.radius * 1.1, right: scale.radius * 1.1, top: scale.radius * 1.1, bottom: -scale.radius * 1.1, near: scale.near, far: scale.far });
+    light.shadow.camera.updateProjectionMatrix();
+    light.shadow.normalBias = scale.radius * 0.001;
+    const fill = this.scene.getObjectByName('fillLight') as THREE.PointLight;
+    fill.position.copy(center).add(new THREE.Vector3(0, scale.radius, 0));
+    fill.distance = scale.radius * 6;
+    fill.decay = 0; // Visual fill stays consistent when scene units span different scales.
+    const rim = this.scene.getObjectByName('rimLight') as THREE.DirectionalLight;
+    rim.target.position.copy(center);
+    if (!rim.target.parent) this.scene.add(rim.target);
+    rim.position.copy(center).add(new THREE.Vector3(-1, 1, -1).multiplyScalar(scale.radius * 2));
+  }
+
   public clearRoom(): void {
     ThreeResourceDisposer.disposeHierarchy(this.roomGroup);
     this.roomGroup.clear();
@@ -293,7 +328,7 @@ export class ThreeSceneManager {
   }
 
   public focusObject(position?: [number, number, number]): void {
-    this.cameraController.focusObject(position, this.currentRoom);
+    this.cameraController.focusObject(position, this.currentRoom, this.activeEntityId);
   }
 
   public focusRoom(): void {
@@ -373,9 +408,13 @@ export class ThreeSceneManager {
     const newGrid = new THREE.GridHelper(40, 40, new THREE.Color(gridCenterStr), new THREE.Color(gridLinesStr));
     newGrid.position.y = -0.05;
     newGrid.name = 'gridHelper';
+    newGrid.userData.centerColor = gridCenterStr;
+    newGrid.userData.linesColor = gridLinesStr;
     this.scene.add(newGrid);
 
     const accentColor = theme?.previewColors?.accent || (isLight ? '#0969da' : '#007acc');
+    if (this.currentRoom) this.adaptVisualScale(this.currentRoom);
+
     applyIdeThemeToSpatialTheme(accentColor, bgColorStr, gridCenterStr, gridLinesStr, isLight);
 
     this.updateLightingColors();
