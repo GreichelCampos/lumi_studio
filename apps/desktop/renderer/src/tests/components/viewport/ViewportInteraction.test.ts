@@ -49,7 +49,14 @@ describe('orthographic camera', () => {
     expect(controller.getControls().minZoom).toBe(0.4);
     controller.zoomCamera(NaN); expect(controller.getCamera().zoom).toBe(0.4);
     controller.focusObject([2, 1, -1], room);
-    expect(controller.getControls().target.toArray()).toEqual([2, 1.4, -1]);
+    // No object matches this position: focus the supplied point without a fixed offset.
+    // Object-centered fitting, rotations and complete bounds are covered separately.
+    expect(controller.getControls().target.toArray()).toEqual([2, 1, -1]);
+    const camera = controller.getCamera(); camera.updateMatrixWorld();
+    const focusedPoint = new THREE.Vector3(2, 1, -1).project(camera);
+    expect(focusedPoint.x).toBeCloseTo(0);
+    expect(focusedPoint.y).toBeCloseTo(0);
+    expect(Math.abs(focusedPoint.z)).toBeLessThan(1);
     controller.resetCamera(room); expect(controller.getCamera().zoom).toBe(1);
     expect(controller.getControls().target.x).toBe(0);
     Object.defineProperty(container, 'clientHeight', { value: 0 });

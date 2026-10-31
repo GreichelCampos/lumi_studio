@@ -1,11 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { RoomModel } from '../../../types';
-import {
-  calculateRoomCenter,
-  calculateDynamicViewSpan,
-  calculateCameraDistance,
-} from '../helpers/spatialMath';
+import { RoomModel, isPlacedSpatialObject } from '../../../types';
+import { calculateSceneBounds, calculateObjectBounds, calculateVisualScale, calculateProjectedSpan } from '../helpers/sceneScale';
 
 export interface CameraControllerOptions {
   container: HTMLDivElement;
@@ -87,9 +83,11 @@ export class CameraController {
 
     const w = this.container.clientWidth;
     const h = this.container.clientHeight;
-    const aspect = w > 0 && h > 0 ? w / h : 1.0;
 
-    this.viewSpan = calculateDynamicViewSpan(room, aspect);
+    const aspect = w > 0 && h > 0 ? w / h : 1;
+    const bounds = calculateSceneBounds(room);
+    const scale = calculateVisualScale(bounds);
+    this.viewSpan = scale.radius;
 
     this.camera.left = -this.viewSpan * aspect;
     this.camera.right = this.viewSpan * aspect;
@@ -98,41 +96,84 @@ export class CameraController {
     this.camera.zoom = 1;
     this.camera.updateProjectionMatrix();
 
-    this.targetLookAt = calculateRoomCenter(room);
+    this.targetLookAt = bounds.getCenter(new THREE.Vector3());
     this.controls.target.copy(this.targetLookAt);
 
-    const camDist = calculateCameraDistance(room);
-    this.camera.far = Math.max(1000, camDist * 6);
-    this.controls.maxDistance = Math.max(120, camDist * 4);
-    this.camera.position.set(camDist, camDist * 1.05, camDist);
+    const camDist = scale.distance;
+    this.camera.near = scale.near;
+    this.camera.far = scale.far;
+    this.controls.minDistance = scale.near * 2;
+    this.controls.maxDistance = scale.far;
+    this.camera.position.copy(this.targetLookAt).add(new THREE.Vector3(1, 1.05, 1).normalize().multiplyScalar(camDist));
+    this.camera.lookAt(this.targetLookAt);
     this.controls.update();
+    this.viewSpan = this.fittedSpan(room, aspect);
+    this.camera.left = -this.viewSpan * aspect;
+    this.camera.right = this.viewSpan * aspect;
+    this.camera.top = this.viewSpan;
+    this.camera.bottom = -this.viewSpan;
+    this.camera.updateProjectionMatrix();
     this.handleResize(room);
   }
 
   private fittedSpan(room: RoomModel, aspect: number): number {
     this.camera.updateMatrixWorld();
-    const [width, length, height] = room.dimensions;
-    let span = 0;
-    for (const x of [-width / 2 - 0.3, width / 2 + 0.3]) {
-      for (const y of [-0.1, height + 0.1]) {
-        for (const z of [-length / 2 - 0.3, length / 2 + 0.3]) {
-          const point = new THREE.Vector3(x, y, z).applyMatrix4(this.camera.matrixWorldInverse);
-          span = Math.max(span, Math.abs(point.x) / aspect, Math.abs(point.y));
-        }
-      }
-    }
-    return Math.max(span * 1.08, 0.1);
+    return calculateProjectedSpan(calculateSceneBounds(room), this.camera.matrixWorldInverse, aspect);
   }
 
-  public focusObject(position?: [number, number, number], currentRoom?: RoomModel | null): void {
-    if (position) {
-      this.controls.target.set(position[0], Math.max(0.4, position[1] + 0.4), position[2]);
-    } else if (currentRoom) {
-      this.controls.target.set(0, currentRoom.dimensions[2] * 0.35, 0);
-    } else {
-      this.controls.target.set(0, 0.8, 0);
+  public updateRoom(room: RoomModel): void {
+    const changed = !this.currentRoom || !calculateSceneBounds(this.currentRoom).equals(calculateSceneBounds(room));
+    this.currentRoom = room;
+    if (changed) this.adaptCameraToRoom(room);
+  }
+
+  public focusObject(
+    position?: [number, number, number],
+    currentRoom: RoomModel | null = this.currentRoom,
+    objectId?: string | null
+  ): void {
+    if (!position) {
+      this.focusRoom(currentRoom);
+      return;
     }
+    const item = currentRoom?.objects.filter(isPlacedSpatialObject).find(candidate =>
+      objectId ? candidate.id === objectId : candidate.position.every((value, axis) => value === position[axis])
+    );
+    const bounds = item ? calculateObjectBounds(item) : new THREE.Box3().setFromPoints([new THREE.Vector3(...position)]);
+    const sceneScale = calculateVisualScale(currentRoom ? calculateSceneBounds(currentRoom) : bounds);
+    const objectScale = item ? calculateVisualScale(bounds) : sceneScale;
+
+    // Finish pending orbit/pan damping before an explicit focus, so later frames
+    // cannot move the object out of the fitted view. Keep the user's viewing angle.
+    const damping = this.controls.enableDamping;
+    this.controls.enableDamping = false;
     this.controls.update();
+    const direction = this.camera.position.clone().sub(this.controls.target);
+    if (direction.lengthSq() === 0) direction.set(1, 1.05, 1);
+    direction.normalize();
+    const distance = Math.max(objectScale.distance, sceneScale.radius * 0.25);
+    this.controls.target.copy(bounds.getCenter(new THREE.Vector3()));
+    this.camera.position.copy(this.controls.target).addScaledVector(direction, distance);
+    this.camera.near = Math.min(sceneScale.near, objectScale.near);
+    this.camera.far = Math.max(sceneScale.far, distance + objectScale.radius * 2);
+    this.controls.minDistance = this.camera.near * 2;
+    this.controls.maxDistance = this.camera.far;
+    this.camera.zoom = 1;
+    this.controls.update();
+    this.controls.enableDamping = damping;
+
+    const w = this.container.clientWidth;
+    const h = this.container.clientHeight;
+    const aspect = w > 0 && h > 0 ? w / h : 1;
+    this.camera.updateMatrixWorld();
+    this.viewSpan = item
+      ? calculateProjectedSpan(bounds, this.camera.matrixWorldInverse, aspect)
+      : sceneScale.radius;
+    this.camera.left = -this.viewSpan * aspect;
+    this.camera.right = this.viewSpan * aspect;
+    this.camera.top = this.viewSpan;
+    this.camera.bottom = -this.viewSpan;
+    this.camera.updateProjectionMatrix();
   }
 
   public focusRoom(currentRoom: RoomModel | null): void {
