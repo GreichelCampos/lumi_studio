@@ -83,7 +83,7 @@ def test_room_can_publish_placed_and_unplaced_objects_together():
     assert objects[1]["position"] == [1, 0, -2]
 
 
-def test_second_floor_produces_spatial_diagnostic_instead_of_adapter_error():
+def test_second_floor_blocks_execution_with_semantic_diagnostic():
     source = (
         "habitacion sala(5, 4, 3) { "
         "piso suelo1 { } piso suelo2 { } }"
@@ -91,14 +91,15 @@ def test_second_floor_produces_spatial_diagnostic_instead_of_adapter_error():
 
     response = RequestDispatcher().dispatch(request(source))
 
-    assert response["status"] == "failed"
+    assert response["status"] == "blocked"
+    assert response["result"]["executionAttempted"] is False
     diagnostic = response["result"]["diagnostics"][0]
-    assert diagnostic["category"] == "SPATIAL"
-    assert diagnostic["code"] == "SPA_MULTIPLE_FLOORS"
+    assert diagnostic["category"] == "SEMANTIC"
+    assert diagnostic["code"] == "SEM_MULTIPLE_FLOORS"
     assert diagnostic["file"] == "principal.lumi"
     assert diagnostic["line"] == 1
     assert diagnostic["column"] == 44
-    assert "más de un piso" in diagnostic["description"]
+    assert "piso" in diagnostic["description"]
     assert response["result"]["capabilities"]["scenePlan"] is False
     assert "scenePlan" not in response["result"]
 

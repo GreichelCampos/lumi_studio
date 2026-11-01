@@ -171,6 +171,15 @@ class SemanticAnalysisResult:
         return not self.diagnostics
 
 
+@dataclass(slots=True)
+class _SpatialRoomContext:
+    """Static declarations visible while one room body is analyzed."""
+
+    name: str
+    elements: dict[str, dict[str, Any]] = field(default_factory=dict)
+    floor_count: int = 0
+
+
 class SemanticAnalyzer:
     """Validate declarations, expressions and control flow in a Lumi AST."""
 
@@ -184,6 +193,8 @@ class SemanticAnalyzer:
         self._processed_function_nodes: set[tuple[SymbolTable, int]] = set()
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
+        self.current_spatial_room: _SpatialRoomContext | None = None
+        self._spatial_room_names: set[str] = set()
 
     def analyze(
         self,
@@ -198,6 +209,8 @@ class SemanticAnalyzer:
         self.current_function = None
         self._function_symbols = {}
         self._processed_function_nodes = set()
+        self.current_spatial_room = None
+        self._spatial_room_names = set()
         self._has_import_context = imported_programs is not None
         self.imported_programs = {
             file_name: normalize_ast(imported_program)
@@ -244,6 +257,22 @@ class SemanticAnalyzer:
             self._analyze_return(node)
         elif node_type == "ImportNode":
             self._analyze_import(node)
+        elif node_type == "RoomNode":
+            self._analyze_room(node)
+        elif node_type == "SpatialObjectDeclarationNode":
+            self._analyze_spatial_declaration(node, "object")
+        elif node_type == "FloorNode":
+            self._analyze_spatial_declaration(node, "floor")
+        elif node_type == "WallNode":
+            self._analyze_spatial_declaration(node, "wall")
+        elif node_type == "DoorNode":
+            self._analyze_spatial_declaration(node, "door")
+        elif node_type == "WindowNode":
+            self._analyze_spatial_declaration(node, "window")
+        elif node_type in {"PlaceObjectNode", "MoveObjectNode"}:
+            self._analyze_spatial_operation(node, "position")
+        elif node_type == "RotateObjectNode":
+            self._analyze_spatial_operation(node, "rotation")
 
     def _analyze_statements(self, statements: list[dict[str, Any]]) -> None:
         self._predeclare_functions(statements)
@@ -414,6 +443,196 @@ class SemanticAnalyzer:
             self._analyze_node(node["update"])
         finally:
             self.current_scope = previous
+
+    def _analyze_room(self, node: dict[str, Any]) -> None:
+        """Check room expressions and analyze its body in one spatial scope."""
+
+        if self.current_spatial_room is not None:
+            self._add_diagnostic(
+                node,
+                "SEM_NESTED_ROOM",
+                (
+                    f"La habitaciÃ³n '{node['name']}' no puede declararse dentro "
+                    f"de la habitaciÃ³n '{self.current_spatial_room.name}'."
+                ),
+                "Declare cada habitaciÃ³n en un alcance sin otra habitaciÃ³n activa.",
+                cause=(self.current_spatial_room.name, node["name"]),
+            )
+            return
+
+        if node["name"] in self._spatial_room_names:
+            self._add_diagnostic(
+                node,
+                "SEM_DUPLICATE_SPATIAL_ROOM",
+                f"La habitaciÃ³n '{node['name']}' ya fue declarada.",
+                "Utilice un nombre diferente para cada habitaciÃ³n.",
+                cause=(node["name"],),
+            )
+        else:
+            self._spatial_room_names.add(node["name"])
+
+        for dimension_name in ("width", "length", "height"):
+            expression = node[dimension_name]
+            expression_type = self._infer_expression(expression)
+            if (
+                expression_type is not None
+                and expression_type not in NUMERIC_TYPES
+            ):
+                self._add_diagnostic(
+                    expression,
+                    "SEM_SPATIAL_DIMENSION_NOT_NUMERIC",
+                    (
+                        f"La dimensiÃ³n '{dimension_name}' de la habitaciÃ³n "
+                        f"'{node['name']}' debe ser numÃ©rica."
+                    ),
+                    "Utilice una expresiÃ³n de tipo entero o decimal.",
+                    cause=(node["name"], dimension_name, expression_type),
+                )
+
+        previous_room = self.current_spatial_room
+        self.current_spatial_room = _SpatialRoomContext(node["name"])
+        try:
+            self._analyze_block(node.get("body", []), f"room:{node['name']}")
+        finally:
+            self.current_spatial_room = previous_room
+
+    def _analyze_spatial_declaration(
+        self,
+        node: dict[str, Any],
+        element_kind: str,
+    ) -> None:
+        room = self.current_spatial_room
+        if room is None and self.current_function is None:
+            self._add_diagnostic(
+                node,
+                "SEM_SPATIAL_DECLARATION_OUTSIDE_ROOM",
+                f"El elemento espacial '{node['name']}' requiere una habitaciÃ³n.",
+                "Declare el elemento dentro de una habitaciÃ³n.",
+                cause=(element_kind, node["name"]),
+            )
+        elif room is not None:
+            previous = room.elements.get(node["name"])
+            if previous is not None:
+                self._add_diagnostic(
+                    node,
+                    "SEM_DUPLICATE_SPATIAL_ELEMENT",
+                    (
+                        f"El elemento '{node['name']}' ya estÃ¡ declarado en la "
+                        f"habitaciÃ³n '{room.name}'."
+                    ),
+                    "Utilice un nombre diferente dentro de la habitaciÃ³n.",
+                    cause=(room.name, node["name"], id(previous)),
+                )
+            else:
+                room.elements[node["name"]] = node
+
+            if element_kind == "floor":
+                room.floor_count += 1
+                if room.floor_count > 1:
+                    self._add_diagnostic(
+                        node,
+                        "SEM_MULTIPLE_FLOORS",
+                        f"La habitaciÃ³n '{room.name}' contiene mÃ¡s de un piso.",
+                        "Conserve como mÃ¡ximo una declaraciÃ³n de piso por habitaciÃ³n.",
+                        cause=(room.name, room.floor_count),
+                    )
+
+        self._analyze_spatial_properties(node, element_kind)
+
+    def _analyze_spatial_properties(
+        self,
+        node: dict[str, Any],
+        element_kind: str,
+    ) -> None:
+        seen: set[str] = set()
+        text_properties = {"color", "material", "orientacion"}
+        numeric_properties = {"ancho", "alto", "desplazamiento", "elevacion"}
+        for spatial_property in node.get("properties", []):
+            name = spatial_property["name"]
+            if name in seen:
+                self._add_diagnostic(
+                    spatial_property,
+                    "SEM_DUPLICATE_SPATIAL_PROPERTY",
+                    f"La propiedad espacial '{name}' estÃ¡ duplicada.",
+                    "Conserve una sola declaraciÃ³n de la propiedad.",
+                    cause=(element_kind, node["name"], name),
+                )
+                continue
+            seen.add(name)
+            value_type = self._infer_expression(spatial_property["value"])
+            expected = (
+                DataType.STRING
+                if name in text_properties
+                else NUMERIC_TYPES
+                if name in numeric_properties
+                else None
+            )
+            if value_type is None or expected is None:
+                type_is_valid = True
+            elif isinstance(expected, DataType):
+                type_is_valid = value_type is expected
+            else:
+                type_is_valid = value_type in expected
+            if not type_is_valid:
+                expected_description = (
+                    "texto" if expected is DataType.STRING else "entero o decimal"
+                )
+                self._add_diagnostic(
+                    spatial_property["value"],
+                    "SEM_SPATIAL_PROPERTY_TYPE_MISMATCH",
+                    (
+                        f"La propiedad '{name}' del elemento '{node['name']}' "
+                        f"debe ser de tipo {expected_description}."
+                    ),
+                    "Utilice una expresiÃ³n compatible con la propiedad espacial.",
+                    cause=(element_kind, node["name"], name, value_type),
+                )
+
+            if name == "orientacion" and value_type is DataType.STRING:
+                value = spatial_property["value"]
+                if (
+                    value.get("node") == "LiteralNode"
+                    and value.get("value") not in {"norte", "sur", "este", "oeste"}
+                ):
+                    self._add_diagnostic(
+                        value,
+                        "SEM_INVALID_SPATIAL_ORIENTATION",
+                        f"La orientaciÃ³n '{value.get('value')}' no es vÃ¡lida.",
+                        "Utilice 'norte', 'sur', 'este' u 'oeste'.",
+                        cause=(element_kind, node["name"], value.get("value")),
+                    )
+
+    def _analyze_spatial_operation(
+        self,
+        node: dict[str, Any],
+        vector_field: str,
+    ) -> None:
+        room = self.current_spatial_room
+        object_name = node["object_name"]
+        if room is None:
+            # A global/imported function can operate on the room active at call
+            # time. Its vector is still checked, but resolution remains a known
+            # interprocedural analysis limitation.
+            if self.current_function is None:
+                self._add_diagnostic(
+                    node,
+                    "SEM_SPATIAL_OPERATION_OUTSIDE_ROOM",
+                    f"La operaciÃ³n sobre '{object_name}' requiere una habitaciÃ³n.",
+                    "Ejecute la operaciÃ³n dentro de una habitaciÃ³n activa.",
+                    cause=(node["node"], object_name),
+                )
+        elif object_name not in room.elements:
+            self._add_diagnostic(
+                node,
+                "SEM_UNDECLARED_SPATIAL_ELEMENT",
+                (
+                    f"El elemento '{object_name}' no estÃ¡ declarado en la "
+                    f"habitaciÃ³n '{room.name}'."
+                ),
+                "Declare el elemento antes de utilizarlo.",
+                cause=(room.name, object_name),
+            )
+        self._infer_expression(node[vector_field])
 
     def _predeclare_functions(self, statements: list[dict[str, Any]]) -> None:
         for statement in statements:
