@@ -20,7 +20,7 @@ def element(result, room_index: int = 0, element_index: int = 0):
 
 def test_true_if_places_element():
     result = execute(
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(6, 6, 3) { silla silla1 { } "
         "si verdadero { colocar silla1 [1, 0, 2]>> } }"
     )
 
@@ -40,7 +40,7 @@ def test_false_if_does_not_place_element():
 
 def test_else_executes_only_selected_branch():
     result = execute(
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(8, 10, 3) { silla silla1 { } "
         "si falso { colocar silla1 [1, 0, 2]>> } "
         "sino { colocar silla1 [3, 0, 4]>> } }"
     )
@@ -53,7 +53,7 @@ def test_else_executes_only_selected_branch():
 def test_switch_executes_only_selected_case():
     result = execute(
         'texto estilo = "industrial">> '
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(6, 6, 3) { silla silla1 { } "
         "segun estilo { "
         'caso "minimalista": colocar silla1 [1, 0, 1]>> '
         'caso "industrial": colocar silla1 [2, 0, 2]>> '
@@ -67,7 +67,7 @@ def test_switch_executes_only_selected_case():
 
 def test_for_executes_repeated_absolute_moves_and_keeps_final_position():
     result = execute(
-        "habitacion sala(8, 5, 3) { silla silla1 { } "
+        "habitacion sala(8, 14, 3) { silla silla1 { } "
         "colocar silla1 [0, 0, 0]>> "
         "hacer entero i = 0; i < 4; i = i + 1 { "
         "mover silla1 [i, 0, i * 2]>> } }"
@@ -92,7 +92,7 @@ def test_while_executes_repeated_absolute_rotations_and_keeps_final_rotation():
 def test_loop_variables_and_expressions_calculate_positions():
     result = execute(
         "decimal inicio = -2.0>> decimal separacion = 1.5>> "
-        "habitacion sala(8, 5, 3) { mesa mesa1 { } "
+        "habitacion sala(8, 8, 3) { mesa mesa1 { } "
         "colocar mesa1 [0, 0, 0]>> "
         "hacer entero i = 0; i < 3; i = i + 1 { "
         "mover mesa1 [inicio + i * separacion, 0, i + 1]>> } }"
@@ -119,7 +119,7 @@ def test_function_parameters_calculate_spatial_coordinates():
     result = execute(
         "funcion vacio ubicar(decimal base, decimal desplazamiento) { "
         "mover mesa1 [base + desplazamiento, 0, base * 2]>> } "
-        "habitacion sala(8, 5, 3) { mesa mesa1 { } "
+        "habitacion sala(10, 10, 3) { mesa mesa1 { } "
         "colocar mesa1 [0, 0, 0]>> ubicar(2, 1.5)>> }"
     )
 
@@ -141,9 +141,9 @@ def test_numeric_function_calculates_room_dimensions():
 
 def test_multiple_rooms_keep_independent_final_states():
     result = execute(
-        "habitacion sala(5, 4, 3) { silla item1 { } "
+        "habitacion sala(6, 6, 3) { silla item1 { } "
         "colocar item1 [1, 0, 1]>> mover item1 [2, 0, 2]>> } "
-        "habitacion oficina(4, 3, 2.7) { mesa item1 { } "
+        "habitacion oficina(4, 6, 2.7) { mesa item1 { } "
         "rotar item1 [0, 90, 0]>> colocar item1 [-1, 0, -2]>> }"
     )
 
@@ -158,7 +158,7 @@ def test_multiple_rooms_keep_independent_final_states():
 def test_boolean_controls_optional_placement():
     result = execute(
         "booleano incluir = verdadero>> booleano omitir = falso>> "
-        "habitacion sala(5, 4, 3) { televisor tv1 { } alfombra alfombra1 { } "
+        "habitacion sala(5, 6, 3) { televisor tv1 { } alfombra alfombra1 { } "
         "si incluir { colocar tv1 [0, 1.5, -2]>> } "
         "si omitir { colocar alfombra1 [0, 0, 0]>> } }"
     )
@@ -260,7 +260,7 @@ def test_imported_function_operates_on_active_room_builder():
     )
     parser, program = parse_source(
         'importar "espacial.lumi" usar mover_a>> '
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(8, 6, 3) { silla silla1 { } "
         "colocar silla1 [0, 0, 0]>> mover_a(3, -2)>> }",
         resolver=resolver,
     )

@@ -1,5 +1,7 @@
 from json import dumps, loads
 
+import pytest
+
 from services.protocol.dispatcher import RequestDispatcher
 
 
@@ -15,7 +17,7 @@ def request(source: str, request_id: str = "scene") -> dict[str, object]:
 
 def test_runtime_scene_reaches_protocol_with_final_object_state():
     source = (
-        'decimal destino = 2>> funcion decimal siguiente(decimal valor) { '
+        'decimal destino = 1>> funcion decimal siguiente(decimal valor) { '
         'retornar valor + 1>> } habitacion sala(6, 5, 3) { '
         'piso suelo { material "madera">> color "beige">> } '
         'mesa mesa1 { color "rojo">> } colocar mesa1 [0, 0, 0]>> '
@@ -36,7 +38,7 @@ def test_runtime_scene_reaches_protocol_with_final_object_state():
     item = room["objects"][0]
     assert item["type"] == "mesa"
     assert item["placed"] is True
-    assert item["position"] == [3, 0, -1]
+    assert item["position"] == [2, 0, -1]
     assert item["rotation"] == [0, 90, 0]
     assert item["dimensions"] == [1.2, 0.5, 0.8]
     assert item["color"] == "rojo"
@@ -70,7 +72,7 @@ def test_unplaced_object_is_published_without_artificial_position():
 def test_room_can_publish_placed_and_unplaced_objects_together():
     source = (
         "habitacion sala(5, 4, 3) { silla pendiente { } mesa ubicada { } "
-        "colocar ubicada [1, 0, -2]>> }"
+        "colocar ubicada [1, 0, -1.5]>> }"
     )
 
     response = RequestDispatcher().dispatch(request(source))
@@ -80,7 +82,7 @@ def test_room_can_publish_placed_and_unplaced_objects_together():
     assert objects[0]["placed"] is False
     assert "position" not in objects[0]
     assert objects[1]["placed"] is True
-    assert objects[1]["position"] == [1, 0, -2]
+    assert objects[1]["position"] == [1, 0, -1.5]
 
 
 def test_second_floor_blocks_execution_with_semantic_diagnostic():
@@ -169,7 +171,45 @@ def test_unrepresentable_wall_returns_controlled_serialization_error():
     assert response["status"] == "error"
     assert response["error"]["kind"] == "infrastructure"
     assert response["error"]["code"] == "SERIALIZATION_ERROR"
-    assert "geometría requerida" in response["error"]["message"]
+    assert "geometría 'orientation' requerida" in response["error"]["message"]
+
+
+def test_wall_and_door_geometry_reaches_current_ide_contract():
+    response = RequestDispatcher().dispatch(
+        request(
+            'habitacion sala(6, 5, 3) { '
+            'pared frente { orientacion "norte">> color "azul">> '
+            'material "concreto">> } '
+            'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
+            'desplazamiento 0.5>> } }'
+        )
+    )
+
+    assert response["status"] == "completed"
+    room = response["result"]["scenePlan"]["rooms"][0]
+    assert room["walls"]["north"] == {
+        "color": "azul",
+        "material": "concreto",
+    }
+    assert room["doors"][0]["wall"] == "norte"
+    assert room["doors"][0]["position"] == pytest.approx(-2.05)
+    assert room["doors"][0]["width"] == 0.9
+    assert room["doors"][0]["height"] == 2.1
+
+
+def test_window_waits_for_elevation_field_in_local_typescript_contract():
+    response = RequestDispatcher().dispatch(
+        request(
+            'habitacion sala(6, 5, 3) { ventana luz { '
+            'orientacion "sur">> ancho 1.2>> alto 1>> '
+            'desplazamiento 2>> elevacion 0.9>> } }'
+        )
+    )
+
+    assert response["status"] == "error"
+    assert response["error"]["code"] == "SERIALIZATION_ERROR"
+    assert "WindowModel" in response["error"]["message"]
+    assert "elevation" in response["error"]["message"]
 
 
 def test_unrepresentable_numeric_magnitude_is_a_controlled_serialization_error():

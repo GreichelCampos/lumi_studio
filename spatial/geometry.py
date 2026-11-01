@@ -243,6 +243,44 @@ def box_vertices(box: OrientedBox) -> tuple[Point3, ...]:
     return tuple(vertices)
 
 
+def box_from_floor_pivot(
+    position: Point3,
+    dimensions: Point3,
+    rotation_degrees: Point3 = Point3(0.0, 0.0, 0.0),
+) -> OrientedBox:
+    """Build the box used by Three.js from its bottom-center object pivot."""
+
+    half_extents = Point3(
+        dimensions.x / 2.0,
+        dimensions.y / 2.0,
+        dimensions.z / 2.0,
+    )
+    local_center = Point3(0.0, half_extents.y, 0.0)
+    axes = box_axes(
+        OrientedBox(
+            center=Point3(0.0, 0.0, 0.0),
+            half_extents=half_extents,
+            rotation_degrees=rotation_degrees,
+        )
+    )
+    rotated_center = Point3(
+        axes[0].x * local_center.x
+        + axes[1].x * local_center.y
+        + axes[2].x * local_center.z,
+        axes[0].y * local_center.x
+        + axes[1].y * local_center.y
+        + axes[2].y * local_center.z,
+        axes[0].z * local_center.x
+        + axes[1].z * local_center.y
+        + axes[2].z * local_center.z,
+    )
+    return OrientedBox(
+        center=_add(position, rotated_center),
+        half_extents=half_extents,
+        rotation_degrees=rotation_degrees,
+    )
+
+
 def box_within_bounds(
     box: OrientedBox,
     bounds: AxisAlignedBounds,

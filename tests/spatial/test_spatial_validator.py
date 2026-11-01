@@ -267,9 +267,9 @@ def test_empty_scene_plan_succeeds():
 @pytest.mark.parametrize(
     "position",
     [
-        vector(1, 0, 2),
-        vector(1.5, 0.25, 2.75),
-        vector(-3, 0, -1.5),
+        vector(1, 0, 1),
+        vector(1.5, 0.25, 1.5),
+        vector(-2, 0, -1.5),
     ],
 )
 def test_valid_position_vectors_succeed(position):
@@ -328,7 +328,7 @@ def test_non_finite_vector_component_is_rejected(value):
 
 @pytest.mark.parametrize("value", [10**1000, -(10**1000)])
 def test_extremely_large_integer_vector_component_succeeds(value):
-    plan = scene(room(elements=(element(position=vector(x=value)),)))
+    plan = scene(room(elements=(element(rotation=vector(x=value)),)))
 
     result = SpatialValidator().validate(plan)
 
