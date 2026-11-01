@@ -254,8 +254,12 @@ export class ThreeSceneManager {
       isWireframe: this.isWireframe,
       showReferenceAxes: this.showReferenceAxes,
       showDimensions: this.showDimensions,
+      selectedEntityId: activeEntityId,
     });
     this.wallRecords = wallRecords;
+    for (const record of wallRecords) if (record.entityId) {
+      for (const mesh of record.meshes) this.selectionController.registerPickable(mesh, record.entityId);
+    }
 
     room.doors.forEach((door) => {
       const isSelected = activeEntityId === door.id;

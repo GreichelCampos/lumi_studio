@@ -40,6 +40,9 @@ export function isPlacedSpatialObject(object: SpatialObject): object is PlacedSp
 export interface WallFace {
   color: string;
   material?: string;
+  id?: string;
+  name?: string;
+  sourceRef?: SourceReference;
 }
 
 export interface WallConfig {
@@ -56,6 +59,9 @@ export interface FloorModel {
 
 export interface DoorModel {
   id: string;
+  name?: string;
+  color?: string;
+  material?: string;
   wall: 'norte' | 'sur' | 'este' | 'oeste';
   position: number; // offset along wall from center or origin
   width: number;
@@ -65,6 +71,10 @@ export interface DoorModel {
 
 export interface WindowModel {
   id: string;
+  name?: string;
+  color?: string;
+  material?: string;
+  elevation?: number; // meters from floor to lower edge; absent preserves legacy center
   wall: 'norte' | 'sur' | 'este' | 'oeste';
   position: number;
   width: number;

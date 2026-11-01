@@ -3,11 +3,15 @@ import type { DoorModel, RoomModel, WindowModel } from '../../../types';
 export const WALL_THICKNESS = 0.16;
 export const WINDOW_CENTER_HEIGHT = 1.6;
 
-/** Unclipped legacy bounds; only wall cuts are clipped to the room height. */
-export function openingVerticalBounds(opening: Pick<DoorModel, 'height'>, kind: 'door' | 'window'): {
+/** Unclipped bounds; only wall cuts are clipped to the room height. */
+export function openingVerticalBounds(opening: Pick<WindowModel, 'height' | 'elevation'>, kind: 'door' | 'window'): {
   centerY: number; bottom: number; top: number;
 } {
   if (kind === 'door') return { centerY: opening.height / 2, bottom: 0, top: opening.height };
+  if (opening.elevation !== undefined) return {
+    centerY: opening.elevation + opening.height / 2,
+    bottom: opening.elevation, top: opening.elevation + opening.height,
+  };
   return {
     centerY: WINDOW_CENTER_HEIGHT,
     bottom: WINDOW_CENTER_HEIGHT - opening.height / 2,

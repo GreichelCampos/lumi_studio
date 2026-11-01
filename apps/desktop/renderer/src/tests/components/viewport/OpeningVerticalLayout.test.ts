@@ -122,3 +122,66 @@ describe('shared legacy opening vertical layout', () => {
     }
   });
 });
+
+describe('explicit elevation, independent of historical window layout', () => {
+  it.each(walls.flatMap(wall => [0, 0.75, 2].map(elevation => ({ wall, elevation }))))
+    ('aligns mesh and wall cut on $wall at elevation $elevation', ({ wall, elevation }) => {
+      const win = createMockWindow({ wall, elevation, height: 1, width: 1.2, position: -0.6 });
+      const room = createMockRoom({ dimensions: [8, 6, 3], doors: [], windows: [win] });
+      const before = structuredClone(room);
+      const mesh = OpeningFactory.createWindowMesh(win, room, false);
+      const { group } = RoomFactory.createRoomStructure(room, options);
+      try {
+        expect(mesh.position.y).toBe(elevation + 0.5);
+        const bounds = new THREE.Box3().setFromObject(mesh);
+        expect(bounds.min.y).toBeCloseTo(elevation, 6);
+        expect(bounds.max.y).toBeCloseTo(elevation + 1, 6);
+        expect(wallHit(group, wall, mesh.position, elevation + 0.001)).toBe(false);
+        expect(wallHit(group, wall, mesh.position, elevation + 0.999)).toBe(false);
+        if (elevation > 0) expect(wallHit(group, wall, mesh.position, elevation - 0.001)).toBe(true);
+        if (elevation + 1 < 3) expect(wallHit(group, wall, mesh.position, elevation + 1.001)).toBe(true);
+        expect(room).toEqual(before);
+      } finally { ThreeResourceDisposer.disposeHierarchy(mesh); ThreeResourceDisposer.disposeHierarchy(group); }
+    });
+
+  it('clips only the wall cut when an explicitly elevated window exceeds room height', () => {
+    const win = createMockWindow({ elevation: 2.5, height: 1, width: 1, wall: 'norte', position: 0 });
+    const room = createMockRoom({ dimensions: [8, 6, 3], doors: [], windows: [win] });
+    const before = structuredClone(room);
+    const mesh = OpeningFactory.createWindowMesh(win, room, false);
+    try {
+      expect(new THREE.Box3().setFromObject(mesh).max.y).toBeCloseTo(3.5);
+      expect(wallSegments(room, 'norte').reduce((sum, part) => sum + (part.right - part.left) * (part.top - part.bottom), 0)).toBeCloseTo(24 - 0.5);
+      expect(room).toEqual(before);
+    } finally { ThreeResourceDisposer.disposeHierarchy(mesh); }
+  });
+
+  it('applies appearance only to opaque components and preserves dimensions and glass optics', () => {
+    const room = createMockRoom();
+    const door = createMockDoor(); const win = createMockWindow({ elevation: 0.7 });
+    const groups = [OpeningFactory.createDoorMesh(door, room, false), OpeningFactory.createWindowMesh(win, room, false),
+      OpeningFactory.createDoorMesh({ ...door, color: '#123456', material: 'acero' }, room, false),
+      OpeningFactory.createWindowMesh({ ...win, color: '#123456', material: 'acero' }, room, false)];
+    try {
+      const firstMaterial = (group: THREE.Group) => (group.children[0] as THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>).material;
+      expect(firstMaterial(groups[0]).roughness).toBe(0.5);
+      expect(firstMaterial(groups[1]).roughness).toBe(0.3);
+      for (const group of groups.slice(2)) {
+        expect(firstMaterial(group).color.getHexString()).toBe('123456');
+        expect(firstMaterial(group).metalness).toBe(0.8);
+      }
+      for (let index = 0; index < 2; index++) {
+        const base = new THREE.Box3().setFromObject(groups[index]);
+        const styled = new THREE.Box3().setFromObject(groups[index + 2]);
+        expect(base.equals(styled)).toBe(true);
+      }
+      const glass = groups.filter((_, index) => index % 2 === 1).map(group =>
+        (group.children.find(child => child instanceof THREE.Mesh && child.material instanceof THREE.MeshPhysicalMaterial) as THREE.Mesh<THREE.BoxGeometry, THREE.MeshPhysicalMaterial>).material);
+      expect(glass[0].color.equals(glass[1].color)).toBe(true);
+      for (const material of glass) {
+        expect(material.transmission).toBe(0.85); expect(material.opacity).toBe(0.55);
+        expect(material.ior).toBe(1.5); expect(material.roughness).toBe(0.1);
+      }
+    } finally { groups.forEach(group => ThreeResourceDisposer.disposeHierarchy(group)); }
+  });
+});

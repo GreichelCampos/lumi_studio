@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { DoorModel, WindowModel, RoomModel } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 import { openingPlacement, openingVerticalBounds, WALL_THICKNESS } from '../helpers/openingLayout';
+import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
 
 export class OpeningFactory {
   public static createDoorMesh(
@@ -18,8 +19,8 @@ export class OpeningFactory {
     const dh = door.height;
 
     const frameMat = new THREE.MeshStandardMaterial({
-      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : '#e2e8f0',
-      roughness: 0.5,
+      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(door.color, '#e2e8f0'),
+      ...(door.material === undefined ? { roughness: 0.5 } : surfaceMaterial(door.material)),
       wireframe: isWireframe,
     });
     const border = Math.min(0.03, dw / 6, dh / 6);
@@ -34,8 +35,8 @@ export class OpeningFactory {
 
     const leafGeo = new THREE.BoxGeometry(dw - border, dh - border, 0.04);
     const leafMat = new THREE.MeshStandardMaterial({
-      color: '#f8fafc',
-      roughness: 0.4,
+      color: surfaceColor(door.color, '#f8fafc'),
+      ...(door.material === undefined ? { roughness: 0.4 } : surfaceMaterial(door.material)),
       wireframe: isWireframe,
     });
     const leafMesh = new THREE.Mesh(leafGeo, leafMat);
@@ -86,8 +87,8 @@ export class OpeningFactory {
     const wh = win.height;
 
     const frameMat = new THREE.MeshStandardMaterial({
-      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : '#ffffff',
-      roughness: 0.3,
+      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(win.color, '#ffffff'),
+      ...(win.material === undefined ? { roughness: 0.3 } : surfaceMaterial(win.material)),
       wireframe: isWireframe,
     });
     const border = Math.min(0.04, ww / 6, wh / 6);

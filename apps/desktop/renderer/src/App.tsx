@@ -7,6 +7,7 @@ import { TopBar } from './components/TopBar';
 import { ProjectExplorer } from './components/ProjectExplorer';
 import { CodeEditor } from './components/CodeEditor';
 import { Viewport3D } from './components/Viewport3D';
+import { findDeclaredWall } from './components/viewport/helpers/architecturalSelection';
 import { ConsolePanel } from './components/ConsolePanel';
 import { DocumentationModal } from './components/DocumentationModal';
 import { NewProjectModal } from './components/modals/NewProjectModal';
@@ -378,6 +379,12 @@ export default function App() {
           if (win.sourceRef?.line) {
             setHighlightedLine(win.sourceRef.line);
           }
+          return;
+        }
+        const wall = findDeclaredWall(room, objectId);
+        if (wall) {
+          lumiAssistant.onEntitySelected(wall.data.name || wall.wall, 'Pared');
+          if (wall.data.sourceRef?.line) setHighlightedLine(wall.data.sourceRef.line);
           return;
         }
       }

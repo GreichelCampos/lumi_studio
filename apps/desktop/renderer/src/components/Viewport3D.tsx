@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import { ScenePlan, SourceReference, isPlacedSpatialObject } from '../types';
 import { ThreeSceneManager } from './viewport/ThreeSceneManager';
 import { validateViewportScene } from './viewport/helpers/validateViewportScene';
+import { findDeclaredWall, roomContainsEntity } from './viewport/helpers/architecturalSelection';
 import { RoomSelector } from './viewport/RoomSelector';
 import { ObjectPropertiesCard, SelectedEntity } from './viewport/ObjectPropertiesCard';
 import { ViewportEmptyState, EmptyStateType } from './viewport/ViewportEmptyState';
@@ -67,6 +68,12 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   const onSelectRef = useRef(onSelectObject);
   onSelectRef.current = onSelectObject;
 
+  useEffect(() => {
+    if (activeObjectId && scenePlan && !scenePlan.rooms.some(room => roomContainsEntity(room, activeObjectId))) {
+      onSelectRef.current?.(null);
+    }
+  }, [activeObjectId, scenePlan]);
+
   const ideContext = useOptionalIdeSettings();
   const currentTheme = ideContext?.currentTheme;
   const spatialBackground = ideContext?.settings?.spatialBackground;
@@ -112,11 +119,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     if (!targetObjId || !scenePlan) return;
 
     for (const r of scenePlan.rooms) {
-      const hasObj = r.objects.some((o) => o.id === targetObjId);
-      const hasDoor = r.doors.some((d) => d.id === targetObjId);
-      const hasWin = r.windows.some((w) => w.id === targetObjId);
-
-      if (hasObj || hasDoor || hasWin) {
+      if (roomContainsEntity(r, targetObjId)) {
         if (selectedRoomId !== r.id) {
           setSelectedRoomId(r.id);
         }
@@ -142,6 +145,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
     const win = activeRoom.windows.find((w) => w.id === activeObjectId);
     if (win) return { kind: 'window', data: win };
+
+    const wall = findDeclaredWall(activeRoom, activeObjectId);
+    if (wall) return { kind: 'wall', ...wall };
 
     return null;
   }, [activeObjectId, activeRoom]);
@@ -242,10 +248,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
       if (activeObjectId && scenePlan) {
         const targetRoom = scenePlan.rooms.find((r) => r.id === newRoomId);
         if (targetRoom) {
-          const belongsToTarget =
-            targetRoom.objects.some((o) => o.id === activeObjectId) ||
-            targetRoom.doors.some((d) => d.id === activeObjectId) ||
-            targetRoom.windows.some((w) => w.id === activeObjectId);
+          const belongsToTarget = roomContainsEntity(targetRoom, activeObjectId);
 
           if (!belongsToTarget) {
             onSelectObject?.(null);
