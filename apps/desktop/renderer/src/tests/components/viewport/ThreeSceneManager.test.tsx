@@ -110,7 +110,11 @@ describe('ThreeSceneManager lifecycle', () => {
     const scene = manager['scene'];
     const geometrySpies: Array<ReturnType<typeof vi.spyOn>> = [];
     scene.traverse(child => { if (child instanceof THREE.Mesh || child instanceof THREE.Line) geometrySpies.push(vi.spyOn(child.geometry, 'dispose')); });
+    const initialRoot = scene.getObjectByName(`room-${room.id}`);
     manager.renderRoom(room, room.objects[0].id);
+    expect(geometrySpies.every(spy => spy.mock.calls.length === 0)).toBe(true);
+    expect(scene.getObjectByName(`room-${room.id}`)).toBe(initialRoot);
+    manager.renderRoom({ ...room, dimensions: [6, 4, 2.7] }, room.objects[0].id);
     expect(geometrySpies.some(spy => spy.mock.calls.length > 0)).toBe(true);
     const before = scene.getObjectByName(`room-${room.id}`);
     expect(() => manager.renderRoom({ ...room, dimensions: [NaN, 2, 3] }, null)).toThrow('Escena no válida');
@@ -253,8 +257,9 @@ it.each(wallOrientations)('picks every declared %s wall segment with one receive
  }
  const disposeMaterial = vi.spyOn(material, 'dispose');
  manager.renderRoom(room, null);
- expect(disposeMaterial).toHaveBeenCalledOnce();
+ expect(disposeMaterial).not.toHaveBeenCalled();
  const unselected = manager['wallRecords'].find(item => item.entityId === 'producer-wall')!.materials[0] as THREE.MeshStandardMaterial;
+ expect(unselected).toBe(material);
  expect(unselected.emissiveIntensity).toBe(0);
  expect(room).toEqual(before); manager.dispose();
 });

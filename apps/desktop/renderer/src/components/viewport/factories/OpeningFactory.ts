@@ -3,13 +3,15 @@ import { DoorModel, WindowModel, RoomModel } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 import { openingPlacement, openingVerticalBounds, WALL_THICKNESS } from '../helpers/openingLayout';
 import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
+import type { RegisterVisualState } from '../interaction/VisualState';
 
 export class OpeningFactory {
   public static createDoorMesh(
     door: DoorModel,
     room: RoomModel,
     isSelected: boolean,
-    isWireframe = false
+    isWireframe = false,
+    registerVisualState?: RegisterVisualState
   ): THREE.Group {
     const wallThick = WALL_THICKNESS;
     const doorGroup = new THREE.Group();
@@ -59,7 +61,7 @@ export class OpeningFactory {
     doorGroup.position.set(...placement.position);
     doorGroup.rotation.y = placement.rotationY;
 
-    if (isSelected) {
+    if (isSelected || registerVisualState) {
       const highlightBox = new THREE.Mesh(
         new THREE.BoxGeometry(dw + 0.12, dh + 0.12, wallThick + 0.1),
         new THREE.MeshBasicMaterial({
@@ -69,6 +71,11 @@ export class OpeningFactory {
       );
       highlightBox.userData.ignorePicking = true;
       doorGroup.add(highlightBox);
+      highlightBox.visible = isSelected;
+      registerVisualState?.(selected => {
+        frameMat.color.set(selected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(door.color, '#e2e8f0'));
+        highlightBox.visible = selected;
+      });
     }
 
     return doorGroup;
@@ -78,7 +85,8 @@ export class OpeningFactory {
     win: WindowModel,
     room: RoomModel,
     isSelected: boolean,
-    isWireframe = false
+    isWireframe = false,
+    registerVisualState?: RegisterVisualState
   ): THREE.Group {
     const winGroup = new THREE.Group();
     winGroup.name = win.id;
@@ -126,7 +134,7 @@ export class OpeningFactory {
     winGroup.position.set(...placement.position);
     winGroup.rotation.y = placement.rotationY;
 
-    if (isSelected) {
+    if (isSelected || registerVisualState) {
       const highlightBox = new THREE.Mesh(
         new THREE.BoxGeometry(ww + 0.1, wh + 0.1, 0.16),
         new THREE.MeshBasicMaterial({
@@ -136,6 +144,11 @@ export class OpeningFactory {
       );
       highlightBox.userData.ignorePicking = true;
       winGroup.add(highlightBox);
+      highlightBox.visible = isSelected;
+      registerVisualState?.(selected => {
+        frameMat.color.set(selected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(win.color, '#ffffff'));
+        highlightBox.visible = selected;
+      });
     }
 
     return winGroup;

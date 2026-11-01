@@ -4,6 +4,7 @@ import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 
 import { WALL_THICKNESS, wallSegments } from '../helpers/openingLayout';
 import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
+import type { VisualStateUpdate } from '../interaction/VisualState';
 
 export interface WallMeshRecord {
   wall: 'norte' | 'sur' | 'este' | 'oeste';
@@ -17,6 +18,7 @@ export interface RoomFactoryOptions {
   showReferenceAxes: boolean;
   showDimensions: boolean;
   selectedEntityId?: string | null;
+  registerVisualState?: (entityId: string, update: VisualStateUpdate) => void;
 }
 
 export class RoomFactory {
@@ -137,6 +139,10 @@ export class RoomFactory {
         emissiveIntensity: selected ? SPATIAL_THEME.states.selected.emissiveIntensity : 0,
       });
       record.materials.push(material);
+      if (entityId) options.registerVisualState?.(entityId, isSelected => {
+        material.emissive.set(isSelected ? SPATIAL_THEME.states.selected.emissive : '#000000');
+        material.emissiveIntensity = isSelected ? SPATIAL_THEME.states.selected.emissiveIntensity : 0;
+      });
       for (const segment of segments) {
         const width = segment.right - segment.left;
         const height = segment.top - segment.bottom;

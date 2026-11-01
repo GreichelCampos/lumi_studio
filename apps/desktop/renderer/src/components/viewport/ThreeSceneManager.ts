@@ -11,6 +11,8 @@ import { calculateSceneBounds, calculateVisualScale } from './helpers/sceneScale
 import { calculateWallOcclusion } from './helpers/spatialMath';
 import { IdeThemeDefinition, SpatialBackgroundMode } from '../../types/settings';
 import { validateViewportScene } from './helpers/validateViewportScene';
+import { roomRenderKey, objectDiagnosticKey } from './helpers/roomRenderKey';
+import type { VisualStateUpdate } from './interaction/VisualState';
 
 export interface ThreeSceneManagerOptions {
   container: HTMLDivElement;
@@ -44,6 +46,12 @@ export class ThreeSceneManager {
   private activeEntityId: string | null = null;
   private debugActiveObjectId: string | null = null;
   private wallRecords: WallMeshRecord[] = [];
+  private visualUpdates = new Map<string, VisualStateUpdate[]>();
+  private contentKey: string | null = null;
+  private renderedBounds: THREE.Box3 | null = null;
+  private renderedDimensions: number[] = [];
+  private visualItems: RoomModel['objects'] = [];
+  private diagnosticKeys: string[] = [];
   private boundWindowResize = () => this.handleResize();
 
   constructor(options: ThreeSceneManagerOptions) {
@@ -226,69 +234,88 @@ export class ThreeSceneManager {
     if (this.disposed) return;
     const validationError = validateViewportScene({ version: '1.0.0', rooms: [room] }, this.legacyPlacement);
     if (validationError) throw new Error(`Escena no válida: ${validationError}`);
-    this.activeEntityId = activeEntityId;
-    this.debugActiveObjectId = debugActiveObjectId;
-    this.selectionController.clearPickables();
-    this.wallRecords = [];
-
-    // Dispose previous room geometry & materials to prevent memory leaks
-    while (this.roomGroup.children.length > 0) {
-      const child = this.roomGroup.children[0];
-      ThreeResourceDisposer.disposeHierarchy(child);
-      this.roomGroup.remove(child);
+    const key = roomRenderKey(room, this.isWireframe, this.showDimensions, this.showReferenceAxes);
+    if (this.contentKey === key) {
+      this.currentRoom = room;
+      this.updateVisualSelection(activeEntityId, debugActiveObjectId);
+      return;
     }
 
-    const dimensionsChanged = !this.currentRoom ||
-      this.currentRoom.dimensions[0] !== room.dimensions[0] ||
-      this.currentRoom.dimensions[1] !== room.dimensions[1] ||
-      this.currentRoom.dimensions[2] !== room.dimensions[2];
+    const nextUpdates = new Map<string, VisualStateUpdate[]>();
+    const nextPickables: Array<[THREE.Object3D, string]> = [];
+    const register = (id: string, update: VisualStateUpdate) => {
+      const entries = nextUpdates.get(id) ?? [];
+      entries.push(update); nextUpdates.set(id, entries);
+    };
+    let roomRoot: THREE.Group | undefined;
+    let wallRecords: WallMeshRecord[];
+    try {
+      const structure = RoomFactory.createRoomStructure(room, {
+        isWireframe: this.isWireframe, showReferenceAxes: this.showReferenceAxes,
+        showDimensions: this.showDimensions, selectedEntityId: activeEntityId,
+        registerVisualState: register,
+      });
+      roomRoot = structure.group; wallRecords = structure.wallRecords;
+      for (const record of wallRecords) if (record.entityId) {
+        for (const mesh of record.meshes) nextPickables.push([mesh, record.entityId]);
+      }
+      for (const door of room.doors) {
+        const group = OpeningFactory.createDoorMesh(door, room, activeEntityId === door.id, this.isWireframe,
+          update => register(door.id, update));
+        roomRoot.add(group); nextPickables.push([group, door.id]);
+      }
+      for (const win of room.windows) {
+        const group = OpeningFactory.createWindowMesh(win, room, activeEntityId === win.id, this.isWireframe,
+          update => register(win.id, update));
+        roomRoot.add(group); nextPickables.push([group, win.id]);
+      }
+      for (const [index, item] of room.objects.filter(isPlacedSpatialObject).entries()) {
+        const group = FurnitureFactory.createFurnitureMesh(item, activeEntityId === item.id,
+          this.isWireframe, debugActiveObjectId === item.id,
+          update => register(item.id, (selected, debug) => update(selected, debug, this.visualItems[index])));
+        roomRoot.add(group); nextPickables.push([group, item.id]);
+      }
+    } catch (error) {
+      if (roomRoot) ThreeResourceDisposer.disposeHierarchy(roomRoot);
+      throw error;
+    }
 
-    const isNewRoom = !this.currentRoom || this.currentRoom.id !== room.id || dimensionsChanged;
+    // Commit the replacement only after construction succeeds; old picking stays valid on failure.
+    this.visualUpdates.clear();
+    this.selectionController.clearPickables();
+    ThreeResourceDisposer.disposeHierarchy(this.roomGroup);
+    this.roomGroup.clear();
+    this.roomGroup.add(roomRoot);
+    this.visualUpdates = nextUpdates; this.wallRecords = wallRecords;
+    for (const [mesh, id] of nextPickables) this.selectionController.registerPickable(mesh, id);
+
+    const bounds = calculateSceneBounds(room);
+    const needsFit = !this.currentRoom || this.currentRoom.id !== room.id
+      || room.dimensions.some((dimension, axis) => dimension !== this.renderedDimensions[axis])
+      || !this.renderedBounds?.equals(bounds);
     this.currentRoom = room;
-
-    if (isNewRoom) this.cameraController.adaptCameraToRoom(room);
+    this.visualItems = room.objects.filter(isPlacedSpatialObject);
+    this.diagnosticKeys = this.visualItems.map(objectDiagnosticKey);
+    this.renderedBounds = bounds.clone(); this.renderedDimensions = [...room.dimensions];
+    if (needsFit) this.cameraController.adaptCameraToRoom(room);
     else this.cameraController.updateRoom(room);
     this.adaptVisualScale(room);
+    this.activeEntityId = activeEntityId; this.debugActiveObjectId = debugActiveObjectId;
+    this.contentKey = key;
+  }
 
-    const { group: roomRoot, wallRecords } = RoomFactory.createRoomStructure(room, {
-      isWireframe: this.isWireframe,
-      showReferenceAxes: this.showReferenceAxes,
-      showDimensions: this.showDimensions,
-      selectedEntityId: activeEntityId,
+  private updateVisualSelection(selected: string | null, debugActive: string | null): void {
+    const affected = new Set([this.activeEntityId, this.debugActiveObjectId, selected, debugActive]);
+    this.visualItems = this.currentRoom?.objects.filter(isPlacedSpatialObject) ?? [];
+    this.diagnosticKeys = this.visualItems.map((item, index) => {
+      const key = objectDiagnosticKey(item);
+      if (key !== this.diagnosticKeys[index]) affected.add(item.id);
+      return key;
     });
-    this.wallRecords = wallRecords;
-    for (const record of wallRecords) if (record.entityId) {
-      for (const mesh of record.meshes) this.selectionController.registerPickable(mesh, record.entityId);
+    for (const id of affected) if (id !== null) {
+      for (const update of this.visualUpdates.get(id) ?? []) update(id === selected, id === debugActive);
     }
-
-    room.doors.forEach((door) => {
-      const isSelected = activeEntityId === door.id;
-      const doorGroup = OpeningFactory.createDoorMesh(door, room, isSelected, this.isWireframe);
-      this.selectionController.registerPickable(doorGroup, door.id);
-      roomRoot.add(doorGroup);
-    });
-
-    room.windows.forEach((win) => {
-      const isSelected = activeEntityId === win.id;
-      const winGroup = OpeningFactory.createWindowMesh(win, room, isSelected, this.isWireframe);
-      this.selectionController.registerPickable(winGroup, win.id);
-      roomRoot.add(winGroup);
-    });
-
-    room.objects.filter(isPlacedSpatialObject).forEach((item) => {
-      const isSelected = activeEntityId === item.id;
-      const isDebugActive = debugActiveObjectId === item.id;
-      const objGroup = FurnitureFactory.createFurnitureMesh(
-        item,
-        isSelected,
-        this.isWireframe,
-        isDebugActive
-      );
-      this.selectionController.registerPickable(objGroup, item.id);
-      roomRoot.add(objGroup);
-    });
-
-    this.roomGroup.add(roomRoot);
+    this.activeEntityId = selected; this.debugActiveObjectId = debugActive;
   }
 
   private adaptVisualScale(room: RoomModel): void {
@@ -324,6 +351,9 @@ export class ThreeSceneManager {
   }
 
   public clearRoom(): void {
+    this.visualUpdates.clear(); this.contentKey = null; this.renderedBounds = null; this.renderedDimensions = [];
+    this.visualItems = []; this.diagnosticKeys = [];
+    this.activeEntityId = null; this.debugActiveObjectId = null;
     ThreeResourceDisposer.disposeHierarchy(this.roomGroup);
     this.roomGroup.clear();
     this.selectionController.clearPickables();
@@ -519,6 +549,8 @@ export class ThreeSceneManager {
     this.selectionController.dispose();
     this.cameraController.dispose();
 
+    this.visualUpdates.clear(); this.contentKey = null;
+    this.visualItems = []; this.diagnosticKeys = [];
     ThreeResourceDisposer.disposeHierarchy(this.scene);
     this.renderer.dispose();
     this.renderer.domElement.remove();

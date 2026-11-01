@@ -3,13 +3,15 @@ import { SpatialObject, isPlacedSpatialObject } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 
 import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
+import type { RegisterVisualState } from '../interaction/VisualState';
 
 export class FurnitureFactory {
   public static createFurnitureMesh(
     item: SpatialObject,
     isSelected: boolean,
     isWireframe: boolean,
-    isDebugActive = false
+    isDebugActive = false,
+    registerVisualState?: RegisterVisualState
   ): THREE.Group {
     const objGroup = new THREE.Group();
     objGroup.name = item.id;
@@ -20,8 +22,8 @@ export class FurnitureFactory {
     const [rx, ry, rz] = item.rotation;
     const [ow, oh, od] = item.dimensions;
 
-    const hasError = Boolean(item.isOutOfBounds || item.hasError);
-    const hasWarning = Boolean(!hasError && (item.hasCollision || item.hasWarning));
+    let hasError = Boolean(item.isOutOfBounds || item.hasError);
+    let hasWarning = Boolean(!hasError && (item.hasCollision || item.hasWarning));
 
     const objColor = surfaceColor(item.color, '#64748b');
 
@@ -75,7 +77,7 @@ export class FurnitureFactory {
     );
 
     // Resaltado visual centralizado (Debug / Selección / Error / Warning)
-    if (isSelected || hasError || hasWarning || isDebugActive) {
+    if (registerVisualState || isSelected || hasError || hasWarning || isDebugActive) {
       const stateColor = hasError
         ? SPATIAL_THEME.states.error.outlineColor
         : isDebugActive
@@ -95,6 +97,7 @@ export class FurnitureFactory {
       highlightBox.position.set(0, oh / 2, 0);
       highlightBox.userData.ignorePicking = true;
       objGroup.add(highlightBox);
+      highlightBox.visible = isSelected || hasError || hasWarning || isDebugActive;
 
       const ringColor = hasError
         ? SPATIAL_THEME.states.error.ringColor
@@ -124,10 +127,12 @@ export class FurnitureFactory {
       disc.position.y = 0.015;
       disc.userData.ignorePicking = true;
       objGroup.add(disc);
+      disc.visible = highlightBox.visible;
 
       // Si hay error o warning Y selección o debug simultánea: agregar borde secundario
-      if ((hasError || hasWarning) && (isSelected || isDebugActive)) {
-        const dualBox = new THREE.Mesh(
+      let dualBox: THREE.Mesh<THREE.BoxGeometry, THREE.MeshBasicMaterial> | undefined;
+      if (registerVisualState || ((hasError || hasWarning) && (isSelected || isDebugActive))) {
+        dualBox = new THREE.Mesh(
           new THREE.BoxGeometry(ow + 0.14, oh + 0.14, od + 0.14),
           new THREE.MeshBasicMaterial({
             color: isDebugActive ? SPATIAL_THEME.states.activeDebug.outlineColor : SPATIAL_THEME.states.selected.outlineColor,
@@ -139,7 +144,27 @@ export class FurnitureFactory {
         dualBox.position.set(0, oh / 2, 0);
         dualBox.userData.ignorePicking = true;
         objGroup.add(dualBox);
+        dualBox.visible = (hasError || hasWarning) && (isSelected || isDebugActive);
       }
+      registerVisualState?.((selected, debugActive, state = item) => {
+        hasError = Boolean(state.isOutOfBounds || state.hasError);
+        hasWarning = Boolean(!hasError && (state.hasCollision || state.hasWarning));
+        const states = SPATIAL_THEME.states;
+        const emissive = hasError ? states.error : hasWarning ? states.warning
+          : debugActive ? states.activeDebug : selected ? states.selected : null;
+        standardMat.emissive.set(emissive?.emissive ?? '#000000');
+        standardMat.emissiveIntensity = emissive?.emissiveIntensity ?? 0;
+        // Preserve the historical outline/ring priority, which differs from emissive.
+        const outline = hasError ? states.error : debugActive ? states.activeDebug
+          : hasWarning ? states.warning : states.selected;
+        highlightBox.visible = disc.visible = selected || debugActive || hasError || hasWarning;
+        boxMat.color.set(outline.outlineColor);
+        discMat.color.set(outline.ringColor); discMat.opacity = outline.ringOpacity;
+        if (dualBox) {
+          dualBox.visible = (hasError || hasWarning) && (selected || debugActive);
+          dualBox.material.color.set(debugActive ? states.activeDebug.outlineColor : states.selected.outlineColor);
+        }
+      });
     }
 
     return objGroup;
