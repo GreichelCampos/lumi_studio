@@ -183,16 +183,18 @@ def test_wall_and_door_geometry_reaches_current_ide_contract():
             'pared frente { orientacion "norte">> color "azul">> '
             'material "concreto">> } '
             'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
-            'desplazamiento 0.5>> } }'
+            'desplazamiento 0.5>> color "cafe">> material "madera">> } }'
         )
     )
 
     assert response["status"] == "completed"
     room = response["result"]["scenePlan"]["rooms"][0]
-    assert room["walls"]["north"] == {
-        "color": "azul",
-        "material": "concreto",
-    }
+    north = room["walls"]["north"]
+    assert north["id"].endswith(":frente")
+    assert north["name"] == "frente"
+    assert north["color"] == "azul"
+    assert north["material"] == "concreto"
+    assert north["sourceRef"]["file"] == "principal.lumi"
     assert room["walls"]["south"] == {
         "color": "#f1f5f9",
         "material": "standard",
@@ -200,24 +202,59 @@ def test_wall_and_door_geometry_reaches_current_ide_contract():
     assert room["walls"]["east"] == room["walls"]["south"]
     assert room["walls"]["west"] == room["walls"]["south"]
     assert room["doors"][0]["wall"] == "norte"
+    assert room["doors"][0]["name"] == "entrada"
     assert room["doors"][0]["position"] == pytest.approx(-2.05)
     assert room["doors"][0]["width"] == 0.9
     assert room["doors"][0]["height"] == 2.1
+    assert room["doors"][0]["color"] == "cafe"
+    assert room["doors"][0]["material"] == "madera"
 
 
-def test_window_waits_for_elevation_field_in_local_typescript_contract():
+def test_door_without_optional_properties_keeps_contract_compatible():
     response = RequestDispatcher().dispatch(
         request(
-            'habitacion sala(6, 5, 3) { ventana luz { '
+            'habitacion sala(6, 5, 3) { puerta entrada { '
+            'orientacion "sur">> ancho 1>> alto 2>> desplazamiento 1>> } }'
+        )
+    )
+
+    assert response["status"] == "completed"
+    door = response["result"]["scenePlan"]["rooms"][0]["doors"][0]
+    assert door["name"] == "entrada"
+    assert "color" not in door
+    assert "material" not in door
+
+
+def test_window_publishes_positive_elevation_and_source_reference():
+    response = RequestDispatcher().dispatch(
+        request(
+            'habitacion sala(6, 5, 3) {\n  ventana luz { '
             'orientacion "sur">> ancho 1.2>> alto 1>> '
             'desplazamiento 2>> elevacion 0.9>> } }'
         )
     )
 
-    assert response["status"] == "error"
-    assert response["error"]["code"] == "SERIALIZATION_ERROR"
-    assert "WindowModel" in response["error"]["message"]
-    assert "elevation" in response["error"]["message"]
+    assert response["status"] == "completed"
+    window = response["result"]["scenePlan"]["rooms"][0]["windows"][0]
+    assert window["name"] == "luz"
+    assert window["elevation"] == 0.9
+    assert window["position"] == pytest.approx(-0.4)
+    assert window["sourceRef"]["file"] == "principal.lumi"
+    assert window["sourceRef"]["line"] == 2
+
+
+def test_window_preserves_zero_elevation():
+    response = RequestDispatcher().dispatch(
+        request(
+            'habitacion sala(6, 5, 3) { ventana baja { '
+            'orientacion "este">> ancho 1>> alto 1>> '
+            'desplazamiento 1>> elevacion 0>> } }'
+        )
+    )
+
+    assert response["status"] == "completed"
+    window = response["result"]["scenePlan"]["rooms"][0]["windows"][0]
+    assert window["elevation"] == 0
 
 
 def test_unrepresentable_numeric_magnitude_is_a_controlled_serialization_error():
