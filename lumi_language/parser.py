@@ -926,7 +926,7 @@ class Parser:
             TokenType.IDENTIFIER,
             "Se esperaba el nombre del objeto espacial.",
         )
-        properties = self.parse_spatial_properties()
+        properties = self.parse_spatial_properties({"color", "material"})
 
         return SpatialObjectDeclarationNode(
             object_type=object_type_token.lexeme,
@@ -945,11 +945,25 @@ class Parser:
             TokenType.DOOR: DoorNode,
             TokenType.WINDOW: WindowNode,
         }
-        name_token = self.consume(
-            TokenType.IDENTIFIER,
-            "Se esperaba el nombre del elemento espacial.",
+        allowed_properties = {
+            TokenType.FLOOR: {"color", "material"},
+            TokenType.WALL: {"orientacion", "color", "material"},
+            TokenType.DOOR: {
+                "orientacion", "ancho", "alto", "desplazamiento",
+                "color", "material",
+            },
+            TokenType.WINDOW: {
+                "orientacion", "ancho", "alto", "desplazamiento",
+                "elevacion", "color", "material",
+            },
+        }
+        if self.match(TokenType.IDENTIFIER, TokenType.PRINCIPAL):
+            name_token = self.previous()
+        else:
+            raise self.error("Se esperaba el nombre del elemento espacial.")
+        properties = self.parse_spatial_properties(
+            allowed_properties[element_token.type]
         )
-        properties = self.parse_spatial_properties()
 
         return node_types[element_token.type](
             name=name_token.lexeme,
@@ -959,7 +973,7 @@ class Parser:
             column=element_token.column,
         )
 
-    def parse_spatial_properties(self):
+    def parse_spatial_properties(self, allowed_properties):
         self.consume(
             TokenType.LEFT_BRACE,
             "Se esperaba '{' para iniciar las propiedades espaciales.",
@@ -972,12 +986,23 @@ class Parser:
                 raise self.error(
                     "Se esperaba '}' para cerrar las propiedades espaciales."
                 )
-            if self.peek().type not in (TokenType.COLOR, TokenType.MATERIAL):
+            property_token = self.peek()
+            is_property_name = property_token.type in (
+                TokenType.IDENTIFIER,
+                TokenType.COLOR,
+                TokenType.MATERIAL,
+            )
+            if (
+                not is_property_name
+                or property_token.lexeme not in allowed_properties
+            ):
+                allowed = "', '".join(sorted(allowed_properties))
                 raise self.error(
-                    "Solo se permiten las propiedades 'color' y 'material'."
+                    f"Solo se permiten las propiedades '{allowed}'.",
+                    property_token,
                 )
 
-            property_token = self.advance()
+            self.advance()
             property_name = property_token.lexeme
             if property_name in seen_properties:
                 raise self.error(
@@ -986,7 +1011,20 @@ class Parser:
                 )
 
             seen_properties.add(property_name)
-            value = self.parse_expression()
+            if property_name == "orientacion":
+                orientation_token = self.consume(
+                    TokenType.STRING_LITERAL,
+                    "La propiedad 'orientacion' requiere un literal de texto.",
+                )
+                value = LiteralNode(
+                    value=orientation_token.lexeme[1:-1],
+                    literal_kind="texto",
+                    file=orientation_token.file,
+                    line=orientation_token.line,
+                    column=orientation_token.column,
+                )
+            else:
+                value = self.parse_expression()
             self.consume(
                 TokenType.TERMINATOR,
                 f"Se esperaba '>>' al final de la propiedad '{property_name}'.",
@@ -1164,12 +1202,19 @@ class Parser:
 
     def _parse_recovering_program(self):
         statements = []
+        last_error_index = None
 
         while not self.is_at_end():
             try:
                 statements.append(self.parse_statement())
+                last_error_index = None
             except ParserError:
-                self.synchronize()
+                error_index = self.current
+                if error_index == last_error_index and not self.is_at_end():
+                    self.advance()
+                else:
+                    self.synchronize()
+                last_error_index = error_index
 
         if statements:
             first_statement = statements[0]
