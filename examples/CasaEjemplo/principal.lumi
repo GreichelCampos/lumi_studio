@@ -1,0 +1,64 @@
+importar "calculos.lumi" usar calcular_area>>
+importar "muebles.lumi" usar organizar_sala>>
+
+principal {
+    decimal ancho = 6.0>>
+    decimal largo = 5.0>>
+    decimal alto = 3.0>>
+    decimal area = calcular_area(ancho, largo)>>
+
+    mostrar("Area de sala:")>>
+    mostrar(area)>>
+
+    habitacion sala(ancho, largo, alto) {
+        piso suelo {
+            material "madera">>
+            color "#d6b98c">>
+        }
+
+        mesa mesa_centro {
+            material "madera">>
+            color "#8b5a2b">>
+        }
+
+        silla silla_lectura {
+            color "#2563eb">>
+        }
+
+        planta planta_ventana {
+            color "#22c55e">>
+        }
+
+        colocar mesa_centro [0, 0, 0]>>
+        colocar silla_lectura [-2, 0, -1]>>
+        colocar planta_ventana [2, 0, 1.5]>>
+
+        booleano reorganizar = verdadero>>
+        si reorganizar {
+            organizar_sala(1.5, 0.5)>>
+        }
+
+        hacer entero i = 0; i < 3; i = i + 1 {
+            mover silla_lectura [-2 + i, 0, -1]>>
+        }
+
+        entero angulo = 0>>
+        mientras angulo < 90 {
+            angulo = angulo + 30>>
+            rotar planta_ventana [0, angulo, 0]>>
+        }
+    }
+
+    habitacion estudio(4, 3, 2.6) {
+        piso piso_estudio {
+            material "madera">>
+        }
+
+        escritorio escritorio1 {
+            color "#f8fafc">>
+        }
+
+        colocar escritorio1 [0, 0, 0]>>
+        rotar escritorio1 [0, 90, 0]>>
+    }
+}

@@ -1,0 +1,4 @@
+funcion vacio organizar_sala(decimal x, decimal z) {
+    mover mesa_centro [x, 0, z]>>
+    rotar mesa_centro [0, 90, 0]>>
+}

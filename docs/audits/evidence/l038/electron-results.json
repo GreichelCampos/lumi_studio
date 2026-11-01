@@ -1,0 +1,117 @@
+{
+  "verifiedAt": "2026-11-01T03:46:23.309Z",
+  "projectRoot": "examples/CasaEjemplo",
+  "entryFile": "principal.lumi",
+  "mode": "Electron + Python real",
+  "status": "completed",
+  "output": [
+    "Area de sala:",
+    "30.0"
+  ],
+  "diagnostics": [],
+  "capabilities": {
+    "scenePlan": true,
+    "debugTrace": false,
+    "interactiveInput": false,
+    "cancellation": false
+  },
+  "rooms": [
+    {
+      "name": "sala",
+      "dimensions": [
+        6,
+        5,
+        3
+      ],
+      "objects": [
+        {
+          "name": "mesa_centro",
+          "type": "mesa",
+          "placed": true,
+          "position": [
+            1.5,
+            0,
+            0.5
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ]
+        },
+        {
+          "name": "silla_lectura",
+          "type": "silla",
+          "placed": true,
+          "position": [
+            0,
+            0,
+            -1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "name": "planta_ventana",
+          "type": "planta",
+          "placed": true,
+          "position": [
+            2,
+            0,
+            1.5
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "name": "estudio",
+      "dimensions": [
+        4,
+        3,
+        2.6
+      ],
+      "objects": [
+        {
+          "name": "escritorio1",
+          "type": "escritorio",
+          "placed": true,
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            90,
+            0
+          ]
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "roomSelectorLabels": [
+      "sala(6.0×5.0m)3",
+      "estudio(4.0×3.0m)1"
+    ],
+    "webglCanvas": {
+      "width": 876,
+      "height": 458,
+      "dataLength": 236478
+    },
+    "drawCallsAfterSala": 3032,
+    "drawCallsAfterEstudio": 4869,
+    "screenshots": [
+      "casa-ejemplo-sala.png",
+      "casa-ejemplo-estudio.png"
+    ]
+  }
+}
