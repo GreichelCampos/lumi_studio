@@ -163,15 +163,17 @@ def test_non_spatial_program_keeps_protocol_compatible_without_empty_scene():
     assert "scenePlan" not in response["result"]
 
 
-def test_unrepresentable_wall_returns_controlled_serialization_error():
+def test_incomplete_wall_is_blocked_by_semantic_analysis():
     response = RequestDispatcher().dispatch(
         request("habitacion sala(5, 4, 3) { pared norte { } }")
     )
 
-    assert response["status"] == "error"
-    assert response["error"]["kind"] == "infrastructure"
-    assert response["error"]["code"] == "SERIALIZATION_ERROR"
-    assert "geometría 'orientation' requerida" in response["error"]["message"]
+    assert response["status"] == "blocked"
+    assert response["result"]["diagnostics"][0]["code"] == (
+        "SEM_MISSING_SPATIAL_PROPERTY"
+    )
+    assert response["result"]["capabilities"]["scenePlan"] is False
+    assert "scenePlan" not in response["result"]
 
 
 def test_wall_and_door_geometry_reaches_current_ide_contract():
@@ -191,6 +193,12 @@ def test_wall_and_door_geometry_reaches_current_ide_contract():
         "color": "azul",
         "material": "concreto",
     }
+    assert room["walls"]["south"] == {
+        "color": "#f1f5f9",
+        "material": "standard",
+    }
+    assert room["walls"]["east"] == room["walls"]["south"]
+    assert room["walls"]["west"] == room["walls"]["south"]
     assert room["doors"][0]["wall"] == "norte"
     assert room["doors"][0]["position"] == pytest.approx(-2.05)
     assert room["doors"][0]["width"] == 0.9

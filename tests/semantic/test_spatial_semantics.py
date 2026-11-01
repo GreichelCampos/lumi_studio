@@ -135,7 +135,8 @@ def test_door_measurements_and_window_elevation_must_be_numeric():
         'habitacion sala(5, 4, 3) { '
         'puerta entrada { orientacion "norte">> ancho "grande">> alto 2>> '
         'desplazamiento falso>> } '
-        'ventana luz { orientacion "este">> elevacion "alta">> } }'
+        'ventana luz { orientacion "este">> ancho 1>> alto 1>> '
+        'desplazamiento 1>> elevacion "alta">> } }'
     )
 
     assert codes(result) == [
@@ -143,6 +144,103 @@ def test_door_measurements_and_window_elevation_must_be_numeric():
         "SEM_SPATIAL_PROPERTY_TYPE_MISMATCH",
         "SEM_SPATIAL_PROPERTY_TYPE_MISMATCH",
     ]
+
+
+def test_complete_architectural_elements_and_optional_properties_succeed():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) { '
+        'pared frente { orientacion "norte">> color "blanco">> material "yeso">> } '
+        'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
+        'desplazamiento 0.5>> color "cafe">> } '
+        'ventana luz { orientacion "sur">> ancho 1.2>> alto 1>> '
+        'desplazamiento 2>> elevacion 0.9>> material "vidrio">> } }'
+    )
+
+    assert result.succeeded
+
+
+def test_incomplete_wall_reports_missing_orientation_at_declaration():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) {\n  pared frente { color "blanco">> }\n}',
+        "arquitectura.lumi",
+    )
+
+    assert codes(result) == ["SEM_MISSING_SPATIAL_PROPERTY"]
+    diagnostic = result.diagnostics[0]
+    assert "orientacion" in diagnostic.description
+    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
+        "arquitectura.lumi",
+        2,
+        3,
+    )
+
+
+def test_incomplete_door_reports_every_missing_required_property():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) { puerta entrada { ancho 0.9>> } }'
+    )
+
+    assert codes(result) == [
+        "SEM_MISSING_SPATIAL_PROPERTY",
+        "SEM_MISSING_SPATIAL_PROPERTY",
+        "SEM_MISSING_SPATIAL_PROPERTY",
+    ]
+    assert [
+        name
+        for name in ("orientacion", "alto", "desplazamiento")
+        if any(name in diagnostic.description for diagnostic in result.diagnostics)
+    ] == ["orientacion", "alto", "desplazamiento"]
+
+
+def test_incomplete_window_reports_every_missing_required_property():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) { ventana luz { orientacion "este">> } }'
+    )
+
+    assert codes(result) == ["SEM_MISSING_SPATIAL_PROPERTY"] * 4
+    assert all(
+        any(name in diagnostic.description for diagnostic in result.diagnostics)
+        for name in ("ancho", "alto", "desplazamiento", "elevacion")
+    )
+
+
+def test_second_explicit_wall_for_same_orientation_is_rejected_at_property():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) {\n'
+        '  pared primera { orientacion "norte">> }\n'
+        '  pared segunda { orientacion "norte">> }\n'
+        '}',
+        "paredes.lumi",
+    )
+
+    assert codes(result) == ["SEM_DUPLICATE_WALL_ORIENTATION"]
+    diagnostic = result.diagnostics[0]
+    assert "norte" in diagnostic.description
+    assert (diagnostic.file, diagnostic.line) == ("paredes.lumi", 3)
+
+
+def test_one_explicit_wall_per_different_orientation_is_allowed():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) { '
+        'pared norte1 { orientacion "norte">> } '
+        'pared sur1 { orientacion "sur">> } '
+        'pared este1 { orientacion "este">> } '
+        'pared oeste1 { orientacion "oeste">> } }'
+    )
+
+    assert result.succeeded
+
+
+def test_door_and_window_do_not_require_explicit_wall_declarations():
+    result = analyze_source(
+        'habitacion sala(6, 5, 3) { '
+        'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
+        'desplazamiento 0.5>> } '
+        'ventana luz { orientacion "este">> ancho 1.2>> alto 1>> '
+        'desplazamiento 1>> elevacion 0.9>> } }'
+    )
+
+    assert result.succeeded
 
 
 def test_spatial_expressions_resolve_lexical_variables():

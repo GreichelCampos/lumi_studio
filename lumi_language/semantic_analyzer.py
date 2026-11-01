@@ -178,6 +178,7 @@ class _SpatialRoomContext:
     name: str
     elements: dict[str, dict[str, Any]] = field(default_factory=dict)
     floor_count: int = 0
+    explicit_walls: dict[str, dict[str, Any]] = field(default_factory=dict)
 
 
 class SemanticAnalyzer:
@@ -537,14 +538,18 @@ class SemanticAnalyzer:
                         cause=(room.name, room.floor_count),
                     )
 
-        self._analyze_spatial_properties(node, element_kind)
+        properties = self._analyze_spatial_properties(node, element_kind)
+        self._validate_required_spatial_properties(node, element_kind, properties)
+        if room is not None and element_kind == "wall":
+            self._register_explicit_wall(room, node, properties)
 
     def _analyze_spatial_properties(
         self,
         node: dict[str, Any],
         element_kind: str,
-    ) -> None:
+    ) -> dict[str, dict[str, Any]]:
         seen: set[str] = set()
+        properties: dict[str, dict[str, Any]] = {}
         text_properties = {"color", "material", "orientacion"}
         numeric_properties = {"ancho", "alto", "desplazamiento", "elevacion"}
         for spatial_property in node.get("properties", []):
@@ -559,6 +564,7 @@ class SemanticAnalyzer:
                 )
                 continue
             seen.add(name)
+            properties[name] = spatial_property
             value_type = self._infer_expression(spatial_property["value"])
             expected = (
                 DataType.STRING
@@ -601,6 +607,68 @@ class SemanticAnalyzer:
                         "Utilice 'norte', 'sur', 'este' u 'oeste'.",
                         cause=(element_kind, node["name"], value.get("value")),
                     )
+        return properties
+
+    def _validate_required_spatial_properties(
+        self,
+        node: dict[str, Any],
+        element_kind: str,
+        properties: dict[str, dict[str, Any]],
+    ) -> None:
+        required_by_kind = {
+            "wall": ("orientacion",),
+            "door": ("orientacion", "ancho", "alto", "desplazamiento"),
+            "window": (
+                "orientacion",
+                "ancho",
+                "alto",
+                "desplazamiento",
+                "elevacion",
+            ),
+        }
+        for property_name in required_by_kind.get(element_kind, ()):
+            if property_name in properties:
+                continue
+            self._add_diagnostic(
+                node,
+                "SEM_MISSING_SPATIAL_PROPERTY",
+                (
+                    f"El elemento '{node['name']}' requiere la propiedad "
+                    f"'{property_name}'."
+                ),
+                "Agregue la propiedad obligatoria a la declaración espacial.",
+                cause=(element_kind, node["name"], property_name),
+            )
+
+    def _register_explicit_wall(
+        self,
+        room: _SpatialRoomContext,
+        node: dict[str, Any],
+        properties: dict[str, dict[str, Any]],
+    ) -> None:
+        orientation_property = properties.get("orientacion")
+        if orientation_property is None:
+            return
+        value = orientation_property["value"]
+        if value.get("node") != "LiteralNode":
+            return
+        orientation = value.get("value")
+        if orientation not in {"norte", "sur", "este", "oeste"}:
+            return
+        previous = room.explicit_walls.get(orientation)
+        if previous is None:
+            room.explicit_walls[orientation] = node
+            return
+        self._add_diagnostic(
+            orientation_property,
+            "SEM_DUPLICATE_WALL_ORIENTATION",
+            (
+                f"La habitación '{room.name}' ya tiene una pared explícita "
+                f"para la orientación '{orientation}'."
+            ),
+            "Conserve como máximo una pared explícita por orientación.",
+            cause=(room.name, orientation, id(previous)),
+        )
 
     def _analyze_spatial_operation(
         self,

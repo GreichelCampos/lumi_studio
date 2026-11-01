@@ -117,8 +117,11 @@ def test_room_execution_publishes_runtime_scene_despite_analysis_limitation():
 def test_execution_result_preserves_reserved_spatial_elements():
     result = ExecutionService().execute_source(
         'habitacion sala(5, 4, 3) { piso suelo { material "madera">> } '
-        'pared norte { color "blanco">> } puerta entrada { material "metal">> } '
-        'ventana ventanal { color "azul">> } }',
+        'pared norte { orientacion "norte">> color "blanco">> } '
+        'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
+        'desplazamiento 0.5>> material "metal">> } '
+        'ventana ventanal { orientacion "sur">> ancho 1.2>> alto 1>> '
+        'desplazamiento 1.5>> elevacion 0.9>> color "azul">> } }',
         "principal.lumi",
     )
 

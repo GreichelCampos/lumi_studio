@@ -38,12 +38,22 @@ def test_published_help_examples_parse_with_the_real_python_parser(help_sections
     assert bool(program.statements) == (index != 4)
 
 
-@pytest.mark.parametrize("index", [0, 2])
-def test_spatial_help_does_not_claim_a_generated_scene(help_sections, index):
-    result = CompilerService().compile(help_sections[index]["code"], "ayuda.lumi")
+def test_complete_spatial_help_does_not_claim_a_generated_scene(help_sections):
+    result = CompilerService().compile(help_sections[0]["code"], "ayuda.lumi")
     assert result.status is CompilationStatus.INCOMPLETE
     assert result.diagnostics == ()
     assert result.limitations
+
+
+def test_incomplete_architectural_help_is_rejected_semantically(help_sections):
+    result = CompilerService().compile(help_sections[2]["code"], "ayuda.lumi")
+
+    assert result.status is CompilationStatus.FAILED
+    assert result.diagnostics
+    assert all(
+        diagnostic.code == "SEM_MISSING_SPATIAL_PROPERTY"
+        for diagnostic in result.diagnostics
+    )
 
 
 def test_type_example_can_be_analyzed_without_claiming_collection_execution(help_sections):
