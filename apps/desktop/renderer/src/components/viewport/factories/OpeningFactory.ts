@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { DoorModel, WindowModel, RoomModel } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
-import { openingPlacement, WALL_THICKNESS, WINDOW_CENTER_HEIGHT } from '../helpers/openingLayout';
+import { openingPlacement, openingVerticalBounds, WALL_THICKNESS } from '../helpers/openingLayout';
 
 export class OpeningFactory {
   public static createDoorMesh(
@@ -54,7 +54,7 @@ export class OpeningFactory {
     handle.position.set(dw * 0.35, 0, 0.03);
     doorGroup.add(handle);
 
-    const placement = openingPlacement(door, room, dh / 2);
+    const placement = openingPlacement(door, room, openingVerticalBounds(door, 'door').centerY);
     doorGroup.position.set(...placement.position);
     doorGroup.rotation.y = placement.rotationY;
 
@@ -121,7 +121,7 @@ export class OpeningFactory {
     winGroup.add(mulH);
     winGroup.add(mulV);
 
-    const placement = openingPlacement(win, room, WINDOW_CENTER_HEIGHT);
+    const placement = openingPlacement(win, room, openingVerticalBounds(win, 'window').centerY);
     winGroup.position.set(...placement.position);
     winGroup.rotation.y = placement.rotationY;
 
