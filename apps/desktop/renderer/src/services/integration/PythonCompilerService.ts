@@ -8,6 +8,9 @@ import { adaptBackendResult } from './resultAdapter';
 import { isRecord } from './protocol/validationHelpers';
 
 function backendErrorMessage(code: string, message: string): string {
+  if (code === 'INPUT_UNAVAILABLE') {
+    return `[${code}] ${message} leer requiere un canal de entrada interactiva que este backend todavía no ofrece.`;
+  }
   if (code === 'SERIALIZATION_ERROR' && /WindowModel.*elevation/.test(message)) {
     return `[${code}] ${message} El visor ya admite elevation; el adaptador Python de esta versión todavía no publica ventanas.`;
   }
