@@ -18,7 +18,8 @@ import {
   LUMI_SUPPORTED_MAJOR_VERSIONS,
 } from '../../../types';
 import { validateLumicStructure } from './lumicStructure';
-import { spatialObjectStructure } from './sceneStructure';
+import { architecturalArtifactErrors } from './architecturalCompatibility';
+import { spatialObjectStructure, architecturalRoomFields, architecturalWallIdentities } from './sceneStructure';
 
 /**
  * Comprueba si una versión semántica es compatible con las versiones mayores soportadas.
@@ -222,6 +223,7 @@ export function validateRoomModel(
   }
 
   const room = raw as Record<string, unknown>;
+  architecturalRoomFields(raw, pathPrefix, errors);
 
   if (typeof room.id !== 'string' || !room.id.trim()) {
     errors.push({
@@ -435,6 +437,7 @@ export function validateScenePlan(
   }
 
   const sp = raw as Record<string, unknown>;
+  architecturalWallIdentities(raw, pathPrefix, errors);
 
   if (typeof sp.version !== 'string' || !sp.version.trim()) {
     errors.push({
@@ -1029,6 +1032,8 @@ export function serializeLumicArtifact(
   artifact: LumiCompiledArtifact,
   pretty = false
 ): string {
+  const compatibility = architecturalArtifactErrors(artifact);
+  if (compatibility.length) throw new Error(compatibility[0].message);
   return JSON.stringify(artifact, null, pretty ? 2 : undefined);
 }
 
@@ -1039,7 +1044,7 @@ export function createLumicArtifactFromCompileResult(
   result: CompileResult,
   project: { id: string; name: string; filesCount?: number; entryFile?: string }
 ): LumiCompiledArtifact | null {
-  if (!result.scenePlan) {
+  if (!result.scenePlan || architecturalArtifactErrors(result).length > 0) {
     return null;
   }
 

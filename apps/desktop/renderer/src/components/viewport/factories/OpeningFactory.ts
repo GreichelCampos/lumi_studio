@@ -1,14 +1,17 @@
 import * as THREE from 'three';
 import { DoorModel, WindowModel, RoomModel } from '../../../types';
 import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
-import { openingPlacement, WALL_THICKNESS, WINDOW_CENTER_HEIGHT } from '../helpers/openingLayout';
+import { openingPlacement, openingVerticalBounds, WALL_THICKNESS } from '../helpers/openingLayout';
+import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
+import type { RegisterVisualState } from '../interaction/VisualState';
 
 export class OpeningFactory {
   public static createDoorMesh(
     door: DoorModel,
     room: RoomModel,
     isSelected: boolean,
-    isWireframe = false
+    isWireframe = false,
+    registerVisualState?: RegisterVisualState
   ): THREE.Group {
     const wallThick = WALL_THICKNESS;
     const doorGroup = new THREE.Group();
@@ -18,8 +21,8 @@ export class OpeningFactory {
     const dh = door.height;
 
     const frameMat = new THREE.MeshStandardMaterial({
-      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : '#e2e8f0',
-      roughness: 0.5,
+      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(door.color, '#e2e8f0'),
+      ...(door.material === undefined ? { roughness: 0.5 } : surfaceMaterial(door.material)),
       wireframe: isWireframe,
     });
     const border = Math.min(0.03, dw / 6, dh / 6);
@@ -34,8 +37,8 @@ export class OpeningFactory {
 
     const leafGeo = new THREE.BoxGeometry(dw - border, dh - border, 0.04);
     const leafMat = new THREE.MeshStandardMaterial({
-      color: '#f8fafc',
-      roughness: 0.4,
+      color: surfaceColor(door.color, '#f8fafc'),
+      ...(door.material === undefined ? { roughness: 0.4 } : surfaceMaterial(door.material)),
       wireframe: isWireframe,
     });
     const leafMesh = new THREE.Mesh(leafGeo, leafMat);
@@ -54,11 +57,11 @@ export class OpeningFactory {
     handle.position.set(dw * 0.35, 0, 0.03);
     doorGroup.add(handle);
 
-    const placement = openingPlacement(door, room, dh / 2);
+    const placement = openingPlacement(door, room, openingVerticalBounds(door, 'door').centerY);
     doorGroup.position.set(...placement.position);
     doorGroup.rotation.y = placement.rotationY;
 
-    if (isSelected) {
+    if (isSelected || registerVisualState) {
       const highlightBox = new THREE.Mesh(
         new THREE.BoxGeometry(dw + 0.12, dh + 0.12, wallThick + 0.1),
         new THREE.MeshBasicMaterial({
@@ -68,6 +71,11 @@ export class OpeningFactory {
       );
       highlightBox.userData.ignorePicking = true;
       doorGroup.add(highlightBox);
+      highlightBox.visible = isSelected;
+      registerVisualState?.(selected => {
+        frameMat.color.set(selected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(door.color, '#e2e8f0'));
+        highlightBox.visible = selected;
+      });
     }
 
     return doorGroup;
@@ -77,7 +85,8 @@ export class OpeningFactory {
     win: WindowModel,
     room: RoomModel,
     isSelected: boolean,
-    isWireframe = false
+    isWireframe = false,
+    registerVisualState?: RegisterVisualState
   ): THREE.Group {
     const winGroup = new THREE.Group();
     winGroup.name = win.id;
@@ -86,8 +95,8 @@ export class OpeningFactory {
     const wh = win.height;
 
     const frameMat = new THREE.MeshStandardMaterial({
-      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : '#ffffff',
-      roughness: 0.3,
+      color: isSelected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(win.color, '#ffffff'),
+      ...(win.material === undefined ? { roughness: 0.3 } : surfaceMaterial(win.material)),
       wireframe: isWireframe,
     });
     const border = Math.min(0.04, ww / 6, wh / 6);
@@ -121,11 +130,11 @@ export class OpeningFactory {
     winGroup.add(mulH);
     winGroup.add(mulV);
 
-    const placement = openingPlacement(win, room, WINDOW_CENTER_HEIGHT);
+    const placement = openingPlacement(win, room, openingVerticalBounds(win, 'window').centerY);
     winGroup.position.set(...placement.position);
     winGroup.rotation.y = placement.rotationY;
 
-    if (isSelected) {
+    if (isSelected || registerVisualState) {
       const highlightBox = new THREE.Mesh(
         new THREE.BoxGeometry(ww + 0.1, wh + 0.1, 0.16),
         new THREE.MeshBasicMaterial({
@@ -135,6 +144,11 @@ export class OpeningFactory {
       );
       highlightBox.userData.ignorePicking = true;
       winGroup.add(highlightBox);
+      highlightBox.visible = isSelected;
+      registerVisualState?.(selected => {
+        frameMat.color.set(selected ? SPATIAL_THEME.states.selected.outlineColor : surfaceColor(win.color, '#ffffff'));
+        highlightBox.visible = selected;
+      });
     }
 
     return winGroup;

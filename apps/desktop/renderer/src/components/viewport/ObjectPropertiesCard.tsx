@@ -1,5 +1,7 @@
 import React from 'react';
 import { SpatialObject, DoorModel, WindowModel, SourceReference, isPlacedSpatialObject } from '../../types';
+import type { DeclaredWallSelection } from './helpers/architecturalSelection';
+import { openingVerticalBounds } from './helpers/openingLayout';
 import { 
   Box, 
   X, 
@@ -17,7 +19,8 @@ import {
 export type SelectedEntity = 
   | { kind: 'object'; data: SpatialObject }
   | { kind: 'door'; data: DoorModel }
-  | { kind: 'window'; data: WindowModel };
+  | { kind: 'window'; data: WindowModel }
+  | ({ kind: 'wall' } & DeclaredWallSelection);
 
 interface ObjectPropertiesCardProps {
   entity: SelectedEntity | null;
@@ -35,20 +38,21 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
   const isObject = entity.kind === 'object';
   const isDoor = entity.kind === 'door';
   const isWindow = entity.kind === 'window';
+  const isWall = entity.kind === 'wall';
 
-  const title = isObject
+  const title = isWall ? entity.data.name || `Pared (${entity.wall})` : isObject
     ? entity.data.name || entity.data.id
     : isDoor
-    ? `Puerta (${entity.data.wall})`
-    : `Ventana (${entity.data.wall})`;
+    ? entity.data.name || `Puerta (${entity.data.wall})`
+    : entity.data.name || `Ventana (${entity.data.wall})`;
 
-  const typeLabel = isObject
+  const typeLabel = isWall ? `Pared declarada (${entity.wall})` : isObject
     ? `Mueble • ${entity.data.type}`
     : isDoor
     ? `Abertura • Puerta (${entity.data.wall})`
     : `Abertura • Ventana (${entity.data.wall})`;
 
-  const positionStr = isObject
+  const positionStr = isWall ? entity.wall : isObject
     ? isPlacedSpatialObject(entity.data)
       ? `X: ${entity.data.position[0].toFixed(2)}m, Y: ${entity.data.position[1].toFixed(2)}m, Z: ${entity.data.position[2].toFixed(2)}m`
       : 'Sin colocar'
@@ -58,7 +62,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
     ? `X: ${entity.data.rotation[0]}°, Y: ${entity.data.rotation[1]}°, Z: ${entity.data.rotation[2]}°`
     : null;
 
-  const dimensionsStr = isObject
+  const dimensionsStr = isWall ? `${entity.dimensions[0].toFixed(2)} × ${entity.dimensions[1].toFixed(2)} m` : isObject
     ? `${entity.data.dimensions[0].toFixed(2)} × ${entity.data.dimensions[1].toFixed(2)} × ${entity.data.dimensions[2].toFixed(2)} m`
     : `${entity.data.width.toFixed(2)} × ${entity.data.height.toFixed(2)} m`;
 
@@ -75,7 +79,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
       <div className="flex items-center justify-between px-3.5 py-2.5 glass-panel-header border-b border-[var(--ide-panel-border)] backdrop-blur-md flex-shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="p-1.5 rounded-xl bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/40 shadow-sm flex-shrink-0">
-            {isObject ? (
+            {isWall ? <Layers className="w-4 h-4" /> : isObject ? (
               <Box className="w-4 h-4" />
             ) : isDoor ? (
               <DoorClosed className="w-4 h-4" />
@@ -129,7 +133,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
         <div className="flex items-start justify-between gap-2">
           <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5 flex-shrink-0">
             <Move className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
-            <span>Posición:</span>
+            <span>{isWall ? 'Orientación:' : 'Posición:'}</span>
           </span>
           <span className="font-mono text-[var(--ide-text)] text-[11px] text-right truncate bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]" title={positionStr}>
             {positionStr}
@@ -158,7 +162,14 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </div>
         )}
 
-        {isObject && (entity.data.color || entity.data.material) && (
+        {isWindow && (
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] text-[var(--ide-text-muted)]">Borde inferior:</span>
+            <span className="font-mono">{openingVerticalBounds(entity.data, 'window').bottom.toFixed(2)} m</span>
+          </div>
+        )}
+
+        {(entity.data.color || entity.data.material) && (
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
               <Palette className="w-3.5 h-3.5 text-[var(--ide-accent)]" />

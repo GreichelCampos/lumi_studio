@@ -1,0 +1,699 @@
+{
+  "provenance": {
+    "sourceCommit": "b74ac70a3de4d555bdc438668f506018578c9345",
+    "backendCommit": "40c38829c0a8d6d77681bb876ca803764f26c770",
+    "sourcePath": "examples/CasaEjemplo",
+    "method": "CompilerService, ExecutionService and RequestDispatcher; unmodified sources read with git show"
+  },
+  "sources": {
+    "principal.lumi": "importar \"calculos.lumi\" usar calcular_area>>\nimportar \"muebles.lumi\" usar organizar_sala>>\n\nprincipal {\n    decimal ancho = 6.0>>\n    decimal largo = 5.0>>\n    decimal alto = 3.0>>\n    decimal area = calcular_area(ancho, largo)>>\n\n    mostrar(\"Area de sala:\")>>\n    mostrar(area)>>\n\n    habitacion sala(ancho, largo, alto) {\n        piso suelo {\n            material \"madera\">>\n            color \"#d6b98c\">>\n        }\n\n        mesa mesa_centro {\n            material \"madera\">>\n            color \"#8b5a2b\">>\n        }\n\n        silla silla_lectura {\n            color \"#2563eb\">>\n        }\n\n        planta planta_ventana {\n            color \"#22c55e\">>\n        }\n\n        colocar mesa_centro [0, 0, 0]>>\n        colocar silla_lectura [-2, 0, -1]>>\n        colocar planta_ventana [2, 0, 1.5]>>\n\n        booleano reorganizar = verdadero>>\n        si reorganizar {\n            organizar_sala(1.5, 0.5)>>\n        }\n\n        hacer entero i = 0; i < 3; i = i + 1 {\n            mover silla_lectura [-2 + i, 0, -1]>>\n        }\n\n        entero angulo = 0>>\n        mientras angulo < 90 {\n            angulo = angulo + 30>>\n            rotar planta_ventana [0, angulo, 0]>>\n        }\n    }\n\n    habitacion estudio(4, 3, 2.6) {\n        piso piso_estudio {\n            material \"madera\">>\n        }\n\n        escritorio escritorio1 {\n            color \"#f8fafc\">>\n        }\n\n        colocar escritorio1 [0, 0, 0]>>\n        rotar escritorio1 [0, 90, 0]>>\n    }\n}\n",
+    "calculos.lumi": "funcion decimal calcular_area(decimal ancho, decimal largo) {\n    retornar ancho * largo>>\n}\n",
+    "muebles.lumi": "funcion vacio organizar_sala(decimal x, decimal z) {\n    mover mesa_centro [x, 0, z]>>\n    rotar mesa_centro [0, 90, 0]>>\n}\n"
+  },
+  "responses": [
+    {
+      "protocolVersion": "1.0.0",
+      "requestId": "real-casa-analyze",
+      "operation": "analyze",
+      "status": "incomplete",
+      "result": {
+        "entryFile": "principal.lumi",
+        "analysisStatus": "incomplete",
+        "stage": "semantic",
+        "output": [],
+        "diagnostics": [],
+        "limitations": [
+          "spatial_semantics_unavailable"
+        ],
+        "executionAttempted": false,
+        "capabilities": {
+          "scenePlan": false,
+          "debugTrace": false,
+          "interactiveInput": false,
+          "cancellation": false
+        }
+      }
+    },
+    {
+      "protocolVersion": "1.0.0",
+      "requestId": "real-casa-execute",
+      "operation": "execute",
+      "status": "completed",
+      "result": {
+        "entryFile": "principal.lumi",
+        "analysisStatus": "incomplete",
+        "stage": "semantic",
+        "output": [
+          "Area de sala:",
+          "30.0"
+        ],
+        "diagnostics": [],
+        "limitations": [
+          "spatial_semantics_unavailable"
+        ],
+        "executionAttempted": true,
+        "capabilities": {
+          "scenePlan": true,
+          "debugTrace": false,
+          "interactiveInput": false,
+          "cancellation": false
+        },
+        "scenePlan": {
+          "version": "1.0.0",
+          "rooms": [
+            {
+              "id": "room:principal.lumi:13:5:sala",
+              "name": "sala",
+              "dimensions": [
+                6.0,
+                5.0,
+                3.0
+              ],
+              "floor": {
+                "material": "madera",
+                "color": "#d6b98c"
+              },
+              "walls": {
+                "north": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "south": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "east": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "west": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                }
+              },
+              "doors": [],
+              "windows": [],
+              "objects": [
+                {
+                  "id": "element:principal.lumi:19:9:mesa_centro",
+                  "type": "mesa",
+                  "name": "mesa_centro",
+                  "placed": true,
+                  "rotation": [
+                    0,
+                    90,
+                    0
+                  ],
+                  "dimensions": [
+                    1.2,
+                    0.5,
+                    0.8
+                  ],
+                  "sourceRef": {
+                    "file": "principal.lumi",
+                    "line": 19,
+                    "column": 9
+                  },
+                  "roomId": "room:principal.lumi:13:5:sala",
+                  "position": [
+                    1.5,
+                    0,
+                    0.5
+                  ],
+                  "color": "#8b5a2b",
+                  "material": "madera"
+                },
+                {
+                  "id": "element:principal.lumi:24:9:silla_lectura",
+                  "type": "silla",
+                  "name": "silla_lectura",
+                  "placed": true,
+                  "rotation": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "dimensions": [
+                    0.55,
+                    0.85,
+                    0.55
+                  ],
+                  "sourceRef": {
+                    "file": "principal.lumi",
+                    "line": 24,
+                    "column": 9
+                  },
+                  "roomId": "room:principal.lumi:13:5:sala",
+                  "position": [
+                    0,
+                    0,
+                    -1
+                  ],
+                  "color": "#2563eb"
+                },
+                {
+                  "id": "element:principal.lumi:28:9:planta_ventana",
+                  "type": "planta",
+                  "name": "planta_ventana",
+                  "placed": true,
+                  "rotation": [
+                    0,
+                    90,
+                    0
+                  ],
+                  "dimensions": [
+                    0.6,
+                    1.2,
+                    0.6
+                  ],
+                  "sourceRef": {
+                    "file": "principal.lumi",
+                    "line": 28,
+                    "column": 9
+                  },
+                  "roomId": "room:principal.lumi:13:5:sala",
+                  "position": [
+                    2,
+                    0,
+                    1.5
+                  ],
+                  "color": "#22c55e"
+                }
+              ],
+              "calculatedArea": 30.0,
+              "calculatedVolume": 90.0
+            },
+            {
+              "id": "room:principal.lumi:52:5:estudio",
+              "name": "estudio",
+              "dimensions": [
+                4,
+                3,
+                2.6
+              ],
+              "floor": {
+                "material": "madera",
+                "color": "#e2e8f0"
+              },
+              "walls": {
+                "north": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "south": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "east": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                },
+                "west": {
+                  "color": "#f1f5f9",
+                  "material": "standard"
+                }
+              },
+              "doors": [],
+              "windows": [],
+              "objects": [
+                {
+                  "id": "element:principal.lumi:57:9:escritorio1",
+                  "type": "escritorio",
+                  "name": "escritorio1",
+                  "placed": true,
+                  "rotation": [
+                    0,
+                    90,
+                    0
+                  ],
+                  "dimensions": [
+                    1.4,
+                    0.75,
+                    0.8
+                  ],
+                  "sourceRef": {
+                    "file": "principal.lumi",
+                    "line": 57,
+                    "column": 9
+                  },
+                  "roomId": "room:principal.lumi:52:5:estudio",
+                  "position": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "color": "#f8fafc"
+                }
+              ],
+              "calculatedArea": 12,
+              "calculatedVolume": 31.200000000000003
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "runtimeScenePlan": {
+    "rooms": [
+      {
+        "name": "sala",
+        "width": {
+          "value": 6.0,
+          "source": {
+            "file": "principal.lumi",
+            "line": 13,
+            "column": 21
+          }
+        },
+        "length": {
+          "value": 5.0,
+          "source": {
+            "file": "principal.lumi",
+            "line": 13,
+            "column": 28
+          }
+        },
+        "height": {
+          "value": 3.0,
+          "source": {
+            "file": "principal.lumi",
+            "line": 13,
+            "column": 35
+          }
+        },
+        "elements": [
+          {
+            "name": "suelo",
+            "element_kind": "floor",
+            "object_type": null,
+            "properties": [
+              {
+                "name": "material",
+                "value": "madera",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 15,
+                  "column": 13
+                }
+              },
+              {
+                "name": "color",
+                "value": "#d6b98c",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 16,
+                  "column": 13
+                }
+              }
+            ],
+            "position": null,
+            "rotation": null,
+            "source": {
+              "file": "principal.lumi",
+              "line": 14,
+              "column": 9
+            }
+          },
+          {
+            "name": "mesa_centro",
+            "element_kind": "object",
+            "object_type": "mesa",
+            "properties": [
+              {
+                "name": "material",
+                "value": "madera",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 20,
+                  "column": 13
+                }
+              },
+              {
+                "name": "color",
+                "value": "#8b5a2b",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 21,
+                  "column": 13
+                }
+              }
+            ],
+            "position": {
+              "x": {
+                "value": 1.5,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 2,
+                  "column": 24
+                }
+              },
+              "y": {
+                "value": 0,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 2,
+                  "column": 27
+                }
+              },
+              "z": {
+                "value": 0.5,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 2,
+                  "column": 30
+                }
+              },
+              "source": {
+                "file": "muebles.lumi",
+                "line": 2,
+                "column": 23
+              }
+            },
+            "rotation": {
+              "x": {
+                "value": 0,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 3,
+                  "column": 24
+                }
+              },
+              "y": {
+                "value": 90,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 3,
+                  "column": 27
+                }
+              },
+              "z": {
+                "value": 0,
+                "source": {
+                  "file": "muebles.lumi",
+                  "line": 3,
+                  "column": 31
+                }
+              },
+              "source": {
+                "file": "muebles.lumi",
+                "line": 3,
+                "column": 23
+              }
+            },
+            "source": {
+              "file": "principal.lumi",
+              "line": 19,
+              "column": 9
+            }
+          },
+          {
+            "name": "silla_lectura",
+            "element_kind": "object",
+            "object_type": "silla",
+            "properties": [
+              {
+                "name": "color",
+                "value": "#2563eb",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 25,
+                  "column": 13
+                }
+              }
+            ],
+            "position": {
+              "x": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 42,
+                  "column": 34
+                }
+              },
+              "y": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 42,
+                  "column": 42
+                }
+              },
+              "z": {
+                "value": -1,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 42,
+                  "column": 45
+                }
+              },
+              "source": {
+                "file": "principal.lumi",
+                "line": 42,
+                "column": 33
+              }
+            },
+            "rotation": null,
+            "source": {
+              "file": "principal.lumi",
+              "line": 24,
+              "column": 9
+            }
+          },
+          {
+            "name": "planta_ventana",
+            "element_kind": "object",
+            "object_type": "planta",
+            "properties": [
+              {
+                "name": "color",
+                "value": "#22c55e",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 29,
+                  "column": 13
+                }
+              }
+            ],
+            "position": {
+              "x": {
+                "value": 2,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 34,
+                  "column": 33
+                }
+              },
+              "y": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 34,
+                  "column": 36
+                }
+              },
+              "z": {
+                "value": 1.5,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 34,
+                  "column": 39
+                }
+              },
+              "source": {
+                "file": "principal.lumi",
+                "line": 34,
+                "column": 32
+              }
+            },
+            "rotation": {
+              "x": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 48,
+                  "column": 35
+                }
+              },
+              "y": {
+                "value": 90,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 48,
+                  "column": 38
+                }
+              },
+              "z": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 48,
+                  "column": 46
+                }
+              },
+              "source": {
+                "file": "principal.lumi",
+                "line": 48,
+                "column": 34
+              }
+            },
+            "source": {
+              "file": "principal.lumi",
+              "line": 28,
+              "column": 9
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 13,
+          "column": 5
+        }
+      },
+      {
+        "name": "estudio",
+        "width": {
+          "value": 4,
+          "source": {
+            "file": "principal.lumi",
+            "line": 52,
+            "column": 24
+          }
+        },
+        "length": {
+          "value": 3,
+          "source": {
+            "file": "principal.lumi",
+            "line": 52,
+            "column": 27
+          }
+        },
+        "height": {
+          "value": 2.6,
+          "source": {
+            "file": "principal.lumi",
+            "line": 52,
+            "column": 30
+          }
+        },
+        "elements": [
+          {
+            "name": "piso_estudio",
+            "element_kind": "floor",
+            "object_type": null,
+            "properties": [
+              {
+                "name": "material",
+                "value": "madera",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 54,
+                  "column": 13
+                }
+              }
+            ],
+            "position": null,
+            "rotation": null,
+            "source": {
+              "file": "principal.lumi",
+              "line": 53,
+              "column": 9
+            }
+          },
+          {
+            "name": "escritorio1",
+            "element_kind": "object",
+            "object_type": "escritorio",
+            "properties": [
+              {
+                "name": "color",
+                "value": "#f8fafc",
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 58,
+                  "column": 13
+                }
+              }
+            ],
+            "position": {
+              "x": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 61,
+                  "column": 30
+                }
+              },
+              "y": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 61,
+                  "column": 33
+                }
+              },
+              "z": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 61,
+                  "column": 36
+                }
+              },
+              "source": {
+                "file": "principal.lumi",
+                "line": 61,
+                "column": 29
+              }
+            },
+            "rotation": {
+              "x": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 62,
+                  "column": 28
+                }
+              },
+              "y": {
+                "value": 90,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 62,
+                  "column": 31
+                }
+              },
+              "z": {
+                "value": 0,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 62,
+                  "column": 35
+                }
+              },
+              "source": {
+                "file": "principal.lumi",
+                "line": 62,
+                "column": 27
+              }
+            },
+            "source": {
+              "file": "principal.lumi",
+              "line": 57,
+              "column": 9
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 52,
+          "column": 5
+        }
+      }
+    ],
+    "source": {
+      "file": "principal.lumi",
+      "line": 1,
+      "column": 1
+    }
+  }
+}

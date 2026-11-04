@@ -3,6 +3,22 @@ import type { DoorModel, RoomModel, WindowModel } from '../../../types';
 export const WALL_THICKNESS = 0.16;
 export const WINDOW_CENTER_HEIGHT = 1.6;
 
+/** Unclipped bounds; only wall cuts are clipped to the room height. */
+export function openingVerticalBounds(opening: Pick<WindowModel, 'height' | 'elevation'>, kind: 'door' | 'window'): {
+  centerY: number; bottom: number; top: number;
+} {
+  if (kind === 'door') return { centerY: opening.height / 2, bottom: 0, top: opening.height };
+  if (opening.elevation !== undefined) return {
+    centerY: opening.elevation + opening.height / 2,
+    bottom: opening.elevation, top: opening.elevation + opening.height,
+  };
+  return {
+    centerY: WINDOW_CENTER_HEIGHT,
+    bottom: WINDOW_CENTER_HEIGHT - opening.height / 2,
+    top: WINDOW_CENTER_HEIGHT + opening.height / 2,
+  };
+}
+
 export function openingPlacement(opening: DoorModel | WindowModel, room: RoomModel, centerY: number): {
   position: [number, number, number]; rotationY: number;
 } {
@@ -22,9 +38,9 @@ export function wallSegments(room: RoomModel, wall: DoorModel['wall']): WallSegm
   const span = wall === 'norte' || wall === 'sur' ? room.dimensions[0] : room.dimensions[1];
   const height = room.dimensions[2];
   const holes = [
-    ...room.doors.filter(item => item.wall === wall).map(item => ({ item, bottom: 0, top: item.height })),
+    ...room.doors.filter(item => item.wall === wall).map(item => ({ item, ...openingVerticalBounds(item, 'door') })),
     ...room.windows.filter(item => item.wall === wall).map(item => ({
-      item, bottom: WINDOW_CENTER_HEIGHT - item.height / 2, top: WINDOW_CENTER_HEIGHT + item.height / 2,
+      item, ...openingVerticalBounds(item, 'window'),
     })),
   ].map(({ item, bottom, top }) => ({
     left: Math.max(-span / 2, item.position - item.width / 2),

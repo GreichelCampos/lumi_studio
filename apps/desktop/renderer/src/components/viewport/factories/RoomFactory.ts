@@ -4,16 +4,21 @@ import { SPATIAL_THEME } from '../../../services/spatial/SpatialVisualTheme';
 
 import { WALL_THICKNESS, wallSegments } from '../helpers/openingLayout';
 import { surfaceColor, surfaceMaterial } from '../helpers/surfaceMaterial';
+import type { VisualStateUpdate } from '../interaction/VisualState';
 
 export interface WallMeshRecord {
   wall: 'norte' | 'sur' | 'este' | 'oeste';
   materials: THREE.Material[];
+  meshes: THREE.Mesh[];
+  entityId?: string;
 }
 
 export interface RoomFactoryOptions {
   isWireframe: boolean;
   showReferenceAxes: boolean;
   showDimensions: boolean;
+  selectedEntityId?: string | null;
+  registerVisualState?: (entityId: string, update: VisualStateUpdate) => void;
 }
 
 export class RoomFactory {
@@ -121,12 +126,24 @@ export class RoomFactory {
     const faces = { norte: room.walls.north, sur: room.walls.south, este: room.walls.east, oeste: room.walls.west };
     for (const wall of ['norte', 'sur', 'este', 'oeste'] as const) {
       const face = faces[wall];
+      const entityId = typeof face.id === 'string' && face.id.trim() ? face.id : undefined;
+      const segments = wallSegments(room, wall);
+      const record: WallMeshRecord = { wall, materials: [], meshes: [], entityId };
+      wallRecords.push(record);
+      if (segments.length === 0) continue;
+      const selected = entityId !== undefined && entityId === options.selectedEntityId;
       const material = new THREE.MeshStandardMaterial({
         color: surfaceColor(face.color, '#f1f5f9'), ...surfaceMaterial(face.material),
         wireframe: options.isWireframe, transparent: true, opacity: SPATIAL_THEME.walls.solidOpacity,
+        emissive: selected ? SPATIAL_THEME.states.selected.emissive : '#000000',
+        emissiveIntensity: selected ? SPATIAL_THEME.states.selected.emissiveIntensity : 0,
       });
-      wallRecords.push({ wall, materials: [material] });
-      for (const segment of wallSegments(room, wall)) {
+      record.materials.push(material);
+      if (entityId) options.registerVisualState?.(entityId, isSelected => {
+        material.emissive.set(isSelected ? SPATIAL_THEME.states.selected.emissive : '#000000');
+        material.emissiveIntensity = isSelected ? SPATIAL_THEME.states.selected.emissiveIntensity : 0;
+      });
+      for (const segment of segments) {
         const width = segment.right - segment.left;
         const height = segment.top - segment.bottom;
         const along = (segment.left + segment.right) / 2;
@@ -143,6 +160,7 @@ export class RoomFactory {
         );
         mesh.castShadow = true;
         mesh.receiveShadow = true;
+        record.meshes.push(mesh);
         roomRoot.add(mesh);
       }
     }

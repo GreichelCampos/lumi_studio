@@ -8,6 +8,9 @@ import { adaptBackendResult } from './resultAdapter';
 import { isRecord } from './protocol/validationHelpers';
 
 function backendErrorMessage(code: string, message: string): string {
+  if (code === 'SERIALIZATION_ERROR' && /WindowModel.*elevation/.test(message)) {
+    return `[${code}] ${message} El visor ya admite elevation; el adaptador Python de esta versión todavía no publica ventanas.`;
+  }
   const explanation = code === 'SERIALIZATION_ERROR' && /de tipo '(wall|door|window)'.*geometría/.test(message)
     ? ' La geometría de este elemento declarado todavía no puede publicarse en el visor. No se recibió ScenePlan; las paredes automáticas de la habitación sí pueden mostrarse.'
     : '';

@@ -12,6 +12,7 @@ import {
   parseAndValidateLumicArtifact,
 } from '../compiler/contracts/contractValidator';
 import { ideLogger } from '../logger/IdeLogService';
+import { architecturalArtifactErrors } from '../compiler/contracts/architecturalCompatibility';
 
 export interface LumicExportResult {
   success: boolean;
@@ -59,6 +60,9 @@ export class LumicFileService {
         error: 'El resultado actual no contiene habitaciones ni elementos espaciales exportables. Compilar solo analiza el código; ejecuta un programa con habitaciones para generar una escena.',
       };
     }
+
+    const compatibility = architecturalArtifactErrors(compileResult);
+    if (compatibility.length) return { canExport: false, error: compatibility[0].message };
 
     const artifact = createLumicArtifactFromCompileResult(compileResult, {
       id: project?.id || 'export-local',

@@ -2,6 +2,7 @@ import type { ContractValidationError, ContractValidationResult, LumiCompiledArt
 import { createDebugStepStructure, legacySceneStructure, sceneStructure } from './sceneStructure';
 import { LUMIC_SCHEMA_VERSION } from '../../../types/domain/contracts';
 import { booleanValue, compatibleVersion, finiteNumber, listOf, objectFields, oneOf, text } from './structureChecks';
+import { architecturalArtifactErrors } from './architecturalCompatibility';
 
 function artifactStructure(extended: boolean) {
   const sceneRule = extended ? sceneStructure : legacySceneStructure;
@@ -22,6 +23,7 @@ export function validateLumicStructure(raw: unknown, path: string): ContractVali
   const extended = raw !== null && typeof raw === 'object' && 'schemaVersion' in raw
     && raw.schemaVersion === LUMIC_SCHEMA_VERSION;
   artifactStructure(extended)(raw, path, errors);
+  errors.push(...architecturalArtifactErrors(raw, path));
   return {
     isValid: errors.length === 0,
     data: errors.length === 0 ? raw as LumiCompiledArtifact : null,

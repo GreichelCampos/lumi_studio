@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as THREE from 'three';
+import { useState } from 'react';
 import { createMockRoom, createMockScenePlan, createMockSpatialObject } from '../../fixtures/testFixtures';
 import { FurnitureFactory } from '../../../components/viewport/factories/FurnitureFactory';
 import type { UnplacedSpatialObject } from '../../../types';
@@ -18,6 +19,8 @@ import { ThreeResourceDisposer } from '../../../components/viewport/resources/Th
 import { CameraController } from '../../../components/viewport/camera/CameraController';
 import { Viewport3D } from '../../../components/Viewport3D';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+
+const wallOrientations = [['north', 'norte'], ['south', 'sur'], ['east', 'este'], ['west', 'oeste']] as const;
 
 beforeEach(() => {
   renderers.length = 0;
@@ -107,7 +110,11 @@ describe('ThreeSceneManager lifecycle', () => {
     const scene = manager['scene'];
     const geometrySpies: Array<ReturnType<typeof vi.spyOn>> = [];
     scene.traverse(child => { if (child instanceof THREE.Mesh || child instanceof THREE.Line) geometrySpies.push(vi.spyOn(child.geometry, 'dispose')); });
+    const initialRoot = scene.getObjectByName(`room-${room.id}`);
     manager.renderRoom(room, room.objects[0].id);
+    expect(geometrySpies.every(spy => spy.mock.calls.length === 0)).toBe(true);
+    expect(scene.getObjectByName(`room-${room.id}`)).toBe(initialRoot);
+    manager.renderRoom({ ...room, dimensions: [6, 4, 2.7] }, room.objects[0].id);
     expect(geometrySpies.some(spy => spy.mock.calls.length > 0)).toBe(true);
     const before = scene.getObjectByName(`room-${room.id}`);
     expect(() => manager.renderRoom({ ...room, dimensions: [NaN, 2, 3] }, null)).toThrow('Escena no válida');
@@ -207,5 +214,95 @@ it('uses real camera focus for selection and the focus button at 0.1 m', async (
  expect(Math.abs(center.y)).toBeLessThan(1);
  expect(plan).toEqual(before);
  ThreeResourceDisposer.disposeHierarchy(mesh);
+ view.unmount();
+});
+
+it.each(wallOrientations)('picks every declared %s wall segment with one received ID and preserves automatic faces', (key, wall) => {
+ const room = createMockRoom({ dimensions: [8, 6, 4] });
+ room.doors[0].wall = wall; room.windows[0].wall = wall;
+ room.doors[0].position = -1.5; room.windows[0].position = 1.5;
+ room.walls[key] = { ...room.walls[key], id: 'producer-wall', name: 'principal', sourceRef: { file: 'principal.lumi', line: 4, column: 2 } };
+ const before = structuredClone(room);
+ const select = vi.fn();
+ const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: select });
+ manager.renderRoom(room, 'producer-wall');
+ const record = manager['wallRecords'].find(item => item.entityId === 'producer-wall')!;
+ expect(record.meshes.length).toBeGreaterThan(1);
+ const material = record.materials[0] as THREE.MeshStandardMaterial;
+ expect(material.emissiveIntensity).toBeGreaterThan(0);
+ const registered = manager['selectionController']['pickableMeshes'];
+ for (const automatic of manager['wallRecords'].filter(item => !item.entityId)) {
+   expect(automatic.meshes.every(mesh => !registered.has(mesh))).toBe(true);
+ }
+ const canvas = manager['renderer'].domElement;
+ Object.defineProperties(canvas, {
+   setPointerCapture: { value: vi.fn() }, releasePointerCapture: { value: vi.fn() },
+ });
+ vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({ x: 0, y: 0, left: 0, top: 0, right: 800, bottom: 600, width: 800, height: 600, toJSON: () => ({}) });
+ const camera = manager['cameraController'].getCamera();
+ const center = record.meshes[0].position.clone();
+ if (wall === 'norte' || wall === 'sur') center.set(0, 2, center.z); else center.set(center.x, 2, 0);
+ const direction = wall === 'norte' || wall === 'sur' ? new THREE.Vector3(0, 0, 1) : new THREE.Vector3(1, 0, 0);
+ camera.position.copy(center).addScaledVector(direction, -10); camera.lookAt(center);
+ Object.assign(camera, { left: -5, right: 5, top: 3, bottom: -3, zoom: 1 });
+ camera.updateProjectionMatrix(); camera.updateMatrixWorld(true);
+ for (const mesh of record.meshes) {
+   expect(registered.get(mesh)).toBe('producer-wall');
+   const point = mesh.position.clone().project(camera);
+   for (const type of ['pointerdown', 'pointerup']) {
+     const event = new MouseEvent(type, { clientX: (point.x + 1) * 400, clientY: (1 - point.y) * 300, button: 0 });
+     Object.defineProperty(event, 'pointerId', { value: 1 }); canvas.dispatchEvent(event);
+   }
+   expect(select).toHaveBeenLastCalledWith('producer-wall');
+ }
+ const disposeMaterial = vi.spyOn(material, 'dispose');
+ manager.renderRoom(room, null);
+ expect(disposeMaterial).not.toHaveBeenCalled();
+ const unselected = manager['wallRecords'].find(item => item.entityId === 'producer-wall')!.materials[0] as THREE.MeshStandardMaterial;
+ expect(unselected).toBe(material);
+ expect(unselected.emissiveIntensity).toBe(0);
+ expect(room).toEqual(before); manager.dispose();
+});
+
+it('shows declared-wall properties, navigates to its real source and clears selection on room change', async () => {
+ const first = createMockRoom({ id: 'first' }); const second = createMockRoom({ id: 'second', name: 'Otra sala' });
+ const source = { file: 'arquitectura.lumi', line: 12, column: 7 };
+ first.walls.north = { color: '#123456', material: 'acero', id: 'wall-source', name: 'principal', sourceRef: source };
+ const plan = createMockScenePlan({ rooms: [first, second] });
+ const navigate = vi.fn(); const changed = vi.fn();
+ function ControlledViewport() {
+   const [active, setActive] = useState<string | null>('wall-source');
+   return <Viewport3D scenePlan={plan} activeObjectId={active} onNavigateToSource={navigate}
+     onSelectObject={id => { changed(id); setActive(id); }} />;
+ }
+ const view = render(<ControlledViewport />);
+ expect(screen.getByText('principal')).toBeInTheDocument();
+ expect(screen.getByText('Pared declarada (norte)')).toBeInTheDocument();
+ expect(screen.getByText('5.00 × 2.70 m')).toBeInTheDocument();
+ fireEvent.click(document.querySelector('#btn-navigate-source')!);
+ expect(navigate).toHaveBeenCalledWith(source);
+ fireEvent.click(document.querySelector('#room-tab-second')!);
+ await waitFor(() => expect(changed).toHaveBeenCalledWith(null));
+ expect(screen.queryByText('Pared declarada (norte)')).not.toBeInTheDocument();
+ view.unmount();
+});
+
+it('does not invent source navigation for a wall without sourceRef and recovers after invalid elevation', async () => {
+ const room = createMockRoom(); room.walls.east.id = 'wall-no-source';
+ const plan = createMockScenePlan({ rooms: [room] });
+ const select = vi.fn();
+ const view = render(<Viewport3D scenePlan={plan} activeObjectId="wall-no-source" onSelectObject={select} />);
+ expect(screen.getByText('Pared declarada (este)')).toBeInTheDocument();
+ expect(document.querySelector('#btn-navigate-source')).toBeNull();
+ const invalid = structuredClone(plan); invalid.rooms[0].windows[0].elevation = -1;
+ const clear = vi.spyOn(ThreeSceneManager.prototype, 'clearRoom');
+ view.rerender(<Viewport3D scenePlan={invalid} activeObjectId="wall-no-source" onSelectObject={select} />);
+ expect(screen.getByRole('alert')).toHaveTextContent('elevation');
+ expect(clear).toHaveBeenCalled();
+ view.rerender(<Viewport3D scenePlan={plan} activeObjectId="wall-no-source" onSelectObject={select} />);
+ await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument());
+ expect(screen.getByText('Pared declarada (este)')).toBeInTheDocument();
+ view.rerender(<Viewport3D scenePlan={createMockScenePlan({ rooms: [] })} activeObjectId="wall-no-source" onSelectObject={select} />);
+ expect(select).toHaveBeenCalledWith(null);
  view.unmount();
 });
