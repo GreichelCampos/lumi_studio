@@ -117,6 +117,7 @@ export const DebuggerControls: React.FC<DebuggerControlsProps> = ({
             <button
               key={spd}
               onClick={() => onChangeSpeed(spd)}
+              disabled={isAllDisabled}
               className={`px-1.5 py-0.5 rounded-lg text-[11px] font-mono transition-colors ${
                 playbackSpeed === spd
                   ? 'bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/50 font-bold'

@@ -41,8 +41,12 @@ export function useCompiler(options?: UseCompilerOptions) {
   useEffect(() => {
     latestCompilationRequestIdRef.current++;
     setIsCompiling(false);
+    setDebugSteps([]);
+    setLumiState(previous => previous === 'compiling' ? 'ready' : previous);
   }, [options?.contextKey]);
   useEffect(() => {
+    latestCompilationRequestIdRef.current++;
+    setIsCompiling(false); setLumiState('ready');
     setLastCompileResult(null); setScenePlan(null); setDiagnostics([]);
     setSceneSource(null);
     setLegacyPlacement(false);
@@ -57,6 +61,9 @@ export function useCompiler(options?: UseCompilerOptions) {
       setLumiState('compiling');
       lumiAssistant.onCompiling();
       setDiagnostics([]);
+      setDebugSteps([]); setLogs([]); setLastCompileResult(null);
+      setScenePlan(null); setSceneSource(null); setLegacyPlacement(false);
+      setLastCompiledRevision(null);
 
       const targetEntry =
         project.files.find((f) => f.id === activeFileId)?.name ||

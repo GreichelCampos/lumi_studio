@@ -142,9 +142,10 @@ export function useSpatialDebugger({
   }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
 
   const pause = useCallback(() => {
+    if (debugSteps.length === 0) return;
     setStatus('paused');
     lumiAssistant.onDebugPaused();
-  }, []);
+  }, [debugSteps.length]);
 
   const togglePlay = useCallback(() => {
     if (status === 'running') {
@@ -157,10 +158,8 @@ export function useSpatialDebugger({
   const nextStep = useCallback(() => {
     if (currentStepIndex < debugSteps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
-      if (status === 'idle' || status === 'finished') {
-        setStatus('paused');
-      }
-    } else if (currentStepIndex === debugSteps.length - 1) {
+      setStatus('paused');
+    } else if (debugSteps.length > 0 && currentStepIndex === debugSteps.length - 1) {
       setStatus('finished');
     }
   }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
@@ -168,16 +167,14 @@ export function useSpatialDebugger({
   const prevStep = useCallback(() => {
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prev) => prev - 1);
-      if (status === 'finished') {
-        setStatus('paused');
-      }
+      setStatus('paused');
     }
   }, [currentStepIndex, status, setCurrentStepIndex]);
 
   const jumpToStart = useCallback(() => {
     setCurrentStepIndex(0);
-    setStatus('ready');
-  }, [setCurrentStepIndex]);
+    setStatus(debugSteps.length > 0 ? 'ready' : 'idle');
+  }, [debugSteps.length, setCurrentStepIndex]);
 
   const jumpToEnd = useCallback(() => {
     if (debugSteps.length > 0) {

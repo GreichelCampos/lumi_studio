@@ -247,6 +247,8 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
           {activeMainTab === 'depurador' && (
             <SpatialDebuggerView
+              lastCompileResult={lastCompileResult}
+              onNavigateToDiagnostic={onNavigateToDiagnostic}
               debugSteps={debugSteps}
               currentStepIndex={currentStepIndex}
               debuggerStatus={debuggerStatus}

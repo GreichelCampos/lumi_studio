@@ -27,6 +27,7 @@ import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { BackendModeNotice } from './components/BackendModeNotice';
 import { findSourceFile } from './services/editor/sourceNavigation';
 import { resolveDebugStep } from './services/editor/debugStepNavigation';
+import { relativePath } from './services/integration/projectInput';
 
 export default function App() {
   const {
@@ -74,8 +75,11 @@ export default function App() {
   const [isViewportMaximized, setIsViewportMaximized] = useState(false);
 
 
-  const activeFileName = useMemo(() => {
-    return currentProject?.files.find((f) => f.id === activeFileId)?.name || '';
+  const activeFileIdentity = useMemo(() => {
+    const file = currentProject?.files.find((f) => f.id === activeFileId);
+    if (!file || !currentProject) return '';
+    try { return relativePath(file.path, currentProject.name); }
+    catch { return file.id; }
   }, [currentProject, activeFileId]);
 
   const {
@@ -88,7 +92,7 @@ export default function App() {
     toggleBreakpoint,
     activeObjectId,
     setActiveObjectId,
-  } = useEditorState(activeFileName, currentProjectId ?? '');
+  } = useEditorState(activeFileIdentity, currentProjectId ?? '');
 
   const {
     lumiState,

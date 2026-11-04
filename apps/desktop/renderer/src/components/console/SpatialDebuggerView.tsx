@@ -3,11 +3,14 @@ import {
   DebugStep,
   DebuggerStatus,
   PlaybackSpeed,
+  CompileResult,
+  DiagnosticItem,
 } from '../../types';
 import { Bug, Compass } from 'lucide-react';
 import { DebuggerControls } from './DebuggerControls';
 import { getDebuggerStatusInfo } from './debuggerUtils';
 import { validDebugSource, resolveDebugStep } from '../../services/editor/debugStepNavigation';
+import { PythonDebuggerStatus } from './PythonDebuggerStatus';
 
 export interface SpatialDebuggerViewProps {
   debugSteps: DebugStep[];
@@ -25,6 +28,8 @@ export interface SpatialDebuggerViewProps {
   onResetDebugger?: () => void;
   onChangeSpeed?: (speed: PlaybackSpeed) => void;
   onFocusObject: (objectId: string) => void;
+  lastCompileResult?: CompileResult | null;
+  onNavigateToDiagnostic?: (diagnostic: DiagnosticItem) => void;
 }
 
 export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
@@ -43,6 +48,8 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
   onResetDebugger,
   onChangeSpeed,
   onFocusObject,
+  lastCompileResult,
+  onNavigateToDiagnostic,
 }) => {
   const currentStep = debugSteps.length > 0 ? debugSteps[currentStepIndex] : undefined;
   const statusInfo = getDebuggerStatusInfo(debuggerStatus);
@@ -54,6 +61,9 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
       <p className="text-xs text-[var(--ide-text-muted)]">
         Reproducción de pasos importados o de demostración. No son trazas de Python.
       </p>
+      {lastCompileResult?.origin === 'python' && (
+        <PythonDebuggerStatus result={lastCompileResult} onNavigateToDiagnostic={onNavigateToDiagnostic} />
+      )}
       <div className="flex flex-wrap items-center justify-between gap-2 glass-panel-header p-2.5 rounded-2xl border border-white/20 shadow-md">
         <div className="flex items-center gap-2">
           <Bug className="w-4 h-4 text-purple-400 drop-shadow-[0_0_6px_rgba(192,132,252,0.6)]" />
@@ -115,6 +125,12 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
           <p className="text-xs text-[var(--ide-text)] leading-relaxed">
             {currentStep.description || currentStep.actionDescription}
           </p>
+          {currentStep.spatialState && (
+            <details className="text-xs">
+              <summary>Estado registrado del paso</summary>
+              <pre className="overflow-auto whitespace-pre-wrap">{JSON.stringify(currentStep.spatialState, null, 2)}</pre>
+            </details>
+          )}
 
           <div className="flex items-center gap-2 pt-1 text-[11px] text-[var(--ide-text-muted)]">
             {currentStep.roomId && (

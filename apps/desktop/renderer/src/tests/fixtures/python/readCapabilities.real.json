@@ -1,0 +1,430 @@
+{
+  "producerCommit": "e16a6ae02e5c563aab59f690231932ab8807bda3",
+  "method": "Real worker NDJSON and separately injected ExecutionService input_provider; injection is not the IDE wire protocol",
+  "cases": [
+    {
+      "name": "one-read",
+      "file": "one-read.lumi",
+      "source": "principal { texto nombre = leer(\"Nombre:\")>> mostrar(nombre)>> }",
+      "injectedHostInputs": [
+        "Lumi"
+      ],
+      "directHostExecution": {
+        "status": "completed",
+        "prompts": [
+          "Nombre:"
+        ],
+        "output": [
+          "Lumi"
+        ],
+        "diagnostics": []
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "one-read-analyze",
+          "operation": "analyze",
+          "status": "completed",
+          "result": {
+            "entryFile": "one-read.lumi",
+            "analysisStatus": "completed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "one-read-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "INPUT_UNAVAILABLE",
+            "message": "La entrada interactiva no está disponible en este protocolo."
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": true
+    },
+    {
+      "name": "consecutive-reads",
+      "file": "consecutive-reads.lumi",
+      "source": "principal { texto primero = leer(\"Primero:\")>> texto segundo = leer(\"Segundo:\")>> mostrar(primero)>> mostrar(segundo)>> }",
+      "injectedHostInputs": [
+        "uno",
+        "dos"
+      ],
+      "directHostExecution": {
+        "status": "completed",
+        "prompts": [
+          "Primero:",
+          "Segundo:"
+        ],
+        "output": [
+          "uno",
+          "dos"
+        ],
+        "diagnostics": []
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "consecutive-reads-analyze",
+          "operation": "analyze",
+          "status": "completed",
+          "result": {
+            "entryFile": "consecutive-reads.lumi",
+            "analysisStatus": "completed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "consecutive-reads-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "INPUT_UNAVAILABLE",
+            "message": "La entrada interactiva no está disponible en este protocolo."
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": true
+    },
+    {
+      "name": "empty-value",
+      "file": "empty-value.lumi",
+      "source": "principal { texto valor = leer(\"Valor:\")>> mostrar(valor)>> }",
+      "injectedHostInputs": [
+        ""
+      ],
+      "directHostExecution": {
+        "status": "completed",
+        "prompts": [
+          "Valor:"
+        ],
+        "output": [
+          ""
+        ],
+        "diagnostics": []
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "empty-value-analyze",
+          "operation": "analyze",
+          "status": "completed",
+          "result": {
+            "entryFile": "empty-value.lumi",
+            "analysisStatus": "completed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "empty-value-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "INPUT_UNAVAILABLE",
+            "message": "La entrada interactiva no está disponible en este protocolo."
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": true
+    },
+    {
+      "name": "invalid-assignment",
+      "file": "invalid-assignment.lumi",
+      "source": "principal { entero edad = leer(\"Edad:\")>> mostrar(edad)>> }",
+      "injectedHostInputs": [
+        "12"
+      ],
+      "directHostExecution": {
+        "status": "blocked",
+        "prompts": [],
+        "output": [],
+        "diagnostics": [
+          {
+            "category": "SEMANTIC",
+            "code": "SEM_TYPE_MISMATCH",
+            "file": "invalid-assignment.lumi",
+            "line": 1,
+            "column": 13,
+            "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+            "suggestion": "Utilice un valor compatible con el tipo declarado."
+          }
+        ]
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-assignment-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "invalid-assignment.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_TYPE_MISMATCH",
+                "file": "invalid-assignment.lumi",
+                "line": 1,
+                "column": 13,
+                "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+                "suggestion": "Utilice un valor compatible con el tipo declarado."
+              }
+            ],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-assignment-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "invalid-assignment.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_TYPE_MISMATCH",
+                "file": "invalid-assignment.lumi",
+                "line": 1,
+                "column": 13,
+                "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+                "suggestion": "Utilice un valor compatible con el tipo declarado."
+              }
+            ],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": false
+    },
+    {
+      "name": "runtime-error",
+      "file": "runtime-error.lumi",
+      "source": "principal { texto valor = leer(\"Valor:\")>> entero divisor = 0>> mostrar(1 / divisor)>> }",
+      "injectedHostInputs": [
+        "dato"
+      ],
+      "directHostExecution": {
+        "status": "failed",
+        "prompts": [
+          "Valor:"
+        ],
+        "output": [],
+        "diagnostics": [
+          {
+            "category": "RUNTIME",
+            "code": "RUN_DIVISION_BY_ZERO",
+            "file": "runtime-error.lumi",
+            "line": 1,
+            "column": 73,
+            "description": "No se puede dividir entre cero.",
+            "suggestion": "Cambie el divisor por un valor distinto de cero."
+          }
+        ]
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "runtime-error-analyze",
+          "operation": "analyze",
+          "status": "completed",
+          "result": {
+            "entryFile": "runtime-error.lumi",
+            "analysisStatus": "completed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "runtime-error-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "INPUT_UNAVAILABLE",
+            "message": "La entrada interactiva no está disponible en este protocolo."
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": true
+    },
+    {
+      "name": "mostrar-before-read",
+      "file": "mostrar-before-read.lumi",
+      "source": "principal { mostrar(\"Antes\")>> texto valor = leer(\"Valor:\")>> mostrar(valor)>> }",
+      "injectedHostInputs": [
+        "despues"
+      ],
+      "directHostExecution": {
+        "status": "completed",
+        "prompts": [
+          "Valor:"
+        ],
+        "output": [
+          "Antes",
+          "despues"
+        ],
+        "diagnostics": []
+      },
+      "workerResponses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "mostrar-before-read-analyze",
+          "operation": "analyze",
+          "status": "completed",
+          "result": {
+            "entryFile": "mostrar-before-read.lumi",
+            "analysisStatus": "completed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "mostrar-before-read-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "INPUT_UNAVAILABLE",
+            "message": "La entrada interactiva no está disponible en este protocolo."
+          }
+        }
+      ],
+      "workerReportedInputUnavailable": true
+    }
+  ],
+  "stdinProbe": [
+    {
+      "protocolVersion": "1.0.0",
+      "requestId": "stdin-read",
+      "operation": "execute",
+      "status": "error",
+      "error": {
+        "kind": "infrastructure",
+        "code": "INPUT_UNAVAILABLE",
+        "message": "La entrada interactiva no está disponible en este protocolo."
+      }
+    },
+    {
+      "protocolVersion": "1.0.0",
+      "requestId": null,
+      "operation": null,
+      "status": "error",
+      "error": {
+        "kind": "protocol",
+        "code": "MALFORMED_JSON",
+        "message": "No se pudo interpretar el mensaje JSON."
+      }
+    },
+    {
+      "protocolVersion": "1.0.0",
+      "requestId": "stdin-recovery",
+      "operation": "execute",
+      "status": "completed",
+      "result": {
+        "entryFile": "principal.lumi",
+        "analysisStatus": "completed",
+        "stage": "semantic",
+        "output": [
+          "Recuperado"
+        ],
+        "diagnostics": [],
+        "limitations": [],
+        "executionAttempted": true,
+        "capabilities": {
+          "scenePlan": false,
+          "debugTrace": false,
+          "interactiveInput": false,
+          "cancellation": false
+        }
+      }
+    }
+  ],
+  "preloadedInputProbe": {
+    "protocolVersion": "1.0.0",
+    "requestId": "preloaded-rejected",
+    "operation": "execute",
+    "status": "error",
+    "error": {
+      "kind": "protocol",
+      "code": "INVALID_REQUEST",
+      "message": "Campos de solicitud ausentes o desconocidos."
+    }
+  }
+}
