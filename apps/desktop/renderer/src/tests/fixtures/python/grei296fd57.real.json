@@ -1,0 +1,5145 @@
+{
+  "producerCommit": "296fd57b906e8902748bd58afd069dd867f12a6d",
+  "method": "Unmodified real CompilerService, ExecutionService, Interpreter and RequestDispatcher in detached worktree; geometry records are internal values, not published ScenePlans",
+  "cases": [
+    {
+      "name": "four-walls",
+      "file": "four-walls.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npared pared_0 { orientacion \"norte\">> color \"#123456\">> material \"acero\">> }\npared pared_1 { orientacion \"sur\">> color \"#123456\">> material \"acero\">> }\npared pared_2 { orientacion \"este\">> color \"#123456\">> material \"acero\">> }\npared pared_3 { orientacion \"oeste\">> color \"#123456\">> material \"acero\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "pared_0",
+          "source": {
+            "file": "four-walls.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "wall",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 2,
+                "column": 17
+              }
+            },
+            "width": null,
+            "height": null,
+            "offset": null,
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#123456",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 2,
+                "column": 39
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "acero",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 2,
+                "column": 57
+              }
+            }
+          }
+        },
+        {
+          "name": "pared_1",
+          "source": {
+            "file": "four-walls.lumi",
+            "line": 3,
+            "column": 1
+          },
+          "kind": "wall",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "sur",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 3,
+                "column": 17
+              }
+            },
+            "width": null,
+            "height": null,
+            "offset": null,
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#123456",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 3,
+                "column": 37
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "acero",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 3,
+                "column": 55
+              }
+            }
+          }
+        },
+        {
+          "name": "pared_2",
+          "source": {
+            "file": "four-walls.lumi",
+            "line": 4,
+            "column": 1
+          },
+          "kind": "wall",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "este",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 4,
+                "column": 17
+              }
+            },
+            "width": null,
+            "height": null,
+            "offset": null,
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#123456",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 4,
+                "column": 38
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "acero",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 4,
+                "column": 56
+              }
+            }
+          }
+        },
+        {
+          "name": "pared_3",
+          "source": {
+            "file": "four-walls.lumi",
+            "line": 5,
+            "column": 1
+          },
+          "kind": "wall",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "oeste",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 5,
+                "column": 17
+              }
+            },
+            "width": null,
+            "height": null,
+            "offset": null,
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#123456",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 5,
+                "column": 39
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "acero",
+              "source": {
+                "file": "four-walls.lumi",
+                "line": 5,
+                "column": 57
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "four-walls-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "four-walls.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "four-walls-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "four-walls.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:four-walls.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#123456",
+                      "material": "acero"
+                    },
+                    "south": {
+                      "color": "#123456",
+                      "material": "acero"
+                    },
+                    "east": {
+                      "color": "#123456",
+                      "material": "acero"
+                    },
+                    "west": {
+                      "color": "#123456",
+                      "material": "acero"
+                    }
+                  },
+                  "doors": [],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-norte-start",
+      "file": "door-norte-start.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 0>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-norte-start.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 78
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-norte-start.lumi",
+                "line": 2,
+                "column": 96
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-norte-start-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-norte-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-norte-start-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-norte-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-norte-start.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-norte-start.lumi:2:1:entrada",
+                      "wall": "norte",
+                      "position": -2.5,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-norte-start.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-norte-end",
+      "file": "door-norte-end.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 5>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-norte-end.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 5,
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 78
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-norte-end.lumi",
+                "line": 2,
+                "column": 96
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-norte-end-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-norte-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-norte-end-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-norte-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-norte-end.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-norte-end.lumi:2:1:entrada",
+                      "wall": "norte",
+                      "position": 2.5,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-norte-end.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-norte-0",
+      "file": "window-norte-0.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"norte\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-norte-0.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "window-norte-0.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-norte-0.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-norte-0.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-norte-0.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0,
+              "source": {
+                "file": "window-norte-0.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-norte-0-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-norte-0.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-norte-0-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-norte-0_9",
+      "file": "window-norte-0_9.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"norte\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0.9>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-norte-0_9.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "window-norte-0_9.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-norte-0_9.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-norte-0_9.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-norte-0_9.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0.9,
+              "source": {
+                "file": "window-norte-0_9.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-norte-0_9-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-norte-0_9.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-norte-0_9-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-sur-start",
+      "file": "door-sur-start.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"sur\">> ancho 1>> alto 2>> desplazamiento 0>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-sur-start.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "sur",
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 38
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 48
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 57
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 76
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-sur-start.lumi",
+                "line": 2,
+                "column": 94
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-sur-start-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-sur-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-sur-start-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-sur-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-sur-start.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-sur-start.lumi:2:1:entrada",
+                      "wall": "sur",
+                      "position": -2.5,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-sur-start.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-sur-end",
+      "file": "door-sur-end.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"sur\">> ancho 1>> alto 2>> desplazamiento 5>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-sur-end.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "sur",
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 38
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 48
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 5,
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 57
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 76
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-sur-end.lumi",
+                "line": 2,
+                "column": 94
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-sur-end-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-sur-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-sur-end-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-sur-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-sur-end.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-sur-end.lumi:2:1:entrada",
+                      "wall": "sur",
+                      "position": 2.5,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-sur-end.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-sur-0",
+      "file": "window-sur-0.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"sur\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-sur-0.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "sur",
+              "source": {
+                "file": "window-sur-0.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-sur-0.lumi",
+                "line": 2,
+                "column": 35
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-sur-0.lumi",
+                "line": 2,
+                "column": 45
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-sur-0.lumi",
+                "line": 2,
+                "column": 54
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0,
+              "source": {
+                "file": "window-sur-0.lumi",
+                "line": 2,
+                "column": 73
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-sur-0-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-sur-0.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-sur-0-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-sur-0_9",
+      "file": "window-sur-0_9.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"sur\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0.9>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-sur-0_9.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "sur",
+              "source": {
+                "file": "window-sur-0_9.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-sur-0_9.lumi",
+                "line": 2,
+                "column": 35
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-sur-0_9.lumi",
+                "line": 2,
+                "column": 45
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-sur-0_9.lumi",
+                "line": 2,
+                "column": 54
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0.9,
+              "source": {
+                "file": "window-sur-0_9.lumi",
+                "line": 2,
+                "column": 73
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-sur-0_9-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-sur-0_9.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-sur-0_9-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-este-start",
+      "file": "door-este-start.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"este\">> ancho 1>> alto 2>> desplazamiento 0>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-este-start.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "este",
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 39
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 49
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 58
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 77
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-este-start.lumi",
+                "line": 2,
+                "column": 95
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-este-start-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-este-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-este-start-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-este-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-este-start.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-este-start.lumi:2:1:entrada",
+                      "wall": "este",
+                      "position": -2.0,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-este-start.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-este-end",
+      "file": "door-este-end.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"este\">> ancho 1>> alto 2>> desplazamiento 4>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-este-end.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "este",
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 39
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 49
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 4,
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 58
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 77
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-este-end.lumi",
+                "line": 2,
+                "column": 95
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-este-end-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-este-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-este-end-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-este-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-este-end.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-este-end.lumi:2:1:entrada",
+                      "wall": "este",
+                      "position": 2.0,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-este-end.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-este-0",
+      "file": "window-este-0.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"este\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-este-0.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "este",
+              "source": {
+                "file": "window-este-0.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-este-0.lumi",
+                "line": 2,
+                "column": 36
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-este-0.lumi",
+                "line": 2,
+                "column": 46
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-este-0.lumi",
+                "line": 2,
+                "column": 55
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0,
+              "source": {
+                "file": "window-este-0.lumi",
+                "line": 2,
+                "column": 74
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-este-0-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-este-0.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-este-0-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-este-0_9",
+      "file": "window-este-0_9.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"este\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0.9>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-este-0_9.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "este",
+              "source": {
+                "file": "window-este-0_9.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-este-0_9.lumi",
+                "line": 2,
+                "column": 36
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-este-0_9.lumi",
+                "line": 2,
+                "column": 46
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-este-0_9.lumi",
+                "line": 2,
+                "column": 55
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0.9,
+              "source": {
+                "file": "window-este-0_9.lumi",
+                "line": 2,
+                "column": 74
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-este-0_9-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-este-0_9.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-este-0_9-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-oeste-start",
+      "file": "door-oeste-start.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"oeste\">> ancho 1>> alto 2>> desplazamiento 0>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-oeste-start.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "oeste",
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 78
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-oeste-start.lumi",
+                "line": 2,
+                "column": 96
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-oeste-start-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-oeste-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-oeste-start-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-oeste-start.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-oeste-start.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-oeste-start.lumi:2:1:entrada",
+                      "wall": "oeste",
+                      "position": -2.0,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-oeste-start.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-oeste-end",
+      "file": "door-oeste-end.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"oeste\">> ancho 1>> alto 2>> desplazamiento 4>> color \"#654321\">> material \"madera\">> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-oeste-end.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "oeste",
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 4,
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": {
+              "name": "color",
+              "value": "#654321",
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 78
+              }
+            },
+            "material": {
+              "name": "material",
+              "value": "madera",
+              "source": {
+                "file": "door-oeste-end.lumi",
+                "line": 2,
+                "column": 96
+              }
+            }
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-oeste-end-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-oeste-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-oeste-end-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-oeste-end.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-oeste-end.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-oeste-end.lumi:2:1:entrada",
+                      "wall": "oeste",
+                      "position": 2.0,
+                      "width": 1,
+                      "height": 2,
+                      "sourceRef": {
+                        "file": "door-oeste-end.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-oeste-0",
+      "file": "window-oeste-0.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"oeste\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-oeste-0.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "oeste",
+              "source": {
+                "file": "window-oeste-0.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-oeste-0.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-oeste-0.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-oeste-0.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0,
+              "source": {
+                "file": "window-oeste-0.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-oeste-0-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-oeste-0.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-oeste-0-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-oeste-0_9",
+      "file": "window-oeste-0_9.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"oeste\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 0.9>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-oeste-0_9.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "oeste",
+              "source": {
+                "file": "window-oeste-0_9.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-oeste-0_9.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-oeste-0_9.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-oeste-0_9.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 0.9,
+              "source": {
+                "file": "window-oeste-0_9.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-oeste-0_9-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-oeste-0_9.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-oeste-0_9-execute",
+          "operation": "execute",
+          "status": "error",
+          "error": {
+            "kind": "infrastructure",
+            "code": "SERIALIZATION_ERROR",
+            "message": "La ventana 'luz' no puede publicarse porque el contrato local WindowModel aún no admite 'elevation'."
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-pared-orientacion",
+      "file": "missing-pared-orientacion.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npared elemento {  }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-pared-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-pared-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-pared-orientacion-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-pared-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-pared-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-pared-orientacion-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-pared-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-pared-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-puerta-orientacion",
+      "file": "missing-puerta-orientacion.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta elemento { ancho 1>> alto 2>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-orientacion-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-puerta-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-orientacion-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-puerta-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-puerta-ancho",
+      "file": "missing-puerta-ancho.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta elemento { orientacion \"norte\">> alto 2>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-ancho.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-ancho.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-ancho-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-puerta-ancho.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-ancho.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-ancho-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-puerta-ancho.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-ancho.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-puerta-alto",
+      "file": "missing-puerta-alto.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta elemento { orientacion \"norte\">> ancho 1>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-alto.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-alto.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-alto-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-puerta-alto.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-alto.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-alto-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-puerta-alto.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-alto.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-puerta-desplazamiento",
+      "file": "missing-puerta-desplazamiento.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta elemento { orientacion \"norte\">> ancho 1>> alto 2>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-desplazamiento.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-puerta-desplazamiento.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-desplazamiento-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-puerta-desplazamiento.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-desplazamiento.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-puerta-desplazamiento-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-puerta-desplazamiento.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-puerta-desplazamiento.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-ventana-orientacion",
+      "file": "missing-ventana-orientacion.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana elemento { ancho 1>> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-orientacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-orientacion-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-ventana-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-orientacion-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-ventana-orientacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-orientacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'orientacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-ventana-ancho",
+      "file": "missing-ventana-ancho.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana elemento { orientacion \"norte\">> alto 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-ancho.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-ancho.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-ancho-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-ventana-ancho.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-ancho.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-ancho-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-ventana-ancho.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-ancho.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'ancho'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-ventana-alto",
+      "file": "missing-ventana-alto.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana elemento { orientacion \"norte\">> ancho 1>> desplazamiento 0>> elevacion 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-alto.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-alto.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-alto-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-ventana-alto.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-alto.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-alto-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-ventana-alto.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-alto.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'alto'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-ventana-desplazamiento",
+      "file": "missing-ventana-desplazamiento.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana elemento { orientacion \"norte\">> ancho 1>> alto 1>> elevacion 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-desplazamiento.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-desplazamiento.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-desplazamiento-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-ventana-desplazamiento.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-desplazamiento.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-desplazamiento-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-ventana-desplazamiento.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-desplazamiento.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'desplazamiento'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "missing-ventana-elevacion",
+      "file": "missing-ventana-elevacion.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana elemento { orientacion \"norte\">> ancho 1>> alto 1>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-elevacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'elevacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_MISSING_SPATIAL_PROPERTY",
+          "file": "missing-ventana-elevacion.lumi",
+          "line": 2,
+          "column": 1,
+          "description": "El elemento 'elemento' requiere la propiedad 'elevacion'.",
+          "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-elevacion-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "missing-ventana-elevacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-elevacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'elevacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "missing-ventana-elevacion-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "missing-ventana-elevacion.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_MISSING_SPATIAL_PROPERTY",
+                "file": "missing-ventana-elevacion.lumi",
+                "line": 2,
+                "column": 1,
+                "description": "El elemento 'elemento' requiere la propiedad 'elevacion'.",
+                "suggestion": "Agregue la propiedad obligatoria a la declaración espacial."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "duplicate-wall",
+      "file": "duplicate-wall.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npared uno { orientacion \"norte\">> } pared dos { orientacion \"norte\">> }\n} }",
+      "compilationStatus": "failed",
+      "compilationDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_DUPLICATE_WALL_ORIENTATION",
+          "file": "duplicate-wall.lumi",
+          "line": 2,
+          "column": 49,
+          "description": "La habitación 'sala' ya tiene una pared explícita para la orientación 'norte'.",
+          "suggestion": "Conserve como máximo una pared explícita por orientación."
+        }
+      ],
+      "executionStatus": "blocked",
+      "executionDiagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_DUPLICATE_WALL_ORIENTATION",
+          "file": "duplicate-wall.lumi",
+          "line": 2,
+          "column": 49,
+          "description": "La habitación 'sala' ya tiene una pared explícita para la orientación 'norte'.",
+          "suggestion": "Conserve como máximo una pared explícita por orientación."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "duplicate-wall-analyze",
+          "operation": "analyze",
+          "status": "failed",
+          "result": {
+            "entryFile": "duplicate-wall.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_DUPLICATE_WALL_ORIENTATION",
+                "file": "duplicate-wall.lumi",
+                "line": 2,
+                "column": 49,
+                "description": "La habitación 'sala' ya tiene una pared explícita para la orientación 'norte'.",
+                "suggestion": "Conserve como máximo una pared explícita por orientación."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "duplicate-wall-execute",
+          "operation": "execute",
+          "status": "blocked",
+          "result": {
+            "entryFile": "duplicate-wall.lumi",
+            "analysisStatus": "failed",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SEMANTIC",
+                "code": "SEM_DUPLICATE_WALL_ORIENTATION",
+                "file": "duplicate-wall.lumi",
+                "line": 2,
+                "column": 49,
+                "description": "La habitación 'sala' ya tiene una pared explícita para la orientación 'norte'.",
+                "suggestion": "Conserve como máximo una pared explícita por orientación."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "overlap",
+      "file": "overlap.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta uno { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 1>> } puerta dos { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 1.5>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_COLLISION",
+          "file": "overlap.lumi",
+          "line": 2,
+          "column": 76,
+          "description": "La abertura 'dos' se superpone con 'uno' en la pared 'norte'.",
+          "suggestion": "Separe las aberturas de la pared."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "uno",
+          "source": {
+            "file": "overlap.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 14
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 36
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 46
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 1,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 55
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        },
+        {
+          "name": "dos",
+          "source": {
+            "file": "overlap.lumi",
+            "line": 2,
+            "column": 76
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 89
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 111
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 121
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 1.5,
+              "source": {
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 130
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "overlap-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "overlap.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "overlap-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "overlap.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_COLLISION",
+                "file": "overlap.lumi",
+                "line": 2,
+                "column": 76,
+                "description": "La abertura 'dos' se superpone con 'uno' en la pared 'norte'.",
+                "suggestion": "Separe las aberturas de la pared."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "colliding-furniture",
+      "file": "colliding-furniture.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nmesa uno {} mesa dos {} colocar uno [0,0,0]>> colocar dos [0,0,0]>>\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_COLLISION",
+          "file": "colliding-furniture.lumi",
+          "line": 2,
+          "column": 59,
+          "description": "El objeto 'dos' colisiona con 'uno'.",
+          "suggestion": "Separe físicamente los objetos."
+        }
+      ],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "colliding-furniture-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "colliding-furniture.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "colliding-furniture-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "colliding-furniture.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_COLLISION",
+                "file": "colliding-furniture.lumi",
+                "line": 2,
+                "column": 59,
+                "description": "El objeto 'dos' colisiona con 'uno'.",
+                "suggestion": "Separe físicamente los objetos."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "separate-furniture",
+      "file": "separate-furniture.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nmesa uno {} mesa dos {} colocar uno [-1.5,0,0]>> colocar dos [1.5,0,0]>>\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "separate-furniture-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "separate-furniture.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "separate-furniture-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "separate-furniture.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:separate-furniture.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [],
+                  "windows": [],
+                  "objects": [
+                    {
+                      "id": "element:separate-furniture.lumi:2:1:uno",
+                      "type": "mesa",
+                      "name": "uno",
+                      "placed": true,
+                      "rotation": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "dimensions": [
+                        1.2,
+                        0.5,
+                        0.8
+                      ],
+                      "sourceRef": {
+                        "file": "separate-furniture.lumi",
+                        "line": 2,
+                        "column": 1
+                      },
+                      "roomId": "room:separate-furniture.lumi:1:13:sala",
+                      "position": [
+                        -1.5,
+                        0,
+                        0
+                      ]
+                    },
+                    {
+                      "id": "element:separate-furniture.lumi:2:13:dos",
+                      "type": "mesa",
+                      "name": "dos",
+                      "placed": true,
+                      "rotation": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "dimensions": [
+                        1.2,
+                        0.5,
+                        0.8
+                      ],
+                      "sourceRef": {
+                        "file": "separate-furniture.lumi",
+                        "line": 2,
+                        "column": 13
+                      },
+                      "roomId": "room:separate-furniture.lumi:1:13:sala",
+                      "position": [
+                        1.5,
+                        0,
+                        0
+                      ]
+                    }
+                  ],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-clearance-blocked",
+      "file": "door-clearance-blocked.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2.1>> desplazamiento 2.5>> } mesa uno {} colocar uno [0,0,-1.31]>>\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_BLOCKED_DOOR",
+          "file": "door-clearance-blocked.lumi",
+          "line": 2,
+          "column": 108,
+          "description": "El objeto 'uno' bloquea la zona libre de 0,80 m de la puerta 'entrada'.",
+          "suggestion": "Mueva el objeto fuera de la zona de paso."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-clearance-blocked.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "door-clearance-blocked.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-clearance-blocked.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2.1,
+              "source": {
+                "file": "door-clearance-blocked.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 2.5,
+              "source": {
+                "file": "door-clearance-blocked.lumi",
+                "line": 2,
+                "column": 61
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-clearance-blocked-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-clearance-blocked.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-clearance-blocked-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "door-clearance-blocked.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_BLOCKED_DOOR",
+                "file": "door-clearance-blocked.lumi",
+                "line": 2,
+                "column": 108,
+                "description": "El objeto 'uno' bloquea la zona libre de 0,80 m de la puerta 'entrada'.",
+                "suggestion": "Mueva el objeto fuera de la zona de paso."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "door-clearance-clear",
+      "file": "door-clearance-clear.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2.1>> desplazamiento 2.5>> } mesa uno {} colocar uno [0,0,-1.29]>>\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "completed",
+      "executionDiagnostics": [],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "door-clearance-clear.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "door-clearance-clear.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "door-clearance-clear.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2.1,
+              "source": {
+                "file": "door-clearance-clear.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 2.5,
+              "source": {
+                "file": "door-clearance-clear.lumi",
+                "line": 2,
+                "column": 61
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-clearance-clear-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "door-clearance-clear.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "door-clearance-clear-execute",
+          "operation": "execute",
+          "status": "completed",
+          "result": {
+            "entryFile": "door-clearance-clear.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": true,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            },
+            "scenePlan": {
+              "version": "1.0.0",
+              "rooms": [
+                {
+                  "id": "room:door-clearance-clear.lumi:1:13:sala",
+                  "name": "sala",
+                  "dimensions": [
+                    6,
+                    5,
+                    3
+                  ],
+                  "floor": {
+                    "material": "standard",
+                    "color": "#e2e8f0"
+                  },
+                  "walls": {
+                    "north": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "south": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "east": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    },
+                    "west": {
+                      "color": "#f1f5f9",
+                      "material": "standard"
+                    }
+                  },
+                  "doors": [
+                    {
+                      "id": "element:door-clearance-clear.lumi:2:1:entrada",
+                      "wall": "norte",
+                      "position": 0.0,
+                      "width": 1,
+                      "height": 2.1,
+                      "sourceRef": {
+                        "file": "door-clearance-clear.lumi",
+                        "line": 2,
+                        "column": 1
+                      }
+                    }
+                  ],
+                  "windows": [],
+                  "objects": [
+                    {
+                      "id": "element:door-clearance-clear.lumi:2:84:uno",
+                      "type": "mesa",
+                      "name": "uno",
+                      "placed": true,
+                      "rotation": [
+                        0,
+                        0,
+                        0
+                      ],
+                      "dimensions": [
+                        1.2,
+                        0.5,
+                        0.8
+                      ],
+                      "sourceRef": {
+                        "file": "door-clearance-clear.lumi",
+                        "line": 2,
+                        "column": 84
+                      },
+                      "roomId": "room:door-clearance-clear.lumi:1:13:sala",
+                      "position": [
+                        0,
+                        0,
+                        -1.29
+                      ]
+                    }
+                  ],
+                  "calculatedArea": 30,
+                  "calculatedVolume": 90
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "negative-offset",
+      "file": "negative-offset.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento -0.1>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+          "file": "negative-offset.lumi",
+          "line": 2,
+          "column": 59,
+          "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+          "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "negative-offset.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "negative-offset.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "negative-offset.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "negative-offset.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": -0.1,
+              "source": {
+                "file": "negative-offset.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "negative-offset-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "negative-offset.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "negative-offset-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "negative-offset.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+                "file": "negative-offset.lumi",
+                "line": 2,
+                "column": 59,
+                "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+                "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "outside-offset",
+      "file": "outside-offset.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 5.1>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+          "file": "outside-offset.lumi",
+          "line": 2,
+          "column": 59,
+          "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+          "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "outside-offset.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "outside-offset.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "outside-offset.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "outside-offset.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 5.1,
+              "source": {
+                "file": "outside-offset.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "outside-offset-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "outside-offset.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "outside-offset-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "outside-offset.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+                "file": "outside-offset.lumi",
+                "line": 2,
+                "column": 59,
+                "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+                "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "invalid-width",
+      "file": "invalid-width.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 0>> alto 2>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "invalid-width.lumi",
+          "line": 2,
+          "column": 40,
+          "description": "La propiedad 'ancho' del elemento 'entrada' debe ser mayor que cero.",
+          "suggestion": "Utilice una dimensión positiva."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "invalid-width.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "invalid-width.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 0,
+              "source": {
+                "file": "invalid-width.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 2,
+              "source": {
+                "file": "invalid-width.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "invalid-width.lumi",
+                "line": 2,
+                "column": 59
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-width-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "invalid-width.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-width-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "invalid-width.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_INVALID_PROPERTY",
+                "file": "invalid-width.lumi",
+                "line": 2,
+                "column": 40,
+                "description": "La propiedad 'ancho' del elemento 'entrada' debe ser mayor que cero.",
+                "suggestion": "Utilice una dimensión positiva."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "too-high",
+      "file": "too-high.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\npuerta entrada { orientacion \"norte\">> ancho 1>> alto 3.1>> desplazamiento 0>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+          "file": "too-high.lumi",
+          "line": 2,
+          "column": 50,
+          "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+          "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "entrada",
+          "source": {
+            "file": "too-high.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "door",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "too-high.lumi",
+                "line": 2,
+                "column": 18
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "too-high.lumi",
+                "line": 2,
+                "column": 40
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 3.1,
+              "source": {
+                "file": "too-high.lumi",
+                "line": 2,
+                "column": 50
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "too-high.lumi",
+                "line": 2,
+                "column": 61
+              }
+            },
+            "elevation": null,
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "too-high-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "too-high.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "too-high-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "too-high.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+                "file": "too-high.lumi",
+                "line": 2,
+                "column": 50,
+                "description": "La abertura 'entrada' excede los límites de la pared 'norte' de la habitación 'sala'.",
+                "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "invalid-elevation",
+      "file": "invalid-elevation.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"norte\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion -0.1>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+          "file": "invalid-elevation.lumi",
+          "line": 2,
+          "column": 75,
+          "description": "La abertura 'luz' excede los límites de la pared 'norte' de la habitación 'sala'.",
+          "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "invalid-elevation.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": -0.1,
+              "source": {
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-elevation-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "invalid-elevation.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "invalid-elevation-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "invalid-elevation.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+                "file": "invalid-elevation.lumi",
+                "line": 2,
+                "column": 75,
+                "description": "La abertura 'luz' excede los límites de la pared 'norte' de la habitación 'sala'.",
+                "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "window-top-outside",
+      "file": "window-top-outside.lumi",
+      "source": "principal { habitacion sala(6,5,3) {\nventana luz { orientacion \"norte\">> ancho 1>> alto 1>> desplazamiento 0>> elevacion 2.1>> }\n} }",
+      "compilationStatus": "incomplete",
+      "compilationDiagnostics": [],
+      "executionStatus": "failed",
+      "executionDiagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+          "file": "window-top-outside.lumi",
+          "line": 2,
+          "column": 75,
+          "description": "La abertura 'luz' excede los límites de la pared 'norte' de la habitación 'sala'.",
+          "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+        }
+      ],
+      "geometry": [
+        {
+          "name": "luz",
+          "source": {
+            "file": "window-top-outside.lumi",
+            "line": 2,
+            "column": 1
+          },
+          "kind": "window",
+          "geometry": {
+            "orientation": {
+              "name": "orientacion",
+              "value": "norte",
+              "source": {
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 15
+              }
+            },
+            "width": {
+              "name": "ancho",
+              "value": 1,
+              "source": {
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 37
+              }
+            },
+            "height": {
+              "name": "alto",
+              "value": 1,
+              "source": {
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 47
+              }
+            },
+            "offset": {
+              "name": "desplazamiento",
+              "value": 0,
+              "source": {
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 56
+              }
+            },
+            "elevation": {
+              "name": "elevacion",
+              "value": 2.1,
+              "source": {
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 75
+              }
+            },
+            "color": null,
+            "material": null
+          }
+        }
+      ],
+      "responses": [
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-top-outside-analyze",
+          "operation": "analyze",
+          "status": "incomplete",
+          "result": {
+            "entryFile": "window-top-outside.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": false,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        },
+        {
+          "protocolVersion": "1.0.0",
+          "requestId": "window-top-outside-execute",
+          "operation": "execute",
+          "status": "failed",
+          "result": {
+            "entryFile": "window-top-outside.lumi",
+            "analysisStatus": "incomplete",
+            "stage": "semantic",
+            "output": [],
+            "diagnostics": [
+              {
+                "category": "SPATIAL",
+                "code": "SPA_OBJECT_OUT_OF_BOUNDS",
+                "file": "window-top-outside.lumi",
+                "line": 2,
+                "column": 75,
+                "description": "La abertura 'luz' excede los límites de la pared 'norte' de la habitación 'sala'.",
+                "suggestion": "Ajuste el desplazamiento, la elevación o las dimensiones."
+              }
+            ],
+            "limitations": [
+              "spatial_semantics_unavailable"
+            ],
+            "executionAttempted": true,
+            "capabilities": {
+              "scenePlan": false,
+              "debugTrace": false,
+              "interactiveInput": false,
+              "cancellation": false
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,403 @@
+{
+  "source": "principal { habitacion sala(6,5,3) {\n pared frontal { orientacion \"norte\">> }\n puerta entrada { orientacion \"norte\">> ancho 0.9>> alto 2.1>> desplazamiento 1.0>> }\n ventana luz { orientacion \"este\">> ancho 1.2>> alto 1.0>> desplazamiento 2.0>> elevacion 0.9>> }\n} }",
+  "compilationStatus": "incomplete",
+  "executionStatus": "failed",
+  "diagnostics": [
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 2,
+      "column": 18,
+      "description": "La propiedad 'orientacion' del elemento 'frontal' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 3,
+      "column": 19,
+      "description": "La propiedad 'orientacion' del elemento 'entrada' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 3,
+      "column": 41,
+      "description": "La propiedad 'ancho' del elemento 'entrada' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 3,
+      "column": 53,
+      "description": "La propiedad 'alto' del elemento 'entrada' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 3,
+      "column": 64,
+      "description": "La propiedad 'desplazamiento' del elemento 'entrada' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 4,
+      "column": 16,
+      "description": "La propiedad 'orientacion' del elemento 'luz' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 4,
+      "column": 37,
+      "description": "La propiedad 'ancho' del elemento 'luz' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 4,
+      "column": 49,
+      "description": "La propiedad 'alto' del elemento 'luz' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 4,
+      "column": 60,
+      "description": "La propiedad 'desplazamiento' del elemento 'luz' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    },
+    {
+      "category": "SPATIAL",
+      "code": "SPA_INVALID_PROPERTY",
+      "file": "sonda-arquitectonica.lumi",
+      "line": 4,
+      "column": 81,
+      "description": "La propiedad 'elevacion' del elemento 'luz' no está permitida.",
+      "suggestion": "Utilice la propiedad 'color' o 'material'."
+    }
+  ],
+  "runtimeScenePlan": null,
+  "response": {
+    "protocolVersion": "1.0.0",
+    "requestId": "real-architecture",
+    "operation": "execute",
+    "status": "failed",
+    "result": {
+      "entryFile": "sonda-arquitectonica.lumi",
+      "analysisStatus": "incomplete",
+      "stage": "semantic",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 2,
+          "column": 18,
+          "description": "La propiedad 'orientacion' del elemento 'frontal' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 3,
+          "column": 19,
+          "description": "La propiedad 'orientacion' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 3,
+          "column": 41,
+          "description": "La propiedad 'ancho' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 3,
+          "column": 53,
+          "description": "La propiedad 'alto' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 3,
+          "column": 64,
+          "description": "La propiedad 'desplazamiento' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 4,
+          "column": 16,
+          "description": "La propiedad 'orientacion' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 4,
+          "column": 37,
+          "description": "La propiedad 'ancho' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 4,
+          "column": 49,
+          "description": "La propiedad 'alto' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 4,
+          "column": 60,
+          "description": "La propiedad 'desplazamiento' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "sonda-arquitectonica.lumi",
+          "line": 4,
+          "column": 81,
+          "description": "La propiedad 'elevacion' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        }
+      ],
+      "limitations": [
+        "spatial_semantics_unavailable"
+      ],
+      "executionAttempted": true,
+      "capabilities": {
+        "scenePlan": false,
+        "debugTrace": false,
+        "interactiveInput": false,
+        "cancellation": false
+      }
+    }
+  },
+  "interpreterSceneBeforePublication": {
+    "rooms": [
+      {
+        "name": "sala",
+        "width": {
+          "value": 6,
+          "source": {
+            "file": "sonda-arquitectonica.lumi",
+            "line": 1,
+            "column": 29
+          }
+        },
+        "length": {
+          "value": 5,
+          "source": {
+            "file": "sonda-arquitectonica.lumi",
+            "line": 1,
+            "column": 31
+          }
+        },
+        "height": {
+          "value": 3,
+          "source": {
+            "file": "sonda-arquitectonica.lumi",
+            "line": 1,
+            "column": 33
+          }
+        },
+        "elements": [
+          {
+            "name": "frontal",
+            "element_kind": "wall",
+            "object_type": null,
+            "properties": [
+              {
+                "name": "orientacion",
+                "value": "norte",
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 2,
+                  "column": 18
+                }
+              }
+            ],
+            "position": null,
+            "rotation": null,
+            "source": {
+              "file": "sonda-arquitectonica.lumi",
+              "line": 2,
+              "column": 2
+            }
+          },
+          {
+            "name": "entrada",
+            "element_kind": "door",
+            "object_type": null,
+            "properties": [
+              {
+                "name": "orientacion",
+                "value": "norte",
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 3,
+                  "column": 19
+                }
+              },
+              {
+                "name": "ancho",
+                "value": 0.9,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 3,
+                  "column": 41
+                }
+              },
+              {
+                "name": "alto",
+                "value": 2.1,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 3,
+                  "column": 53
+                }
+              },
+              {
+                "name": "desplazamiento",
+                "value": 1.0,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 3,
+                  "column": 64
+                }
+              }
+            ],
+            "position": null,
+            "rotation": null,
+            "source": {
+              "file": "sonda-arquitectonica.lumi",
+              "line": 3,
+              "column": 2
+            }
+          },
+          {
+            "name": "luz",
+            "element_kind": "window",
+            "object_type": null,
+            "properties": [
+              {
+                "name": "orientacion",
+                "value": "este",
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 4,
+                  "column": 16
+                }
+              },
+              {
+                "name": "ancho",
+                "value": 1.2,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 4,
+                  "column": 37
+                }
+              },
+              {
+                "name": "alto",
+                "value": 1.0,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 4,
+                  "column": 49
+                }
+              },
+              {
+                "name": "desplazamiento",
+                "value": 2.0,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 4,
+                  "column": 60
+                }
+              },
+              {
+                "name": "elevacion",
+                "value": 0.9,
+                "source": {
+                  "file": "sonda-arquitectonica.lumi",
+                  "line": 4,
+                  "column": 81
+                }
+              }
+            ],
+            "position": null,
+            "rotation": null,
+            "source": {
+              "file": "sonda-arquitectonica.lumi",
+              "line": 4,
+              "column": 2
+            }
+          }
+        ],
+        "source": {
+          "file": "sonda-arquitectonica.lumi",
+          "line": 1,
+          "column": 13
+        }
+      }
+    ],
+    "source": {
+      "file": "sonda-arquitectonica.lumi",
+      "line": 1,
+      "column": 1
+    }
+  },
+  "provenance": {
+    "backendCommit": "40c38829c0a8d6d77681bb876ca803764f26c770",
+    "method": "Real Interpreter output, retaining diagnostics; ExecutionService withholds failed scene"
+  },
+  "legacySource": "principal { habitacion sala(6,5,3) { ventana luz { color \"azul\">> } } }",
+  "legacyResponse": {
+    "protocolVersion": "1.0.0",
+    "requestId": "legacy-architecture",
+    "operation": "execute",
+    "status": "error",
+    "error": {
+      "kind": "infrastructure",
+      "code": "SERIALIZATION_ERROR",
+      "message": "El elemento 'luz' de tipo 'window' no contiene todavía la geometría requerida por el IDE."
+    }
+  }
+}

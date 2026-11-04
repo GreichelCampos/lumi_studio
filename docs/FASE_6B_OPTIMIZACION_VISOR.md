@@ -4,7 +4,7 @@
 
 Rama: `feature/architectural-elements-integration`.
 Fase 5B-B2 guardada en `f519542b2822a8d85cd2f00d9a5e19dda136f1f2`, con exactamente sus 19 archivos y el mensaje `feat(ide): add architectural element rendering and selection`.
-La Fase 6B queda sin commit. No se realizó merge ni push.
+Fase 6B cerrada con el commit local `40c38829c0a8d6d77681bb876ca803764f26c770`. No se realizó merge ni push.
 
 ## Auditoría
 
@@ -87,4 +87,4 @@ El coste inicial y los recursos retenidos aumentan al preparar los resaltados; s
 
 La validación, serialización de la clave y comparación de diagnósticos siguen siendo O(n); solo la aplicación visual queda acotada a entidades afectadas. Nuevos campos que afecten el render deberán incorporarse a la clave y a sus pruebas. Una edición geométrica todavía reconstruye la habitación completa; el alcance de esta fase es evitarlo por selección y resaltado.
 
-No se modificaron `Viewport3D`, `ObjectSelectionController`, `ThreeResourceDisposer`, contratos ni dependencias en 6B. La carpeta `.vite/` preexistente conserva sus dos archivos y hashes. Los artefactos de prueba gráfica y logs quedan fuera del repositorio. Pendiente revisión del usuario antes de cualquier commit de esta fase.
+No se modificaron `Viewport3D`, `ObjectSelectionController`, `ThreeResourceDisposer`, contratos ni dependencias en 6B. La carpeta `.vite/` preexistente conserva sus dos archivos y hashes. Los artefactos de prueba gráfica y logs quedan fuera del repositorio.
