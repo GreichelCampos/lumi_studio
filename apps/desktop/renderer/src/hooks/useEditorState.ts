@@ -11,6 +11,8 @@ export function useEditorState(activeFileName?: string, scopeKey = '') {
   useEffect(() => {
     setLine(null);
     setSourceNavigation(null);
+    setBreakpointsMap([]);
+    setActiveObjectId(null);
   }, [scopeKey]);
 
   const setHighlightedLine = useCallback((value: SetStateAction<number | null>) => {
