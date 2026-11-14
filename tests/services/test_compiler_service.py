@@ -97,7 +97,7 @@ def test_optional_loop_spatial_error_remains_incomplete():
     assert result.diagnostics == ()
 
 
-def test_imported_function_declaration_does_not_apply_spatial_effects():
+def test_imported_function_effects_prevent_definite_spatial_conclusions():
     result = CompilerService().compile(
         'importar "espacial.lumi" usar preparar>> '
         "habitacion sala(5, 4, 3) { mesa mesa1 {} preparar()>> "
@@ -111,10 +111,8 @@ def test_imported_function_declaration_does_not_apply_spatial_effects():
         },
     )
 
-    assert result.status == CompilationStatus.FAILED
-    assert [item.code for item in result.diagnostics] == [
-        "SPA_ELEMENT_NOT_PLACED",
-    ]
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.diagnostics == ()
 
 
 def test_lexical_failure_preserves_raw_message_without_inventing_diagnostic():

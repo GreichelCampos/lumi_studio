@@ -215,6 +215,8 @@ class SpatialAbstractState:
     room_presence: dict[str, PresenceStates] = field(default_factory=dict)
     floor_presence: dict[str, PresenceStates] = field(default_factory=dict)
     wall_presence: dict[str, dict[str, PresenceStates]] = field(default_factory=dict)
+    unknown_global_effects: bool = False
+    unknown_rooms: set[str] = field(default_factory=set)
 
     def copy(self) -> "SpatialAbstractState":
         return SpatialAbstractState(
@@ -224,9 +226,13 @@ class SpatialAbstractState:
             wall_presence={
                 room: dict(walls) for room, walls in self.wall_presence.items()
             },
+            unknown_global_effects=self.unknown_global_effects,
+            unknown_rooms=set(self.unknown_rooms),
         )
 
     def states_for(self, room: str, name: str) -> ElementStates:
+        if self.unknown_global_effects or room in self.unknown_rooms:
+            return frozenset({AbstractElementState.TOP})
         return self.rooms.get(room, {}).get(
             name, frozenset({AbstractElementState.ABSENT}),
         )
@@ -235,6 +241,8 @@ class SpatialAbstractState:
         self.rooms.setdefault(room, {})[name] = states
 
     def room_states(self, room: str) -> PresenceStates:
+        if self.unknown_global_effects:
+            return frozenset({AbstractPresence.TOP})
         return self.room_presence.get(
             room, frozenset({AbstractPresence.ABSENT}),
         )
@@ -243,6 +251,8 @@ class SpatialAbstractState:
         self.room_presence[room] = states
 
     def floor_states(self, room: str) -> PresenceStates:
+        if self.unknown_global_effects or room in self.unknown_rooms:
+            return frozenset({AbstractPresence.TOP})
         return self.floor_presence.get(
             room, frozenset({AbstractPresence.ABSENT}),
         )
@@ -251,6 +261,8 @@ class SpatialAbstractState:
         self.floor_presence[room] = states
 
     def wall_states(self, room: str, orientation: str) -> PresenceStates:
+        if self.unknown_global_effects or room in self.unknown_rooms:
+            return frozenset({AbstractPresence.TOP})
         return self.wall_presence.get(room, {}).get(
             orientation, frozenset({AbstractPresence.ABSENT}),
         )
@@ -262,7 +274,14 @@ class SpatialAbstractState:
 
     @classmethod
     def join(cls, *alternatives: "SpatialAbstractState") -> "SpatialAbstractState":
-        result = cls()
+        result = cls(
+            unknown_global_effects=any(
+                item.unknown_global_effects for item in alternatives
+            ),
+            unknown_rooms=set().union(*(
+                item.unknown_rooms for item in alternatives
+            )),
+        )
         rooms = set().union(*(item.rooms for item in alternatives))
         for room in rooms:
             names = set().union(*(
@@ -308,6 +327,23 @@ class SpatialAbstractState:
         for walls in self.wall_presence.values():
             for orientation in walls:
                 walls[orientation] = presence_top
+
+    def mark_unknown_effects(self, room: str | None) -> None:
+        """Forget facts that an unsupported call could have modified."""
+
+        element_top = frozenset({AbstractElementState.TOP})
+        presence_top = frozenset({AbstractPresence.TOP})
+        if room is None:
+            self.unknown_global_effects = True
+            self.widen_to_unknown()
+            return
+        self.unknown_rooms.add(room)
+        for name in self.rooms.get(room, {}):
+            self.rooms[room][name] = element_top
+        if room in self.floor_presence:
+            self.floor_presence[room] = presence_top
+        for orientation in self.wall_presence.get(room, {}):
+            self.wall_presence[room][orientation] = presence_top
 
     def room_elements(self, room: str) -> Mapping[str, ElementStates]:
         return self.rooms.get(room, {})

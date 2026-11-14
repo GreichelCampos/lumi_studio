@@ -24,6 +24,7 @@ from spatial.spatial_rules import (
 from .constant_evaluator import Known, evaluate_numeric_constant
 from .diagnostics import Diagnostic, DiagnosticCategory
 from .spatial_abstract_state import (
+    AbstractPresence,
     AbstractElementState,
     LoopCardinality,
     SpatialAbstractState,
@@ -31,6 +32,16 @@ from .spatial_abstract_state import (
     apply_operation as apply_abstract_operation,
     declare as declare_abstract_element,
     declare_presence,
+    join_presence_states,
+)
+from .spatial_function_effects import (
+    AlternativeEffects,
+    ConditionalEffects,
+    EffectSequence,
+    RepeatedEffects,
+    RoomEffects,
+    SpatialEffect,
+    SpatialEffectKind,
 )
 from .symbol_table import DataType
 
@@ -158,7 +169,8 @@ class SpatialSemanticAnalyzer:
     def analyze_switch(
         self,
         node: dict[str, Any],
-        analyze_case: Callable[[dict[str, Any]], None],
+        analyze_case_value: Callable[[dict[str, Any]], None],
+        analyze_case_body: Callable[[dict[str, Any]], None],
         analyze_block: Callable[[list[dict[str, Any]], str], None],
     ) -> None:
         """Analyze every switch route independently and join its final state."""
@@ -166,20 +178,28 @@ class SpatialSemanticAnalyzer:
         if not self._linear_analysis_enabled:
             with self.suspend_linear_analysis():
                 for case in node.get("cases", []):
-                    analyze_case(case)
+                    analyze_case_value(case)
+                    analyze_case_body(case)
                 analyze_block(node.get("default_body", []), "default")
             return
-        initial = self._abstract_state.copy()
         finals = []
         route_diagnostics = []
-        for case in node.get("cases", []):
-            self._abstract_state = initial.copy()
+        cases = node.get("cases", [])
+        prefix = self._abstract_state.copy()
+        for index, case in enumerate(cases):
+            self._abstract_state = prefix.copy()
+            if index == 0:
+                analyze_case_value(case)
+            else:
+                with self._suppress_transition_diagnostics():
+                    analyze_case_value(case)
+            prefix = self._abstract_state.copy()
             with self._collect_route_diagnostics() as diagnostics:
-                analyze_case(case)
+                analyze_case_body(case)
             finals.append(self._abstract_state)
             route_diagnostics.append(diagnostics)
         default_body = node.get("default_body", [])
-        self._abstract_state = initial.copy()
+        self._abstract_state = prefix.copy()
         if default_body:
             with self._collect_route_diagnostics() as diagnostics:
                 analyze_block(default_body, "default")
@@ -311,6 +331,345 @@ class SpatialSemanticAnalyzer:
                 node["rotation"], node["object_name"], "rotación",
             )
             self._apply_operation(node, SpatialOperation.ROTATE)
+
+    def apply_function_effects(
+        self,
+        effects: EffectSequence,
+        bindings: dict[str, dict[str, Any] | None],
+        apply_call: Callable[
+            [SpatialEffect, dict[str, dict[str, Any] | None]], bool
+        ],
+    ) -> None:
+        """Apply a non-recursive summary without rechecking its expressions."""
+
+        if not self._linear_analysis_enabled:
+            return
+        self._apply_effect_sequence(effects, bindings, apply_call)
+
+    def apply_unknown_function_effects(self) -> None:
+        """Conservatively forget facts an unsupported call may modify."""
+
+        if self._linear_analysis_enabled:
+            self._abstract_state.mark_unknown_effects(self._active_room)
+
+    def analyze_recursive_transfer(
+        self,
+        apply_iteration: Callable[[], None],
+        *,
+        recursion_required: bool,
+    ) -> None:
+        """Reach a bounded contextual fixed point for one recursive SCC."""
+
+        if not self._linear_analysis_enabled:
+            return
+        if recursion_required:
+            self._iterate_to_fixed_point(
+                apply_iteration,
+                include_zero=False,
+                minimum_iterations=2,
+                suppress_diagnostics=False,
+            )
+            return
+        # The external invocation occurs once. Further recursive invocations
+        # are optional because every cycle-closing edge is conditional.
+        apply_iteration()
+        self._iterate_to_fixed_point(
+            apply_iteration,
+            include_zero=True,
+            minimum_iterations=1,
+            suppress_diagnostics=True,
+        )
+
+    def _apply_effect_sequence(
+        self,
+        sequence: EffectSequence,
+        bindings: dict[str, dict[str, Any] | None],
+        apply_call: Callable[
+            [SpatialEffect, dict[str, dict[str, Any] | None]], bool
+        ],
+    ) -> bool:
+        for effect in sequence.effects:
+            if isinstance(effect, SpatialEffect):
+                if effect.kind is SpatialEffectKind.PENDING_CALL:
+                    if not apply_call(effect, bindings):
+                        return False
+                else:
+                    self._apply_effect_leaf(effect, bindings)
+                continue
+            if isinstance(effect, EffectSequence):
+                if not self._apply_effect_sequence(effect, bindings, apply_call):
+                    return False
+                continue
+            if isinstance(effect, RoomEffects):
+                if not self._apply_room_effect(effect, bindings, apply_call):
+                    return False
+                continue
+            if isinstance(effect, ConditionalEffects):
+                if not self._apply_effect_alternatives(
+                    (effect.then_effects, effect.else_effects),
+                    bindings, apply_call,
+                ):
+                    return False
+                continue
+            if isinstance(effect, AlternativeEffects):
+                if not self._apply_effect_alternatives(
+                    (*effect.branches, effect.default_effects),
+                    bindings, apply_call,
+                ):
+                    return False
+                continue
+            if isinstance(effect, RepeatedEffects):
+                if not self._apply_effect_sequence(
+                    effect.initial_effects, bindings, apply_call,
+                ):
+                    return False
+
+                iteration_continues = True
+
+                def apply_iteration():
+                    nonlocal iteration_continues
+                    if not self._apply_effect_sequence(
+                        effect.body, bindings, apply_call,
+                    ):
+                        iteration_continues = False
+                        return
+                    if not self._apply_effect_sequence(
+                        effect.iteration_effects, bindings, apply_call,
+                    ):
+                        iteration_continues = False
+
+                self.analyze_loop(
+                    self._summary_loop_cardinality(effect, bindings),
+                    apply_iteration,
+                )
+                if not iteration_continues:
+                    return False
+        return True
+
+    def _summary_loop_cardinality(
+        self,
+        effect: RepeatedEffects,
+        bindings: dict[str, dict[str, Any] | None],
+    ) -> LoopCardinality:
+        if effect.loop_kind == "RepeatNode" and effect.control:
+            count = self._substitute(effect.control[-1], bindings)
+            result = evaluate_numeric_constant(count)
+            if not isinstance(result, Known) or not isinstance(result.value, int):
+                return LoopCardinality.UNKNOWN
+            if result.value <= 0:
+                return LoopCardinality.ZERO
+            if result.value == 1:
+                return LoopCardinality.EXACTLY_ONE
+            return LoopCardinality.AT_LEAST_TWO_KNOWN
+        if effect.loop_kind == "WhileNode" and effect.control:
+            condition = self._substitute(effect.control[0], bindings)
+            if (
+                condition.get("node") == "LiteralNode"
+                and condition.get("literal_kind") == "booleano"
+                and condition.get("value") is False
+            ):
+                return LoopCardinality.ZERO
+            return LoopCardinality.ZERO_OR_MORE
+        if effect.loop_kind == "ForNode" and len(effect.control) == 3:
+            initializer, condition, update = (
+                self._substitute(item, bindings) for item in effect.control
+            )
+            return self._for_effect_cardinality(initializer, condition, update)
+        return LoopCardinality.UNKNOWN
+
+    @staticmethod
+    def _for_effect_cardinality(
+        initializer: dict[str, Any],
+        condition: dict[str, Any],
+        update: dict[str, Any],
+    ) -> LoopCardinality:
+        name = initializer.get("name")
+        if not name or update.get("name") != name:
+            return LoopCardinality.UNKNOWN
+        initial = evaluate_numeric_constant(initializer.get("value", {}))
+        if not isinstance(initial, Known) or not isinstance(initial.value, int):
+            return LoopCardinality.UNKNOWN
+        if condition.get("node") != "BinaryExpressionNode":
+            return LoopCardinality.UNKNOWN
+        left = condition.get("left", {})
+        bound = evaluate_numeric_constant(condition.get("right", {}))
+        if (
+            left.get("node") != "IdentifierNode"
+            or left.get("name") != name
+            or not isinstance(bound, Known)
+            or not isinstance(bound.value, int)
+        ):
+            return LoopCardinality.UNKNOWN
+        update_value = update.get("value", {})
+        update_left = update_value.get("left", {})
+        operator = update_value.get("operator")
+        step_value = evaluate_numeric_constant(update_value.get("right", {}))
+        if (
+            update_value.get("node") != "BinaryExpressionNode"
+            or update_left.get("node") != "IdentifierNode"
+            or update_left.get("name") != name
+            or operator not in {"+", "-"}
+            or not isinstance(step_value, Known)
+            or not isinstance(step_value.value, int)
+        ):
+            return LoopCardinality.UNKNOWN
+        step = step_value.value if operator == "+" else -step_value.value
+        if step == 0:
+            return LoopCardinality.UNKNOWN
+        predicates = {
+            "<": lambda value: value < bound.value,
+            "<=": lambda value: value <= bound.value,
+            ">": lambda value: value > bound.value,
+            ">=": lambda value: value >= bound.value,
+        }
+        predicate = predicates.get(condition.get("operator"))
+        if predicate is None or not predicate(initial.value):
+            return (
+                LoopCardinality.UNKNOWN
+                if predicate is None else LoopCardinality.ZERO
+            )
+        if not predicate(initial.value + step):
+            return LoopCardinality.EXACTLY_ONE
+        return LoopCardinality.AT_LEAST_TWO_KNOWN
+
+    def _apply_effect_alternatives(
+        self,
+        alternatives: tuple[EffectSequence, ...],
+        bindings: dict[str, dict[str, Any] | None],
+        apply_call: Callable[
+            [SpatialEffect, dict[str, dict[str, Any] | None]], bool
+        ],
+    ) -> bool:
+        initial = self._abstract_state.copy()
+        finals = []
+        route_diagnostics = []
+        continuations = []
+        for alternative in alternatives:
+            self._abstract_state = initial.copy()
+            with self._collect_route_diagnostics() as diagnostics:
+                continuations.append(
+                    self._apply_effect_sequence(alternative, bindings, apply_call)
+                )
+            finals.append(self._abstract_state)
+            route_diagnostics.append(diagnostics)
+        self._abstract_state = SpatialAbstractState.join(*finals)
+        self._emit_common_route_diagnostics(route_diagnostics)
+        return all(continuations)
+
+    def _apply_room_effect(
+        self,
+        effect: RoomEffects,
+        bindings: dict[str, dict[str, Any] | None],
+        apply_call: Callable[
+            [SpatialEffect, dict[str, dict[str, Any] | None]], bool
+        ],
+    ) -> bool:
+        node = self._substitute(effect.declaration.source_node, bindings)
+        room_name = node["name"]
+        if self._active_room is not None:
+            return True
+        initial = self._abstract_state.copy()
+        transfer = declare_presence(self._abstract_state.room_states(room_name))
+        if transfer.confirmed_duplicate:
+            self._report_transition(
+                SpatialTransitionViolation.DUPLICATE_ROOM,
+                node,
+                room_name=room_name,
+            )
+            return True
+        self._abstract_state.set_room_states(room_name, transfer.states)
+        previous_room = self._active_room
+        previous_elements = self._elements
+        self._active_room = room_name
+        self._elements = {}
+        try:
+            continues = self._apply_effect_sequence(
+                effect.body, bindings, apply_call,
+            )
+        finally:
+            self._active_room = previous_room
+            self._elements = previous_elements
+        if transfer.classification is TransferClassification.POSSIBLE_ERROR:
+            self._abstract_state = SpatialAbstractState.join(
+                initial, self._abstract_state,
+            )
+        return continues
+
+    def _apply_effect_leaf(
+        self,
+        effect: SpatialEffect,
+        bindings: dict[str, dict[str, Any] | None],
+    ) -> None:
+        node = self._substitute(effect.source_node, bindings)
+        if self._active_room is None:
+            self._report_transition(
+                SpatialTransitionViolation.NO_ACTIVE_ROOM,
+                node,
+                element_name=node.get("name") or node.get("object_name"),
+            )
+            return
+        if effect.kind in {
+            SpatialEffectKind.DECLARE_ELEMENT,
+            SpatialEffectKind.DECLARE_FLOOR,
+            SpatialEffectKind.DECLARE_WALL,
+            SpatialEffectKind.DECLARE_DOOR,
+            SpatialEffectKind.DECLARE_WINDOW,
+        }:
+            self._declare_element(node)
+            if (
+                effect.kind is SpatialEffectKind.DECLARE_WALL
+                and not self._known_orientation(node)
+            ):
+                possible = frozenset({AbstractPresence.PRESENT})
+                for orientation in ("norte", "sur", "este", "oeste"):
+                    self._abstract_state.set_wall_states(
+                        self._active_room,
+                        orientation,
+                        join_presence_states(
+                            self._abstract_state.wall_states(
+                                self._active_room, orientation,
+                            ),
+                            possible,
+                        ),
+                    )
+                return
+            self._declare_architectural_resource(node)
+            return
+        operation = {
+            SpatialEffectKind.PLACE: SpatialOperation.PLACE,
+            SpatialEffectKind.MOVE: SpatialOperation.MOVE,
+            SpatialEffectKind.ROTATE: SpatialOperation.ROTATE,
+        }.get(effect.kind)
+        if operation is not None:
+            self._apply_operation(node, operation)
+
+    @staticmethod
+    def _known_orientation(node: dict[str, Any]) -> bool:
+        for item in node.get("properties", []):
+            if item.get("name") != "orientacion":
+                continue
+            value = item.get("value", {})
+            return (
+                value.get("node") == "LiteralNode"
+                and value.get("value") in {"norte", "sur", "este", "oeste"}
+            )
+        return False
+
+    def _substitute(
+        self,
+        value: Any,
+        bindings: dict[str, dict[str, Any] | None],
+    ) -> Any:
+        if isinstance(value, dict):
+            if value.get("node") == "IdentifierNode" and value.get("name") in bindings:
+                replacement = bindings[value["name"]]
+                return value if replacement is None else replacement
+            return {key: self._substitute(item, bindings) for key, item in value.items()}
+        if isinstance(value, list):
+            return [self._substitute(item, bindings) for item in value]
+        if isinstance(value, tuple):
+            return tuple(self._substitute(item, bindings) for item in value)
+        return value
 
     def _analyze_room(self, node: dict[str, Any]) -> None:
         dimensions = (

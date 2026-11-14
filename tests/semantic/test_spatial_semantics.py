@@ -743,11 +743,14 @@ def test_walls_in_exclusive_branches_do_not_accumulate_orientation_errors():
     assert result.succeeded
 
 
-def test_uncalled_function_effects_are_not_applied_or_reported():
+def test_called_function_effects_are_applied_at_the_call_site():
     result = analyze_source(
         "funcion vacio preparar() { colocar fantasma [0, 0, 0]>> } "
         "habitacion sala(5, 4, 3) { mesa mesa1 {} preparar()>> "
         "mover mesa1 [1, 0, 1]>> }"
     )
 
-    assert codes(result) == ["SPA_ELEMENT_NOT_PLACED"]
+    assert codes(result) == [
+        "SPA_ELEMENT_NOT_FOUND",
+        "SPA_ELEMENT_NOT_PLACED",
+    ]

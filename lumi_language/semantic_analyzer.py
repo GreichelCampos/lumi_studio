@@ -7,6 +7,16 @@ from .ast_adapter import normalize_ast
 from .constant_evaluator import Known, evaluate_numeric_constant
 from .diagnostics import Diagnostic, DiagnosticCategory
 from .spatial_abstract_state import LoopCardinality
+from .spatial_function_effects import (
+    CallResolution,
+    EffectCertainty,
+    FunctionCallGraph,
+    FunctionEffectSummary,
+    FunctionIdentity,
+    extract_function_effects,
+    pending_calls,
+    resolve_summary_calls,
+)
 from .spatial_semantic_analyzer import SpatialSemanticAnalyzer
 from .symbol_table import DataType, Symbol, SymbolKind, SymbolTable
 
@@ -195,6 +205,20 @@ class SemanticAnalyzer:
         self.current_function: Symbol | None = None
         self._function_symbols: dict[tuple[SymbolTable, int], Symbol] = {}
         self._processed_function_nodes: set[tuple[SymbolTable, int]] = set()
+        self._function_effect_summaries: dict[
+            tuple[int, int], FunctionEffectSummary
+        ] = {}
+        self._function_identity_by_symbol: dict[int, FunctionIdentity] = {}
+        self._call_resolutions: dict[
+            int, tuple[CallResolution, FunctionIdentity | None]
+        ] = {}
+        self._function_call_graph = FunctionCallGraph({})
+        self._active_effect_calls: list[FunctionIdentity] = []
+        self._active_recursive_components: list[frozenset[FunctionIdentity]] = []
+        self._function_declarations: dict[
+            FunctionIdentity, tuple[dict[str, Any], Symbol, SymbolTable]
+        ] = {}
+        self._analyzed_function_bodies: set[tuple[int, int]] = set()
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
         self.spatial_analyzer = self._create_spatial_analyzer()
@@ -212,6 +236,14 @@ class SemanticAnalyzer:
         self.current_function = None
         self._function_symbols = {}
         self._processed_function_nodes = set()
+        self._function_effect_summaries = {}
+        self._function_identity_by_symbol = {}
+        self._call_resolutions = {}
+        self._function_call_graph = FunctionCallGraph({})
+        self._active_effect_calls = []
+        self._active_recursive_components = []
+        self._function_declarations = {}
+        self._analyzed_function_bodies = set()
         self._has_import_context = imported_programs is not None
         self.spatial_analyzer = self._create_spatial_analyzer()
         self.imported_programs = {
@@ -222,6 +254,7 @@ class SemanticAnalyzer:
         if normalized_program["node"] == "ProgramNode":
             self._predeclare_functions(normalized_program.get("statements", []))
         self._analyze_node(normalized_program)
+        self._resolve_function_dependencies()
         return self.result
 
     def _analyze_node(self, node: dict[str, Any]) -> None:
@@ -243,11 +276,15 @@ class SemanticAnalyzer:
         elif node_type == "SwitchNode":
             expression_type = self._infer_expression(node["expression"])
 
-            def analyze_case(case):
-                self._analyze_switch_case(case, expression_type)
+            def analyze_case_value(case):
+                self._analyze_switch_case_value(case, expression_type)
+
+            def analyze_case_body(case):
+                self._analyze_block(case.get("body", []), "case")
 
             self.spatial_analyzer.analyze_switch(
-                node, analyze_case, self._analyze_block,
+                node, analyze_case_value, analyze_case_body,
+                self._analyze_block,
             )
         elif node_type == "WhileNode":
             self._require_boolean(node["condition"])
@@ -256,9 +293,12 @@ class SemanticAnalyzer:
                 if self._is_literal_false(node["condition"])
                 else LoopCardinality.ZERO_OR_MORE
             )
+            def analyze_while_iteration():
+                self._analyze_block(node.get("body", []), "while")
+                self._require_boolean(node["condition"])
+
             self.spatial_analyzer.analyze_loop(
-                cardinality,
-                lambda: self._analyze_block(node.get("body", []), "while"),
+                cardinality, analyze_while_iteration,
             )
         elif node_type == "RepeatNode":
             self._require_integer(node["count"], "SEM_REPEAT_COUNT_NOT_INTEGER")
@@ -504,6 +544,19 @@ class SemanticAnalyzer:
             )
         self._analyze_block(case.get("body", []), "case")
 
+    def _analyze_switch_case_value(
+        self, case: dict[str, Any], expression_type: DataType | None,
+    ) -> None:
+        case_type = self._infer_expression(case["value"])
+        if expression_type is not None and case_type is not None:
+            check = self.type_checker.check_binary_operation(
+                expression_type, "==", case_type, **self._location(case),
+            )
+            self._append(
+                check.diagnostic, case,
+                cause=(expression_type, "==", case_type),
+            )
+
     def _analyze_for(self, node: dict[str, Any]) -> None:
         previous = self.current_scope
         self.current_scope = previous.create_child_scope("for")
@@ -515,6 +568,7 @@ class SemanticAnalyzer:
             def analyze_iteration():
                 self._analyze_block(node.get("body", []), "for-body")
                 self._analyze_node(node["update"])
+                self._require_boolean(node["condition"])
 
             self.spatial_analyzer.analyze_loop(cardinality, analyze_iteration)
         finally:
@@ -899,6 +953,21 @@ class SemanticAnalyzer:
             return None
 
         self._function_symbols[(self.current_scope, id(node))] = symbol
+        identity = self._function_identity(
+            symbol, self.current_scope,
+        )
+        self._function_identity_by_symbol[id(symbol)] = identity
+        self._function_declarations[identity] = (
+            node, symbol, self.current_scope,
+        )
+        summary = extract_function_effects(
+            node,
+            scope_id=id(self.current_scope),
+            function_identity=identity,
+        )
+        self._function_effect_summaries[
+            (summary.scope_id, summary.declaration_id)
+        ] = summary
         return symbol
 
     def _analyze_function(self, node: dict[str, Any]) -> None:
@@ -909,7 +978,12 @@ class SemanticAnalyzer:
         if symbol is None:
             return
 
+        body_key = (id(self.current_scope), id(node))
+        if body_key in self._analyzed_function_bodies:
+            return
+
         self._analyze_function_body(node, symbol)
+        self._analyzed_function_bodies.add(body_key)
 
     def _analyze_function_body(
         self,
@@ -1000,6 +1074,7 @@ class SemanticAnalyzer:
         symbol = self.current_scope.resolve(node["name"])
 
         if symbol is None:
+            self._call_resolutions[id(node)] = (CallResolution.UNDECLARED, None)
             self._add_diagnostic(
                 node,
                 "SEM_UNDECLARED_FUNCTION",
@@ -1010,6 +1085,7 @@ class SemanticAnalyzer:
             return None
 
         if symbol.kind is not SymbolKind.FUNCTION:
+            self._call_resolutions[id(node)] = (CallResolution.NOT_CALLABLE, None)
             self._add_diagnostic(
                 node,
                 "SEM_SYMBOL_NOT_CALLABLE",
@@ -1019,7 +1095,13 @@ class SemanticAnalyzer:
             )
             return None
 
-        if len(arguments) != len(symbol.parameters):
+        self._call_resolutions[id(node)] = (
+            CallResolution.RESOLVED,
+            self._function_identity_by_symbol.get(id(symbol)),
+        )
+
+        call_is_compatible = len(arguments) == len(symbol.parameters)
+        if not call_is_compatible:
             self._add_diagnostic(
                 node,
                 "SEM_ARGUMENT_COUNT_MISMATCH",
@@ -1040,6 +1122,7 @@ class SemanticAnalyzer:
             if argument_type is None:
                 continue
             if not self.type_checker.is_assignable(parameter_type, argument_type):
+                call_is_compatible = False
                 self._add_diagnostic(
                     argument,
                     "SEM_ARGUMENT_TYPE_MISMATCH",
@@ -1052,7 +1135,298 @@ class SemanticAnalyzer:
                     cause=(symbol, argument_type, parameter_type),
                 )
 
+        if call_is_compatible and self.spatial_analyzer._linear_analysis_enabled:
+            identity = self._function_identity_by_symbol.get(id(symbol))
+            if identity is not None:
+                self._apply_function_summary(identity, arguments)
+
         return symbol.return_type
+
+    def _apply_function_summary(
+        self,
+        identity: FunctionIdentity,
+        arguments: list[dict[str, Any]],
+    ) -> None:
+        if identity in self._active_effect_calls:
+            # A cycle-closing edge is the fixed-point boundary, not an
+            # unknown external call.
+            return
+        self._ensure_function_dependencies_linked(identity)
+        if self._effect_dependencies_are_unavailable(identity):
+            self.spatial_analyzer.apply_unknown_function_effects()
+            return
+        component = self._recursive_component(identity)
+        if component is not None and component not in self._active_recursive_components:
+            self._apply_recursive_component(identity, arguments, component)
+            return
+        self._apply_function_summary_once(identity, arguments)
+
+    def _ensure_function_dependencies_linked(
+        self, identity: FunctionIdentity,
+    ) -> None:
+        declaration = self._function_declarations.get(identity)
+        if declaration is None:
+            return
+        node, symbol, declaration_scope = declaration
+        body_key = (id(declaration_scope), id(node))
+        if body_key in self._analyzed_function_bodies:
+            return
+        previous_scope = self.current_scope
+        try:
+            self.current_scope = declaration_scope
+            self._analyze_function_body(node, symbol)
+            self._analyzed_function_bodies.add(body_key)
+        finally:
+            self.current_scope = previous_scope
+
+    def _apply_function_summary_once(
+        self,
+        identity: FunctionIdentity,
+        arguments: list[dict[str, Any]],
+    ) -> None:
+        summary = next(
+            (
+                item for item in self._function_effect_summaries.values()
+                if item.function_identity == identity
+            ),
+            None,
+        )
+        if summary is None:
+            self.spatial_analyzer.apply_unknown_function_effects()
+            return
+        bindings = {
+            parameter: self._abstract_argument(argument)
+            for parameter, argument in zip(summary.parameters, arguments)
+        }
+        self._active_effect_calls.append(identity)
+        try:
+            self.spatial_analyzer.apply_function_effects(
+                summary.effects,
+                bindings,
+                self._apply_pending_summary_call,
+            )
+        finally:
+            self._active_effect_calls.pop()
+
+    def _apply_recursive_component(
+        self,
+        identity: FunctionIdentity,
+        arguments: list[dict[str, Any]],
+        component: frozenset[FunctionIdentity],
+    ) -> None:
+        recursion_required = self._component_has_guaranteed_cycle(
+            component, identity,
+        )
+        ordered = [identity, *sorted(
+            (item for item in component if item != identity),
+            key=lambda item: (
+                item.file, item.line, item.column, item.name, item.scope_path,
+            ),
+        )]
+
+        def apply_component_iteration():
+            for member in ordered:
+                self._apply_function_summary_once(
+                    member, arguments if member == identity else [],
+                )
+
+        self._active_recursive_components.append(component)
+        try:
+            self.spatial_analyzer.analyze_recursive_transfer(
+                apply_component_iteration,
+                recursion_required=recursion_required,
+            )
+            # The spatial prefix was analyzed, but return from the recursive
+            # component is not proven. Downstream operations must therefore
+            # not rely on a definite post-call state.
+            self.spatial_analyzer.apply_unknown_function_effects()
+        finally:
+            self._active_recursive_components.pop()
+
+    def _recursive_component(
+        self, identity: FunctionIdentity,
+    ) -> frozenset[FunctionIdentity] | None:
+        graph = self._resolved_local_call_graph()
+        nodes = tuple(graph)
+        visited: set[FunctionIdentity] = set()
+        finish: list[FunctionIdentity] = []
+        for root in nodes:
+            if root in visited:
+                continue
+            visited.add(root)
+            stack = [(root, False)]
+            while stack:
+                node, expanded = stack.pop()
+                if expanded:
+                    finish.append(node)
+                    continue
+                stack.append((node, True))
+                for target in graph[node]:
+                    if target not in visited:
+                        visited.add(target)
+                        stack.append((target, False))
+        reverse = {node: set() for node in nodes}
+        for source, targets in graph.items():
+            for target in targets:
+                reverse[target].add(source)
+        assigned: set[FunctionIdentity] = set()
+        for root in reversed(finish):
+            if root in assigned:
+                continue
+            component = set()
+            stack = [root]
+            assigned.add(root)
+            while stack:
+                node = stack.pop()
+                component.add(node)
+                for source in reverse[node]:
+                    if source not in assigned:
+                        assigned.add(source)
+                        stack.append(source)
+            recursive = len(component) > 1 or root in graph[root]
+            if recursive and identity in component:
+                return frozenset(component)
+        return None
+
+    def _resolved_local_call_graph(
+        self,
+    ) -> dict[FunctionIdentity, set[FunctionIdentity]]:
+        summaries = {
+            item.function_identity: item
+            for item in self._function_effect_summaries.values()
+        }
+        graph = {identity: set() for identity in summaries}
+        for identity, summary in summaries.items():
+            for effect in pending_calls(summary.effects):
+                resolution, target = self._call_resolutions.get(
+                    id(effect.source_node), (CallResolution.UNDECLARED, None),
+                )
+                if (
+                    resolution is CallResolution.RESOLVED
+                    and target in summaries
+                ):
+                    graph[identity].add(target)
+        return graph
+
+    def _component_has_guaranteed_cycle(
+        self,
+        component: frozenset[FunctionIdentity],
+        entry: FunctionIdentity,
+    ) -> bool:
+        graph = {identity: set() for identity in component}
+        for summary in self._function_effect_summaries.values():
+            if summary.function_identity not in component:
+                continue
+            for effect in pending_calls(summary.effects):
+                _, target = self._call_resolutions.get(
+                    id(effect.source_node), (CallResolution.UNDECLARED, None),
+                )
+                if (
+                    target in component
+                    and effect.certainty is EffectCertainty.GUARANTEED
+                ):
+                    graph[summary.function_identity].add(target)
+        reachable = set()
+        stack = [entry]
+        while stack:
+            identity = stack.pop()
+            if identity in reachable:
+                continue
+            reachable.add(identity)
+            stack.extend(graph[identity])
+        indegree = {identity: 0 for identity in reachable}
+        for identity in reachable:
+            for target in graph[identity]:
+                if target in indegree:
+                    indegree[target] += 1
+        queue = [identity for identity, degree in indegree.items() if degree == 0]
+        removed = 0
+        while queue:
+            identity = queue.pop()
+            removed += 1
+            for target in graph[identity]:
+                if target not in indegree:
+                    continue
+                indegree[target] -= 1
+                if indegree[target] == 0:
+                    queue.append(target)
+        return removed != len(reachable)
+
+    def _effect_dependencies_are_unavailable(
+        self, identity: FunctionIdentity,
+    ) -> bool:
+        summary = next(
+            (
+                item for item in self._function_effect_summaries.values()
+                if item.function_identity == identity
+            ),
+            None,
+        )
+        return summary is not None and any(
+            id(effect.source_node) not in self._call_resolutions
+            for effect in pending_calls(summary.effects)
+        )
+
+    def _apply_pending_summary_call(
+        self,
+        effect,
+        caller_bindings: dict[str, dict[str, Any] | None],
+    ) -> bool:
+        resolution, identity = self._call_resolutions.get(
+            id(effect.source_node), (CallResolution.UNDECLARED, None),
+        )
+        if resolution is not CallResolution.RESOLVED or identity is None:
+            self.spatial_analyzer.apply_unknown_function_effects()
+            return True
+        if (
+            self._active_recursive_components
+            and identity in self._active_recursive_components[-1]
+        ):
+            return False
+        arguments = [
+            self._substitute_summary_argument(argument, caller_bindings)
+            for argument in effect.arguments
+        ]
+        self._apply_function_summary(identity, arguments)
+        return True
+
+    def _abstract_argument(
+        self, argument: dict[str, Any],
+    ) -> dict[str, Any] | None:
+        if argument.get("node") == "LiteralNode":
+            return argument
+        constant = evaluate_numeric_constant(argument)
+        if isinstance(constant, Known):
+            return {
+                "node": "LiteralNode",
+                "value": constant.value,
+                "literal_kind": (
+                    "entero" if isinstance(constant.value, int) else "decimal"
+                ),
+                "file": argument.get("file", "<desconocido>"),
+                "line": argument.get("line", 1),
+                "column": argument.get("column", 1),
+            }
+        return None
+
+    def _substitute_summary_argument(
+        self,
+        argument: dict[str, Any],
+        bindings: dict[str, dict[str, Any] | None],
+    ) -> dict[str, Any]:
+        if (
+            argument.get("node") == "IdentifierNode"
+            and argument.get("name") in bindings
+        ):
+            return bindings[argument["name"]] or argument
+        return {
+            key: (
+                self._substitute_summary_argument(value, bindings)
+                if isinstance(value, dict)
+                else value
+            )
+            for key, value in argument.items()
+        }
 
     def _analyze_return(self, node: dict[str, Any]) -> None:
         value = node.get("value")
@@ -1216,7 +1590,59 @@ class SemanticAnalyzer:
             return_type=return_type,
         )
         self.current_scope.define(symbol)
+        identity = self._function_identity(
+            symbol, self.current_scope,
+        )
+        self._function_identity_by_symbol[id(symbol)] = identity
+        self._function_declarations[identity] = (
+            function, symbol, self.current_scope,
+        )
+        summary = extract_function_effects(
+            function,
+            scope_id=id(self.current_scope),
+            function_identity=identity,
+        )
+        self._function_effect_summaries[
+            (summary.scope_id, summary.declaration_id)
+        ] = summary
         self._analyze_function_body(function, symbol)
+        self._analyzed_function_bodies.add(
+            (id(self.current_scope), id(function))
+        )
+
+    def _function_identity(
+        self, symbol: Symbol, scope: SymbolTable,
+    ) -> FunctionIdentity:
+        if symbol.is_imported:
+            path = ["module", symbol.source_file or symbol.file]
+        else:
+            path = []
+            current: SymbolTable | None = scope
+            while current is not None:
+                path.append(current.scope_name)
+                current = current.parent
+            path.reverse()
+        return FunctionIdentity(
+            name=symbol.name,
+            file=symbol.file,
+            line=symbol.line,
+            column=symbol.column,
+            scope_path=tuple(path),
+            source_file=symbol.source_file,
+            is_imported=symbol.is_imported,
+        )
+
+    def _resolve_function_dependencies(self) -> None:
+        resolved_summaries = {}
+        graph = {}
+        for key, summary in self._function_effect_summaries.items():
+            resolved, dependencies = resolve_summary_calls(
+                summary, self._call_resolutions,
+            )
+            resolved_summaries[key] = resolved
+            graph[resolved.function_identity] = dependencies
+        self._function_effect_summaries = resolved_summaries
+        self._function_call_graph = FunctionCallGraph(graph)
 
     def _imported_function_signature(
         self,
