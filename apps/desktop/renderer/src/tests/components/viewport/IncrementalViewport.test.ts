@@ -25,7 +25,7 @@ describe('progressive CPU construction/selection and room-owned resources (mock 
   it.each([10, 100, 1000])('measures %i objects independently', count => {
     const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
     const room = createMockRoom({ doors: [], windows: [], objects: Array.from({ length: count }, (_, i) =>
-      createMockSpatialObject({ id: `bench-${i}`, position: [(i % 32) * 2, 0, Math.floor(i / 32) * 2] })) });
+      createMockSpatialObject({ id: `bench-${i}`, type: 'escritorio', position: [(i % 32) * 2, 0, Math.floor(i / 32) * 2] })) });
     const observed = new Set<THREE.BufferGeometry | THREE.Material | THREE.Texture>();
     const created = { geometries: 0, materials: 0, textures: 0 };
     const freed = { geometries: 0, materials: 0, textures: 0 };
@@ -67,6 +67,62 @@ describe('progressive CPU construction/selection and room-owned resources (mock 
 });
 
 describe('incremental ownership and invalidation', () => {
+  it.each(['silla', 'mesa', 'sofa', 'cama', 'planta'])('batches %s and preserves picking, highlight and disposal', type => {
+    const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
+    const items = Array.from({ length: 40 }, (_, i) =>
+      createMockSpatialObject({ id: `item-${i}`, type, position: [i * 2, 0, 0] }));
+    const room = createMockRoom({ doors: [], windows: [], objects: items });
+    manager.renderRoom(room, null);
+
+    const pickables = manager['selectionController']['pickableMeshes'];
+    const [[batch, pick]] = [...pickables.entries()];
+    expect(pickables.size).toBe(1);
+    const part = batch.children[0];
+    expect(part).toBeInstanceOf(THREE.InstancedMesh);
+    if (!(part instanceof THREE.InstancedMesh) || typeof pick !== 'function') throw new Error('Missing furniture batch');
+    expect(part.count).toBe(40);
+    const hit = { object: part, point: new THREE.Vector3(), distance: 1, instanceId: 7 };
+    expect(pick(hit)).toBe(items[7].id);
+
+    manager.renderRoom(room, items[7].id);
+    expect(pick(hit)).toBeNull();
+    const highlight = batch.getObjectByName(items[7].id)!;
+    expect(pick({ ...hit, object: highlight.children[0], instanceId: undefined })).toBe(items[7].id);
+    manager.renderRoom(room, null);
+    expect(batch.getObjectByName(items[7].id)).toBeUndefined();
+    expect(pick(hit)).toBe(items[7].id);
+
+    const dispose = vi.spyOn(part, 'dispose');
+    manager.clearRoom();
+    expect(dispose).toHaveBeenCalledOnce();
+    expect(pickables.size).toBe(0);
+    manager.dispose();
+  });
+
+  it('keeps different types and finishes in distinct batches within the same room', () => {
+    const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
+    try {
+      const styles = [
+        { type: 'mesa', color: 'rojo' },
+        { type: 'sofa', color: 'rojo' },
+        { type: 'mesa', color: 'azul' },
+      ];
+      const items = styles.flatMap((style, group) => Array.from({ length: 32 }, (_, i) =>
+        createMockSpatialObject({ ...style, id: `furniture-${group}-${i}`, position: [i * 2, 0, group * 3] })));
+      manager.renderRoom(createMockRoom({ doors: [], windows: [], objects: items }), null);
+      const pickables = [...manager['selectionController']['pickableMeshes']];
+      expect(pickables).toHaveLength(3);
+      for (const [group, [batch, pick]] of pickables.entries()) {
+        const part = batch.children[0];
+        if (!(part instanceof THREE.InstancedMesh) || typeof pick !== 'function') throw new Error('Missing furniture batch');
+        expect(part.count).toBe(32);
+        expect(pick({ object: part, point: new THREE.Vector3(), distance: 1, instanceId: 7 })).toBe(`furniture-${group}-7`);
+      }
+    } finally {
+      manager.dispose();
+    }
+  });
+
   it('updates in-place error/warning/debug state with identical geometry and picking', () => {
     const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
     const room = createMockRoom(); manager.renderRoom(room, null);
