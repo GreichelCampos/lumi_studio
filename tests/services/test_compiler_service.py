@@ -52,6 +52,51 @@ def test_valid_spatial_program_remains_incomplete():
     )
 
 
+def test_error_confined_to_optional_branch_remains_incomplete():
+    result = CompilerService().compile(
+        "habitacion sala(5, 4, 3) { si verdadero { "
+        "mover fantasma [0, 0, 0]>> } }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.diagnostics == ()
+
+
+def test_possible_conditional_spatial_error_remains_incomplete():
+    result = CompilerService().compile(
+        "habitacion sala(5, 4, 3) { si verdadero { mesa item {} } "
+        "rotar item [0, 90, 0]>> }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.diagnostics == ()
+
+
+def test_required_loop_spatial_error_fails_compilation():
+    result = CompilerService().compile(
+        "habitacion sala(5, 4, 3) { repetir 2 { mesa item {} } }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.FAILED
+    assert [item.code for item in result.diagnostics] == [
+        "SPA_DUPLICATE_ELEMENT",
+    ]
+
+
+def test_optional_loop_spatial_error_remains_incomplete():
+    result = CompilerService().compile(
+        "booleano continuar = verdadero>> habitacion sala(5, 4, 3) { "
+        "mientras continuar { mover fantasma [0, 0, 0]>> } }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.diagnostics == ()
+
+
 def test_imported_function_declaration_does_not_apply_spatial_effects():
     result = CompilerService().compile(
         'importar "espacial.lumi" usar preparar>> '

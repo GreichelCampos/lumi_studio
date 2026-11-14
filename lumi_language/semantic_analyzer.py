@@ -4,7 +4,9 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from .ast_adapter import normalize_ast
+from .constant_evaluator import Known, evaluate_numeric_constant
 from .diagnostics import Diagnostic, DiagnosticCategory
+from .spatial_abstract_state import LoopCardinality
 from .spatial_semantic_analyzer import SpatialSemanticAnalyzer
 from .symbol_table import DataType, Symbol, SymbolKind, SymbolTable
 
@@ -196,8 +198,6 @@ class SemanticAnalyzer:
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
         self.spatial_analyzer = self._create_spatial_analyzer()
-        self._architectural_room: str | None = None
-        self._architectural_walls: dict[str, dict[str, Any]] = {}
 
     def analyze(
         self,
@@ -214,8 +214,6 @@ class SemanticAnalyzer:
         self._processed_function_nodes = set()
         self._has_import_context = imported_programs is not None
         self.spatial_analyzer = self._create_spatial_analyzer()
-        self._architectural_room = None
-        self._architectural_walls = {}
         self.imported_programs = {
             file_name: normalize_ast(imported_program)
             for file_name, imported_program in (imported_programs or {}).items()
@@ -241,23 +239,35 @@ class SemanticAnalyzer:
             self._infer_expression(node["expression"])
         elif node_type == "IfNode":
             self._require_boolean(node["condition"])
-            with self.spatial_analyzer.suspend_linear_analysis():
-                self._analyze_block(node.get("then_body", []), "if")
-                self._analyze_block(node.get("else_body", []), "else")
+            self.spatial_analyzer.analyze_if(node, self._analyze_block)
         elif node_type == "SwitchNode":
-            with self.spatial_analyzer.suspend_linear_analysis():
-                self._analyze_switch(node)
+            expression_type = self._infer_expression(node["expression"])
+
+            def analyze_case(case):
+                self._analyze_switch_case(case, expression_type)
+
+            self.spatial_analyzer.analyze_switch(
+                node, analyze_case, self._analyze_block,
+            )
         elif node_type == "WhileNode":
             self._require_boolean(node["condition"])
-            with self.spatial_analyzer.suspend_linear_analysis():
-                self._analyze_block(node.get("body", []), "while")
+            cardinality = (
+                LoopCardinality.ZERO
+                if self._is_literal_false(node["condition"])
+                else LoopCardinality.ZERO_OR_MORE
+            )
+            self.spatial_analyzer.analyze_loop(
+                cardinality,
+                lambda: self._analyze_block(node.get("body", []), "while"),
+            )
         elif node_type == "RepeatNode":
             self._require_integer(node["count"], "SEM_REPEAT_COUNT_NOT_INTEGER")
-            with self.spatial_analyzer.suspend_linear_analysis():
-                self._analyze_block(node.get("body", []), "repeat")
+            self.spatial_analyzer.analyze_loop(
+                self._repeat_cardinality(node["count"]),
+                lambda: self._analyze_block(node.get("body", []), "repeat"),
+            )
         elif node_type == "ForNode":
-            with self.spatial_analyzer.suspend_linear_analysis():
-                self._analyze_for(node)
+            self._analyze_for(node)
         elif node_type == "FunctionDeclarationNode":
             self._analyze_function(node)
         elif node_type == "FunctionCallNode":
@@ -267,18 +277,8 @@ class SemanticAnalyzer:
         elif node_type == "ImportNode":
             self._analyze_import(node)
         elif self.spatial_analyzer.handles(node_type):
-            if node_type == "RoomNode":
-                previous_room = self._architectural_room
-                previous_walls = self._architectural_walls
-                self._architectural_room = node["name"]
-                self._architectural_walls = {}
-                try:
-                    self.spatial_analyzer.analyze(node)
-                finally:
-                    self._architectural_room = previous_room
-                    self._architectural_walls = previous_walls
-            else:
-                self.spatial_analyzer.analyze(node)
+            self.spatial_analyzer.analyze(node)
+            if node_type != "RoomNode":
                 self._analyze_architectural_contract(node)
 
     def _create_spatial_analyzer(self) -> SpatialSemanticAnalyzer:
@@ -339,24 +339,6 @@ class SemanticAnalyzer:
                 cause=(element_kind, node["name"], orientation),
             )
             return
-
-        if (
-            element_kind == "wall"
-            and self._architectural_room is not None
-            and self.spatial_analyzer._linear_analysis_enabled
-        ):
-            previous = self._architectural_walls.get(orientation)
-            if previous is None:
-                self._architectural_walls[orientation] = node
-            else:
-                self._add_diagnostic(
-                    orientation_property,
-                    "SEM_DUPLICATE_WALL_ORIENTATION",
-                    f"La habitación '{self._architectural_room}' ya tiene una "
-                    f"pared explícita para la orientación '{orientation}'.",
-                    "Conserve como máximo una pared explícita por orientación.",
-                    cause=(self._architectural_room, orientation, id(previous)),
-                )
 
     def _analyze_statements(self, statements: list[dict[str, Any]]) -> None:
         self._predeclare_functions(statements)
@@ -505,17 +487,22 @@ class SemanticAnalyzer:
     def _analyze_switch(self, node: dict[str, Any]) -> None:
         expression_type = self._infer_expression(node["expression"])
         for case in node.get("cases", []):
-            case_type = self._infer_expression(case["value"])
-            if expression_type is not None and case_type is not None:
-                check = self.type_checker.check_binary_operation(
-                    expression_type,
-                    "==",
-                    case_type,
-                    **self._location(case),
-                )
-                self._append(check.diagnostic, case, cause=(expression_type, "==", case_type))
-            self._analyze_block(case.get("body", []), "case")
+            self._analyze_switch_case(case, expression_type)
         self._analyze_block(node.get("default_body", []), "default")
+
+    def _analyze_switch_case(
+        self, case: dict[str, Any], expression_type: DataType | None,
+    ) -> None:
+        case_type = self._infer_expression(case["value"])
+        if expression_type is not None and case_type is not None:
+            check = self.type_checker.check_binary_operation(
+                expression_type, "==", case_type, **self._location(case),
+            )
+            self._append(
+                check.diagnostic, case,
+                cause=(expression_type, "==", case_type),
+            )
+        self._analyze_block(case.get("body", []), "case")
 
     def _analyze_for(self, node: dict[str, Any]) -> None:
         previous = self.current_scope
@@ -523,10 +510,92 @@ class SemanticAnalyzer:
         try:
             self._analyze_node(node["initializer"])
             self._require_boolean(node["condition"])
-            self._analyze_block(node.get("body", []), "for-body")
-            self._analyze_node(node["update"])
+            cardinality = self._for_cardinality(node)
+
+            def analyze_iteration():
+                self._analyze_block(node.get("body", []), "for-body")
+                self._analyze_node(node["update"])
+
+            self.spatial_analyzer.analyze_loop(cardinality, analyze_iteration)
         finally:
             self.current_scope = previous
+
+    @staticmethod
+    def _is_literal_false(expression: dict[str, Any]) -> bool:
+        return (
+            expression.get("node") == "LiteralNode"
+            and expression.get("literal_kind") == "booleano"
+            and expression.get("value") is False
+        )
+
+    @staticmethod
+    def _repeat_cardinality(count: dict[str, Any]) -> LoopCardinality:
+        result = evaluate_numeric_constant(count)
+        if not isinstance(result, Known) or not isinstance(result.value, int):
+            return LoopCardinality.UNKNOWN
+        if result.value <= 0:
+            return LoopCardinality.ZERO
+        if result.value == 1:
+            return LoopCardinality.EXACTLY_ONE
+        return LoopCardinality.AT_LEAST_TWO_KNOWN
+
+    @staticmethod
+    def _for_cardinality(node: dict[str, Any]) -> LoopCardinality:
+        """Recognize a side-effect-free canonical integer induction pattern."""
+
+        initializer = node["initializer"]
+        condition = node["condition"]
+        update = node["update"]
+        name = initializer.get("name")
+        if not name or update.get("name") != name:
+            return LoopCardinality.UNKNOWN
+        if initializer.get("node") == "VariableDeclarationNode":
+            if initializer.get("type") != "entero":
+                return LoopCardinality.UNKNOWN
+        initial = evaluate_numeric_constant(initializer.get("value", {}))
+        if not isinstance(initial, Known) or not isinstance(initial.value, int):
+            return LoopCardinality.UNKNOWN
+        if condition.get("node") != "BinaryExpressionNode":
+            return LoopCardinality.UNKNOWN
+        left = condition.get("left", {})
+        if left.get("node") != "IdentifierNode" or left.get("name") != name:
+            return LoopCardinality.UNKNOWN
+        bound = evaluate_numeric_constant(condition.get("right", {}))
+        if not isinstance(bound, Known) or not isinstance(bound.value, int):
+            return LoopCardinality.UNKNOWN
+        update_value = update.get("value", {})
+        if update_value.get("node") != "BinaryExpressionNode":
+            return LoopCardinality.UNKNOWN
+        update_left = update_value.get("left", {})
+        operator = update_value.get("operator")
+        if (
+            update_left.get("node") != "IdentifierNode"
+            or update_left.get("name") != name
+            or operator not in {"+", "-"}
+        ):
+            return LoopCardinality.UNKNOWN
+        step_result = evaluate_numeric_constant(update_value.get("right", {}))
+        if not isinstance(step_result, Known) or not isinstance(step_result.value, int):
+            return LoopCardinality.UNKNOWN
+        step = step_result.value if operator == "+" else -step_result.value
+        if step == 0:
+            return LoopCardinality.UNKNOWN
+
+        comparison = condition.get("operator")
+        predicates = {
+            "<": lambda value: value < bound.value,
+            "<=": lambda value: value <= bound.value,
+            ">": lambda value: value > bound.value,
+            ">=": lambda value: value >= bound.value,
+        }
+        predicate = predicates.get(comparison)
+        if predicate is None:
+            return LoopCardinality.UNKNOWN
+        if not predicate(initial.value):
+            return LoopCardinality.ZERO
+        if not predicate(initial.value + step):
+            return LoopCardinality.EXACTLY_ONE
+        return LoopCardinality.AT_LEAST_TWO_KNOWN
 
     def _analyze_room(self, node: dict[str, Any]) -> None:
         """Check room expressions and analyze its body in one spatial scope."""

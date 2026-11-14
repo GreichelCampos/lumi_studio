@@ -114,6 +114,28 @@ def test_room_execution_publishes_runtime_scene_despite_analysis_limitation():
     assert result.scene_plan.rooms[0].name == "sala"
 
 
+def test_optional_spatial_failure_is_decided_by_the_executed_route():
+    skipped = ExecutionService().execute_source(
+        "habitacion sala(5, 4, 3) { si falso { "
+        "mover fantasma [0, 0, 0]>> } }",
+        "principal.lumi",
+    )
+    executed = ExecutionService().execute_source(
+        "habitacion sala(5, 4, 3) { si verdadero { "
+        "mover fantasma [0, 0, 0]>> } }",
+        "principal.lumi",
+    )
+
+    assert skipped.compilation.status == CompilationStatus.INCOMPLETE
+    assert skipped.status == ExecutionStatus.COMPLETED
+    assert skipped.scene_plan is not None
+    assert executed.compilation.status == CompilationStatus.INCOMPLETE
+    assert executed.status == ExecutionStatus.FAILED
+    assert [item.code for item in executed.diagnostics] == [
+        "RUN_SPATIAL_OPERATION_FAILED",
+    ]
+
+
 def test_execution_result_preserves_reserved_spatial_elements():
     result = ExecutionService().execute_source(
         'habitacion sala(5, 4, 3) { piso suelo { material "madera">> } '

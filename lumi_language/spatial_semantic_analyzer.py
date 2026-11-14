@@ -1,7 +1,7 @@
 """Static type and constant-value checks for Lumi spatial syntax."""
 
 from collections.abc import Callable
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 from typing import Any
 
 from spatial.spatial_rules import (
@@ -16,7 +16,6 @@ from spatial.spatial_rules import (
     property_diagnostic,
     property_expected_type,
     validate_dimension_value,
-    validate_element_declaration,
     validate_room_start,
     validate_vector_component_value,
     vector_diagnostic,
@@ -24,6 +23,15 @@ from spatial.spatial_rules import (
 
 from .constant_evaluator import Known, evaluate_numeric_constant
 from .diagnostics import Diagnostic, DiagnosticCategory
+from .spatial_abstract_state import (
+    AbstractElementState,
+    LoopCardinality,
+    SpatialAbstractState,
+    TransferClassification,
+    apply_operation as apply_abstract_operation,
+    declare as declare_abstract_element,
+    declare_presence,
+)
 from .symbol_table import DataType
 
 
@@ -62,9 +70,12 @@ class SpatialSemanticAnalyzer:
         self._append_spatial_diagnostic = append_spatial_diagnostic
         self._diagnostic_count = diagnostic_count
         self._linear_suspensions = 0
-        self._room_names: set[str] = set()
+        self._abstract_branch_depth = 0
+        self._route_diagnostic_collectors: list[list[tuple]] = []
+        self._transition_diagnostic_suspensions = 0
         self._active_room: str | None = None
         self._elements: dict[str, SpatialElementState] = {}
+        self._abstract_state = SpatialAbstractState()
 
     @contextmanager
     def suspend_linear_analysis(self):
@@ -80,8 +91,202 @@ class SpatialSemanticAnalyzer:
     def _linear_analysis_enabled(self) -> bool:
         return self._linear_suspensions == 0
 
+    @property
+    def in_abstract_branch(self) -> bool:
+        """Whether resource checks must avoid cross-branch accumulation."""
+
+        return self._abstract_branch_depth > 0
+
+    @contextmanager
+    def _abstract_branch(self):
+        self._abstract_branch_depth += 1
+        try:
+            yield
+        finally:
+            self._abstract_branch_depth -= 1
+
+    @contextmanager
+    def _collect_route_diagnostics(self):
+        """Defer cumulative failures until all alternative routes are known."""
+
+        collector: list[tuple] = []
+        self._route_diagnostic_collectors.append(collector)
+        try:
+            with self._abstract_branch():
+                yield collector
+        finally:
+            self._route_diagnostic_collectors.pop()
+
+    @contextmanager
+    def _suppress_transition_diagnostics(self):
+        self._transition_diagnostic_suspensions += 1
+        try:
+            yield
+        finally:
+            self._transition_diagnostic_suspensions -= 1
+
     def handles(self, node_type: str) -> bool:
         return node_type in SPATIAL_NODE_TYPES
+
+    def analyze_if(
+        self,
+        node: dict[str, Any],
+        analyze_block: Callable[[list[dict[str, Any]], str], None],
+    ) -> None:
+        """Analyze mutually exclusive if branches from the same input state."""
+
+        if not self._linear_analysis_enabled:
+            with self.suspend_linear_analysis():
+                analyze_block(node.get("then_body", []), "if")
+                analyze_block(node.get("else_body", []), "else")
+            return
+        initial = self._abstract_state.copy()
+        finals = []
+        route_diagnostics = []
+        for body, scope in (
+            (node.get("then_body", []), "if"),
+            (node.get("else_body", []), "else"),
+        ):
+            self._abstract_state = initial.copy()
+            with self._collect_route_diagnostics() as diagnostics:
+                analyze_block(body, scope)
+            finals.append(self._abstract_state)
+            route_diagnostics.append(diagnostics)
+        self._abstract_state = SpatialAbstractState.join(*finals)
+        self._emit_common_route_diagnostics(route_diagnostics)
+
+    def analyze_switch(
+        self,
+        node: dict[str, Any],
+        analyze_case: Callable[[dict[str, Any]], None],
+        analyze_block: Callable[[list[dict[str, Any]], str], None],
+    ) -> None:
+        """Analyze every switch route independently and join its final state."""
+
+        if not self._linear_analysis_enabled:
+            with self.suspend_linear_analysis():
+                for case in node.get("cases", []):
+                    analyze_case(case)
+                analyze_block(node.get("default_body", []), "default")
+            return
+        initial = self._abstract_state.copy()
+        finals = []
+        route_diagnostics = []
+        for case in node.get("cases", []):
+            self._abstract_state = initial.copy()
+            with self._collect_route_diagnostics() as diagnostics:
+                analyze_case(case)
+            finals.append(self._abstract_state)
+            route_diagnostics.append(diagnostics)
+        default_body = node.get("default_body", [])
+        self._abstract_state = initial.copy()
+        if default_body:
+            with self._collect_route_diagnostics() as diagnostics:
+                analyze_block(default_body, "default")
+            route_diagnostics.append(diagnostics)
+        else:
+            route_diagnostics.append([])
+        finals.append(self._abstract_state)
+        self._abstract_state = SpatialAbstractState.join(*finals)
+        self._emit_common_route_diagnostics(route_diagnostics)
+
+    def _emit_common_route_diagnostics(
+        self, routes: list[list[tuple]],
+    ) -> None:
+        """Emit only cumulative failures justified on every alternative."""
+
+        if not routes or any(not route for route in routes):
+            return
+        common_keys = {record[0] for record in routes[0]}
+        for route in routes[1:]:
+            common_keys.intersection_update(record[0] for record in route)
+        if not common_keys:
+            return
+        for route in routes:
+            for record in route:
+                if record[0] in common_keys:
+                    self._emit_transition_record(record)
+
+    def _emit_transition_record(self, record: tuple) -> None:
+        if self._transition_diagnostic_suspensions:
+            return
+        if self._route_diagnostic_collectors:
+            self._route_diagnostic_collectors[-1].append(record)
+            return
+        _, diagnostic, node, cause = record
+        self._append_spatial_diagnostic(diagnostic, node, cause)
+
+    def analyze_loop(
+        self,
+        cardinality: LoopCardinality,
+        analyze_iteration: Callable[[], None],
+    ) -> None:
+        """Apply a loop transfer without executing or unrolling runtime counts."""
+
+        if not self._linear_analysis_enabled:
+            with self.suspend_linear_analysis():
+                analyze_iteration()
+            return
+
+        if cardinality is LoopCardinality.ZERO:
+            with self.suspend_linear_analysis():
+                analyze_iteration()
+            return
+
+        if cardinality is LoopCardinality.EXACTLY_ONE:
+            with self._abstract_branch():
+                analyze_iteration()
+            return
+
+        if cardinality is LoopCardinality.AT_LEAST_TWO_KNOWN:
+            # Two passes expose duplicate declaration/placement errors. Further
+            # passes are bounded by the finite lifecycle lattice, not the count.
+            self._iterate_to_fixed_point(
+                analyze_iteration, include_zero=False,
+                minimum_iterations=2, suppress_diagnostics=False,
+            )
+            return
+
+        self._iterate_to_fixed_point(
+            analyze_iteration, include_zero=True,
+            minimum_iterations=1, suppress_diagnostics=True,
+        )
+
+    def _iterate_to_fixed_point(
+        self,
+        analyze_iteration: Callable[[], None],
+        *,
+        include_zero: bool,
+        minimum_iterations: int,
+        suppress_diagnostics: bool,
+    ) -> None:
+        initial = self._abstract_state.copy()
+        accumulated = initial.copy() if include_zero else None
+        # Element lifecycle height is small; eight passes also covers nested
+        # branch joins while remaining independent of literal loop magnitude.
+        stabilized = False
+        for iteration in range(8):
+            before = self._abstract_state.copy()
+            diagnostic_context = (
+                self._suppress_transition_diagnostics()
+                if suppress_diagnostics
+                else nullcontext()
+            )
+            with self._abstract_branch(), diagnostic_context:
+                analyze_iteration()
+            if accumulated is not None:
+                self._abstract_state = SpatialAbstractState.join(
+                    accumulated, self._abstract_state,
+                )
+                accumulated = self._abstract_state.copy()
+            if (
+                iteration + 1 >= minimum_iterations
+                and self._abstract_state == before
+            ):
+                stabilized = True
+                break
+        if not stabilized:
+            self._abstract_state.widen_to_unknown()
 
     def analyze(self, node: dict[str, Any]) -> None:
         node_type = node["node"]
@@ -90,6 +295,7 @@ class SpatialSemanticAnalyzer:
         elif node_type in ELEMENT_KINDS:
             self._analyze_properties(node, ELEMENT_KINDS[node_type])
             self._declare_element(node)
+            self._declare_architectural_resource(node)
         elif node_type in {"PlaceObjectNode", "MoveObjectNode"}:
             self._analyze_vector(
                 node["position"], node["object_name"], "posición",
@@ -141,26 +347,33 @@ class SpatialSemanticAnalyzer:
                         (dimension_name, violation, "constant-dimension"),
                     )
 
-        self._analyze_direct_floors(node)
         if not self._linear_analysis_enabled:
             self._analyze_block(node.get("body", []), "room")
             return
 
         violation = validate_room_start(
             room_active=self._active_room is not None,
-            room_exists=node["name"] in self._room_names,
+            room_exists=False,
         )
-        if violation is SpatialTransitionViolation.DUPLICATE_ROOM:
-            self._report_transition(violation, node, room_name=node["name"])
-            with self.suspend_linear_analysis():
-                self._analyze_block(node.get("body", []), "room")
-            return
         if violation is SpatialTransitionViolation.ROOM_ALREADY_ACTIVE:
             with self.suspend_linear_analysis():
                 self._analyze_block(node.get("body", []), "room")
             return
 
-        self._room_names.add(node["name"])
+        initial = self._abstract_state.copy()
+        room_transfer = declare_presence(
+            self._abstract_state.room_states(node["name"])
+        )
+        if room_transfer.confirmed_duplicate:
+            self._report_transition(
+                SpatialTransitionViolation.DUPLICATE_ROOM,
+                node,
+                room_name=node["name"],
+            )
+            with self.suspend_linear_analysis():
+                self._analyze_block(node.get("body", []), "room")
+            return
+        self._abstract_state.set_room_states(node["name"], room_transfer.states)
         self._active_room = node["name"]
         self._elements = {}
         try:
@@ -168,22 +381,93 @@ class SpatialSemanticAnalyzer:
         finally:
             self._active_room = None
             self._elements = {}
+        if room_transfer.classification is TransferClassification.POSSIBLE_ERROR:
+            self._abstract_state = SpatialAbstractState.join(
+                initial, self._abstract_state,
+            )
+
+    def _declare_architectural_resource(self, node: dict[str, Any]) -> None:
+        if not self._linear_analysis_enabled or self._active_room is None:
+            return
+        node_type = node["node"]
+        if node_type == "FloorNode":
+            transfer = declare_presence(
+                self._abstract_state.floor_states(self._active_room)
+            )
+            if transfer.confirmed_duplicate:
+                diagnostic = multiple_floors_diagnostic(
+                    room_name=self._active_room, **self._location(node),
+                )
+                self._emit_transition_record((
+                    ("multiple-floors", self._active_room),
+                    diagnostic,
+                    node,
+                    (self._active_room, "abstract-multiple-floors"),
+                ))
+                return
+            self._abstract_state.set_floor_states(
+                self._active_room, transfer.states,
+            )
+            return
+        if node_type != "WallNode":
+            return
+        orientation_property = next(
+            (
+                item for item in node.get("properties", [])
+                if item.get("name") == "orientacion"
+            ),
+            None,
+        )
+        if orientation_property is None:
+            return
+        value = orientation_property.get("value", {})
+        orientation = value.get("value") if value.get("node") == "LiteralNode" else None
+        if orientation not in {"norte", "sur", "este", "oeste"}:
+            return
+        transfer = declare_presence(
+            self._abstract_state.wall_states(self._active_room, orientation)
+        )
+        if transfer.confirmed_duplicate:
+            diagnostic = Diagnostic(
+                category=DiagnosticCategory.SEMANTIC,
+                code="SEM_DUPLICATE_WALL_ORIENTATION",
+                description=(
+                    f"La habitaciÃ³n '{self._active_room}' ya tiene una pared "
+                    f"explÃ­cita para la orientaciÃ³n '{orientation}'."
+                ),
+                suggestion=(
+                    "Conserve como mÃ¡ximo una pared explÃ­cita por orientaciÃ³n."
+                ),
+                **self._location(orientation_property),
+            )
+            self._emit_transition_record((
+                ("duplicate-wall", self._active_room, orientation),
+                diagnostic,
+                orientation_property,
+                (self._active_room, orientation, "abstract-wall"),
+            ))
+            return
+        self._abstract_state.set_wall_states(
+            self._active_room, orientation, transfer.states,
+        )
 
     def _declare_element(self, node: dict[str, Any]) -> None:
         if not self._linear_analysis_enabled or self._active_room is None:
             return
         name = node["name"]
-        violation = validate_element_declaration(
-            room_active=True,
-            element_exists=name in self._elements,
+        abstract = declare_abstract_element(
+            self._abstract_state.states_for(self._active_room, name)
         )
-        if violation is not None:
+        if abstract.confirmed_reason is not None:
             self._report_transition(
-                violation, node, room_name=self._active_room,
+                abstract.confirmed_reason, node, room_name=self._active_room,
                 element_name=name,
             )
             return
-        self._elements[name] = SpatialElementState()
+        self._abstract_state.set_states(self._active_room, name, abstract.states)
+        # Retain this compatibility mirror without making it authoritative.
+        if abstract.states == frozenset({AbstractElementState.DECLARED_UNPLACED}):
+            self._elements[name] = SpatialElementState()
 
     def _apply_operation(
         self, node: dict[str, Any], operation: SpatialOperation,
@@ -191,6 +475,26 @@ class SpatialSemanticAnalyzer:
         if not self._linear_analysis_enabled:
             return
         name = node["object_name"]
+        if self._active_room is not None:
+            abstract = apply_abstract_operation(
+                self._abstract_state.states_for(self._active_room, name), operation,
+            )
+            if abstract.confirmed_reason is not None:
+                self._report_transition(
+                    abstract.confirmed_reason, node, room_name=self._active_room,
+                    element_name=name,
+                )
+                return
+            self._abstract_state.set_states(
+                self._active_room, name, abstract.states,
+            )
+            # Abstract state is authoritative after a control-flow join.
+            concrete_states = abstract.states
+            if concrete_states == frozenset({AbstractElementState.DECLARED_UNPLACED}):
+                self._elements[name] = SpatialElementState(placed=False)
+            elif concrete_states == frozenset({AbstractElementState.DECLARED_PLACED}):
+                self._elements[name] = SpatialElementState(placed=True)
+            return
         next_state, violation = apply_element_operation(
             room_active=self._active_room is not None,
             element_state=self._elements.get(name),
@@ -255,26 +559,12 @@ class SpatialSemanticAnalyzer:
             suggestion=suggestion,
             **self._location(node),
         )
-        self._append_spatial_diagnostic(
-            diagnostic, node,
+        self._emit_transition_record((
+            (violation, room_name, element_name),
+            diagnostic,
+            node,
             (violation, room_name, element_name, "linear-transition"),
-        )
-
-    def _analyze_direct_floors(self, room: dict[str, Any]) -> None:
-        floor_found = False
-        for statement in room.get("body", []):
-            if statement.get("node") != "FloorNode":
-                continue
-            if not floor_found:
-                floor_found = True
-                continue
-            diagnostic = multiple_floors_diagnostic(
-                room_name=room["name"], **self._location(statement),
-            )
-            self._append_spatial_diagnostic(
-                diagnostic, statement,
-                (room["name"], "direct-multiple-floors"),
-            )
+        ))
 
     def _analyze_vector(
         self, vector: dict[str, Any], element_name: str, vector_name: str,
@@ -378,7 +668,10 @@ class SpatialSemanticAnalyzer:
     ) -> tuple[DataType | None, bool]:
         before = self._diagnostic_count()
         expression_type = self._infer_expression(expression)
-        return expression_type, self._diagnostic_count() > before
+        return (
+            expression_type,
+            expression_type is None or self._diagnostic_count() > before,
+        )
 
     @staticmethod
     def _location(node: dict[str, Any]) -> dict[str, str | int]:

@@ -651,7 +651,7 @@ def test_direct_operation_outside_room_is_reported_once_at_operation():
     )
 
 
-def test_control_flow_effects_are_not_applied_to_linear_state():
+def test_only_program_wide_errors_inside_control_flow_are_reported():
     result = analyze_source(
         "habitacion sala(5, 4, 3) { mesa mesa1 {} "
         "si verdadero { colocar fantasma [0, 0, 0]>> "
@@ -660,6 +660,84 @@ def test_control_flow_effects_are_not_applied_to_linear_state():
         "repetir 2 { colocar mesa1 [0, 0, 0]>> } "
         "hacer entero i = 0; i < 2; i = i + 1 { "
         "colocar mesa1 [0, 0, 0]>> } }"
+    )
+
+    assert codes(result) == [
+        "SPA_ELEMENT_ALREADY_PLACED", "SPA_ELEMENT_ALREADY_PLACED",
+    ]
+
+
+def test_if_routes_join_declaration_and_placement_conservatively():
+    possible_declaration = analyze_source(
+        "habitacion sala(5, 4, 3) { si verdadero { mesa item {} } "
+        "rotar item [0, 90, 0]>> }"
+    )
+    both_declared = analyze_source(
+        "habitacion sala(5, 4, 3) { si verdadero { mesa item {} } "
+        "sino { silla item {} } rotar item [0, 90, 0]>> }"
+    )
+    possible_placement = analyze_source(
+        "habitacion sala(5, 4, 3) { mesa item {} "
+        "si verdadero { colocar item [0, 0, 0]>> } "
+        "mover item [1, 0, 1]>> }"
+    )
+    both_placed = analyze_source(
+        "habitacion sala(5, 4, 3) { mesa item {} "
+        "si verdadero { colocar item [0, 0, 0]>> } "
+        "sino { colocar item [1, 0, 1]>> } mover item [2, 0, 2]>> }"
+    )
+
+    assert possible_declaration.succeeded
+    assert both_declared.succeeded
+    assert possible_placement.succeeded
+    assert both_placed.succeeded
+
+
+def test_same_name_and_placement_in_exclusive_branches_are_not_duplicates():
+    result = analyze_source(
+        "habitacion sala(5, 4, 3) { si verdadero { mesa item {} "
+        "colocar item [0, 0, 0]>> } sino { silla item {} "
+        "colocar item [1, 0, 1]>> } mover item [2, 0, 2]>> }"
+    )
+
+    assert result.succeeded
+
+
+def test_switch_cases_and_default_are_independent_routes():
+    with_default = analyze_source(
+        "habitacion sala(5, 4, 3) { segun 1 { "
+        "caso 1: mesa item {} colocar item [0, 0, 0]>> "
+        "caso 2: silla item {} colocar item [1, 0, 1]>> "
+        "defecto: objeto item {} colocar item [2, 0, 2]>> } "
+        "mover item [3, 0, 3]>> }"
+    )
+    without_default = analyze_source(
+        "habitacion sala(5, 4, 3) { segun 1 { "
+        "caso 1: mesa item {} } rotar item [0, 90, 0]>> }"
+    )
+
+    assert with_default.succeeded
+    assert without_default.succeeded
+
+
+def test_invalid_property_in_optional_branch_keeps_location_without_route_error():
+    result = analyze_source(
+        'habitacion sala(5, 4, 3) {\n  si verdadero {\n'
+        '    mesa item { color 1>> }\n    silla item {}\n  }\n}',
+        file="ramas.lumi",
+    )
+
+    assert codes(result) == ["SEM_SPATIAL_PROPERTY_TYPE_MISMATCH"]
+    assert (result.diagnostics[0].file, result.diagnostics[0].line) == (
+        "ramas.lumi", 3,
+    )
+
+
+def test_walls_in_exclusive_branches_do_not_accumulate_orientation_errors():
+    result = analyze_source(
+        'habitacion sala(5, 4, 3) { si verdadero { pared norte_a { '
+        'orientacion "norte">> } } sino { pared norte_b { '
+        'orientacion "norte">> } } }'
     )
 
     assert result.succeeded
