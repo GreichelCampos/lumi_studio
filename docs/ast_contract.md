@@ -321,6 +321,26 @@ Los siguientes códigos complementan los códigos anteriores y respetan los pref
 * `SEM_RETURN_OUTSIDE_FUNCTION`: se encontró `retornar` fuera de una función.
 * `SEM_MISSING_RETURN`: una función no `vacio` puede finalizar sin retornar un valor.
 * `SEM_UNKNOWN_TYPE`: se encontró un nombre de tipo que Lumi no reconoce.
+* `SEM_SPATIAL_DIMENSION_NOT_NUMERIC`: una dimensión de habitación no produce un valor entero o decimal.
+* `SEM_VECTOR_COMPONENT_NOT_NUMERIC`: un componente de vector no produce un valor entero o decimal.
+* `SEM_SPATIAL_PROPERTY_TYPE_MISMATCH`: una propiedad espacial no produce el tipo de valor requerido.
+* `SEM_INVALID_SPATIAL_ORIENTATION`: la orientación no es `norte`, `sur`, `este` u `oeste`.
+* `SEM_DUPLICATE_SPATIAL_ROOM`: el nombre de una habitación ya fue declarado.
+* `SEM_NESTED_ROOM`: una habitación aparece dentro de otra habitación activa.
+* `SEM_SPATIAL_DECLARATION_OUTSIDE_ROOM`: un elemento espacial se declara sin una habitación activa.
+* `SEM_DUPLICATE_SPATIAL_ELEMENT`: dos elementos comparten nombre dentro de la misma habitación.
+* `SEM_DUPLICATE_SPATIAL_PROPERTY`: una propiedad aparece más de una vez en el mismo elemento.
+* `SEM_UNDECLARED_SPATIAL_ELEMENT`: una operación espacial referencia un elemento no declarado en la habitación.
+* `SEM_SPATIAL_OPERATION_OUTSIDE_ROOM`: una operación espacial aparece sin habitación activa.
+* `SEM_MULTIPLE_FLOORS`: una segunda declaración de piso se detecta antes de ejecutar el programa.
+
+El análisis estático recorre habitaciones, declaraciones, propiedades y vectores,
+incluidos los que aparecen dentro de condiciones y ciclos. Las funciones globales
+o importadas pueden operar sobre la habitación activa en el momento de la llamada;
+la resolución interprocedural de esos nombres permanece como limitación conocida.
+Por esta razón, y mientras L-035 no esté implementada, la presencia de nodos
+espaciales conserva `spatial_semantics_unavailable`: estos códigos no autorizan
+por sí solos cambiar un resultado espacial a `completed`.
 
 **Importaciones:**
 

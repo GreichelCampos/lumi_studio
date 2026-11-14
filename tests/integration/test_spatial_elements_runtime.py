@@ -62,7 +62,7 @@ def test_evaluates_color_and_material_properties():
 
 def test_places_element_at_initial_position():
     result = execute(
-        "habitacion sala(5, 4, 3) { "
+        "habitacion sala(5, 5, 3) { "
         "silla silla1 { } colocar silla1 [1, 0, 2]>> }"
     )
 
@@ -73,7 +73,7 @@ def test_places_element_at_initial_position():
 
 def test_absolute_move_replaces_initial_position():
     result = execute(
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(5, 7, 3) { silla silla1 { } "
         "colocar silla1 [1, 0, 2]>> mover silla1 [-2, 0, 3]>> }"
     )
 
@@ -95,7 +95,7 @@ def test_absolute_rotation_replaces_previous_rotation():
 
 def test_allows_rotation_before_placement():
     result = execute(
-        "habitacion sala(5, 4, 3) { silla silla1 { } "
+        "habitacion sala(5, 5, 3) { silla silla1 { } "
         "rotar silla1 [0, 90, 0]>> colocar silla1 [1, 0, 2]>> }"
     )
 
@@ -110,7 +110,7 @@ def test_evaluates_calculated_dimensions_coordinates_and_properties():
         'decimal base = 2.0>> texto tono = "azul">> '
         "habitacion sala(base * 3, base + 2, 3) { "
         "mesa mesa1 { color tono>> } "
-        "colocar mesa1 [base / 2, 0, -(base + 1)]>> }"
+        "colocar mesa1 [base / 2, 0, -(base - 1)]>> }"
     )
 
     room = result.scene_plan.rooms[0]
@@ -118,7 +118,7 @@ def test_evaluates_calculated_dimensions_coordinates_and_properties():
     assert result.succeeded
     assert (room.width.value, room.length.value) == (6.0, 4.0)
     assert element.properties[0].value == "azul"
-    assert (element.position.x.value, element.position.z.value) == (1.0, -3.0)
+    assert (element.position.x.value, element.position.z.value) == (1.0, -1.0)
 
 
 def test_builds_multiple_elements_in_declaration_order():
@@ -204,7 +204,7 @@ def test_preserves_element_property_vector_and_component_locations():
     mesa mesa1 {
         color "verde">>
     }
-    colocar mesa1 [1 + 1, 0, 3]>>
+    colocar mesa1 [1 + 0.5, 0, 1]>>
 }""",
         "escena.lumi",
     )
@@ -241,7 +241,7 @@ def test_builds_elements_and_final_state_in_multiple_rooms():
     result = execute(
         "habitacion sala(5, 4, 3) { sofa sofa1 { } "
         "colocar sofa1 [0, 0, 1]>> } "
-        "habitacion oficina(4, 3, 2.7) { escritorio escritorio1 { } "
+        "habitacion oficina(4, 4, 2.7) { escritorio escritorio1 { } "
         "rotar escritorio1 [0, 90, 0]>> "
         "colocar escritorio1 [1, 0, -1]>> }"
     )

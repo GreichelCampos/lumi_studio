@@ -174,7 +174,7 @@ def test_program_without_rooms_produces_a_valid_empty_scene_plan():
 def test_negative_and_zero_coordinates_remain_valid():
     result = execute(
         "habitacion sala(5, 4, 3) { silla silla1 { } "
-        "colocar silla1 [-2, 0, 3]>> rotar silla1 [0, -90, 0]>> }"
+        "colocar silla1 [-2, 0, 1]>> rotar silla1 [0, -90, 0]>> }"
     )
 
     assert result.succeeded

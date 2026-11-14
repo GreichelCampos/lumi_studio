@@ -3,25 +3,9 @@
 from math import isfinite
 from typing import NotRequired, TypedDict
 
+from spatial.furniture_catalog import furniture_dimensions
+from spatial.geometry import normalize_spatial_geometry
 from spatial.scene_plan import RoomPlan, ScenePlan, SourceLocation, SpatialElement
-
-
-# Presentation-only geometry already used by the IDE. These values are not
-# language semantics and are never written back to ScenePlan.
-FURNITURE_DIMENSIONS: dict[str, tuple[float, float, float]] = {
-    "sofa": (2.0, 0.85, 0.9),
-    "mesa": (1.2, 0.5, 0.8),
-    "silla": (0.55, 0.85, 0.55),
-    "planta": (0.6, 1.2, 0.6),
-    "cama": (2.0, 0.75, 1.6),
-    "escritorio": (1.4, 0.75, 0.8),
-    "lampara": (0.45, 1.5, 0.45),
-    "estanteria": (1.0, 1.8, 0.4),
-    "armario": (1.2, 2.0, 0.6),
-    "cuadro": (1.0, 0.8, 0.05),
-    "alfombra": (2.0, 0.02, 1.5),
-}
-GENERIC_FURNITURE_DIMENSIONS = (1.0, 1.0, 1.0)
 
 
 class SceneAdapterError(ValueError):
@@ -42,6 +26,34 @@ class FloorDTO(TypedDict):
 class WallDTO(TypedDict):
     color: str
     material: str
+    id: NotRequired[str]
+    name: NotRequired[str]
+    sourceRef: NotRequired[SourceReferenceDTO]
+
+
+class DoorDTO(TypedDict):
+    id: str
+    name: str
+    wall: str
+    position: int | float
+    width: int | float
+    height: int | float
+    color: NotRequired[str]
+    material: NotRequired[str]
+    sourceRef: SourceReferenceDTO
+
+
+class WindowDTO(TypedDict):
+    id: str
+    name: str
+    wall: str
+    position: int | float
+    width: int | float
+    height: int | float
+    elevation: int | float
+    color: NotRequired[str]
+    material: NotRequired[str]
+    sourceRef: SourceReferenceDTO
 
 
 class SpatialObjectDTO(TypedDict):
@@ -64,8 +76,8 @@ class RoomDTO(TypedDict):
     dimensions: list[int | float]
     floor: FloorDTO
     walls: dict[str, WallDTO]
-    doors: list[dict[str, object]]
-    windows: list[dict[str, object]]
+    doors: list[DoorDTO]
+    windows: list[WindowDTO]
     objects: list[SpatialObjectDTO]
     calculatedArea: int | float
     calculatedVolume: int | float
@@ -84,7 +96,7 @@ def _identifier(prefix: str, source: SourceLocation, name: str) -> str:
     return f"{prefix}:{source.file}:{source.line}:{source.column}:{name}"
 
 
-def _properties(element: SpatialElement) -> dict[str, str]:
+def _properties(element: SpatialElement) -> dict[str, object]:
     return {item.name: item.value for item in element.properties}
 
 
@@ -117,11 +129,7 @@ def _object_dto(element: SpatialElement, room_id: str) -> SpatialObjectDTO:
         "name": element.name,
         "placed": element.position is not None,
         "rotation": _vector(element.rotation) if element.rotation else [0, 0, 0],
-        "dimensions": list(
-            FURNITURE_DIMENSIONS.get(
-                object_type.lower(), GENERIC_FURNITURE_DIMENSIONS
-            )
-        ),
+        "dimensions": list(furniture_dimensions(object_type)),
         "sourceRef": _source_reference(element.source),
         "roomId": room_id,
     }
@@ -134,10 +142,131 @@ def _object_dto(element: SpatialElement, room_id: str) -> SpatialObjectDTO:
     return result
 
 
+_WALL_KEYS = {
+    "norte": "north",
+    "sur": "south",
+    "este": "east",
+    "oeste": "west",
+}
+
+
+def _required_geometry_property(element: SpatialElement, field: str):
+    geometry = normalize_spatial_geometry(element.element_kind, element.properties)
+    value = getattr(geometry, field)
+    if value is None:
+        raise SceneAdapterError(
+            f"El elemento '{element.name}' no define la geometría '{field}' "
+            "requerida por el DTO del IDE."
+        )
+    return value
+
+
+def _wall_dto(element: SpatialElement) -> tuple[str, WallDTO]:
+    orientation = _required_geometry_property(element, "orientation").value
+    wall_key = _WALL_KEYS.get(orientation)
+    if wall_key is None:
+        raise SceneAdapterError(
+            f"La orientación '{orientation}' de '{element.name}' no es publicable."
+        )
+    properties = _properties(element)
+    return wall_key, {
+        "id": _identifier("element", element.source, element.name),
+        "name": element.name,
+        "color": properties.get("color", "#f1f5f9"),
+        "material": properties.get("material", "standard"),
+        "sourceRef": _source_reference(element.source),
+    }
+
+
+def _door_dto(element: SpatialElement, room: RoomPlan) -> DoorDTO:
+    orientation = _required_geometry_property(element, "orientation").value
+    width = _wire_number(
+        _required_geometry_property(element, "width").value,
+        f"{element.name}.ancho",
+    )
+    height = _wire_number(
+        _required_geometry_property(element, "height").value,
+        f"{element.name}.alto",
+    )
+    offset = _wire_number(
+        _required_geometry_property(element, "offset").value,
+        f"{element.name}.desplazamiento",
+    )
+    span = room.width.value if orientation in {"norte", "sur"} else room.length.value
+    centered_position = _wire_number(
+        -span / 2 + offset + width / 2,
+        f"{element.name}.position",
+    )
+    result: DoorDTO = {
+        "id": _identifier("element", element.source, element.name),
+        "name": element.name,
+        "wall": orientation,
+        "position": centered_position,
+        "width": width,
+        "height": height,
+        "sourceRef": _source_reference(element.source),
+    }
+    properties = _properties(element)
+    if "color" in properties:
+        result["color"] = properties["color"]
+    if "material" in properties:
+        result["material"] = properties["material"]
+    return result
+
+
+def _window_dto(element: SpatialElement, room: RoomPlan) -> WindowDTO:
+    orientation = _required_geometry_property(element, "orientation").value
+    width = _wire_number(
+        _required_geometry_property(element, "width").value,
+        f"{element.name}.ancho",
+    )
+    height = _wire_number(
+        _required_geometry_property(element, "height").value,
+        f"{element.name}.alto",
+    )
+    offset = _wire_number(
+        _required_geometry_property(element, "offset").value,
+        f"{element.name}.desplazamiento",
+    )
+    elevation = _wire_number(
+        _required_geometry_property(element, "elevation").value,
+        f"{element.name}.elevacion",
+    )
+    span = room.width.value if orientation in {"norte", "sur"} else room.length.value
+    centered_position = _wire_number(
+        -span / 2 + offset + width / 2,
+        f"{element.name}.position",
+    )
+    result: WindowDTO = {
+        "id": _identifier("element", element.source, element.name),
+        "name": element.name,
+        "wall": orientation,
+        "position": centered_position,
+        "width": width,
+        "height": height,
+        "elevation": elevation,
+        "sourceRef": _source_reference(element.source),
+    }
+    properties = _properties(element)
+    if "color" in properties:
+        result["color"] = properties["color"]
+    if "material" in properties:
+        result["material"] = properties["material"]
+    return result
+
+
 def _room_dto(room: RoomPlan) -> RoomDTO:
     room_id = _identifier("room", room.source, room.name)
     floor: FloorDTO = {"material": "standard", "color": "#e2e8f0"}
     objects: list[SpatialObjectDTO] = []
+    doors: list[DoorDTO] = []
+    windows: list[WindowDTO] = []
+    neutral_wall: WallDTO = {"color": "#f1f5f9", "material": "standard"}
+    walls = {
+        side: dict(neutral_wall)
+        for side in ("north", "south", "east", "west")
+    }
+    declared_walls: set[str] = set()
     floor_count = 0
     for element in room.elements:
         if element.element_kind == "floor":
@@ -152,11 +281,19 @@ def _room_dto(room: RoomPlan) -> RoomDTO:
             floor["color"] = properties.get("color", floor["color"])
         elif element.element_kind == "object":
             objects.append(_object_dto(element, room_id))
-        elif element.element_kind in {"wall", "door", "window"}:
-            raise SceneAdapterError(
-                f"El elemento '{element.name}' de tipo '{element.element_kind}' "
-                "no contiene todavía la geometría requerida por el IDE."
-            )
+        elif element.element_kind == "wall":
+            wall_key, wall = _wall_dto(element)
+            if wall_key in declared_walls:
+                raise SceneAdapterError(
+                    f"La habitación '{room.name}' contiene más de una pared "
+                    f"declarada para la cara '{wall_key}'."
+                )
+            declared_walls.add(wall_key)
+            walls[wall_key] = wall
+        elif element.element_kind == "door":
+            doors.append(_door_dto(element, room))
+        elif element.element_kind == "window":
+            windows.append(_window_dto(element, room))
         else:
             raise SceneAdapterError(
                 f"El tipo espacial '{element.element_kind}' no puede publicarse."
@@ -166,18 +303,14 @@ def _room_dto(room: RoomPlan) -> RoomDTO:
     height = _wire_number(room.height.value, f"{room.name}.height")
     area = _wire_number(width * length, f"{room.name}.calculatedArea")
     volume = _wire_number(width * length * height, f"{room.name}.calculatedVolume")
-    neutral_wall: WallDTO = {"color": "#f1f5f9", "material": "standard"}
     return {
         "id": room_id,
         "name": room.name,
         "dimensions": [width, length, height],
         "floor": floor,
-        "walls": {
-            side: dict(neutral_wall)
-            for side in ("north", "south", "east", "west")
-        },
-        "doors": [],
-        "windows": [],
+        "walls": walls,
+        "doors": doors,
+        "windows": windows,
         "objects": objects,
         "calculatedArea": area,
         "calculatedVolume": volume,
