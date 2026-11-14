@@ -15,10 +15,10 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor();
   await page.locator('textarea').waitFor();
   const viewport = page.locator('#viewport-3d-main');
-  await viewport.getByText('Sin ScenePlan en esta respuesta', { exact: true }).waitFor();
+  await viewport.getByText('Sin escena 3D', { exact: true }).waitFor();
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   let basic;
   for (const [version, name] of [['1.0.0', 'valid-basic'], ['1.0.0', 'valid-debug'], ['1.1.0', 'valid-mixed']]) {

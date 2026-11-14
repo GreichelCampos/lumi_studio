@@ -31,7 +31,7 @@ try {
   delete env.ELECTRON_RUN_AS_NODE;
   desktop = await launchDesktop(env, workspace);
   const page = await desktop.firstWindow();
-  await page.getByLabel('Modo Python real').waitFor();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor();
   const iconUrl = new URL('../resources/lumi-taskbar-adapted.ico', import.meta.url);
   const ico = await readFile(iconUrl);
   const sourceBytes = await readFile(new URL('../resources/lumi-taskbar.png', import.meta.url));
@@ -100,7 +100,7 @@ try {
     return Math.abs(width - 1200) <= 1 && Math.abs(height - 800) <= 1;
   }, 'Resize failed (including one DIP of Windows scaling tolerance)');
 
-  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Compilar', 'Ejecutar', 'Ayuda']) {
+  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Ejecutar', 'Ayuda']) {
     const button = page.getByRole('button', { name: menu, exact: true }).first();
     await button.click();
     await button.click();

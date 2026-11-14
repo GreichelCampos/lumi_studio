@@ -8,7 +8,6 @@ import {
   Copy, 
   Check, 
   Save, 
-  Sparkles, 
   FilePlus,
   Compass
 } from 'lucide-react';
@@ -57,7 +56,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const highlightRef = useRef<HTMLDivElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
-  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
 
   const { settings } = useIdeSettings();
   const editorFontFamily = `${settings.fontFamily}, monospace`;
@@ -123,7 +121,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       textareaRef.current.setSelectionRange(selection.start, selection.end);
       textareaRef.current.focus();
-      setCursorPos({ line: selection.line, col: selection.column });
     }
   }, [highlightedLine, activeFileId, sourceNavigation, lineHeightPx]);
 
@@ -147,14 +144,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     if (!activeFile) return;
     onCodeChange(activeFile.id, e.target.value);
-  };
-
-  const handleCursorMove = () => {
-    if (!textareaRef.current) return;
-    const text = textareaRef.current.value.substring(0, textareaRef.current.selectionStart);
-    const lineCount = text.split('\n').length;
-    const lastLineLength = text.split('\n').pop()?.length || 0;
-    setCursorPos({ line: lineCount, col: lastLineLength + 1 });
   };
 
   const copyCode = () => {
@@ -320,8 +309,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
               ref={textareaRef}
               value={currentContent}
               onChange={handleTextChange}
-              onKeyUp={handleCursorMove}
-              onClick={handleCursorMove}
               onScroll={handleScroll}
               spellCheck={false}
               aria-label={`Editor de código fuente: ${activeFile?.name || 'sin archivo'}`}
@@ -341,18 +328,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
 
       {activeFile && (
         <div className="flex items-center justify-between px-4 py-1.5 bg-[var(--ide-control-bg,rgba(0,0,0,0.15))] border-t border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)] font-mono">
-          <div className="flex items-center gap-3">
-            <span className="flex items-center gap-1 text-[var(--ide-text)] drop-shadow-[0_0_6px_var(--ide-accent-bg)] font-semibold">
-              <Sparkles className="w-3 h-3 text-[var(--ide-accent)]" />
-              <span>Lumi 1.0</span>
-            </span>
-            <span className="text-[var(--ide-panel-border)]">|</span>
-            <span>
-              Ln {cursorPos.line}, Col {cursorPos.col}
-            </span>
-            <span className="text-[var(--ide-panel-border)]">|</span>
-            <span>{lines.length} líneas</span>
-          </div>
+          <span>{lines.length} líneas</span>
 
           <div className="flex items-center gap-3">
             {currentFileIsDirty ? (
@@ -363,8 +339,6 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             ) : (
               <span className="text-emerald-400 font-sans font-medium">Guardado</span>
             )}
-            <span className="text-[var(--ide-panel-border)]">|</span>
-            <span>UTF-8</span>
           </div>
         </div>
       )}

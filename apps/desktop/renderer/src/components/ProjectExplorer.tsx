@@ -344,24 +344,6 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         )}
       </div>
 
-      {currentProject && (
-        <div className="p-3 bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border-t border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)]">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[var(--ide-accent)] shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
-              <span className="font-semibold text-[var(--ide-text)]">Espacio de Trabajo</span>
-            </div>
-            {currentProject.entryFileId && (
-              <span className="text-[10px] text-amber-400 font-mono">
-                Entry: {currentProject.files.find(f => f.id === currentProject.entryFileId)?.name || 'principal.lumi'}
-              </span>
-            )}
-          </div>
-          <p className="text-[10px] text-[var(--ide-text-muted)] leading-relaxed truncate">
-            {currentProject.description || currentProject.location || 'Proyecto Lumi'}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

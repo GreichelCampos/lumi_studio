@@ -349,6 +349,21 @@ export default function App() {
 
   const debugSelection = useMemo(() => resolveDebugStep(null, currentStep, legacyPlacement), [currentStep, legacyPlacement]);
 
+  const handleNavigateToSource = useCallback(
+    (sourceRef: SourceReference) => {
+      if (!currentProject) return;
+
+      const targetFile = findSourceFile(currentProject, sourceRef.file, isRealBackend);
+      if (!targetFile) {
+        ideLogger.log('warning', `No se pudo identificar el archivo de origen: ${sourceRef.file}.`, undefined, 'Editor');
+        return;
+      }
+      handleSelectFile(targetFile.id);
+      navigateToLocation(targetFile.id, sourceRef.line, sourceRef.column);
+    },
+    [currentProject, handleSelectFile, navigateToLocation, isRealBackend]
+  );
+
   const handleFocusObject = useCallback(
     (objectId: string | null) => {
       setActiveObjectId(objectId);
@@ -362,9 +377,7 @@ export default function App() {
         const obj = room.objects.find((o) => o.id === objectId);
         if (obj) {
           lumiAssistant.onEntitySelected(obj.name, 'Objeto');
-          if (obj.sourceRef?.line) {
-            setHighlightedLine(obj.sourceRef.line);
-          }
+          if (obj.sourceRef) handleNavigateToSource(obj.sourceRef);
           return;
         }
 
@@ -393,22 +406,7 @@ export default function App() {
         }
       }
     },
-    [scenePlan, setActiveObjectId, setHighlightedLine]
-  );
-
-  const handleNavigateToSource = useCallback(
-    (sourceRef: SourceReference) => {
-      if (!currentProject) return;
-
-      const targetFile = findSourceFile(currentProject, sourceRef.file, isRealBackend);
-      if (!targetFile) {
-        ideLogger.log('warning', `No se pudo identificar el archivo de origen: ${sourceRef.file}.`, undefined, 'Editor');
-        return;
-      }
-      handleSelectFile(targetFile.id);
-      navigateToLocation(targetFile.id, sourceRef.line, sourceRef.column);
-    },
-    [currentProject, handleSelectFile, navigateToLocation, isRealBackend]
+    [scenePlan, setActiveObjectId, setHighlightedLine, handleNavigateToSource]
   );
 
   const handleNavigateToDiagnostic = useCallback(
@@ -493,7 +491,6 @@ export default function App() {
         lumiState={lumiState}
         onCompile={handleCompileCurrent}
         onRun={handleRunExecution}
-        isCompiling={isCompiling}
         isStale={isStale}
         hasBlockingErrors={isRealBackend ? false : hasBlockingErrors}
         canRun={canRun}

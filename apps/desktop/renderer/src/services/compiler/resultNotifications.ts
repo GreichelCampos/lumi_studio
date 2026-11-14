@@ -9,16 +9,18 @@ export function notifyCompileResult(result: CompileResult, setLumiState: (state:
     setLumiState(state);
     const message = result.status === 'completed'
       ? result.operation === 'analyze'
-        ? 'El análisis terminó correctamente. Compilar no ejecuta el programa ni genera una escena; usa Ejecutar Python para obtenerla.'
+        ? 'Análisis sin errores. Usa Ejecutar Lumi (F6) para ejecutar el programa y ver la escena.'
         : result.scenePlan
-          ? 'La ejecución Python terminó correctamente. ScenePlan recibido; las trazas todavía no están disponibles.'
-          : 'La ejecución Python terminó correctamente. Esta respuesta no contiene ScenePlan ni trazas.'
+          ? 'Ejecución completada. La escena está lista para el visor 3D.'
+          : 'Ejecución completada. Este programa no generó una escena 3D.'
       : result.status === 'incomplete'
-        ? 'El análisis espacial todavía está incompleto. Compilar no ejecuta el programa; Ejecutar Python puede generar una escena con las construcciones compatibles.'
+        ? 'Análisis sin errores detectados. Usa Ejecutar Lumi (F6) para comprobar el espacio y dibujar la escena.'
         : result.operation === 'analyze'
           ? 'El análisis encontró un problema. Revisa la consola y los diagnósticos.'
-          : 'La ejecución Python no pudo completarse. Revisa la consola y los diagnósticos.';
-    lumiAssistant.setMessage(message, state);
+          : 'La ejecución de Lumi se detuvo. Revisa los diagnósticos o la salida para conocer el motivo.';
+    const importError = result.diagnostics.find(diagnostic => diagnostic.blocking && diagnostic.category === 'importacion');
+    if (importError) lumiAssistant.onDiagnosticFocused(importError);
+    else lumiAssistant.setMessage(message, state);
     return;
   }
   const blockingErrors = result.diagnostics.filter((d) => d.blocking === true);

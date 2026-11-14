@@ -14,7 +14,7 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor({ timeout: 30_000 });
   const preferences = await desktop.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences());
   assert.equal(preferences.contextIsolation, true);
   assert.equal(preferences.nodeIntegration, false);
@@ -24,17 +24,18 @@ try {
   assert.equal(await page.getByLabel('Modo de demostración').count(), 0);
   const editor = page.locator('textarea');
   await editor.fill('mostrar("SALIDA_REAL_PYTHON_42")>>');
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByText('SALIDA_REAL_PYTHON_42', { exact: true }).waitFor();
   await mkdir(new URL('../test-results/', import.meta.url), { recursive: true });
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-output.png', import.meta.url)), fullPage: true });
   // CompilerService must call analyze, which must not evaluate the division.
   await editor.fill('mostrar(4 / 0)>>');
-  await page.getByTitle('Compilar y validar sintaxis (F5)').click();
+  await page.getByRole('button', { name: 'Ejecutar', exact: true }).click();
+  await page.getByText('Analizar código', { exact: true }).click();
   await page.getByText('[Python · Análisis] completed', { exact: true }).waitFor();
   assert.equal(await page.getByTestId('output-log-view').getByText('Análisis terminado', { exact: true }).count(), 1);
   assert.equal(await page.getByText(/Válido para 3D/).count(), 0);
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByRole('button', { name: /Diagnósticos/ }).click();
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).waitFor();
   await page.getByText('SIN SEVERIDAD PROPORCIONADA', { exact: true }).waitFor();
@@ -43,7 +44,8 @@ try {
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).scrollIntoViewIfNeeded();
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-python.png', import.meta.url)), fullPage: true });
   await editor.fill('principal {\n  @\n}');
-  await page.getByTitle('Compilar y validar sintaxis (F5)').click();
+  await page.getByRole('button', { name: 'Ejecutar', exact: true }).click();
+  await page.getByText('Analizar código', { exact: true }).click();
   await page.locator('#tab-salida-btn').click();
   await page.getByText('[Python · Análisis] failed', { exact: true }).waitFor();
   assert.equal(await page.getByText('Fallo de infraestructura', { exact: true }).count(), 0);
@@ -61,9 +63,9 @@ try {
   const unavailableEnv = { ...env, LUMI_PYTHON: fileURLToPath(new URL('../test-results/missing-python.exe', import.meta.url)) };
   desktop = await launchDesktop(unavailableEnv, workspace);
   const unavailablePage = await desktop.firstWindow();
-  await unavailablePage.getByLabel('Modo Python real').waitFor();
+  await unavailablePage.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor();
   await unavailablePage.locator('textarea').fill('mostrar("NO_DEBE_SIMULAR")>>');
-  await unavailablePage.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await unavailablePage.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await unavailablePage.getByText(/\[Infraestructura\].*No se pudo iniciar Python/).first().waitFor();
   assert.equal(await unavailablePage.getByLabel('Modo de demostración').count(), 0);
   console.log('Electron sin Python: error de infraestructura visible, sin fallback al mock.');

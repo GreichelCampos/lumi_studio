@@ -8,14 +8,20 @@ const categories: Record<CoreDiagnostic['category'], DiagnosticCategory> = {
 
 export function adaptBackendResult(response: ResultResponse, project: LumiProject, durationMs: number): CompileResult {
   const payload = response.result;
+  // The worker provides no severity. Classify a failed operation's diagnostics for the IDE.
+  const blocking = response.status === 'failed' || response.status === 'blocked';
+  const importSolutions: Record<string, string> = {
+    IMPORT_FILE_NOT_FOUND: 'Revisa la ruta en importar y confirma que el archivo exista en el proyecto.',
+    IMPORT_SYMBOL_NOT_FOUND: 'Abre el archivo importado y usa el nombre exacto de la función después de usar.',
+    IMPORT_CIRCULAR_DEPENDENCY: 'Quita una importación del ciclo. Si ambos archivos necesitan la misma función, muévela a un tercer archivo.',
+  };
   const diagnostics: DiagnosticItem[] = payload.diagnostics.map((diagnostic, index) => ({
     id: `${response.requestId}:${index}`, code: diagnostic.code,
-    category: categories[diagnostic.category], severity: 'unspecified',
-    // This UI flag reflects the failed operation, not an invented language severity.
-    blocking: response.status === 'failed' || response.status === 'blocked',
+    category: categories[diagnostic.category], severity: blocking ? 'error' : 'unspecified',
+    blocking,
     file: diagnostic.file, line: diagnostic.line, column: diagnostic.column,
-    description: diagnostic.description,
-    ...(diagnostic.suggestion !== undefined ? { solution: diagnostic.suggestion } : {}),
+    description: diagnostic.description.replace('No se encontro el archivo importado', 'No se encontró el archivo importado'),
+    ...(diagnostic.suggestion !== undefined ? { solution: importSolutions[diagnostic.code] ?? diagnostic.suggestion } : {}),
   }));
   const logs = [`[Python · ${response.operation === 'analyze' ? 'Análisis' : 'Ejecución'}] ${response.status}`, ...payload.output];
   if (response.operation === 'execute') logs.push(`[Python · Análisis] ${payload.analysisStatus}`);

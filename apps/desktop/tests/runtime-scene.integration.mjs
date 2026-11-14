@@ -28,7 +28,7 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor({ timeout: 30_000 });
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor({ timeout: 30_000 });
   const editor = page.locator('textarea');
   await editor.waitFor();
   await page.evaluate(async () => {
@@ -53,7 +53,7 @@ try {
 
   const source = RUNTIME_SCENE_SOURCE;
   await editor.fill(source);
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await eventually(
     async () => await page.evaluate(() => window.__runtimeSceneAudit?.room?.name) === 'sala',
     'La escena producida por el intérprete no llegó a Three.js',
@@ -75,7 +75,7 @@ try {
   await page.getByLabel('Restablecer cámara isométrica', { exact: true }).click();
 
   await editor.fill('habitacion invalida(0, 4, 3) { }');
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.locator('#tab-diagnosticos-btn').click();
   await page.getByText('SPA_INVALID_DIMENSION', { exact: true }).waitFor();
   await eventually(
@@ -85,7 +85,7 @@ try {
   assert.deepEqual(errors, []);
   await page.screenshot({ path: fileURLToPath(new URL('invalid-dimension.png', evidence)) });
   await editor.fill('principal { mostrar("SIN_ESCENA_REAL")>> }');
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.locator('#tab-salida-btn').click();
   await page.getByText('SIN_ESCENA_REAL', { exact: true }).waitFor();
   assert.equal(await page.locator('#room-selector-single, #room-selector-multi').count(), 0);

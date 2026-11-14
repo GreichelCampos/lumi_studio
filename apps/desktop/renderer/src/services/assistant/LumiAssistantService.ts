@@ -116,8 +116,9 @@ class LumiAssistantService {
   }
 
   public onDiagnosticFocused(diag: DiagnosticItem) {
-    if (diag.severity === 'error') {
-      this.setMessage(`Error ${diag.code} en ${diag.file}:${diag.line}.`, 'error');
+    if (diag.blocking || diag.severity === 'error') {
+      const kind = diag.category === 'importacion' ? 'Error de importación' : 'Error';
+      this.setMessage(`${kind} en ${diag.file}:${diag.line}. ${diag.description}`, 'error');
     } else if (diag.severity === 'warning') {
       this.setMessage(`Advertencia ${diag.code} en ${diag.file}:${diag.line}.`, 'warning');
     } else {

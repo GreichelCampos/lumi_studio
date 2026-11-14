@@ -31,7 +31,7 @@ try {
   page.on('pageerror', error => failures.push(error.message));
   const requests = [];
   page.on('request', request => requests.push(request.url()));
-  await page.getByLabel('Modo Python real').waitFor();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor();
   assert.equal(page.url(), 'lumi-app://ide/index.html');
   const identity = await desktop.evaluate(({ app, BrowserWindow }) => ({
     packaged: app.isPackaged, profile: app.getPath('userData'),
@@ -50,7 +50,7 @@ try {
   const editor = page.locator('textarea');
   assert.match(await editor.evaluate(element => getComputedStyle(element).fontFamily), /monospace/);
   await editor.fill('mostrar("PAQUETE_PYTHON_REAL")>>');
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByText('PAQUETE_PYTHON_REAL', { exact: true }).waitFor();
   await editor.press('Control+s');
   await page.getByText('Guardado', { exact: true }).waitFor();
@@ -69,7 +69,6 @@ try {
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   await input.setInputFiles(resolve('../../docs/contracts/lumic/v1.0.0/examples/valid-basic.lumic'));
   await page.getByText(/Archivo .lumic importado/).waitFor();
-  assert.equal(await page.getByText('ScenePlan recibido de Python', { exact: true }).count(), 0);
   assert.ok(await page.locator('canvas').count() > 0);
   assert.equal(await page.getByText('Error al inicializar WebGL').count(), 0);
   await page.screenshot({ path: join(evidenceDirectory, 'imported-lumic.png'), fullPage: true });
@@ -89,9 +88,9 @@ try {
   await rename(runtime, runtime + '.unavailable'); runtimeMoved = true;
   desktop = await launch();
   const missing = await desktop.firstWindow();
-  await missing.getByLabel('Modo Python real').waitFor();
+  await missing.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).waitFor();
   await missing.locator('textarea').fill('mostrar("NO_SIMULAR")>>');
-  await missing.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await missing.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await missing.getByText(/Reinstala Estudio Lumi/).first().waitFor();
   assert.equal(await missing.getByLabel('Modo de demostración').count(), 0);
   console.log('Packaged Windows x64: bundled Python, runtime ScenePlan/WebGL, absolute transforms, scene cleanup, diagnostics, save/reopen, independent lumic import, icon and missing-runtime error verified.');
