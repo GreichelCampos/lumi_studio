@@ -1,5 +1,6 @@
 import type { CompileResult, DiagnosticCategory, DiagnosticItem, LumiProject } from '../../types';
 import type { ResultResponse, CoreDiagnostic } from './protocol/types';
+import { relativePath } from './projectInput';
 
 const categories: Record<CoreDiagnostic['category'], DiagnosticCategory> = {
   LEXICAL: 'lexico', SYNTACTIC: 'sintactico', SEMANTIC: 'semantico',
@@ -8,6 +9,7 @@ const categories: Record<CoreDiagnostic['category'], DiagnosticCategory> = {
 
 export function adaptBackendResult(response: ResultResponse, project: LumiProject, durationMs: number): CompileResult {
   const payload = response.result;
+  const entry = project.files.find((file) => relativePath(file.path, project.name) === payload.entryFile);
   const diagnostics: DiagnosticItem[] = payload.diagnostics.map((diagnostic, index) => ({
     id: `${response.requestId}:${index}`, code: diagnostic.code,
     category: categories[diagnostic.category], severity: 'unspecified',
@@ -26,7 +28,7 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
     compilationId: response.requestId, status: response.status, success: response.status === 'completed',
     diagnostics, scenePlan: payload.scenePlan ?? null, debugSteps: [], durationMs, logs,
     entryFileInfo: {
-      id: project.entryFileId ?? project.files.find((file) => file.isEntry)?.id ?? '',
+      id: entry?.id ?? '',
       name: payload.entryFile.split('/').at(-1) ?? payload.entryFile, path: payload.entryFile,
     },
     timestamp: new Date().toISOString(), origin: 'python', operation: response.operation,

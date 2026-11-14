@@ -5,6 +5,7 @@ import type { CompileResult } from '../../types';
 import type { CompilerService } from '../../services/compiler/CompilerService';
 import { createMockProject } from '../fixtures/testFixtures';
 import { FIXTURE_COMPILATION_SUCCESS } from '../../data/contracts';
+import { ideLogger } from '../../services/logger/IdeLogService';
 
 function deferred() {
   let resolve!: (result: CompileResult) => void;
@@ -14,6 +15,33 @@ function deferred() {
 }
 
 describe('Python asynchronous state', () => {
+  it('logs the same effective secondary entry passed to the compiler', async () => {
+    ideLogger.clear();
+    const service: CompilerService = { mode: 'python', compile: vi.fn().mockResolvedValue(FIXTURE_COMPILATION_SUCCESS) };
+    const selected = createMockProject({ entryFileId: 'main', activeFileId: 'secondary', files: [
+      { id: 'main', name: 'principal.lumi', path: 'principal.lumi', content: '', isEntry: true },
+      { id: 'secondary', name: 'pruebas.lumi', path: 'pruebas.lumi', content: '@' },
+    ] });
+    const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
+
+    await act(async () => { await result.current.runCompile(selected, 'secondary'); });
+
+    expect(service.compile).toHaveBeenCalledWith(selected, { activeFileId: 'secondary' });
+    expect(ideLogger.getHistory().some(event => event.message.includes('Archivo de entrada: pruebas.lumi'))).toBe(true);
+  });
+
+  it('logs the main entry when the requested active file no longer exists', async () => {
+    ideLogger.clear();
+    const service: CompilerService = { mode: 'python', compile: vi.fn().mockResolvedValue(FIXTURE_COMPILATION_SUCCESS) };
+    const selected = createMockProject({ entryFileId: 'main', files: [
+      { id: 'main', name: 'principal.lumi', path: 'principal.lumi', content: '', isEntry: true },
+    ] });
+    const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
+
+    await act(async () => { await result.current.runCompile(selected, 'missing'); });
+
+    expect(ideLogger.getHistory().some(event => event.message.includes('Archivo de entrada: principal.lumi'))).toBe(true);
+  });
   it('does not publish an old failure over a newer success', async () => {
     const old = deferred();
     const service: CompilerService = { mode: 'python', compile: vi.fn()

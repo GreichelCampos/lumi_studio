@@ -91,6 +91,66 @@ def test_spatial_analysis_remains_incomplete_without_execution():
     assert "scenePlan" not in result["result"]
 
 
+@pytest.mark.parametrize(
+    "source, code",
+    [
+        ("principal { habitacion sala(-7, 5, 3) {} }", "SPA_INVALID_DIMENSION"),
+        ("principal { habitacion sala(faltante, 5, 3) {} }", "SEM_UNDECLARED_VARIABLE"),
+        (
+            "principal { habitacion sala(5, 4, 3) { piso uno {} piso dos {} } }",
+            "SPA_MULTIPLE_FLOORS",
+        ),
+    ],
+)
+def test_secondary_entry_preserves_semantic_and_spatial_diagnostics(source, code):
+    message = request("principal { habitacion principal(5, 4, 3) {} }", "analyze")
+    message["entryFile"] = "pruebas.lumi"
+    message["files"]["pruebas.lumi"] = source
+
+    result = RequestDispatcher().dispatch(message)
+
+    assert result["status"] == "failed"
+    diagnostic = result["result"]["diagnostics"][0]
+    assert diagnostic["code"] == code
+    assert diagnostic["file"] == "pruebas.lumi"
+    assert diagnostic["line"] == 1
+    assert diagnostic["column"] >= 1
+
+
+def test_switching_between_secondary_and_main_entry_preserves_project_sources():
+    files = {
+        "principal.lumi": "principal { habitacion sala_principal(5, 4, 3) {} }",
+        "pruebas.lumi": "principal { habitacion sala(-7, 5, 3) {} }",
+        "util.lumi": "funcion entero ancho() { retornar 5>> }",
+    }
+    secondary = request(operation="analyze", request_id="secondary-entry")
+    secondary.update(entryFile="pruebas.lumi", files=files)
+    main = request(operation="analyze", request_id="main-entry")
+    main.update(entryFile="principal.lumi", files=files)
+
+    secondary_result = RequestDispatcher().dispatch(secondary)
+    main_result = RequestDispatcher().dispatch(main)
+
+    assert secondary_result["status"] == "failed"
+    assert secondary_result["result"]["diagnostics"][0]["code"] == "SPA_INVALID_DIMENSION"
+    assert main_result["status"] == "incomplete"
+    assert main_result["result"]["diagnostics"] == []
+
+
+def test_secondary_entry_resolves_its_imports_from_the_complete_project_snapshot():
+    message = request(operation="analyze")
+    message.update(entryFile="pruebas.lumi", files={
+        "principal.lumi": "principal { habitacion sala_principal(5, 4, 3) {} }",
+        "pruebas.lumi": 'importar "util.lumi" usar ancho>> principal { habitacion sala(ancho(), 4, 3) {} }',
+        "util.lumi": "funcion entero ancho() { retornar 5>> }",
+    })
+
+    result = RequestDispatcher().dispatch(message)
+
+    assert result["status"] == "incomplete"
+    assert result["result"]["diagnostics"] == []
+
+
 def test_spatial_execution_publishes_validated_runtime_scene():
     result = RequestDispatcher().dispatch(
         request("habitacion sala(5, 4, 2.7) {}", "execute")

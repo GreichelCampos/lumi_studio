@@ -10,7 +10,7 @@ type MessageListener = (message: AssistantMessage) => void;
 
 class LumiAssistantService {
   private currentMessage: AssistantMessage = {
-    text: 'Todo listo. Puedes seguir editando ✨',
+    text: 'Proyecto listo para trabajar ✨',
     state: 'ready',
     timestamp: Date.now(),
   };
@@ -53,7 +53,7 @@ class LumiAssistantService {
 
 
   public onReady() {
-    this.setMessage('Todo listo. Puedes seguir editando ✨', 'ready');
+    this.setMessage('Proyecto listo para trabajar ✨', 'ready');
   }
 
   public onCompiling() {

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { ScenePlan, SourceReference, isPlacedSpatialObject } from '../types';
+import { CompileResult, ScenePlan, SourceReference, isPlacedSpatialObject } from '../types';
 import { ThreeSceneManager } from './viewport/ThreeSceneManager';
 import { validateViewportScene } from './viewport/helpers/validateViewportScene';
 import { findDeclaredWall, roomContainsEntity } from './viewport/helpers/architecturalSelection';
@@ -28,8 +28,8 @@ import {
 
 interface Viewport3DProps {
   legacyPlacement?: boolean;
-  sceneGenerationUnavailable?: boolean;
   scenePlan: ScenePlan | null;
+  lastCompileResult?: CompileResult | null;
   sceneSource?: 'simulation' | 'artifact' | 'python' | null;
   activeObjectId?: string | null;
   debugActiveObjectId?: string | null;
@@ -46,8 +46,8 @@ interface Viewport3DProps {
 
 export const Viewport3D: React.FC<Viewport3DProps> = ({
   legacyPlacement = false,
-  sceneGenerationUnavailable = false,
   scenePlan: inputScenePlan,
+  lastCompileResult = null,
   sceneSource = 'simulation',
   activeObjectId = null,
   debugActiveObjectId = null,
@@ -319,14 +319,20 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   // Determinar estado vacío (Solo cuando no hay ScenePlan válido disponible)
   let emptyState: EmptyStateType | null = null;
-  if (sceneGenerationUnavailable && !scenePlan) {
-    emptyState = 'scene_unavailable';
-  } else
   if (!scenePlan) {
-    if (hasCompileErrors) {
-      emptyState = 'compile_errors';
-    } else if (!isCompiled) {
+    const operationFailed = lastCompileResult?.status === 'failed' || lastCompileResult?.status === 'blocked';
+    if (!lastCompileResult && !isCompiled) {
       emptyState = 'no_compile';
+    } else if (lastCompileResult?.operation === 'execute' && (operationFailed || hasCompileErrors)) {
+      emptyState = 'execution_error';
+    } else if (operationFailed || hasCompileErrors) {
+      emptyState = 'compile_errors';
+    } else if (lastCompileResult?.operation === 'analyze' && lastCompileResult.status === 'incomplete') {
+      emptyState = 'analysis_incomplete';
+    } else if (lastCompileResult?.operation === 'analyze') {
+      emptyState = 'analysis_completed';
+    } else if (lastCompileResult?.operation === 'execute') {
+      emptyState = 'scene_unavailable';
     } else {
       emptyState = 'no_rooms';
     }

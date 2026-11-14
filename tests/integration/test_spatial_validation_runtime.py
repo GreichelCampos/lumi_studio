@@ -2,6 +2,7 @@ from lumi_language.diagnostics import DiagnosticCategory
 from lumi_language.interpreter import Interpreter
 from lumi_language.lexer import Lexer
 from lumi_language.parser import Parser
+from lumi_language.semantic_analyzer import SemanticAnalyzer
 
 
 def parse_source(source: str, file: str = "principal.lumi"):
@@ -202,3 +203,28 @@ def test_accumulates_errors_from_multiple_rooms_independently():
     ]
     assert "'sala'" in result.diagnostics[0].description
     assert "'cocina'" in result.diagnostics[1].description
+
+
+def test_static_and_runtime_dimension_rules_share_diagnostic_contract():
+    program = parse_source("habitacion sala(2 - 2, 4, 3) {}", "paridad.lumi")
+
+    static = SemanticAnalyzer().analyze(program).diagnostics[0]
+    runtime = Interpreter().execute(program).diagnostics[0]
+
+    assert (
+        static.category,
+        static.code,
+        static.file,
+        static.line,
+        static.column,
+        static.description,
+        static.suggestion,
+    ) == (
+        runtime.category,
+        runtime.code,
+        runtime.file,
+        runtime.line,
+        runtime.column,
+        runtime.description,
+        runtime.suggestion,
+    )

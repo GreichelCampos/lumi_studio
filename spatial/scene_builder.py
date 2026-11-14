@@ -14,6 +14,14 @@ from .scene_plan import (
     SpatialProperty,
     Vector3,
 )
+from .spatial_rules import (
+    SpatialElementState,
+    SpatialOperation,
+    SpatialTransitionViolation,
+    apply_element_operation,
+    validate_element_declaration,
+    validate_room_start,
+)
 
 
 class ScenePlanBuilderErrorReason(str, Enum):
@@ -115,7 +123,11 @@ class ScenePlanBuilder:
     ) -> None:
         """Open one room using values already resolved by the caller."""
 
-        if self._active_room is not None:
+        violation = validate_room_start(
+            room_active=self._active_room is not None,
+            room_exists=name in self._room_names,
+        )
+        if violation is SpatialTransitionViolation.ROOM_ALREADY_ACTIVE:
             raise ScenePlanBuilderError(
                 ScenePlanBuilderErrorReason.ROOM_ALREADY_ACTIVE,
                 (
@@ -125,7 +137,7 @@ class ScenePlanBuilder:
                 source,
                 room_name=name,
             )
-        if name in self._room_names:
+        if violation is SpatialTransitionViolation.DUPLICATE_ROOM:
             raise ScenePlanBuilderError(
                 ScenePlanBuilderErrorReason.DUPLICATE_ROOM,
                 f"La habitación '{name}' ya fue construida.",
@@ -163,8 +175,15 @@ class ScenePlanBuilder:
     ) -> None:
         """Declare one uniquely named element in the active room."""
 
-        room = self._require_active_room(source)
-        if name in room.elements_by_name:
+        room = self._active_room
+        violation = validate_element_declaration(
+            room_active=room is not None,
+            element_exists=room is not None and name in room.elements_by_name,
+        )
+        if violation is SpatialTransitionViolation.NO_ACTIVE_ROOM:
+            self._require_active_room(source)
+        assert room is not None
+        if violation is SpatialTransitionViolation.DUPLICATE_ELEMENT:
             raise ScenePlanBuilderError(
                 ScenePlanBuilderErrorReason.DUPLICATE_ELEMENT,
                 (
@@ -197,8 +216,10 @@ class ScenePlanBuilder:
         """Assign an element's initial absolute position."""
 
         operation_source = source or position.source
-        element = self._resolve_element(name, operation_source)
-        if element.position is not None:
+        element, violation = self._resolve_operation(
+            name, operation_source, SpatialOperation.PLACE,
+        )
+        if violation is SpatialTransitionViolation.ELEMENT_ALREADY_PLACED:
             raise ScenePlanBuilderError(
                 ScenePlanBuilderErrorReason.ELEMENT_ALREADY_PLACED,
                 f"El elemento '{name}' ya tiene una posición inicial.",
@@ -218,8 +239,10 @@ class ScenePlanBuilder:
         """Replace an already placed element's absolute position."""
 
         operation_source = source or position.source
-        element = self._resolve_element(name, operation_source)
-        if element.position is None:
+        element, violation = self._resolve_operation(
+            name, operation_source, SpatialOperation.MOVE,
+        )
+        if violation is SpatialTransitionViolation.ELEMENT_NOT_PLACED:
             raise ScenePlanBuilderError(
                 ScenePlanBuilderErrorReason.ELEMENT_NOT_PLACED,
                 f"El elemento '{name}' debe colocarse antes de moverlo.",
@@ -239,7 +262,9 @@ class ScenePlanBuilder:
         """Replace an element's absolute rotation, whether placed or not."""
 
         operation_source = source or rotation.source
-        element = self._resolve_element(name, operation_source)
+        element, _ = self._resolve_operation(
+            name, operation_source, SpatialOperation.ROTATE,
+        )
         element.rotation = rotation
 
     def build(self) -> ScenePlan:
@@ -285,6 +310,31 @@ class ScenePlanBuilder:
                 element_name=name,
             )
         return element
+
+    def _resolve_operation(
+        self,
+        name: str,
+        source: SourceLocation,
+        operation: SpatialOperation,
+    ) -> tuple[_ElementDraft, SpatialTransitionViolation | None]:
+        room = self._active_room
+        element = room.elements_by_name.get(name) if room is not None else None
+        _, violation = apply_element_operation(
+            room_active=room is not None,
+            element_state=(
+                SpatialElementState(placed=element.position is not None)
+                if element is not None else None
+            ),
+            operation=operation,
+        )
+        if violation in {
+            SpatialTransitionViolation.NO_ACTIVE_ROOM,
+            SpatialTransitionViolation.ELEMENT_NOT_FOUND,
+        }:
+            self._resolve_element(name, source)
+            raise AssertionError("unreachable")
+        assert element is not None
+        return element, violation
 
     def _active_room_name(self) -> str | None:
         return self._active_room.name if self._active_room is not None else None

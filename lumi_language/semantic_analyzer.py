@@ -5,6 +5,7 @@ from typing import Any
 
 from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
+from .spatial_semantic_analyzer import SpatialSemanticAnalyzer
 from .symbol_table import DataType, Symbol, SymbolKind, SymbolTable
 
 
@@ -173,7 +174,7 @@ class SemanticAnalysisResult:
 
 @dataclass(slots=True)
 class _SpatialRoomContext:
-    """Static declarations visible while one room body is analyzed."""
+    """Legacy context retained for compatibility with private helper annotations."""
 
     name: str
     elements: dict[str, dict[str, Any]] = field(default_factory=dict)
@@ -194,8 +195,9 @@ class SemanticAnalyzer:
         self._processed_function_nodes: set[tuple[SymbolTable, int]] = set()
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
-        self.current_spatial_room: _SpatialRoomContext | None = None
-        self._spatial_room_names: set[str] = set()
+        self.spatial_analyzer = self._create_spatial_analyzer()
+        self._architectural_room: str | None = None
+        self._architectural_walls: dict[str, dict[str, Any]] = {}
 
     def analyze(
         self,
@@ -210,9 +212,10 @@ class SemanticAnalyzer:
         self.current_function = None
         self._function_symbols = {}
         self._processed_function_nodes = set()
-        self.current_spatial_room = None
-        self._spatial_room_names = set()
         self._has_import_context = imported_programs is not None
+        self.spatial_analyzer = self._create_spatial_analyzer()
+        self._architectural_room = None
+        self._architectural_walls = {}
         self.imported_programs = {
             file_name: normalize_ast(imported_program)
             for file_name, imported_program in (imported_programs or {}).items()
@@ -238,18 +241,23 @@ class SemanticAnalyzer:
             self._infer_expression(node["expression"])
         elif node_type == "IfNode":
             self._require_boolean(node["condition"])
-            self._analyze_block(node.get("then_body", []), "if")
-            self._analyze_block(node.get("else_body", []), "else")
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_block(node.get("then_body", []), "if")
+                self._analyze_block(node.get("else_body", []), "else")
         elif node_type == "SwitchNode":
-            self._analyze_switch(node)
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_switch(node)
         elif node_type == "WhileNode":
             self._require_boolean(node["condition"])
-            self._analyze_block(node.get("body", []), "while")
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_block(node.get("body", []), "while")
         elif node_type == "RepeatNode":
             self._require_integer(node["count"], "SEM_REPEAT_COUNT_NOT_INTEGER")
-            self._analyze_block(node.get("body", []), "repeat")
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_block(node.get("body", []), "repeat")
         elif node_type == "ForNode":
-            self._analyze_for(node)
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_for(node)
         elif node_type == "FunctionDeclarationNode":
             self._analyze_function(node)
         elif node_type == "FunctionCallNode":
@@ -258,22 +266,97 @@ class SemanticAnalyzer:
             self._analyze_return(node)
         elif node_type == "ImportNode":
             self._analyze_import(node)
-        elif node_type == "RoomNode":
-            self._analyze_room(node)
-        elif node_type == "SpatialObjectDeclarationNode":
-            self._analyze_spatial_declaration(node, "object")
-        elif node_type == "FloorNode":
-            self._analyze_spatial_declaration(node, "floor")
-        elif node_type == "WallNode":
-            self._analyze_spatial_declaration(node, "wall")
-        elif node_type == "DoorNode":
-            self._analyze_spatial_declaration(node, "door")
-        elif node_type == "WindowNode":
-            self._analyze_spatial_declaration(node, "window")
-        elif node_type in {"PlaceObjectNode", "MoveObjectNode"}:
-            self._analyze_spatial_operation(node, "position")
-        elif node_type == "RotateObjectNode":
-            self._analyze_spatial_operation(node, "rotation")
+        elif self.spatial_analyzer.handles(node_type):
+            if node_type == "RoomNode":
+                previous_room = self._architectural_room
+                previous_walls = self._architectural_walls
+                self._architectural_room = node["name"]
+                self._architectural_walls = {}
+                try:
+                    self.spatial_analyzer.analyze(node)
+                finally:
+                    self._architectural_room = previous_room
+                    self._architectural_walls = previous_walls
+            else:
+                self.spatial_analyzer.analyze(node)
+                self._analyze_architectural_contract(node)
+
+    def _create_spatial_analyzer(self) -> SpatialSemanticAnalyzer:
+        return SpatialSemanticAnalyzer(
+            infer_expression=self._infer_expression,
+            analyze_block=self._analyze_block,
+            add_diagnostic=self._add_diagnostic,
+            append_spatial_diagnostic=lambda diagnostic, node, cause: self._append(
+                diagnostic, node, cause=cause,
+            ),
+            diagnostic_count=lambda: len(self.result.diagnostics),
+        )
+
+    def _analyze_architectural_contract(self, node: dict[str, Any]) -> None:
+        """Add architectural requirements not covered by shared value rules."""
+
+        kind_by_node = {
+            "WallNode": "wall",
+            "DoorNode": "door",
+            "WindowNode": "window",
+        }
+        element_kind = kind_by_node.get(node["node"])
+        if element_kind is None:
+            return
+
+        properties = {item["name"]: item for item in node.get("properties", [])}
+        required_by_kind = {
+            "wall": ("orientacion",),
+            "door": ("orientacion", "ancho", "alto", "desplazamiento"),
+            "window": (
+                "orientacion", "ancho", "alto", "desplazamiento", "elevacion",
+            ),
+        }
+        for property_name in required_by_kind[element_kind]:
+            if property_name not in properties:
+                self._add_diagnostic(
+                    node,
+                    "SEM_MISSING_SPATIAL_PROPERTY",
+                    f"El elemento '{node['name']}' requiere la propiedad "
+                    f"'{property_name}'.",
+                    "Agregue la propiedad obligatoria a la declaración espacial.",
+                    cause=(element_kind, node["name"], property_name),
+                )
+
+        orientation_property = properties.get("orientacion")
+        if orientation_property is None:
+            return
+        value = orientation_property["value"]
+        if value.get("node") != "LiteralNode":
+            return
+        orientation = value.get("value")
+        if orientation not in {"norte", "sur", "este", "oeste"}:
+            self._add_diagnostic(
+                value,
+                "SEM_INVALID_SPATIAL_ORIENTATION",
+                f"La orientación '{orientation}' no es válida.",
+                "Utilice 'norte', 'sur', 'este' u 'oeste'.",
+                cause=(element_kind, node["name"], orientation),
+            )
+            return
+
+        if (
+            element_kind == "wall"
+            and self._architectural_room is not None
+            and self.spatial_analyzer._linear_analysis_enabled
+        ):
+            previous = self._architectural_walls.get(orientation)
+            if previous is None:
+                self._architectural_walls[orientation] = node
+            else:
+                self._add_diagnostic(
+                    orientation_property,
+                    "SEM_DUPLICATE_WALL_ORIENTATION",
+                    f"La habitación '{self._architectural_room}' ya tiene una "
+                    f"pared explícita para la orientación '{orientation}'.",
+                    "Conserve como máximo una pared explícita por orientación.",
+                    cause=(self._architectural_room, orientation, id(previous)),
+                )
 
     def _analyze_statements(self, statements: list[dict[str, Any]]) -> None:
         self._predeclare_functions(statements)
@@ -793,7 +876,8 @@ class SemanticAnalyzer:
                         "Utilice un nombre diferente para cada parámetro.",
                         cause=(parameter_symbol, self.current_scope.resolve(parameter["name"])),
                     )
-            self._analyze_statements(node.get("body", []))
+            with self.spatial_analyzer.suspend_linear_analysis():
+                self._analyze_statements(node.get("body", []))
             if (
                 symbol.return_type is not DataType.VOID
                 and not self._block_guarantees_return(node.get("body", []))

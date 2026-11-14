@@ -66,11 +66,12 @@ def element(
     position: Vector3 | None = None,
     rotation: Vector3 | None = None,
     properties: tuple[SpatialProperty, ...] = (),
+    element_kind: str = "object",
 ) -> SpatialElement:
     return SpatialElement(
         name=name,
-        element_kind="object",
-        object_type="silla",
+        element_kind=element_kind,
+        object_type="silla" if element_kind == "object" else None,
         properties=properties,
         position=position,
         rotation=rotation,
@@ -612,3 +613,33 @@ def test_property_diagnostic_preserves_source_location():
     assert diagnostic.file == "muebles.lumi"
     assert diagnostic.line == 20
     assert diagnostic.column == 31
+
+
+@pytest.mark.parametrize(
+    "element_kind, properties",
+    [
+        ("floor", (spatial_property("color", "gris"),)),
+        ("wall", (spatial_property("orientacion", "norte"),)),
+        ("door", (spatial_property("ancho", 0.9),)),
+        ("door", (spatial_property("desplazamiento", 0.2),)),
+        ("window", (spatial_property("elevacion", 1),)),
+    ],
+)
+def test_property_catalog_depends_on_element_kind(element_kind, properties):
+    plan = scene(room(elements=(element(
+        element_kind=element_kind, properties=properties,
+    ),)))
+
+    assert SpatialValidator().validate(plan).succeeded
+
+
+def test_reserved_numeric_property_rejects_boolean_as_non_numeric():
+    plan = scene(room(elements=(element(
+        element_kind="door",
+        properties=(spatial_property("ancho", True),),
+    ),)))
+
+    result = SpatialValidator().validate(plan)
+
+    assert [item.code for item in result.diagnostics] == ["SPA_INVALID_PROPERTY"]
+    assert "valor numérico" in result.diagnostics[0].description

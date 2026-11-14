@@ -83,13 +83,24 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   const [activeMainTab, setActiveMainTab] = useState<'salida' | 'diagnosticos' | 'depurador'>('salida');
   const [ideEvents, setIdeEvents] = useState<IdeLogEvent[]>(() => ideLogger.getHistory());
   const [assistantMsg, setAssistantMsg] = useState<AssistantMessage>(() => lumiAssistant.getMessage());
+  const [showAssistantMessage, setShowAssistantMessage] = useState(true);
 
   useEffect(() => {
     const unsubscribe = lumiAssistant.subscribe((msg) => {
       setAssistantMsg(msg);
+      setShowAssistantMessage(true);
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (assistantMsg.state !== 'ready' && assistantMsg.state !== 'success') {
+      setShowAssistantMessage(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setShowAssistantMessage(false), 6000);
+    return () => window.clearTimeout(timer);
+  }, [assistantMsg]);
 
   useEffect(() => {
     const unsubscribe = ideLogger.subscribe((newEvent) => {
@@ -276,7 +287,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             state={activeMascotState}
             size={68}
             isAnimated={true}
-            showSpeechBubble={Boolean(assistantMsg.text)}
+            showSpeechBubble={showAssistantMessage && Boolean(assistantMsg.text)}
             message={assistantMsg.text}
             onClick={onLumiClick}
           />

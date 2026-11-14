@@ -1,5 +1,5 @@
 import type { LumiProject, CompileResult } from '../../types';
-import type { CompilerService } from '../compiler/CompilerService';
+import type { CompilerService, CompileOptions } from '../compiler/CompilerService';
 import type { DesktopBridge } from './desktopBridge';
 import { validateProtocolResponse } from './protocol/responseValidator';
 import type { Operation } from './protocol/types';
@@ -24,13 +24,16 @@ export class PythonCompilerService implements CompilerService {
   readonly mode = 'python' as const;
   constructor(private readonly bridge: DesktopBridge | undefined) {}
 
-  compile(project: LumiProject): Promise<CompileResult> { return this.run('analyze', project); }
+  compile(project: LumiProject, options?: CompileOptions | string): Promise<CompileResult> {
+    const activeFileId = typeof options === 'object' ? options.activeFileId : undefined;
+    return this.run('analyze', project, activeFileId);
+  }
   execute(project: LumiProject): Promise<CompileResult> { return this.run('execute', project); }
 
-  private async run(operation: Operation, project: LumiProject): Promise<CompileResult> {
+  private async run(operation: Operation, project: LumiProject, preferredFileId?: string): Promise<CompileResult> {
     if (!this.bridge) throw new Error('El puente seguro de Electron no está disponible. No se utilizará el mock.');
     const started = performance.now();
-    const input = projectInput(project);
+    const input = projectInput(project, preferredFileId);
     const reply: unknown = await this.bridge[operation](input);
     if (!isRecord(reply) || reply.ok !== true) {
       if (isRecord(reply) && reply.ok === false && isRecord(reply.error)
@@ -44,7 +47,7 @@ export class PythonCompilerService implements CompilerService {
     const response = validation.value;
     if (response.operation !== operation) throw new Error('La operación recibida no coincide con la solicitud.');
     if (response.status === 'error') throw new Error(backendErrorMessage(response.error.code, response.error.message));
-    if (response.result.entryFile !== input.entryFile) throw new Error('El archivo principal recibido no coincide.');
+    if (response.result.entryFile !== input.entryFile) throw new Error('El archivo de entrada recibido no coincide.');
     return adaptBackendResult(response, project, performance.now() - started);
   }
 }

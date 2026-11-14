@@ -302,3 +302,23 @@ def test_preserves_complete_backend_contract_for_all_spatial_declarations():
         -1,
     )
     assert room.elements[-1].rotation.y.value == 90
+
+
+def test_runtime_accepts_every_property_allowed_by_reserved_element_catalog():
+    result = execute(
+        'habitacion sala(6, 5, 3) { '
+        'piso suelo { color "gris">> material "madera">> } '
+        'pared norte { orientacion "norte">> color "blanco">> '
+        'material "yeso">> } '
+        'puerta entrada { orientacion "sur">> ancho 0.9>> alto 2.1>> '
+        'desplazamiento 0.2>> color "cafe">> material "madera">> } '
+        'ventana luz { orientacion "este">> ancho 1.2>> alto 1.1>> '
+        'desplazamiento 0.3>> elevacion 0.9>> color "azul">> '
+        'material "vidrio">> } }'
+    )
+
+    assert result.succeeded
+    assert result.diagnostics == []
+    assert [len(element.properties) for element in result.scene_plan.rooms[0].elements] == [
+        2, 3, 6, 7,
+    ]

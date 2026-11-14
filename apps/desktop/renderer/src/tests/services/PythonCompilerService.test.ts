@@ -48,6 +48,46 @@ describe('Real compiler adapter', () => {
     expect(validateCompileResult(result).isValid).toBe(true);
   });
 
+  it('uses the active secondary file for analysis and keeps every project source', async () => {
+    const raw = reply();
+    if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
+    Object.assign(raw.response, { operation: 'analyze', status: 'failed' });
+    Object.assign(raw.response.result, { entryFile: 'otro.lumi', analysisStatus: 'failed',
+      diagnostics: [{ category: 'SPATIAL', code: 'SPA_INVALID_DIMENSION', file: 'otro.lumi',
+        line: 2, column: 21, description: 'La dimensión debe ser positiva.' }],
+      limitations: ['spatial_semantics_unavailable'], executionAttempted: false, output: [] });
+    const api = bridge(raw);
+
+    const result = await new PythonCompilerService(api).compile(project(), { activeFileId: 'active' });
+
+    expect(api.analyze).toHaveBeenCalledWith({ entryFile: 'otro.lumi', files: {
+      'otro.lumi': '@', 'principal.lumi': 'mostrar("BORRADOR")>>',
+    } });
+    expect(result).toMatchObject({ status: 'failed', entryFileInfo: { id: 'active', name: 'otro.lumi' } });
+    expect(result.diagnostics[0]).toMatchObject({ code: 'SPA_INVALID_DIMENSION', file: 'otro.lumi',
+      line: 2, column: 21, blocking: true });
+  });
+
+  it('falls back to the main entry for a missing active file', async () => {
+    const raw = reply();
+    if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
+    Object.assign(raw.response, { operation: 'analyze', status: 'incomplete' });
+    Object.assign(raw.response.result, { analysisStatus: 'incomplete', output: [], executionAttempted: false,
+      limitations: ['spatial_semantics_unavailable'] });
+    const api = bridge(raw);
+
+    const result = await new PythonCompilerService(api).compile(project(), { activeFileId: 'missing' });
+
+    expect(api.analyze).toHaveBeenCalledWith(expect.objectContaining({ entryFile: 'principal.lumi' }));
+    expect(result).toMatchObject({ status: 'incomplete', entryFileInfo: { id: 'main' } });
+  });
+
+  it('always executes the main entry even while a secondary file is active', async () => {
+    const api = bridge();
+    await new PythonCompilerService(api).execute(project());
+    expect(api.execute).toHaveBeenCalledWith(expect.objectContaining({ entryFile: 'principal.lumi' }));
+  });
+
   it('delivers a validated backend scene to the IDE result', async () => {
     const raw = reply();
     if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');

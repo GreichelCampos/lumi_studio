@@ -96,13 +96,14 @@ def test_second_floor_blocks_execution_with_semantic_diagnostic():
     assert response["status"] == "blocked"
     assert response["result"]["executionAttempted"] is False
     diagnostic = response["result"]["diagnostics"][0]
-    assert diagnostic["category"] == "SEMANTIC"
-    assert diagnostic["code"] == "SEM_MULTIPLE_FLOORS"
+    assert diagnostic["category"] == "SPATIAL"
+    assert diagnostic["code"] == "SPA_MULTIPLE_FLOORS"
     assert diagnostic["file"] == "principal.lumi"
     assert diagnostic["line"] == 1
     assert diagnostic["column"] == 44
     assert "piso" in diagnostic["description"]
     assert response["result"]["capabilities"]["scenePlan"] is False
+    assert response["result"]["executionAttempted"] is False
     assert "scenePlan" not in response["result"]
 
 
@@ -132,14 +133,15 @@ def test_scene_ids_are_deterministic_across_equivalent_executions():
     assert first_room["objects"][0]["id"] == second_room["objects"][0]["id"]
 
 
-def test_invalid_spatial_scene_is_not_published():
+def test_static_invalid_spatial_scene_is_blocked_and_not_published():
     response = RequestDispatcher().dispatch(
         request("habitacion sala(0, 4, 3) { }")
     )
 
-    assert response["status"] == "failed"
+    assert response["status"] == "blocked"
     assert response["result"]["diagnostics"][0]["code"] == "SPA_INVALID_DIMENSION"
     assert response["result"]["capabilities"]["scenePlan"] is False
+    assert response["result"]["executionAttempted"] is False
     assert "scenePlan" not in response["result"]
 
 

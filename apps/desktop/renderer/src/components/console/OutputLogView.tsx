@@ -108,7 +108,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
         <div className="flex items-center justify-between text-xs pb-1 select-none border-b border-[var(--ide-panel-border)]/50">
           <div className="flex items-center gap-2">
             <span className="text-[10px] text-[var(--ide-text-muted)] uppercase tracking-wider font-semibold">
-              Eventos ({filteredEvents.length}):
+              Historial de la sesión · todos los proyectos ({filteredEvents.length}):
             </span>
             <div className="flex items-center gap-1">
               <Filter className="w-3 h-3 text-[var(--ide-accent)]" />
@@ -149,6 +149,9 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
 
       {lastCompileResult && (
         <div className="glass-card p-3 space-y-1.5 font-sans text-xs border border-[var(--ide-panel-border)] !w-auto !h-auto">
+          <div className="text-[10px] text-[var(--ide-text-muted)] uppercase tracking-wider font-semibold">
+            Resultado de la operación actual
+          </div>
           <div className="flex items-center justify-between text-[11px] text-[var(--ide-text-muted)]">
             <span className="font-mono text-[var(--ide-accent)] font-semibold">
               ID: #{lastCompileResult.compilationId}

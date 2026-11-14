@@ -1,8 +1,9 @@
 import React from 'react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ConsolePanel } from '../../../components/ConsolePanel';
 import { ideLogger } from '../../../services/logger/IdeLogService';
+import { lumiAssistant } from '../../../services/assistant/LumiAssistantService';
 
 describe('ConsolePanel & OutputLogView Integration', () => {
   const defaultProps = {
@@ -19,6 +20,11 @@ describe('ConsolePanel & OutputLogView Integration', () => {
 
   beforeEach(() => {
     ideLogger.clear();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    lumiAssistant.onReady();
   });
 
   it('debe renderizar por defecto la pestaña Salida con OutputLogView integrado', () => {
@@ -69,5 +75,19 @@ describe('ConsolePanel & OutputLogView Integration', () => {
     fireEvent.click(screen.getByRole('button', { name: /^salida$/i }));
     expect(screen.getByTestId('output-log-view')).toBeInTheDocument();
     expect(screen.getByText('Evento permanente')).toBeInTheDocument();
+  });
+
+  it('minimiza mensajes informativos y conserva visibles advertencias importantes', () => {
+    vi.useFakeTimers();
+    lumiAssistant.onReady();
+    render(<ConsolePanel {...defaultProps} />);
+    expect(screen.getByText('Proyecto listo para trabajar ✨')).toBeInTheDocument();
+
+    act(() => vi.advanceTimersByTime(6000));
+    expect(screen.queryByText('Proyecto listo para trabajar ✨')).not.toBeInTheDocument();
+
+    act(() => lumiAssistant.setMessage('Advertencia que requiere atención.', 'warning'));
+    act(() => vi.advanceTimersByTime(12000));
+    expect(screen.getByText('Advertencia que requiere atención.')).toBeInTheDocument();
   });
 });

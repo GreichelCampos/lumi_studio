@@ -24,7 +24,6 @@ import { ideLogger } from './services/logger/IdeLogService';
 import { lumiAssistant } from './services/assistant/LumiAssistantService';
 import { LumicFileService } from './services/storage/LumicFileService';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import { BackendModeNotice } from './components/BackendModeNotice';
 import { findSourceFile } from './services/editor/sourceNavigation';
 import { resolveDebugStep } from './services/editor/debugStepNavigation';
 import { relativePath } from './services/integration/projectInput';
@@ -38,7 +37,6 @@ export default function App() {
     activeFileId,
     entryFile,
     openTabIds,
-    isLoaded,
     isDirty,
     dirtyCount,
     projectRevision,
@@ -268,18 +266,6 @@ export default function App() {
     handleSaveCurrentFile,
     handleSaveAllFiles,
   ]);
-
-  // Recompilación automática al cargar y al cambiar entre proyectos
-  const lastLoadedProjectIdRef = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (isLoaded && currentProject) {
-      if (lastLoadedProjectIdRef.current !== currentProject.id) {
-        lastLoadedProjectIdRef.current = currentProject.id;
-        handleCompileCurrent();
-      }
-    }
-  }, [currentProject?.id, isLoaded, handleCompileCurrent]);
 
   // Track processed compilationId so auto-focus only runs ONCE per new compilation
   const lastProcessedCompilationIdRef = useRef<string | null>(null);
@@ -514,7 +500,6 @@ export default function App() {
         onExportLumic={handleExportLumic}
         onImportLumicFile={handleImportLumicFile}
       />
-      <BackendModeNotice real={isRealBackend} refresh={isCompiling} />
       {storageError && <div role="alert" className="bg-rose-950 text-rose-100 px-4 py-2 text-sm z-[60]">
         {storageError} <button onClick={clearStorageError} className="underline ml-3">Cerrar aviso</button>
       </div>}
@@ -586,8 +571,8 @@ export default function App() {
               <Viewport3D
                 legacyPlacement={legacyPlacement}
                 sceneSource={sceneSource}
-                sceneGenerationUnavailable={isRealBackend}
                 scenePlan={scenePlan}
+                lastCompileResult={lastCompileResult}
                 activeObjectId={activeObjectId}
                 debugActiveObjectId={debugSelection.activeObjectId}
                 debugRoomId={currentStep?.roomId ?? null}

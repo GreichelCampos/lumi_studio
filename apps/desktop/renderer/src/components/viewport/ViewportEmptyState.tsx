@@ -1,13 +1,18 @@
 import React from 'react';
 import { Hammer, AlertCircle, Box, Layers, Plus } from 'lucide-react';
 
-export type EmptyStateType = 'no_compile' | 'compile_errors' | 'no_rooms' | 'empty_scene' | 'scene_unavailable';
+export type EmptyStateType = 'no_compile' | 'analysis_completed' | 'analysis_incomplete' | 'compile_errors' | 'execution_error' | 'no_rooms' | 'empty_scene' | 'scene_unavailable';
 
 interface ViewportEmptyStateProps {
   type: EmptyStateType;
   onCompile?: () => void;
   onInsertRoom?: () => void;
 }
+
+const initialShortcuts = [
+  { key: 'F5', label: 'Compilar' },
+  { key: 'F6', label: 'Ejecutar' },
+];
 
 export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
   type,
@@ -28,10 +33,30 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       iconColor: 'text-[var(--ide-accent)]',
       bgColor: 'bg-[var(--ide-accent-bg)]',
       borderColor: 'border-[var(--ide-accent)]/40',
-      title: 'Proyecto sin compilar',
-      description: 'Compilar (F5) analiza el código. En Electron, usa Ejecutar Python para generar una escena compatible o importa un archivo .lumic válido.',
-      actionText: 'Compilar proyecto (F5)',
-      actionFn: onCompile,
+      title: 'Todo listo para comenzar',
+      description: 'Escribí tu código Lumi y utilizá las herramientas del IDE para compilarlo, ejecutarlo y visualizar los espacios que construyas.',
+      actionText: '',
+      actionFn: undefined,
+    },
+    analysis_completed: {
+      icon: Hammer,
+      iconColor: 'text-[var(--ide-accent)]',
+      bgColor: 'bg-[var(--ide-accent-bg)]',
+      borderColor: 'border-[var(--ide-accent)]/40',
+      title: 'Análisis finalizado',
+      description: 'Compilar analiza el código, pero no ejecuta el programa ni genera la visualización. Usá Ejecutar Python (F6) para visualizar la habitación.',
+      actionText: '',
+      actionFn: undefined,
+    },
+    analysis_incomplete: {
+      icon: AlertCircle,
+      iconColor: 'text-amber-400',
+      bgColor: 'bg-amber-950/40',
+      borderColor: 'border-amber-500/30',
+      title: 'Análisis incompleto',
+      description: 'El código fue analizado, pero algunas comprobaciones todavía no están disponibles. Revisá la consola para conocer las capacidades pendientes',
+      actionText: '',
+      actionFn: undefined,
     },
     compile_errors: {
       icon: AlertCircle,
@@ -42,6 +67,16 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       description: 'Existen errores bloqueantes en el código Lumi. Revise los diagnósticos para solucionarlos antes de visualizar el 3D.',
       actionText: 'Reintentar compilación',
       actionFn: onCompile,
+    },
+    execution_error: {
+      icon: AlertCircle,
+      iconColor: 'text-rose-400',
+      bgColor: 'bg-rose-950/40',
+      borderColor: 'border-rose-500/40',
+      title: 'La ejecución no pudo completarse',
+      description: 'Revisá la consola y los diagnósticos para conocer el error real de la ejecución. No se mostrará una escena anterior.',
+      actionText: '',
+      actionFn: undefined,
     },
     no_rooms: {
       icon: Box,
@@ -77,6 +112,19 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       <p className="text-xs text-[var(--ide-text-muted)] max-w-sm mb-4 leading-relaxed">
         {config.description}
       </p>
+
+      {type === 'no_compile' && (
+        <div className="flex items-center gap-2 mb-4" aria-label="Atajos principales">
+          {initialShortcuts.map((shortcut) => (
+            <div key={shortcut.key} className="glass-btn flex items-center gap-2 rounded-xl border border-[var(--ide-panel-border)] px-2.5 py-1.5 text-[11px] text-[var(--ide-text-muted)]">
+              <kbd className="rounded-md border border-[var(--ide-accent)]/35 bg-[var(--ide-accent-bg)] px-1.5 py-0.5 font-mono font-bold text-[var(--ide-accent)]">
+                {shortcut.key}
+              </kbd>
+              <span>{shortcut.label}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {config.actionFn && (
         <button

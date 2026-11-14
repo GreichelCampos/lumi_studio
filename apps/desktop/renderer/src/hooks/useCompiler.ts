@@ -9,6 +9,7 @@ import {
 } from '../services/compiler/contracts/contractValidator';
 import { ideLogger } from '../services/logger/IdeLogService';
 import { lumiAssistant } from '../services/assistant/LumiAssistantService';
+import { projectEntry } from '../services/integration/projectInput';
 
 export interface UseCompilerOptions {
   customCompilerService?: CompilerService;
@@ -51,6 +52,7 @@ export function useCompiler(options?: UseCompilerOptions) {
     setSceneSource(null);
     setLegacyPlacement(false);
     setLogs([]); setDebugSteps([]); setLastCompiledRevision(null);
+    lumiAssistant.onReady();
   }, [options?.scopeKey]);
 
   const runOperation = useCallback(
@@ -65,13 +67,15 @@ export function useCompiler(options?: UseCompilerOptions) {
       setScenePlan(null); setSceneSource(null); setLegacyPlacement(false);
       setLastCompiledRevision(null);
 
-      const targetEntry =
-        project.files.find((f) => f.id === activeFileId)?.name ||
-        project.files.find((f) => f.isEntry)?.name ||
-        project.files[0]?.name ||
-        'desconocido';
-
       try {
+        const targetEntry = compilerService.mode === 'python'
+          ? projectEntry(project, operation === 'analyze' ? activeFileId : undefined).name
+          : project.files.find((f) => f.id === activeFileId)?.name ||
+            project.files.find((f) => f.isEntry)?.name ||
+            project.files[0]?.name ||
+            'desconocido';
+        ideLogger.logCompilationStarted(`request-${requestId}`, targetEntry);
+
         const rawResult = operation === 'analyze'
           ? await compilerService.compile(project, { activeFileId })
           : await compilerService.execute?.(project);
@@ -99,8 +103,6 @@ export function useCompiler(options?: UseCompilerOptions) {
             'Contratos'
           );
         }
-
-        ideLogger.logCompilationStarted(result.compilationId, result.entryFileInfo?.name || targetEntry);
 
         setLastCompileResult(result);
         setLegacyPlacement(false);

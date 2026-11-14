@@ -6,10 +6,36 @@ import { useSpatialDebugger } from '../../hooks/useSpatialDebugger';
 import { createMockDebugSteps, createMockProject } from '../fixtures/testFixtures';
 import { FIXTURE_COMPILATION_SUCCESS, FIXTURE_LUMIC_ARTIFACT } from '../../data/contracts';
 import type { CompileResult } from '../../types';
+import { lumiAssistant } from '../../services/assistant/LumiAssistantService';
 
 afterEach(() => vi.useRealTimers());
 
 describe('debugger lifecycle and local replay (not Python stepping)', () => {
+  it('starts ready and clears an assistant warning when the project changes', () => {
+    lumiAssistant.setMessage('Advertencia del proyecto anterior.', 'warning');
+    const { result, rerender } = renderHook(({ scope }) => useCompiler({ scopeKey: scope }), {
+      initialProps: { scope: 'first' },
+    });
+
+    expect(result.current.lumiState).toBe('ready');
+    expect(result.current.lastCompileResult).toBeNull();
+    expect(result.current.logs).toEqual([]);
+    expect(result.current.diagnostics).toEqual([]);
+    expect(lumiAssistant.getMessage()).toEqual(expect.objectContaining({
+      state: 'ready', text: 'Proyecto listo para trabajar ✨',
+    }));
+
+    lumiAssistant.setMessage('Análisis espacial incompleto.', 'warning');
+    rerender({ scope: 'second' });
+
+    expect(result.current.lumiState).toBe('ready');
+    expect(result.current.lastCompileResult).toBeNull();
+    expect(result.current.logs).toEqual([]);
+    expect(lumiAssistant.getMessage()).toEqual(expect.objectContaining({
+      state: 'ready', text: 'Proyecto listo para trabajar ✨',
+    }));
+  });
+
   it('keeps per-file breakpoints within a project and clears them with spatial selection on project change', () => {
     const { result, rerender } = renderHook(({ file, scope }) => useEditorState(file, scope), {
       initialProps: { file: 'principal.lumi', scope: 'first' },

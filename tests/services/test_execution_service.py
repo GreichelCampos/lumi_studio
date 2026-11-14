@@ -138,16 +138,32 @@ def test_execution_result_preserves_reserved_spatial_elements():
     )
 
 
-def test_execution_result_does_not_publish_spatially_invalid_scene():
+def test_execution_is_blocked_by_statically_invalid_spatial_scene():
     result = ExecutionService().execute_source(
         "habitacion invalida(0, 4, 3) { }",
         "principal.lumi",
     )
 
-    assert result.status == ExecutionStatus.FAILED
+    assert result.status == ExecutionStatus.BLOCKED
+    assert not result.execution_attempted
     assert result.scene_plan is None
     assert result.diagnostics[0].category == DiagnosticCategory.SPATIAL
     assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
+
+
+def test_dynamic_invalid_dimension_remains_a_runtime_validation():
+    result = ExecutionService().execute_source(
+        "entero ancho = 0>> habitacion invalida(ancho, 4, 3) { }",
+        "principal.lumi",
+    )
+
+    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.status == ExecutionStatus.FAILED
+    assert result.execution_attempted
+    assert result.scene_plan is None
+    assert [item.code for item in result.diagnostics] == [
+        "SPA_INVALID_DIMENSION"
+    ]
 
 
 def test_uncalled_spatial_function_keeps_analysis_limitation_but_execution_succeeds():

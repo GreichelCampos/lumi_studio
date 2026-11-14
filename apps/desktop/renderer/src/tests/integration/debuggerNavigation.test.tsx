@@ -5,7 +5,12 @@ import App from '../../App';
 import type { DebugStep, LumiFile, LumiProject } from '../../types';
 import { createMockDebugSteps, createMockFile, createMockProject } from '../fixtures/testFixtures';
 
-const state = vi.hoisted(() => ({ project: null as LumiProject | null, steps: [] as DebugStep[] }));
+const state = vi.hoisted(() => ({
+  project: null as LumiProject | null,
+  steps: [] as DebugStep[],
+  runCompile: vi.fn(),
+  runExecute: vi.fn(),
+}));
 
 vi.mock('../../hooks/useProjectManager', async () => {
   const { useState } = await import('react');
@@ -16,7 +21,7 @@ vi.mock('../../hooks/useProjectManager', async () => {
       currentProject: state.project, currentProjectId: state.project?.id,
       projects: state.project ? [state.project] : [], legacyProjects: [],
       activeFileId, activeFile: state.project?.files.find(file => file.id === activeFileId),
-      entryFile: state.project?.files[0], openTabIds: tabs, isLoaded: false,
+      entryFile: state.project?.files[0], openTabIds: tabs, isLoaded: true,
       projectRevision: 1, isDirty: () => false, dirtyCount: 0,
       getFileContent: (file: LumiFile) => file.content,
       handleSelectFile: (id: string) => { select(id); setTabs(previous => previous.includes(id) ? previous : [...previous, id]); },
@@ -29,10 +34,14 @@ vi.mock('../../hooks/useCompiler', async () => {
     const [scenePlan, setScenePlan] = useState(state.steps[0]?.sceneSnapshot ?? null);
     return { scenePlan, setScenePlan, sceneSource: 'artifact', debugSteps: state.steps,
       diagnostics: [], logs: [], lastCompileResult: null, isRealBackend: true,
-      lastCompiledRevision: null, isCompiling: false, lumiState: 'ready' };
+      lastCompiledRevision: null, isCompiling: false, lumiState: 'ready',
+      runCompile: state.runCompile, runExecute: state.runExecute };
   } };
 });
-vi.mock('../../components/TopBar', () => ({ TopBar: () => null }));
+vi.mock('../../components/TopBar', () => ({ TopBar: (props: { onCompile(): void; onRun(): void }) => <>
+  <button onClick={props.onCompile}>Compilar prueba</button>
+  <button onClick={props.onRun}>Ejecutar prueba</button>
+</> }));
 vi.mock('../../components/ProjectExplorer', () => ({ ProjectExplorer: () => null }));
 vi.mock('../../components/modals/SettingsModal', () => ({ SettingsModal: () => null }));
 vi.mock('../../components/DocumentationModal', () => ({ DocumentationModal: () => null }));
@@ -57,6 +66,34 @@ beforeEach(() => {
   state.steps = createMockDebugSteps().map((step, index) => ({
     ...step, sourceRef: { file: index === 0 ? 'principal.lumi' : 'lib/other.lumi', line: index + 1, column: 2 },
   }));
+  state.runCompile.mockReset();
+  state.runExecute.mockReset();
+});
+
+describe('App explicit compiler operations', () => {
+  it('does not analyze when a restored project mounts, changes, rerenders, or mounts under StrictMode', () => {
+    const view = render(<React.StrictMode><App /></React.StrictMode>);
+    expect(state.runCompile).not.toHaveBeenCalled();
+    expect(state.runExecute).not.toHaveBeenCalled();
+
+    state.project = createMockProject({ id: 'second-project' });
+    view.rerender(<React.StrictMode><App /></React.StrictMode>);
+    expect(state.runCompile).not.toHaveBeenCalled();
+    expect(state.runExecute).not.toHaveBeenCalled();
+  });
+
+  it('runs exactly one analysis for Compilar/F5 and one execution for Ejecutar/F6', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText('Compilar prueba'));
+    expect(state.runCompile).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(window, { key: 'F5' });
+    expect(state.runCompile).toHaveBeenCalledTimes(2);
+
+    fireEvent.click(screen.getByText('Ejecutar prueba'));
+    expect(state.runExecute).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(window, { key: 'F6' });
+    expect(state.runExecute).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('App navigation with imported fixture events, not Python traces', () => {

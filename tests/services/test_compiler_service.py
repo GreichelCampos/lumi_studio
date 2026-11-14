@@ -23,6 +23,55 @@ def test_analysis_does_not_execute_output_or_input():
     assert result.lexical_error is None
 
 
+def test_confirmed_linear_spatial_error_fails_compilation():
+    result = CompilerService().compile(
+        "habitacion sala(5, 4, 3) { mover fantasma [0, 0, 0]>> }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.FAILED
+    assert [item.code for item in result.diagnostics] == [
+        "SPA_ELEMENT_NOT_FOUND",
+    ]
+    assert result.limitations == (
+        AnalysisLimitation.SPATIAL_SEMANTICS_UNAVAILABLE,
+    )
+
+
+def test_valid_spatial_program_remains_incomplete():
+    result = CompilerService().compile(
+        "habitacion sala(5, 4, 3) { mesa mesa1 {} "
+        "colocar mesa1 [0, 0, 0]>> }",
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.diagnostics == ()
+    assert result.limitations == (
+        AnalysisLimitation.SPATIAL_SEMANTICS_UNAVAILABLE,
+    )
+
+
+def test_imported_function_declaration_does_not_apply_spatial_effects():
+    result = CompilerService().compile(
+        'importar "espacial.lumi" usar preparar>> '
+        "habitacion sala(5, 4, 3) { mesa mesa1 {} preparar()>> "
+        "mover mesa1 [1, 0, 1]>> }",
+        "principal.lumi",
+        sources={
+            "espacial.lumi": (
+                "funcion vacio preparar() { "
+                "colocar mesa1 [0, 0, 0]>> }"
+            ),
+        },
+    )
+
+    assert result.status == CompilationStatus.FAILED
+    assert [item.code for item in result.diagnostics] == [
+        "SPA_ELEMENT_NOT_PLACED",
+    ]
+
+
 def test_lexical_failure_preserves_raw_message_without_inventing_diagnostic():
     source = "mostrar(@)>>"
     with pytest.raises(LexerError) as original:
@@ -172,6 +221,40 @@ def test_spatial_syntax_inside_imported_function_is_flagged():
 
     assert result.status == CompilationStatus.INCOMPLETE
     assert result.limitations
+
+
+def test_confirmed_spatial_semantic_error_fails_compilation():
+    result = CompilerService().compile(
+        'habitacion sala("ancho", 4, 3) {}',
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.FAILED
+    assert not result.can_execute
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "SEM_SPATIAL_DIMENSION_NOT_NUMERIC"
+    ]
+    assert result.limitations == (
+        AnalysisLimitation.SPATIAL_SEMANTICS_UNAVAILABLE,
+    )
+
+
+def test_valid_spatial_semantics_remains_incomplete_with_limitation():
+    result = CompilerService().compile(
+        'decimal ancho = 5>> habitacion sala(ancho, 4, 3) { '
+        'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
+        'desplazamiento 0.5>> material "madera">> } '
+        'colocar entrada [0, 0, 0]>> '
+        'mover entrada [ancho / 2, 0, 1]>> }',
+        "principal.lumi",
+    )
+
+    assert result.status == CompilationStatus.INCOMPLETE
+    assert result.can_execute
+    assert result.diagnostics == ()
+    assert result.limitations == (
+        AnalysisLimitation.SPATIAL_SEMANTICS_UNAVAILABLE,
+    )
 
 
 def test_repeated_analysis_does_not_leak_diagnostics_or_imports():
