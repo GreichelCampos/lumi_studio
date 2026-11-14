@@ -926,6 +926,10 @@ class Parser:
             TokenType.IDENTIFIER,
             "Se esperaba el nombre del objeto espacial.",
         )
+        object_index = None
+        if self.match(TokenType.LEFT_BRACKET):
+            object_index = self.parse_expression()
+            self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' después del índice del objeto.")
         properties = self.parse_spatial_properties({"color", "material"})
 
         return SpatialObjectDeclarationNode(
@@ -935,6 +939,7 @@ class Parser:
             file=object_type_token.file,
             line=object_type_token.line,
             column=object_type_token.column,
+            object_index=object_index,
         )
 
     def parse_reserved_spatial_element(self):
@@ -1045,17 +1050,26 @@ class Parser:
         )
         return properties
 
+    def parse_spatial_transform_target(self):
+        # After the name, [expr] is an index and [x, y, z] is the legacy vector.
+        bracket = self.consume(TokenType.LEFT_BRACKET, "Se esperaba '[' para iniciar el vector.")
+        first = self.parse_expression()
+        if self.match(TokenType.RIGHT_BRACKET):
+            return first, self.parse_vector()
+        return None, self.parse_vector_components(bracket, first)
+
     def parse_place_object(self):
         place_token = self.consume(TokenType.PLACE, "Se esperaba 'colocar'.")
         name_token = self.consume(
             TokenType.IDENTIFIER,
             "Se esperaba el nombre del objeto a colocar.",
         )
-        position = self.parse_vector()
+        object_index, position = self.parse_spatial_transform_target()
         self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'colocar'.")
 
         return PlaceObjectNode(
             object_name=name_token.lexeme,
+            object_index=object_index,
             position=position,
             file=place_token.file,
             line=place_token.line,
@@ -1068,11 +1082,12 @@ class Parser:
             TokenType.IDENTIFIER,
             "Se esperaba el nombre del objeto a mover.",
         )
-        position = self.parse_vector()
+        object_index, position = self.parse_spatial_transform_target()
         self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'mover'.")
 
         return MoveObjectNode(
             object_name=name_token.lexeme,
+            object_index=object_index,
             position=position,
             file=move_token.file,
             line=move_token.line,
@@ -1085,11 +1100,12 @@ class Parser:
             TokenType.IDENTIFIER,
             "Se esperaba el nombre del objeto a rotar.",
         )
-        rotation = self.parse_vector()
+        object_index, rotation = self.parse_spatial_transform_target()
         self.consume(TokenType.TERMINATOR, "Se esperaba '>>' al final de 'rotar'.")
 
         return RotateObjectNode(
             object_name=name_token.lexeme,
+            object_index=object_index,
             rotation=rotation,
             file=rotate_token.file,
             line=rotate_token.line,
@@ -1255,7 +1271,9 @@ class Parser:
             TokenType.LEFT_BRACKET,
             "Se esperaba '[' para iniciar el vector.",
         )
-        x = self.parse_expression()
+        return self.parse_vector_components(left_bracket, self.parse_expression())
+
+    def parse_vector_components(self, left_bracket, x):
         self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente x.")
         y = self.parse_expression()
         self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente y.")

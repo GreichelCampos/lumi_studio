@@ -21,7 +21,11 @@ def assert_locations(original, serialized):
             original.file, original.line, original.column,
         )
         for field in fields(original):
-            assert_locations(getattr(original, field.name), serialized[field.name])
+            value = getattr(original, field.name)
+            if value is None and field.metadata.get("omit_if_none"):
+                assert field.name not in serialized
+            else:
+                assert_locations(value, serialized[field.name])
     elif isinstance(original, list):
         assert len(original) == len(serialized)
         for node, item in zip(original, serialized):
@@ -32,6 +36,7 @@ def assert_locations(original, serialized):
 
 @pytest.mark.parametrize("source", [
     "  entero numero = 42>>",
+    "habitacion sala(5, 4, 3) { silla fila[1 + 2] {} colocar fila[3] [0, 0, 0]>> }",
     "principal { si verdadero { mostrar([1, 2 + 3])>> } }",
     '''habitacion sala(5, 4, 3) {
  piso base { material "madera">> }

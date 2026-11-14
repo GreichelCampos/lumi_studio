@@ -11,9 +11,10 @@ def normalize_ast(value: Any) -> Any:
     if is_dataclass(value) and not isinstance(value, type):
         normalized = {"node": type(value).__name__}
         for ast_field in fields(value):
-            normalized[ast_field.name] = normalize_ast(
-                getattr(value, ast_field.name)
-            )
+            field_value = getattr(value, ast_field.name)
+            if field_value is None and ast_field.metadata.get("omit_if_none"):
+                continue
+            normalized[ast_field.name] = normalize_ast(field_value)
         return normalized
 
     if isinstance(value, Mapping):
