@@ -1,0 +1,15 @@
+{
+  "platform": "win32",
+  "release": "10.0.26300",
+  "architecture": "x64",
+  "cpu": "13th Gen Intel(R) Core(TM) i7-13620H",
+  "logicalProcessors": 16,
+  "browser": {
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "width": 900,
+    "height": 650,
+    "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+    "renderer": "WebKit WebGL"
+  },
+  "method": "Real Chrome WebGL; no FPS measurement or mass stress; 900x650; at most two placed objects"
+}

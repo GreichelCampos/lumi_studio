@@ -1,0 +1,1 @@
+principal { habitacion sala(0.000000001,0.000000001,0.000000001) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }

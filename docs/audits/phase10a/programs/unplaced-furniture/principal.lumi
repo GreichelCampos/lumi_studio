@@ -1,0 +1,1 @@
+principal { habitacion sala(5,5,3) { mesa declarada {} silla colocada {} colocar colocada [0,0,0]>> } }

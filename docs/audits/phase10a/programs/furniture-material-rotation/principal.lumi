@@ -1,0 +1,1 @@
+principal { habitacion sala(6,5,3) { piso base { color "#d6b98c">> material "madera">> } mesa centro { color "#ff2200">> material "acero">> } silla lateral { color "#2255ff">> } colocar centro [0,0,0]>> rotar centro [0,45,0]>> colocar lateral [-2,0,-1]>> } }

@@ -1,0 +1,1 @@
+principal { entero divisor = 0>> mostrar(10 / divisor)>> }

@@ -1,0 +1,1 @@
+principal { entero total = 0>> hacer entero i = 0; i < 3; i = i + 1 { total = total + i>> } mientras total < 5 { total = total + 1>> } si total == 5 { mostrar("cinco")>> } sino { mostrar("otro")>> } }

@@ -1,0 +1,1 @@
+funcion decimal area(decimal ancho, decimal largo) { retornar ancho * largo>> }

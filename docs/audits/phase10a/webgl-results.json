@@ -1,0 +1,3397 @@
+[
+  {
+    "environment": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "width": 900,
+      "height": 650,
+      "version": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+      "renderer": "WebKit WebGL"
+    }
+  },
+  {
+    "id": "types-expressions",
+    "protocolValid": true,
+    "status": "completed",
+    "rendered": false,
+    "outputMatches": true
+  },
+  {
+    "id": "condition-loops",
+    "protocolValid": true,
+    "status": "completed",
+    "rendered": false,
+    "outputMatches": true
+  },
+  {
+    "id": "functions-imports",
+    "protocolValid": true,
+    "status": "completed",
+    "rendered": false,
+    "outputMatches": true
+  },
+  {
+    "id": "leer",
+    "protocolValid": true,
+    "status": "error",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "lexical-error",
+    "protocolValid": true,
+    "status": "blocked",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "syntax-error",
+    "protocolValid": true,
+    "status": "blocked",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "semantic-error",
+    "protocolValid": true,
+    "status": "blocked",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "runtime-error",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "furniture-material-rotation",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      6,
+      5,
+      3
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.5921947194324426
+    },
+    "physical": {
+      "maxXY": 0.9473951969221447,
+      "maxZ": 0.6008812925845405
+    },
+    "physicalVertices": {
+      "maxXY": 0.9196174134131508,
+      "maxZ": 0.5965380060084916,
+      "outside": 0,
+      "total": 728
+    },
+    "precision": {
+      "floorWidth": 6,
+      "floorLength": 5,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        7.124992048004381,
+        8.981241650404602,
+        7.1249920480043825
+      ],
+      "near": 0.004183300132670378,
+      "far": 41.83300132670378,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.006000000000000001,
+        0
+      ],
+      "size": [
+        8.399999618530273,
+        0,
+        8.399999618530273
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 978.5507863281504,
+      "projectedHeightPixels": 583.33330684238
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:90:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          45,
+          0
+        ],
+        "materials": [
+          {
+            "color": "ff2200",
+            "roughness": 0.2,
+            "metalness": 0.8
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.4563414978115334,
+          "maxZ": 0.4100267883385813
+        }
+      },
+      {
+        "id": "element:principal.lumi:1:143:lateral",
+        "name": "lateral",
+        "geometryPresent": true,
+        "position": [
+          -2,
+          0,
+          -1
+        ],
+        "rotationDegrees": [
+          0,
+          0,
+          0
+        ],
+        "materials": [
+          {
+            "color": "2255ff",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "2255ff",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          }
+        ],
+        "projected": {
+          "maxXY": 0.24699837199837185,
+          "maxZ": 0.3151066055543701
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 34,
+    "glError": 0
+  },
+  {
+    "id": "furniture-material-rotation",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 285253,
+    "totalPixels": 585000
+  },
+  {
+    "id": "furniture-material-rotation",
+    "focusObject": "element:principal.lumi:1:90:centro",
+    "projected": {
+      "maxXY": 0.8928571428571429,
+      "maxZ": 0.8977158920384891
+    },
+    "glError": 0
+  },
+  {
+    "id": "unplaced-furniture",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      5,
+      5,
+      3
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.5945494226339905
+    },
+    "physical": {
+      "maxXY": 0.9508658003626448,
+      "maxZ": 0.6040111732145481
+    },
+    "physicalVertices": {
+      "maxXY": 0.9213203397212605,
+      "maxZ": 0.5992802979242693,
+      "outside": 0,
+      "total": 400
+    },
+    "precision": {
+      "floorWidth": 5,
+      "floorLength": 5,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        6.541259369094233,
+        8.368322337548943,
+        6.5412593690942336
+      ],
+      "near": 0.003840572873934304,
+      "far": 38.40572873934304,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.006000000000000001,
+        0
+      ],
+      "size": [
+        7.199999809265137,
+        0,
+        7.199999809265137
+      ],
+      "vertices": 100,
+      "projectedWidthPixels": 892.1333311698263,
+      "projectedHeightPixels": 531.818167729811
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:56:colocada",
+        "name": "colocada",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          0,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 1,
+            "metalness": 0
+          }
+        ],
+        "projected": {
+          "maxXY": 0.3871753246753246,
+          "maxZ": 0.3962222578578538
+        }
+      }
+    ],
+    "unplacedGeometry": [
+      false
+    ],
+    "selectionReusedRoot": true,
+    "calls": 24,
+    "glError": 0
+  },
+  {
+    "id": "unplaced-furniture",
+    "focusObject": "element:principal.lumi:1:56:colocada",
+    "projected": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.9394832375432982
+    },
+    "glError": 0
+  },
+  {
+    "id": "multiple-rooms",
+    "room": "pequena",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 3.22735189612734,
+      "maxZ": 1.0197076315873355
+    },
+    "physicalVertices": {
+      "maxXY": 2.038327505883439,
+      "maxZ": 0.809906958930322,
+      "outside": 57,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 0.10000000149011612,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        0.1475013486874791,
+        0.2048764161218531,
+        0.14750134868747913
+      ],
+      "near": 0.00008660254037844388,
+      "far": 0.8660254037844388,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0001,
+        0
+      ],
+      "size": [
+        0.14000000059604645,
+        0,
+        0.14000000059604645
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124858975344,
+      "projectedHeightPixels": 416.15853835714984
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 14,
+    "glError": 0
+  },
+  {
+    "id": "multiple-rooms",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      5,
+      4,
+      3
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.5952631682714264
+    },
+    "physical": {
+      "maxXY": 0.9548081363096205,
+      "maxZ": 0.6055412602333349
+    },
+    "physicalVertices": {
+      "maxXY": 0.923254731741152,
+      "maxZ": 0.6004022142523806,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 5,
+      "floorLength": 4,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        6.021717344277751,
+        7.822803211491639,
+        6.021717344277752
+      ],
+      "near": 0.0035355339059327377,
+      "far": 35.35533905932738,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.006000000000000001,
+        0
+      ],
+      "size": [
+        7.199999809265137,
+        0,
+        7.199999809265137
+      ],
+      "vertices": 100,
+      "projectedWidthPixels": 952.7637517347662,
+      "projectedHeightPixels": 567.9611500027108
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:73:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          0,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.46809986130374476,
+          "maxZ": 0.39853406211440423
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "multiple-rooms",
+    "focusObject": "element:principal.lumi:1:73:centro",
+    "projected": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.911065285478259
+    },
+    "glError": 0
+  },
+  {
+    "id": "multiple-rooms",
+    "room": "grande",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1000,
+      1000,
+      1000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 0.8930905923324693,
+      "maxZ": 0.6001482434283056
+    },
+    "physicalVertices": {
+      "maxXY": 0.8929716887785838,
+      "maxZ": 0.6001272633609422,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1000,
+      "floorLength": 1000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1475.0134868747907,
+        2048.7641612185307,
+        1475.013486874791
+      ],
+      "near": 0.8660254037844386,
+      "far": 8660.254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1,
+        0
+      ],
+      "size": [
+        1400,
+        0,
+        1400
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.1585365853657
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "four-declared-walls",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "declared-door",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "declared-window",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "legacy-declared-wall",
+    "protocolValid": true,
+    "status": "error",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "size-0.000000001-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1e-9,
+      1e-9,
+      1e-9
+    ],
+    "logical": {
+      "maxXY": 8.229680372843244e-8,
+      "maxZ": 0.40014003131898723
+    },
+    "physical": {
+      "maxXY": 21.51760320587637,
+      "maxZ": 4.426072702980109
+    },
+    "physicalVertices": {
+      "maxXY": 10.558077848384459,
+      "maxZ": 2.217067162300083,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999717180685e-10,
+      "floorLength": 9.999999717180685e-10,
+      "maxRelativeError": 2.828193152570687e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017883588607815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000000001-empty",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1e-9,
+      1e-9,
+      1e-9
+    ],
+    "logical": {
+      "maxXY": 8.229680372843244e-8,
+      "maxZ": 0.40014003131898723
+    },
+    "physical": {
+      "maxXY": 21.51760320587637,
+      "maxZ": 4.426072702980109
+    },
+    "physicalVertices": {
+      "maxXY": 10.558077848384459,
+      "maxZ": 2.217067162300083,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999717180685e-10,
+      "floorLength": 9.999999717180685e-10,
+      "maxRelativeError": 2.828193152570687e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017883588607815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000000001-empty",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1e-9,
+      1e-9,
+      1e-9
+    ],
+    "logical": {
+      "maxXY": 8.229680372843244e-8,
+      "maxZ": 0.40014003131898723
+    },
+    "physical": {
+      "maxXY": 21.51760320587637,
+      "maxZ": 4.426072702980109
+    },
+    "physicalVertices": {
+      "maxXY": 10.558077848384459,
+      "maxZ": 2.217067162300083,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999717180685e-10,
+      "floorLength": 9.999999717180685e-10,
+      "maxRelativeError": 2.828193152570687e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017883588607815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000000001-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1e-9,
+      1e-9,
+      1e-9
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "physical": {
+      "maxXY": 0.9838552173477765,
+      "maxZ": 0.5850282251440029
+    },
+    "physicalVertices": {
+      "maxXY": 0.5640327283159697,
+      "maxZ": 0.5081463764971108,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 9.999999717180685e-10,
+      "floorLength": 9.999999717180685e-10,
+      "maxRelativeError": 2.828193152570687e-8
+    },
+    "camera": {
+      "position": [
+        1.7315363843642309,
+        2.0681132035824428,
+        1.731536384364231
+      ],
+      "near": 0.00101663782045389,
+      "far": 10.1663782045389,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0016,
+        0
+      ],
+      "size": [
+        2.0799999237060547,
+        0,
+        2.0799999237060547
+      ],
+      "vertices": 108,
+      "projectedWidthPixels": 1083.5146303465378,
+      "projectedHeightPixels": 645.9043119303071
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:68:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.8928571428571427,
+          "maxZ": 0.5850282251440029
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000000001-object",
+    "focusObject": "element:principal.lumi:1:68:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-0.000001-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.000001,
+      0.000001,
+      0.000001
+    ],
+    "logical": {
+      "maxXY": 0.00008229680370524903,
+      "maxZ": 0.4001573315883109
+    },
+    "physical": {
+      "maxXY": 21.51768542038327,
+      "maxZ": 4.426090003249433
+    },
+    "physicalVertices": {
+      "maxXY": 10.558160036664372,
+      "maxZ": 2.2170844625693777,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999974752427e-7,
+      "floorLength": 9.999999974752427e-7,
+      "maxRelativeError": 2.5247572468697606e-9
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017884088107815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000001-empty",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.000001,
+      0.000001,
+      0.000001
+    ],
+    "logical": {
+      "maxXY": 0.00008229680370524903,
+      "maxZ": 0.4001573315883109
+    },
+    "physical": {
+      "maxXY": 21.51768542038327,
+      "maxZ": 4.426090003249433
+    },
+    "physicalVertices": {
+      "maxXY": 10.558160036664372,
+      "maxZ": 2.2170844625693777,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999974752427e-7,
+      "floorLength": 9.999999974752427e-7,
+      "maxRelativeError": 2.5247572468697606e-9
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017884088107815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000001-empty",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.000001,
+      0.000001,
+      0.000001
+    ],
+    "logical": {
+      "maxXY": 0.00008229680370524903,
+      "maxZ": 0.4001573315883109
+    },
+    "physical": {
+      "maxXY": 21.51768542038327,
+      "maxZ": 4.426090003249433
+    },
+    "physicalVertices": {
+      "maxXY": 10.558160036664372,
+      "maxZ": 2.2170844625693777,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 9.999999974752427e-7,
+      "floorLength": 9.999999974752427e-7,
+      "maxRelativeError": 2.5247572468697606e-9
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.017884088107815273,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000001-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.000001,
+      0.000001,
+      0.000001
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "physical": {
+      "maxXY": 0.9838552173477765,
+      "maxZ": 0.5850282251440029
+    },
+    "physicalVertices": {
+      "maxXY": 0.5640327283159697,
+      "maxZ": 0.5081463764971108,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 9.999999974752427e-7,
+      "floorLength": 9.999999974752427e-7,
+      "maxRelativeError": 2.5247572468697606e-9
+    },
+    "camera": {
+      "position": [
+        1.7315363843642309,
+        2.0681132035824428,
+        1.731536384364231
+      ],
+      "near": 0.00101663782045389,
+      "far": 10.1663782045389,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0016,
+        0
+      ],
+      "size": [
+        2.0799999237060547,
+        0,
+        2.0799999237060547
+      ],
+      "vertices": 108,
+      "projectedWidthPixels": 1083.5146303465378,
+      "projectedHeightPixels": 645.9043119303071
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:59:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.8928571428571427,
+          "maxZ": 0.5850282251440029
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-0.000001-object",
+    "focusObject": "element:principal.lumi:1:59:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-0.01-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "logical": {
+      "maxXY": 0.8229680370512928,
+      "maxZ": 0.5733158831084271
+    },
+    "physical": {
+      "maxXY": 22.340571160630855,
+      "maxZ": 4.599248554769549
+    },
+    "physicalVertices": {
+      "maxXY": 11.381045757355002,
+      "maxZ": 2.3902430114878497,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.022883588107815274,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.01-empty",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 477305,
+    "totalPixels": 585000
+  },
+  {
+    "id": "size-0.01-empty",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "logical": {
+      "maxXY": 0.8229680370512928,
+      "maxZ": 0.5733158831084271
+    },
+    "physical": {
+      "maxXY": 22.340571160630855,
+      "maxZ": 4.599248554769549
+    },
+    "physicalVertices": {
+      "maxXY": 11.381045757355002,
+      "maxZ": 2.3902430114878497,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.022883588107815274,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.01-empty",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "logical": {
+      "maxXY": 0.8229680370512928,
+      "maxZ": 0.5733158831084271
+    },
+    "physical": {
+      "maxXY": 22.340571160630855,
+      "maxZ": 4.599248554769549
+    },
+    "physicalVertices": {
+      "maxXY": 11.381045757355002,
+      "maxZ": 2.3902430114878497,
+      "outside": 84,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        0.017031988674109776,
+        0.022883588107815274,
+        0.01703198867410978
+      ],
+      "near": 0.00001,
+      "far": 0.1,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 643.4671907414606,
+      "projectedHeightPixels": 383.5834066704431
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 13,
+    "glError": 0
+  },
+  {
+    "id": "size-0.01-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      0.01
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "physical": {
+      "maxXY": 0.9838552173477765,
+      "maxZ": 0.5850282251440029
+    },
+    "physicalVertices": {
+      "maxXY": 0.5640327283159697,
+      "maxZ": 0.5081463764971108,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        1.7315363843642309,
+        2.0681132035824428,
+        1.731536384364231
+      ],
+      "near": 0.00101663782045389,
+      "far": 10.1663782045389,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0016,
+        0
+      ],
+      "size": [
+        2.0799999237060547,
+        0,
+        2.0799999237060547
+      ],
+      "vertices": 108,
+      "projectedWidthPixels": 1083.5146303465378,
+      "projectedHeightPixels": 645.9043119303071
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:47:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.8928571428571427,
+          "maxZ": 0.5850282251440029
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-0.01-object",
+    "focusObject": "element:principal.lumi:1:47:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-0.1-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 3.22735189612734,
+      "maxZ": 1.0197076315873355
+    },
+    "physicalVertices": {
+      "maxXY": 2.038327505883439,
+      "maxZ": 0.809906958930322,
+      "outside": 57,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 0.10000000149011612,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        0.1475013486874791,
+        0.2048764161218531,
+        0.14750134868747913
+      ],
+      "near": 0.00008660254037844388,
+      "far": 0.8660254037844388,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0001,
+        0
+      ],
+      "size": [
+        0.14000000059604645,
+        0,
+        0.14000000059604645
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124858975344,
+      "projectedHeightPixels": 416.15853835714984
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 14,
+    "glError": 0
+  },
+  {
+    "id": "size-0.1-empty",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 521153,
+    "totalPixels": 585000
+  },
+  {
+    "id": "size-0.1-empty",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 3.22735189612734,
+      "maxZ": 1.0197076315873355
+    },
+    "physicalVertices": {
+      "maxXY": 2.038327505883439,
+      "maxZ": 0.809906958930322,
+      "outside": 57,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 0.10000000149011612,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        0.1475013486874791,
+        0.2048764161218531,
+        0.14750134868747913
+      ],
+      "near": 0.00008660254037844388,
+      "far": 0.8660254037844388,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0001,
+        0
+      ],
+      "size": [
+        0.14000000059604645,
+        0,
+        0.14000000059604645
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124858975344,
+      "projectedHeightPixels": 416.15853835714984
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 14,
+    "glError": 0
+  },
+  {
+    "id": "size-0.1-empty",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 3.22735189612734,
+      "maxZ": 1.0197076315873355
+    },
+    "physicalVertices": {
+      "maxXY": 2.038327505883439,
+      "maxZ": 0.809906958930322,
+      "outside": 57,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 0.10000000149011612,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        0.1475013486874791,
+        0.2048764161218531,
+        0.14750134868747913
+      ],
+      "near": 0.00008660254037844388,
+      "far": 0.8660254037844388,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0001,
+        0
+      ],
+      "size": [
+        0.14000000059604645,
+        0,
+        0.14000000059604645
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124858975344,
+      "projectedHeightPixels": 416.15853835714984
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 14,
+    "glError": 0
+  },
+  {
+    "id": "size-0.1-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "physical": {
+      "maxXY": 0.9838552173477765,
+      "maxZ": 0.5850282251440029
+    },
+    "physicalVertices": {
+      "maxXY": 0.5640327283159697,
+      "maxZ": 0.5081463764971108,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 0.10000000149011612,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        1.7315363843642309,
+        2.0681132035824428,
+        1.731536384364231
+      ],
+      "near": 0.00101663782045389,
+      "far": 10.1663782045389,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0016,
+        0
+      ],
+      "size": [
+        2.0799999237060547,
+        0,
+        2.0799999237060547
+      ],
+      "vertices": 108,
+      "projectedWidthPixels": 1083.5146303465378,
+      "projectedHeightPixels": 645.9043119303071
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:44:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.8928571428571427,
+          "maxZ": 0.5850282251440029
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-0.1-object",
+    "focusObject": "element:principal.lumi:1:44:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.5850282251440029
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-1-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1,
+      1,
+      1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 1.1263066181841626,
+      "maxZ": 0.6420664180203739
+    },
+    "physicalVertices": {
+      "maxXY": 1.0074041546273729,
+      "maxZ": 0.6210863506569765,
+      "outside": 3,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1,
+      "floorLength": 1,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1.475013486874791,
+        2.0487641612185308,
+        1.4750134868747913
+      ],
+      "near": 0.0008660254037844386,
+      "far": 8.660254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.001,
+        0
+      ],
+      "size": [
+        1.399999976158142,
+        0,
+        1.399999976158142
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124710365536,
+      "projectedHeightPixels": 416.15852949822806
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-1-empty",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1,
+      1,
+      1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 1.1263066181841626,
+      "maxZ": 0.6420664180203739
+    },
+    "physicalVertices": {
+      "maxXY": 1.0074041546273729,
+      "maxZ": 0.6210863506569765,
+      "outside": 3,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1,
+      "floorLength": 1,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1.475013486874791,
+        2.0487641612185308,
+        1.4750134868747913
+      ],
+      "near": 0.0008660254037844386,
+      "far": 8.660254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.001,
+        0
+      ],
+      "size": [
+        1.399999976158142,
+        0,
+        1.399999976158142
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124710365536,
+      "projectedHeightPixels": 416.15852949822806
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-1-empty",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1,
+      1,
+      1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 1.1263066181841626,
+      "maxZ": 0.6420664180203739
+    },
+    "physicalVertices": {
+      "maxXY": 1.0074041546273729,
+      "maxZ": 0.6210863506569765,
+      "outside": 3,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1,
+      "floorLength": 1,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1.475013486874791,
+        2.0487641612185308,
+        1.4750134868747913
+      ],
+      "near": 0.0008660254037844386,
+      "far": 8.660254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.001,
+        0
+      ],
+      "size": [
+        1.399999976158142,
+        0,
+        1.399999976158142
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124710365536,
+      "projectedHeightPixels": 416.15852949822806
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-1-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1,
+      1,
+      1
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571429,
+      "maxZ": 0.5972177158260641
+    },
+    "physical": {
+      "maxXY": 0.965377437243379,
+      "maxZ": 0.5972177158260641
+    },
+    "physicalVertices": {
+      "maxXY": 0.8386971862162625,
+      "maxZ": 0.573301090021571,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 1,
+      "floorLength": 1,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1.8820559096352012,
+        2.476158705116961,
+        1.8820559096352016
+      ],
+      "near": 0.0011050124243542404,
+      "far": 11.050124243542403,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.0016,
+        0
+      ],
+      "size": [
+        2.0799999237060547,
+        0,
+        2.0799999237060547
+      ],
+      "vertices": 108,
+      "projectedWidthPixels": 863.4995894623258,
+      "projectedHeightPixels": 514.7490329737274
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:38:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.8928571428571429,
+          "maxZ": 0.5432654517269164
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-1-object",
+    "focusObject": "element:principal.lumi:1:38:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6182191103642105
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-5-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      5,
+      5,
+      5
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.9395470379225466,
+      "maxZ": 0.6084983102389381
+    },
+    "physicalVertices": {
+      "maxXY": 0.9157665452111887,
+      "maxZ": 0.6043022967662586,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 5,
+      "floorLength": 5,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        7.375067434373955,
+        10.243820806092653,
+        7.375067434373956
+      ],
+      "near": 0.004330127018922194,
+      "far": 43.30127018922194,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.006000000000000001,
+        0
+      ],
+      "size": [
+        7.199999809265137,
+        0,
+        7.199999809265137
+      ],
+      "vertices": 100,
+      "projectedWidthPixels": 718.0585348440068,
+      "projectedHeightPixels": 428.0487691483845
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "grid-pan",
+    "gridMoved": false,
+    "distance": 71.99999809265137,
+    "gridIntersectsFrustum": false
+  },
+  {
+    "id": "size-5-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      5,
+      5,
+      5
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.9395470379225466,
+      "maxZ": 0.6084983102389381
+    },
+    "physicalVertices": {
+      "maxXY": 0.9157665452111887,
+      "maxZ": 0.6043022967662586,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 5,
+      "floorLength": 5,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        7.375067434373955,
+        10.243820806092653,
+        7.375067434373956
+      ],
+      "near": 0.004330127018922194,
+      "far": 43.30127018922194,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.006000000000000001,
+        0
+      ],
+      "size": [
+        7.199999809265137,
+        0,
+        7.199999809265137
+      ],
+      "vertices": 100,
+      "projectedWidthPixels": 718.0585348440068,
+      "projectedHeightPixels": 428.0487691483845
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:38:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.5629237721839754,
+          "maxZ": 0.38159175864362693
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-5-object",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 240686,
+    "totalPixels": 585000
+  },
+  {
+    "id": "size-5-object",
+    "focusObject": "element:principal.lumi:1:38:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.9025793665067914
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-100-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      100,
+      100,
+      100
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 0.8951916376104131,
+      "maxZ": 0.6005258846408468
+    },
+    "physicalVertices": {
+      "maxXY": 0.8940026020715566,
+      "maxZ": 0.6003160839672128,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 100,
+      "floorLength": 100,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        147.50134868747907,
+        204.87641612185308,
+        147.5013486874791
+      ],
+      "near": 0.08660254037844387,
+      "far": 866.0254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.1,
+        0
+      ],
+      "size": [
+        140,
+        0,
+        140
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.1585365853659
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-100-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      100,
+      100,
+      100
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 0.8951916376104131,
+      "maxZ": 0.6005258846408468
+    },
+    "physicalVertices": {
+      "maxXY": 0.8940026020715566,
+      "maxZ": 0.6003160839672128,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 100,
+      "floorLength": 100,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        147.50134868747907,
+        204.87641612185308,
+        147.5013486874791
+      ],
+      "near": 0.08660254037844387,
+      "far": 866.0254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.1,
+        0
+      ],
+      "size": [
+        140,
+        0,
+        140
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.1585365853659
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:44:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.4419092548112894,
+          "maxZ": 0.3338137967682824
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-100-object",
+    "focusObject": "element:principal.lumi:1:44:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.952172499975015
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-1000-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1000,
+      1000,
+      1000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 0.8930905923324693,
+      "maxZ": 0.6001482434283056
+    },
+    "physicalVertices": {
+      "maxXY": 0.8929716887785838,
+      "maxZ": 0.6001272633609422,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1000,
+      "floorLength": 1000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1475.0134868747907,
+        2048.7641612185307,
+        1475.013486874791
+      ],
+      "near": 0.8660254037844386,
+      "far": 8660.254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1,
+        0
+      ],
+      "size": [
+        1400,
+        0,
+        1400
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.1585365853657
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-1000-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1000,
+      1000,
+      1000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.6001062832935788
+    },
+    "physical": {
+      "maxXY": 0.8930905923324693,
+      "maxZ": 0.6001482434283056
+    },
+    "physicalVertices": {
+      "maxXY": 0.8929716887785838,
+      "maxZ": 0.6001272633609422,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 1000,
+      "floorLength": 1000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1475.0134868747907,
+        2048.7641612185307,
+        1475.013486874791
+      ],
+      "near": 0.8660254037844386,
+      "far": 8660.254037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1,
+        0
+      ],
+      "size": [
+        1400,
+        0,
+        1400
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.1585365853657
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:47:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.4361769881988986,
+          "maxZ": 0.3315506301531346
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-1000-object",
+    "focusObject": "element:principal.lumi:1:47:centro",
+    "projected": {
+      "maxXY": 0.8928571428571427,
+      "maxZ": 0.9502172497679721
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-10000-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      10000,
+      10000,
+      10000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571429,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.8928804878046755,
+      "maxZ": 0.6001104793070517
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928685779105936,
+      "maxZ": 0.6001083813003154,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 10000,
+      "floorLength": 10000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        14750.134868747904,
+        20487.641612185304,
+        14750.134868747908
+      ],
+      "near": 8.660254037844387,
+      "far": 86602.54037844387,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -10,
+        0
+      ],
+      "size": [
+        14000,
+        0,
+        14000
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253381,
+      "projectedHeightPixels": 416.15853658536565
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-10000-empty",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 227963,
+    "totalPixels": 585000
+  },
+  {
+    "id": "size-10000-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      10000,
+      10000,
+      10000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571429,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.8928804878046755,
+      "maxZ": 0.6001104793070517
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928685779105936,
+      "maxZ": 0.6001083813003154,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 10000,
+      "floorLength": 10000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        14750.134868747904,
+        20487.641612185304,
+        14750.134868747908
+      ],
+      "near": 8.660254037844387,
+      "far": 86602.54037844387,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -10,
+        0
+      ],
+      "size": [
+        14000,
+        0,
+        14000
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253381,
+      "projectedHeightPixels": 416.15853658536565
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:50:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.4356037615376601,
+          "maxZ": 0.33132431349162017
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-10000-object",
+    "focusObject": "element:principal.lumi:1:50:centro",
+    "projected": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.950021724974502
+    },
+    "glError": 0
+  },
+  {
+    "id": "size-1000000-empty",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1000000,
+      1000000,
+      1000000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.8928573763066181,
+      "maxZ": 0.6001063252537139
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928572585474734,
+      "maxZ": 0.6001063042736465,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 1000000,
+      "floorLength": 1000000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1475013.4868747909,
+        2048764.1612185307,
+        1475013.486874791
+      ],
+      "near": 866.0254037844386,
+      "far": 8660254.037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1000,
+        0
+      ],
+      "size": [
+        1400000,
+        0,
+        1400000
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.15853658536577
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "size-1000000-object",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      1000000,
+      1000000,
+      1000000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.6001062832935791
+    },
+    "physical": {
+      "maxXY": 0.8928573763066181,
+      "maxZ": 0.6001063252537139
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928572585474734,
+      "maxZ": 0.6001063042736465,
+      "outside": 0,
+      "total": 472
+    },
+    "precision": {
+      "floorWidth": 1000000,
+      "floorLength": 1000000,
+      "maxRelativeError": 0
+    },
+    "camera": {
+      "position": [
+        1475013.4868747909,
+        2048764.1612185307,
+        1475013.486874791
+      ],
+      "near": 866.0254037844386,
+      "far": 8660254.037844386,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1000,
+        0
+      ],
+      "size": [
+        1400000,
+        0,
+        1400000
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 698.1124829253382,
+      "projectedHeightPixels": 416.15853658536577
+    },
+    "objects": [
+      {
+        "id": "element:principal.lumi:1:56:centro",
+        "name": "centro",
+        "geometryPresent": true,
+        "position": [
+          0,
+          0,
+          0
+        ],
+        "rotationDegrees": [
+          0,
+          35,
+          0
+        ],
+        "materials": [
+          {
+            "color": "64748b",
+            "roughness": 0.85,
+            "metalness": 0
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          },
+          {
+            "color": "1e293b",
+            "roughness": 0.4,
+            "metalness": 0.6
+          }
+        ],
+        "projected": {
+          "maxXY": 0.4355407066049237,
+          "maxZ": 0.3312994186588535
+        }
+      }
+    ],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 26,
+    "glError": 0
+  },
+  {
+    "id": "size-1000000-object",
+    "focusObject": "element:principal.lumi:1:56:centro",
+    "projected": {
+      "maxXY": 0.8928571428571428,
+      "maxZ": 0.9500002172497425
+    },
+    "glError": 0
+  },
+  {
+    "id": "invalid-size-0",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "invalid-size--1",
+    "protocolValid": true,
+    "status": "failed",
+    "rendered": false,
+    "outputMatches": null
+  },
+  {
+    "id": "disproportion-flat",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      10000,
+      0.01,
+      0.01
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571425,
+      "maxZ": 0.5136981937505055
+    },
+    "physical": {
+      "maxXY": 0.8929142856565039,
+      "maxZ": 0.5137054614590267
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928857142568232,
+      "maxZ": 0.5137018276047648,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 10000,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        8515.994337063406,
+        8941.799053916578,
+        8515.994337063406
+      ],
+      "near": 5.0000000000050004,
+      "far": 50000.00000005,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -10,
+        0
+      ],
+      "size": [
+        14000,
+        0,
+        14000
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 2249.9977500022487,
+      "projectedHeightPixels": 1341.267766818378
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "disproportion-tall",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      10000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571425,
+      "maxZ": 0.5193760854203738
+    },
+    "physical": {
+      "maxXY": 0.8929049999493346,
+      "maxZ": 0.5193833531288977
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928806249752915,
+      "maxZ": 0.5193797192746332,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        8515.994337063406,
+        13941.79405391658,
+        8515.994337063406
+      ],
+      "near": 5.0000000000050004,
+      "far": 50000.00000005,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 0.0014311291314856205,
+      "projectedHeightPixels": 0.0008531241305009818
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "disproportion-tall",
+    "iteration": 0,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 0,
+    "totalPixels": 585000
+  },
+  {
+    "id": "disproportion-tall",
+    "room": "sala",
+    "iteration": 1,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      10000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571425,
+      "maxZ": 0.5193760854203738
+    },
+    "physical": {
+      "maxXY": 0.8929049999493346,
+      "maxZ": 0.5193833531288977
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928806249752915,
+      "maxZ": 0.5193797192746332,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        8515.994337063406,
+        13941.79405391658,
+        8515.994337063406
+      ],
+      "near": 5.0000000000050004,
+      "far": 50000.00000005,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 0.0014311291314856205,
+      "projectedHeightPixels": 0.0008531241305009818
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "disproportion-tall",
+    "iteration": 1,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 0,
+    "totalPixels": 585000
+  },
+  {
+    "id": "disproportion-tall",
+    "room": "sala",
+    "iteration": 2,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.01,
+      0.01,
+      10000
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571425,
+      "maxZ": 0.5193760854203738
+    },
+    "physical": {
+      "maxXY": 0.8929049999493346,
+      "maxZ": 0.5193833531288977
+    },
+    "physicalVertices": {
+      "maxXY": 0.8928806249752915,
+      "maxZ": 0.5193797192746332,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.009999999776482582,
+      "floorLength": 0.009999999776482582,
+      "maxRelativeError": 2.2351741811588166e-8
+    },
+    "camera": {
+      "position": [
+        8515.994337063406,
+        13941.79405391658,
+        8515.994337063406
+      ],
+      "near": 5.0000000000050004,
+      "far": 50000.00000005,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -0.00001,
+        0
+      ],
+      "size": [
+        0.014000000432133675,
+        0,
+        0.014000000432133675
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 0.0014311291314856205,
+      "projectedHeightPixels": 0.0008531241305009818
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  },
+  {
+    "id": "disproportion-tall",
+    "iteration": 2,
+    "rasterCheck": true,
+    "nonBackgroundPixels": 0,
+    "totalPixels": 585000
+  },
+  {
+    "id": "disproportion-long",
+    "room": "sala",
+    "iteration": 0,
+    "protocolValid": true,
+    "rendered": true,
+    "dimensions": [
+      0.1,
+      1000,
+      3
+    ],
+    "logical": {
+      "maxXY": 0.8928571428571423,
+      "maxZ": 0.5140665110467197
+    },
+    "physical": {
+      "maxXY": 0.893428514285042,
+      "maxZ": 0.5141391878045509
+    },
+    "physicalVertices": {
+      "maxXY": 0.8931428285724224,
+      "maxZ": 0.5141028494258046,
+      "outside": 0,
+      "total": 144
+    },
+    "precision": {
+      "floorWidth": 0.10000000149011612,
+      "floorLength": 1000,
+      "maxRelativeError": 1.4901161138336505e-8
+    },
+    "camera": {
+      "position": [
+        851.6032701522962,
+        895.6834336599111,
+        851.6032701522963
+      ],
+      "near": 0.5000022524949262,
+      "far": 5000.022524949262,
+      "zoom": 1
+    },
+    "grid": {
+      "position": [
+        0,
+        -1,
+        0
+      ],
+      "size": [
+        1400,
+        0,
+        1400
+      ],
+      "vertices": 116,
+      "projectedWidthPixels": 2249.775022497749,
+      "projectedHeightPixels": 1341.1349945866862
+    },
+    "objects": [],
+    "unplacedGeometry": [],
+    "selectionReusedRoot": true,
+    "calls": 16,
+    "glError": 0
+  }
+]

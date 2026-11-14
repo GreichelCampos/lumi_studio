@@ -1,0 +1,1 @@
+principal { habitacion sala(6,5,3) { pared frente { color "#aa2222">> } } }

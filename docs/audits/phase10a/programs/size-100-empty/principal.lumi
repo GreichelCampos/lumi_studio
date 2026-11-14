@@ -1,0 +1,1 @@
+principal { habitacion sala(100,100,100) {  } }

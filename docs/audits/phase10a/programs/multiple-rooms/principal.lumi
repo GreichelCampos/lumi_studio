@@ -1,0 +1,1 @@
+principal { habitacion pequena(0.1,0.1,0.1) {} habitacion sala(5,4,3) { mesa centro {} colocar centro [0,0,0]>> } habitacion grande(1000,1000,1000) {} }
