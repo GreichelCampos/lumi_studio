@@ -3,6 +3,7 @@ import type { BackendInput, DesktopBridge, InputPrompt, InputReply } from '../re
 import type { WindowControlsBridge } from '../renderer/src/windowBridge';
 import type { WorkspaceBridge } from '../renderer/src/services/storage/workspaceBridge';
 import type { ViewportSelection, ViewportWindowBridge, ViewportWindowState } from '../renderer/src/viewportBridge';
+import type { StartupBridge } from '../renderer/src/startupBridge';
 
 const bridge: DesktopBridge = Object.freeze({
   analyze: (input: BackendInput) => ipcRenderer.invoke('lumi:analyze', input),
@@ -16,6 +17,12 @@ const bridge: DesktopBridge = Object.freeze({
   availability: () => ipcRenderer.invoke('lumi:availability'),
 });
 contextBridge.exposeInMainWorld('lumiDesktop', bridge);
+
+const startup: StartupBridge = Object.freeze({
+  presentSplash: () => ipcRenderer.invoke('lumi:startup:presentSplash'),
+  whenReady: () => ipcRenderer.invoke('lumi:startup:whenReady'),
+});
+contextBridge.exposeInMainWorld('lumiStartup', startup);
 
 const windowControls: WindowControlsBridge = Object.freeze({
   minimize: () => ipcRenderer.invoke('lumi:window:minimize'),

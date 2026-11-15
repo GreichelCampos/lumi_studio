@@ -1,10 +1,10 @@
-import { app, BrowserWindow, Menu, session, protocol, dialog } from 'electron';
+import { app, BrowserWindow, Menu, session, protocol, dialog, ipcMain } from 'electron';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { isAbsolute, join, resolve } from 'node:path';
 import { PythonWorker } from './pythonWorker';
 import { workerTimeout } from './pythonConfig';
 import { registerIpc } from './ipc';
-import { contentSecurityPolicy, localRendererUrl } from './security';
+import { contentSecurityPolicy, localRendererUrl, trustedFrame } from './security';
 import { registerWindowControls } from './windowControls';
 import { registerWorkspaceIpc } from './workspaceIpc';
 import { APP_USER_MODEL_ID, applicationIconPath, configureWindowsTaskbar } from './appIdentity';
@@ -59,6 +59,7 @@ app.whenReady().then(async () => {
   }));
   const window = new BrowserWindow({
     width: 1440, height: 960, title: 'Estudio Lumi', frame: false, resizable: true, icon,
+    show: false, backgroundColor: '#020807',
     webPreferences: {
       preload: join(__dirname, 'preload.cjs'), contextIsolation: true,
       nodeIntegration: false, sandbox: true, webSecurity: true,
@@ -74,13 +75,33 @@ app.whenReady().then(async () => {
   const disposeControls = registerWindowControls(window, renderer);
   const workspace = registerWorkspaceIpc(window, renderer);
   const disposeViewport = registerViewportWindow(window, renderer, icon);
+  let finishStartup!: () => void;
+  const startupReady = new Promise<void>(resolveStartup => { finishStartup = resolveStartup; });
+  const isTrustedOwner = (event: Electron.IpcMainInvokeEvent) =>
+    event.sender === window.webContents && event.senderFrame === window.webContents.mainFrame
+    && !!event.senderFrame && trustedFrame(event.senderFrame.url, renderer);
+  ipcMain.handle('lumi:startup:presentSplash', event => {
+    if (!isTrustedOwner(event)) throw new Error('Origen IPC no autorizado.');
+    if (!window.isDestroyed() && !window.isVisible()) window.show();
+  });
+  ipcMain.handle('lumi:startup:whenReady', async event => {
+    if (!isTrustedOwner(event)) throw new Error('Origen IPC no autorizado.');
+    await startupReady;
+  });
   flushWorkspace = workspace.flush;
   window.once('closed', dispose);
   window.once('closed', disposeControls);
   window.once('closed', workspace.dispose);
   window.once('closed', disposeViewport);
-  try { await worker.start(); } catch (error) { console.error('Backend Python no disponible:', error); }
-  await window.loadURL(renderer.href);
+  window.once('closed', () => {
+    ipcMain.removeHandler('lumi:startup:presentSplash');
+    ipcMain.removeHandler('lumi:startup:whenReady');
+  });
+  const rendererLoading = window.loadURL(renderer.href);
+  const backendStarting = worker.start()
+    .catch(error => console.error('Backend Python no disponible:', error))
+    .finally(finishStartup);
+  await Promise.all([rendererLoading, backendStarting]);
   console.log('Estudio Lumi iniciado.');
 }).catch((error: unknown) => {
   console.error(error);

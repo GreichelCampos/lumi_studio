@@ -19,6 +19,7 @@ export default defineConfig(() => {
     server: {
       port: 3000,
       host: '127.0.0.1',
+      fs: { allow: [path.resolve(__dirname, '..')] },
       hmr: process.env.DISABLE_HMR !== 'true',
       watch: process.env.DISABLE_HMR === 'true' ? null : {},
     },

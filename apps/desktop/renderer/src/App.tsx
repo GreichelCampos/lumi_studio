@@ -8,6 +8,7 @@ import { ProjectExplorer } from './components/ProjectExplorer';
 import { CodeEditor } from './components/CodeEditor';
 import { findDeclaredWall } from './components/viewport/helpers/architecturalSelection';
 import { ConsolePanel } from './components/ConsolePanel';
+import { SplashScreen } from './components/SplashScreen';
 import { InteractiveInputDialog } from './components/console/InteractiveInputDialog';
 import { DocumentationModal } from './components/DocumentationModal';
 import { NewProjectModal } from './components/modals/NewProjectModal';
@@ -27,11 +28,13 @@ import { findSourceFile } from './services/editor/sourceNavigation';
 import { resolveDebugStep } from './services/editor/debugStepNavigation';
 import { relativePath } from './services/integration/projectInput';
 import type { ViewportWindowState } from './viewportBridge';
+import type { StartupBridge } from './startupBridge';
 
 const EXPLORER_MIN_WIDTH = 220;
 const EXPLORER_MAX_WIDTH = 480;
 const CONSOLE_MIN_HEIGHT = 140;
 const CONSOLE_MAX_HEIGHT = 420;
+export const MIN_SPLASH_DURATION_MS = 2500;
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
@@ -64,7 +67,7 @@ export default function App() {
     storageError, clearStorageError, chooseProjectLocation,
     handleOpenProject, handleRenameProject, handleSaveAs,
     legacyProjects, handleImportLocalProject,
-    isDiskStorage,
+    isDiskStorage, isLoaded,
   } = useProjectManager();
 
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
@@ -78,6 +81,9 @@ export default function App() {
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [hasExecutedScene, setHasExecutedScene] = useState(false);
+  const [startupReady, setStartupReady] = useState(() => !window.lumiStartup);
+  const [splashPresented, setSplashPresented] = useState(() => !window.lumiStartup);
+  const [minimumSplashElapsed, setMinimumSplashElapsed] = useState(() => !window.lumiStartup);
   const [explorerWidth, setExplorerWidth] = useState(280);
   const [consoleHeight, setConsoleHeight] = useState(210);
   const [isConsoleVisible, setIsConsoleVisible] = useState(true);
@@ -85,6 +91,34 @@ export default function App() {
   const workspaceRef = useRef<HTMLDivElement>(null);
   const viewportSessionRef = useRef<string | null>(null);
   const viewportSessionSequenceRef = useRef(0);
+  useEffect(() => {
+    if (!window.lumiStartup) return;
+    let active = true;
+    let firstFrame = 0;
+    let secondFrame = 0;
+    let minimumDurationTimer: ReturnType<typeof setTimeout> | undefined;
+    window.lumiStartup.presentSplash()
+      .then(() => {
+        // Electron has shown the window: the minimum visible duration starts now.
+        minimumDurationTimer = setTimeout(() => {
+          if (active) setMinimumSplashElapsed(true);
+        }, MIN_SPLASH_DURATION_MS);
+        // Keep the committed splash through a real compositor frame before allowing the IDE swap.
+        firstFrame = requestAnimationFrame(() => {
+          secondFrame = requestAnimationFrame(() => { if (active) setSplashPresented(true); });
+        });
+      })
+      .catch(error => console.error('No se pudo presentar la pantalla de inicio:', error));
+    window.lumiStartup.whenReady()
+      .catch(error => console.error('No se pudo confirmar la inicialización de Electron:', error))
+      .finally(() => { if (active) setStartupReady(true); });
+    return () => {
+      active = false;
+      if (minimumDurationTimer !== undefined) clearTimeout(minimumDurationTimer);
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+    };
+  }, []);
   const activeFileIdentity = useMemo(() => {
     const file = currentProject?.files.find((f) => f.id === activeFileId);
     if (!file || !currentProject) return '';
@@ -582,6 +616,8 @@ export default function App() {
     const delta = event.key === 'ArrowUp' ? 16 : -16;
     setConsoleHeight((height) => clamp(height + delta, CONSOLE_MIN_HEIGHT, CONSOLE_MAX_HEIGHT));
   }, []);
+
+  if (!isLoaded || !startupReady || !splashPresented || !minimumSplashElapsed) return <SplashScreen />;
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[var(--ide-bg,#02110c)] text-[var(--ide-text,#f5ede0)] overflow-hidden font-sans select-none transition-colors duration-250">
