@@ -1,6 +1,7 @@
 import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
+import ViewportWindowApp from './ViewportWindowApp.tsx';
 import { IdeSettingsProvider } from './context/IdeSettingsContext';
 import './index.css';
 
@@ -15,10 +16,12 @@ window.addEventListener('error', (e) => {
   }
 });
 
+const RootApp = new URLSearchParams(window.location.search).get('window') === 'viewport' ? ViewportWindowApp : App;
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <IdeSettingsProvider>
-      <App />
+      <RootApp />
     </IdeSettingsProvider>
   </StrictMode>,
 );

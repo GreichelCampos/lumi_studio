@@ -6,7 +6,6 @@ import { useSpatialDebugger } from './hooks/useSpatialDebugger';
 import { TopBar } from './components/TopBar';
 import { ProjectExplorer } from './components/ProjectExplorer';
 import { CodeEditor } from './components/CodeEditor';
-import { Viewport3D } from './components/Viewport3D';
 import { findDeclaredWall } from './components/viewport/helpers/architecturalSelection';
 import { ConsolePanel } from './components/ConsolePanel';
 import { InteractiveInputDialog } from './components/console/InteractiveInputDialog';
@@ -24,10 +23,10 @@ import { SpatialObject, LumiFile, DiagnosticItem, SourceReference, DebugStep } f
 import { ideLogger } from './services/logger/IdeLogService';
 import { lumiAssistant } from './services/assistant/LumiAssistantService';
 import { LumicFileService } from './services/storage/LumicFileService';
-import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { findSourceFile } from './services/editor/sourceNavigation';
 import { resolveDebugStep } from './services/editor/debugStepNavigation';
 import { relativePath } from './services/integration/projectInput';
+import type { ViewportWindowState } from './viewportBridge';
 
 export default function App() {
   const {
@@ -71,9 +70,9 @@ export default function App() {
   const [unsavedTargetFile, setUnsavedTargetFile] = useState<LumiFile | null>(null);
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [isViewportMaximized, setIsViewportMaximized] = useState(false);
-
-
+  const [hasExecutedScene, setHasExecutedScene] = useState(false);
+  const viewportSessionRef = useRef<string | null>(null);
+  const viewportSessionSequenceRef = useRef(0);
   const activeFileIdentity = useMemo(() => {
     const file = currentProject?.files.find((f) => f.id === activeFileId);
     if (!file || !currentProject) return '';
@@ -131,6 +130,8 @@ export default function App() {
       return null;
     }
 
+    // Compilar actualiza el IDE, pero nunca abre ni reemplaza la escena ejecutada.
+    setHasExecutedScene(false);
     // Usar contenido actualizado con cambios en memoria (drafts)
     const virtualProject = {
       ...currentProject,
@@ -150,10 +151,21 @@ export default function App() {
     }
 
     if (isRealBackend) {
-      await runExecute({
+      const result = await runExecute({
         ...currentProject,
         files: currentProject.files.map((file) => ({ ...file, content: getFileContent(file) })),
       }, projectRevision);
+      if (result?.success && result.scenePlan) {
+        const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
+        viewportSessionRef.current = sessionId;
+        setActiveObjectId(null);
+        setHasExecutedScene(true);
+        await window.lumiViewport?.show({
+          sessionId,
+          scenePlan: result.scenePlan, sceneSource: 'python', legacyPlacement: false,
+          activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
+        });
+      }
       return;
     }
 
@@ -187,12 +199,21 @@ export default function App() {
     }
 
     if (lastCompileResult.scenePlan) {
+      const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
+      viewportSessionRef.current = sessionId;
+      setActiveObjectId(null);
       setScenePlan(lastCompileResult.scenePlan);
+      setHasExecutedScene(true);
+      await window.lumiViewport?.show({
+        sessionId,
+        scenePlan: lastCompileResult.scenePlan, sceneSource: sceneSource ?? 'simulation', legacyPlacement,
+        activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
+      });
       const totalObjs = lastCompileResult.scenePlan.rooms.reduce((acc, r) => acc + r.objects.length, 0);
       ideLogger.logExecutionStarted(currentProject.name, lastCompileResult.scenePlan.rooms.length, totalObjs);
     }
   }, [currentProject, isStale, lastCompileResult, hasBlockingErrors, setScenePlan,
-    isRealBackend, runExecute, getFileContent, projectRevision]);
+    isRealBackend, runExecute, getFileContent, projectRevision, sceneSource, legacyPlacement, setActiveObjectId]);
 
   const handleExportLumic = useCallback(() => {
     return LumicFileService.exportLumic(lastCompileResult, currentProject);
@@ -213,9 +234,6 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
-      if (e.key === 'Escape' && isViewportMaximized) {
-        setIsViewportMaximized(false);
-      }
       if ((e.ctrlKey || e.metaKey) && e.key === ',') {
         e.preventDefault();
         setShowSettingsModal((prev) => !prev);
@@ -260,7 +278,6 @@ export default function App() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [
-    isViewportMaximized,
     handleExportLumic,
     handleCompileCurrent,
     handleRunExecution,
@@ -336,6 +353,22 @@ export default function App() {
 
   const debugSelection = useMemo(() => resolveDebugStep(null, currentStep, legacyPlacement), [currentStep, legacyPlacement]);
 
+  useEffect(() => {
+    const sessionId = viewportSessionRef.current;
+    if (!scenePlan || !hasExecutedScene || !sessionId) return;
+    const state: ViewportWindowState = {
+      sessionId, scenePlan, sceneSource, legacyPlacement, activeObjectId,
+      debugActiveObjectId: debugSelection.activeObjectId,
+      debugRoomId: currentStep?.roomId ?? null,
+    };
+    window.lumiViewport?.update(state);
+  }, [scenePlan, sceneSource, legacyPlacement, activeObjectId, debugSelection.activeObjectId, currentStep?.roomId, hasExecutedScene]);
+
+  useEffect(() => {
+    viewportSessionRef.current = null;
+    setHasExecutedScene(false);
+  }, [currentProjectId]);
+
   const handleNavigateToSource = useCallback(
     (sourceRef: SourceReference) => {
       if (!currentProject) return;
@@ -395,6 +428,10 @@ export default function App() {
     },
     [scenePlan, setActiveObjectId, setHighlightedLine, handleNavigateToSource]
   );
+
+  useEffect(() => window.lumiViewport?.onObjectSelected(selection => {
+    if (selection.sessionId === viewportSessionRef.current) handleFocusObject(selection.objectId);
+  }), [handleFocusObject]);
 
   const handleNavigateToDiagnostic = useCallback(
     (diag: DiagnosticItem) => {
@@ -506,7 +543,7 @@ export default function App() {
         Selecciona el archivo principal desde el explorador antes de compilar. Esta selección se guarda en esta computadora.
       </div>}
 
-      <div className={`relative flex-1 grid ${isViewportMaximized ? 'grid-rows-[1fr]' : 'grid-rows-[1fr_235px] xl:grid-rows-[1fr_210px]'} gap-3 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250`}>
+      <div className="relative flex-1 grid grid-rows-[1fr_235px] xl:grid-rows-[1fr_210px] gap-3 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250">
         <div 
           className="absolute top-10 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none -z-10 opacity-30 transition-all duration-300"
           style={{ backgroundColor: 'var(--ide-accent-bg, rgba(26,66,47,0.4))' }}
@@ -521,9 +558,7 @@ export default function App() {
         />
 
         <div className="grid grid-cols-12 gap-3 min-h-0 h-full">
-          {!isViewportMaximized && (
-            <>
-              <div className="col-span-12 md:col-span-3 lg:col-span-2 xl:col-span-2 h-full min-h-0">
+          <div className="col-span-12 md:col-span-3 lg:col-span-2 h-full min-h-0">
                 <ProjectExplorer
                   currentProject={currentProject}
                   projects={projects}
@@ -539,9 +574,9 @@ export default function App() {
                   onOpenDocs={() => setShowDocsModal(true)}
                   isDirty={isDirty}
                 />
-              </div>
+          </div>
 
-              <div className="col-span-12 md:col-span-5 lg:col-span-5 xl:col-span-4 h-full min-h-0">
+          <div className="col-span-12 md:col-span-9 lg:col-span-10 h-full min-h-0">
                 <CodeEditor
                   files={currentProject ? currentProject.files : []}
                   activeFileId={activeFileId}
@@ -561,35 +596,10 @@ export default function App() {
                   breakpoints={breakpoints}
                   onToggleBreakpoint={toggleBreakpoint}
                 />
-              </div>
-            </>
-          )}
-
-          <div className={`${isViewportMaximized ? 'col-span-12' : 'col-span-12 md:col-span-4 lg:col-span-5 xl:col-span-6'} h-full min-h-0`}>
-            <ErrorBoundary fallbackTitle="Error al renderizar el visualizador 3D">
-              <Viewport3D
-                legacyPlacement={legacyPlacement}
-                sceneSource={sceneSource}
-                scenePlan={scenePlan}
-                lastCompileResult={lastCompileResult}
-                activeObjectId={activeObjectId}
-                debugActiveObjectId={debugSelection.activeObjectId}
-                debugRoomId={currentStep?.roomId ?? null}
-                onSelectObject={handleFocusObject}
-                onNavigateToSource={handleNavigateToSource}
-                onCompile={handleCompileCurrent}
-                onInsertRoom={() => setShowInsertRoomModal(true)}
-                hasCompileErrors={hasBlockingErrors}
-                isCompiled={lastCompileResult !== null}
-                isMaximized={isViewportMaximized}
-                onToggleMaximize={() => setIsViewportMaximized((prev) => !prev)}
-              />
-            </ErrorBoundary>
           </div>
         </div>
 
-        {!isViewportMaximized && (
-          <div className="h-full min-h-0">
+        <div className="h-full min-h-0">
             <ConsolePanel
               lumiState={lumiState}
               logs={logs}
@@ -616,8 +626,7 @@ export default function App() {
               isStale={isStale}
               lastCompileResult={lastCompileResult}
             />
-          </div>
-        )}
+        </div>
       </div>
 
       <NewProjectModal

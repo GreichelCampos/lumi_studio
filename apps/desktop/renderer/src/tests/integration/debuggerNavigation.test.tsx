@@ -1,9 +1,10 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import App from '../../App';
 import type { DebugStep, LumiFile, LumiProject } from '../../types';
 import { createMockDebugSteps, createMockFile, createMockProject } from '../fixtures/testFixtures';
+import type { ViewportSelection, ViewportWindowBridge, ViewportWindowState } from '../../viewportBridge';
 
 const state = vi.hoisted(() => ({
   project: null as LumiProject | null,
@@ -11,6 +12,18 @@ const state = vi.hoisted(() => ({
   runCompile: vi.fn(),
   runExecute: vi.fn(),
 }));
+
+let viewportSelectionListener: ((selection: ViewportSelection) => void) | null = null;
+const viewportBridge = {
+  show: vi.fn(async (_state: ViewportWindowState) => undefined),
+  update: vi.fn((_state: ViewportWindowState) => undefined),
+  onState: vi.fn(() => () => undefined),
+  selectObject: vi.fn(),
+  onObjectSelected: vi.fn((listener: (selection: ViewportSelection) => void) => {
+    viewportSelectionListener = listener;
+    return () => { if (viewportSelectionListener === listener) viewportSelectionListener = null; };
+  }),
+} satisfies ViewportWindowBridge;
 
 vi.mock('../../hooks/useProjectManager', async () => {
   const { useState } = await import('react');
@@ -49,14 +62,11 @@ vi.mock('../../components/CodeEditor', () => ({ CodeEditor: (props: {
   activeFileId: string; openTabIds: string[]; highlightedLine: number | null;
   sourceNavigation: { fileId: string; line: number; column?: number } | null;
 }) => <output data-testid="editor">{JSON.stringify(props)}</output> }));
-vi.mock('../../components/Viewport3D', () => ({ Viewport3D: (props: unknown) =>
-  <output data-testid="viewport">{JSON.stringify(props)}</output> }));
 vi.mock('../../components/ConsolePanel', () => ({ ConsolePanel: (props: {
   onStepChange(index: number): void; currentStepIndex: number;
 }) => <button onClick={() => props.onStepChange(props.currentStepIndex + 1)}>Siguiente fixture</button> }));
 
 const editor = () => JSON.parse(screen.getByTestId('editor').textContent!);
-const viewport = () => JSON.parse(screen.getByTestId('viewport').textContent!);
 
 beforeEach(() => {
   state.project = createMockProject({ files: [
@@ -68,6 +78,10 @@ beforeEach(() => {
   }));
   state.runCompile.mockReset();
   state.runExecute.mockReset();
+  viewportBridge.show.mockClear();
+  viewportBridge.update.mockClear();
+  viewportSelectionListener = null;
+  window.lumiViewport = viewportBridge;
 });
 
 describe('App explicit compiler operations', () => {
@@ -94,6 +108,36 @@ describe('App explicit compiler operations', () => {
     fireEvent.keyDown(window, { key: 'F6' });
     expect(state.runExecute).toHaveBeenCalledTimes(2);
   });
+
+  it('starts every valid execution with a new session and no previous selection', async () => {
+    const scenePlan = state.steps[0].sceneSnapshot!;
+    state.runExecute.mockResolvedValue({
+      compilationId: 'execution', status: 'completed', success: true, diagnostics: [], scenePlan,
+      entryFileInfo: null, durationMs: 1, logs: [], debugSteps: [], timestamp: new Date(0).toISOString(),
+    });
+    render(<App />);
+
+    fireEvent.click(screen.getByText('Ejecutar prueba'));
+    await waitFor(() => expect(viewportBridge.show).toHaveBeenCalledTimes(1));
+    const first = viewportBridge.show.mock.calls[0][0];
+    expect(first.activeObjectId).toBeNull();
+
+    act(() => viewportSelectionListener?.({ sessionId: first.sessionId, objectId: 'obj-mesa-1' }));
+    await waitFor(() => expect(viewportBridge.update).toHaveBeenCalledWith(expect.objectContaining({
+      sessionId: first.sessionId, activeObjectId: 'obj-mesa-1',
+    })));
+
+    fireEvent.click(screen.getByText('Ejecutar prueba'));
+    await waitFor(() => expect(viewportBridge.show).toHaveBeenCalledTimes(2));
+    const second = viewportBridge.show.mock.calls[1][0];
+    expect(second.sessionId).not.toBe(first.sessionId);
+    expect(second.activeObjectId).toBeNull();
+
+    act(() => viewportSelectionListener?.({ sessionId: first.sessionId, objectId: 'obj-mesa-1' }));
+    expect(viewportBridge.update).not.toHaveBeenLastCalledWith(expect.objectContaining({
+      sessionId: second.sessionId, activeObjectId: 'obj-mesa-1',
+    }));
+  });
 });
 
 describe('App navigation with imported fixture events, not Python traces', () => {
@@ -102,11 +146,7 @@ describe('App navigation with imported fixture events, not Python traces', () =>
     fireEvent.click(screen.getByText('Siguiente fixture'));
     expect(editor()).toMatchObject({ activeFileId: 'other', openTabIds: ['main', 'other'], highlightedLine: 2,
       sourceNavigation: { fileId: 'other', line: 2, column: 2 } });
-    expect(viewport().scenePlan).toEqual(state.steps[1].sceneSnapshot);
-    expect(viewport().activeObjectId).toBe(state.steps[1].activeObjectId);
     fireEvent.click(screen.getByText('Siguiente fixture'));
-    expect(viewport().activeObjectId).toBeNull();
-    expect(viewport().debugActiveObjectId).toBeNull();
   });
 
   it('clears invalid source, missing snapshot and entity without opening a path', () => {
@@ -115,7 +155,6 @@ describe('App navigation with imported fixture events, not Python traces', () =>
     render(<App />);
     fireEvent.click(screen.getByText('Siguiente fixture'));
     expect(editor()).toMatchObject({ activeFileId: 'main', openTabIds: ['main'], highlightedLine: null, sourceNavigation: null });
-    expect(viewport()).toMatchObject({ scenePlan: null, activeObjectId: null, debugActiveObjectId: null });
   });
 
   it('clears highlights on empty events and never selects an old index from a replacement', () => {
@@ -125,10 +164,8 @@ describe('App navigation with imported fixture events, not Python traces', () =>
     state.steps = [replacement];
     act(() => view.rerender(<App />));
     expect(editor()).toMatchObject({ activeFileId: 'main', highlightedLine: 3 });
-    expect(viewport().scenePlan).toEqual(replacement.sceneSnapshot);
     state.steps = [];
     act(() => view.rerender(<App />));
     expect(editor()).toMatchObject({ highlightedLine: null, sourceNavigation: null });
-    expect(viewport().activeObjectId).toBeNull();
   });
 });

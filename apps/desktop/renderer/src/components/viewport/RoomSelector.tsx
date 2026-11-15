@@ -25,10 +25,10 @@ export const RoomSelector: React.FC<RoomSelectorProps> = ({
     return (
       <div 
         id="room-selector-single"
-        className="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-btn text-xs text-[var(--ide-text-muted)] border border-[var(--ide-panel-border)]"
+        className="flex max-w-full flex-wrap items-center gap-2 px-3 py-1.5 rounded-xl glass-btn text-xs text-[var(--ide-text-muted)] border border-[var(--ide-panel-border)]"
       >
         <Layers className="w-3.5 h-3.5 text-[var(--ide-accent)] flex-shrink-0" />
-        <span className="font-bold text-[var(--ide-text)] font-mono">{room.name}</span>
+        <span className="min-w-0 break-words font-bold text-[var(--ide-text)] font-mono">{room.name}</span>
         <span className="text-[11px] text-[var(--ide-text-muted)] font-mono opacity-80">
           ({rw.toFixed(1)}×{rl.toFixed(1)}×{rh.toFixed(1)}m)
         </span>

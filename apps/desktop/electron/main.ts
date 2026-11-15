@@ -9,6 +9,7 @@ import { registerWindowControls } from './windowControls';
 import { registerWorkspaceIpc } from './workspaceIpc';
 import { APP_USER_MODEL_ID, applicationIconPath, configureWindowsTaskbar } from './appIdentity';
 import { PACKAGED_RENDERER_URL, registerPackagedRenderer } from './packagedRenderer';
+import { registerViewportWindow } from './viewportWindow';
 
 protocol.registerSchemesAsPrivileged([{ scheme: 'lumi-app', privileges: {
   standard: true, secure: true, supportFetchAPI: true, corsEnabled: true,
@@ -72,10 +73,12 @@ app.whenReady().then(async () => {
   const dispose = registerIpc(window, worker, renderer);
   const disposeControls = registerWindowControls(window, renderer);
   const workspace = registerWorkspaceIpc(window, renderer);
+  const disposeViewport = registerViewportWindow(window, renderer, icon);
   flushWorkspace = workspace.flush;
   window.once('closed', dispose);
   window.once('closed', disposeControls);
   window.once('closed', workspace.dispose);
+  window.once('closed', disposeViewport);
   try { await worker.start(); } catch (error) { console.error('Backend Python no disponible:', error); }
   await window.loadURL(renderer.href);
   console.log('Estudio Lumi iniciado.');

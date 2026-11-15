@@ -11,6 +11,7 @@ vi.mock('../../../components/viewport/ThreeSceneManager', () => ({
     handleResize() {}
     setLegacyPlacement() {}
     clearRoom() {}
+    renderRoom() {}
   },
 }));
 
@@ -63,5 +64,21 @@ describe('Viewport operation lifecycle', () => {
       scenePlan: null,
     }} />);
     expect(screen.getByText('La ejecución no pudo completarse')).toBeInTheDocument();
+  });
+
+  it('keeps room details in the responsive header and outside the 3D render area', () => {
+    render(<Viewport3D scenePlan={FIXTURE_COMPILATION_SUCCESS.scenePlan} sceneSource="python" isCompiled />);
+
+    const header = screen.getByTestId('viewport-header');
+    const summary = screen.getByTestId('room-summary');
+    const renderArea = screen.getByTestId('viewport-render-area');
+
+    expect(header).toContainElement(summary);
+    expect(renderArea).not.toContainElement(summary);
+    expect(summary).toHaveTextContent('Área:');
+    expect(summary).toHaveTextContent('Volumen:');
+    expect(summary).toHaveTextContent('Entidades:');
+    expect(summary.className).toContain('flex-wrap');
+    expect(summary.className).not.toContain('absolute');
   });
 });

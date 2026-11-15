@@ -32,8 +32,7 @@ describe('App Root Mounting and Visibility Regression Test', () => {
     const projectExplorer = container.querySelector('#project-explorer') || screen.getAllByText(/PROYECTO/i)[0];
     expect(projectExplorer).toBeInTheDocument();
 
-    const viewportMain = container.querySelector('#viewport-3d-main');
-    expect(viewportMain).toBeInTheDocument();
+    expect(container.querySelector('#viewport-3d-main')).not.toBeInTheDocument();
 
     const lumiCompanion = screen.getByLabelText('Asistente Lumi');
     expect(lumiCompanion).toBeInTheDocument();

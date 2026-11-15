@@ -2,6 +2,7 @@ import { contextBridge, ipcRenderer } from 'electron';
 import type { BackendInput, DesktopBridge, InputPrompt, InputReply } from '../renderer/src/services/integration/desktopBridge';
 import type { WindowControlsBridge } from '../renderer/src/windowBridge';
 import type { WorkspaceBridge } from '../renderer/src/services/storage/workspaceBridge';
+import type { ViewportSelection, ViewportWindowBridge, ViewportWindowState } from '../renderer/src/viewportBridge';
 
 const bridge: DesktopBridge = Object.freeze({
   analyze: (input: BackendInput) => ipcRenderer.invoke('lumi:analyze', input),
@@ -44,3 +45,20 @@ const workspace = Object.freeze<WorkspaceBridge>({
   lastActive: (...args: [] | [string | null]) => ipcRenderer.invoke('lumi:workspace:lastActive', ...args),
 });
 contextBridge.exposeInMainWorld('lumiWorkspace', workspace);
+
+const viewport: ViewportWindowBridge = Object.freeze({
+  show: (state: ViewportWindowState) => ipcRenderer.invoke('lumi:viewport:show', state),
+  update: (state: ViewportWindowState) => ipcRenderer.send('lumi:viewport:update', state),
+  onState: (listener: (state: ViewportWindowState) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, state: ViewportWindowState) => listener(state);
+    ipcRenderer.on('lumi:viewport:state', handler);
+    return () => { ipcRenderer.removeListener('lumi:viewport:state', handler); };
+  },
+  selectObject: (selection: ViewportSelection) => ipcRenderer.send('lumi:viewport:selected', selection),
+  onObjectSelected: (listener: (selection: ViewportSelection) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, selection: ViewportSelection) => listener(selection);
+    ipcRenderer.on('lumi:viewport:selected', handler);
+    return () => { ipcRenderer.removeListener('lumi:viewport:selected', handler); };
+  },
+});
+contextBridge.exposeInMainWorld('lumiViewport', viewport);

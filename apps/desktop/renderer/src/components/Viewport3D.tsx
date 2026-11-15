@@ -342,11 +342,12 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   return (
     <div id="viewport-3d-main" className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none">
-      {scenePlan && sceneSource !== 'python' && <div role="status" className="px-3 py-1 text-[10px] text-[var(--ide-text-muted)]">
-        {sceneSource === 'artifact' ? 'Archivo .lumic importado · no implica generación espacial desde Python'
-          : 'ScenePlan simulado · datos de demostración'}
-      </div>}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 glass-panel-header z-10">
+      <header className="flex-shrink-0 glass-panel-header z-10" data-testid="viewport-header">
+        {scenePlan && sceneSource !== 'python' && <div role="status" className="px-3 pt-1 text-[10px] text-[var(--ide-text-muted)]">
+          {sceneSource === 'artifact' ? 'Archivo .lumic importado · no implica generación espacial desde Python'
+            : 'ScenePlan simulado · datos de demostración'}
+        </div>}
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">
           {scenePlan && scenePlan.rooms.length > 0 && (
             <RoomSelector
@@ -528,9 +529,27 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
             </button>
           )}
         </div>
-      </div>
+        </div>
 
-      <div className="relative flex-1 w-full min-h-0 overflow-hidden">
+        {activeRoom && !emptyState && (
+          <div
+            className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-[var(--ide-panel-border)] px-3 py-1.5 text-[10px] sm:text-[11px] font-mono text-[var(--ide-text-muted)]"
+            data-testid="room-summary"
+          >
+            <span>
+              Área: <strong className="text-[var(--ide-text)]">{activeRoom.calculatedArea.toFixed(1)} m²</strong>
+            </span>
+            <span>
+              Volumen: <strong className="text-[var(--ide-text)]">{activeRoom.calculatedVolume.toFixed(1)} m³</strong>
+            </span>
+            <span>
+              Entidades: <strong className="text-[var(--ide-text)]">{activeRoom.objects.length + activeRoom.doors.length + activeRoom.windows.length}</strong>
+            </span>
+          </div>
+        )}
+      </header>
+
+      <div className="relative flex-1 w-full min-h-0 overflow-hidden" data-testid="viewport-render-area">
         <div ref={containerRef} className="absolute inset-0 w-full h-full min-h-0 cursor-grab active:cursor-grabbing" />
 
         {webglError && (
@@ -576,24 +595,6 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
           </div>
         )}
 
-        {/* Bottom Coordinates & Stats Badge (hidden during object inspection to avoid visual clutter) */}
-        {activeRoom && !emptyState && !selectedEntityData && (
-          <div className="absolute bottom-3 right-3 glass-card px-3 py-1.5 text-[10px] sm:text-[11px] font-mono text-[var(--ide-text-muted)] shadow-lg flex items-center gap-2 sm:gap-3 select-none border border-[var(--ide-panel-border)] max-w-[calc(100%-8rem)] z-10 pointer-events-none">
-            <span className="text-[var(--ide-accent)] font-bold truncate">{activeRoom.name}</span>
-            <span className="opacity-75">
-              [{activeRoom.dimensions[0].toFixed(1)}×{activeRoom.dimensions[1].toFixed(1)}×{activeRoom.dimensions[2].toFixed(1)}m]
-            </span>
-            <span className="hidden md:inline">
-              Área: <strong className="text-[var(--ide-text)]">{activeRoom.calculatedArea.toFixed(1)} m²</strong>
-            </span>
-            <span className="hidden lg:inline">
-              Vol: <strong className="text-[var(--ide-text)]">{activeRoom.calculatedVolume.toFixed(1)} m³</strong>
-            </span>
-            <span className="hidden sm:inline">
-              Entidades: <strong className="text-[var(--ide-text)] font-bold">{activeRoom.objects.length + activeRoom.doors.length + activeRoom.windows.length}</strong>
-            </span>
-          </div>
-        )}
       </div>
     </div>
   );

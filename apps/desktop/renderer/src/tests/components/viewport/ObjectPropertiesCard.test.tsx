@@ -2,6 +2,7 @@ import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ObjectPropertiesCard } from '../../../components/viewport/ObjectPropertiesCard';
+import { IdeSettingsProvider, useIdeSettings } from '../../../context/IdeSettingsContext';
 import {
   createMockSpatialObject,
   createMockDoor,
@@ -9,6 +10,34 @@ import {
 } from '../../fixtures/testFixtures';
 
 describe('ObjectPropertiesCard', () => {
+  it('uses an opaque themed surface and wraps long identifiers without overflow', () => {
+    const longId = `mueble-${'identificador-muy-largo-'.repeat(8)}`;
+    render(<ObjectPropertiesCard entity={{ kind: 'object', data: createMockSpatialObject({ id: longId }) }} onClose={vi.fn()} />);
+
+    const card = document.querySelector('#object-properties-card')!;
+    const identifier = screen.getByText(longId);
+    expect(card.className).toContain('bg-[var(--ide-panel-solid)]');
+    expect(card.className).toContain('text-[var(--ide-text)]');
+    expect(card.className).not.toContain('glass-card');
+    expect(card.className).not.toContain('text-slate-100');
+    expect(identifier.className).toContain('break-all');
+  });
+
+  it('continues using the active theme tokens when switching to the light theme', () => {
+    function ThemeHarness() {
+      const { setTheme } = useIdeSettings();
+      return <><button onClick={() => setTheme('vs-light')}>Tema claro</button>
+        <ObjectPropertiesCard entity={{ kind: 'object', data: createMockSpatialObject() }} onClose={vi.fn()} /></>;
+    }
+    render(<IdeSettingsProvider><ThemeHarness /></IdeSettingsProvider>);
+    fireEvent.click(screen.getByRole('button', { name: 'Tema claro' }));
+
+    expect(document.documentElement).toHaveAttribute('data-theme', 'vs-light');
+    expect(document.documentElement.style.getPropertyValue('--ide-panel-solid')).toBe('#ffffff');
+    expect(document.documentElement.style.getPropertyValue('--ide-text')).toBe('#1f2328');
+    expect(document.querySelector('#object-properties-card')?.className).toContain('bg-[var(--ide-panel-solid)]');
+  });
+
   it('preserves details and source navigation for an unplaced object without displaying invented coordinates', () => {
     const { position, ...properties } = createMockSpatialObject();
     const navigate = vi.fn();

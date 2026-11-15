@@ -72,11 +72,11 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
   return (
     <div 
       id="object-properties-card"
-      className="absolute top-3 left-3 w-80 max-w-[calc(100%-1.5rem)] max-h-[calc(100%-1.5rem)] flex flex-col glass-card border border-white/20 rounded-2xl overflow-hidden z-30 text-slate-100 select-none animate-fade-in pointer-events-auto"
+      className="absolute top-3 left-3 w-80 max-w-[calc(100%-1.5rem)] max-h-[calc(100%-1.5rem)] flex flex-col bg-[var(--ide-panel-solid)] border border-[var(--ide-panel-border)] rounded-[var(--ide-radius-sm)] overflow-hidden z-30 text-[var(--ide-text)] shadow-2xl select-none animate-fade-in pointer-events-auto"
       onPointerDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="flex items-center justify-between px-3.5 py-2.5 glass-panel-header border-b border-[var(--ide-panel-border)] backdrop-blur-md flex-shrink-0">
+      <div className="flex items-center justify-between px-3.5 py-2.5 bg-[var(--ide-panel-solid)] border-b border-[var(--ide-panel-border)] flex-shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
           <div className="p-1.5 rounded-xl bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/40 shadow-sm flex-shrink-0">
             {isWall ? <Layers className="w-4 h-4" /> : isObject ? (
@@ -88,8 +88,8 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
             )}
           </div>
           <div className="min-w-0">
-            <h4 className="text-xs font-bold text-[var(--ide-text)] truncate font-mono tracking-tight">{title}</h4>
-            <span className="text-[10px] text-[var(--ide-text-muted)] font-sans block truncate uppercase tracking-wider">{typeLabel}</span>
+            <h4 className="text-xs font-bold text-[var(--ide-text)] break-words font-mono tracking-tight">{title}</h4>
+            <span className="text-[10px] text-[var(--ide-text-muted)] font-semibold font-sans block break-words uppercase tracking-wider">{typeLabel}</span>
           </div>
         </div>
 
@@ -100,7 +100,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
             e.stopPropagation();
             onClose();
           }}
-          className="w-7 h-7 flex items-center justify-center rounded-xl bg-white/[0.06] hover:bg-rose-500/20 text-[var(--ide-text-muted)] hover:text-rose-200 border border-[var(--ide-panel-border)] hover:border-rose-400/40 transition-all ml-1 flex-shrink-0 cursor-pointer shadow-sm active:scale-95"
+          className="w-7 h-7 flex items-center justify-center rounded-xl bg-[var(--ide-btn-bg)] hover:brightness-125 text-[var(--ide-text)] border border-[var(--ide-btn-border)] transition-all ml-1 flex-shrink-0 cursor-pointer shadow-sm active:scale-95"
           title="Cerrar panel de propiedades (Esc)"
           aria-label="Cerrar detalles del objeto"
         >
@@ -119,72 +119,72 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
         </div>
       )}
 
-      <div className="p-3.5 space-y-2.5 text-xs flex-1 overflow-y-auto min-h-0 backdrop-blur-md">
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
+      <div className="p-3.5 space-y-2.5 text-xs flex-1 overflow-y-auto min-h-0 bg-[var(--ide-panel-solid)]">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+          <span className="text-[11px] text-[var(--ide-text)] font-medium font-sans flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
             <span>ID Lumi:</span>
           </span>
-          <span className="font-mono text-[var(--ide-text)] bg-[var(--ide-control-bg)] px-2.5 py-0.5 rounded-lg border border-[var(--ide-panel-border)] text-[11px] shadow-sm">
+          <span className="min-w-0 justify-self-end break-all text-right font-mono text-[var(--ide-text)] bg-[var(--ide-control-bg)] px-2.5 py-0.5 rounded-lg border border-[var(--ide-panel-border)] text-[11px] shadow-sm">
             {entity.data.id}
           </span>
         </div>
 
-        <div className="flex items-start justify-between gap-2">
-          <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5 flex-shrink-0">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+          <span className="text-[11px] text-[var(--ide-text)] font-medium font-sans flex items-center gap-1.5">
             <Move className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
             <span>{isWall ? 'Orientación:' : 'Posición:'}</span>
           </span>
-          <span className="font-mono text-[var(--ide-text)] text-[11px] text-right truncate bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]" title={positionStr}>
+          <span className="min-w-0 justify-self-end break-words font-mono text-[var(--ide-text)] text-[11px] text-right bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]" title={positionStr}>
             {positionStr}
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+          <span className="text-[11px] text-[var(--ide-text)] font-medium font-sans flex items-center gap-1.5">
             <Maximize2 className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
             <span>Dimensiones:</span>
           </span>
-          <span className="font-mono text-[var(--ide-text)] text-[11px] bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
+          <span className="min-w-0 justify-self-end break-words text-right font-mono text-[var(--ide-text)] text-[11px] bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
             {dimensionsStr}
           </span>
         </div>
 
         {isObject && rotationStr && (
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+            <span className="text-[11px] text-[var(--ide-text)] font-medium font-sans flex items-center gap-1.5">
               <RotateCw className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
               <span>Rotación:</span>
             </span>
-            <span className="font-mono text-[var(--ide-text)] text-[11px] bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
+            <span className="min-w-0 justify-self-end break-words text-right font-mono text-[var(--ide-text)] text-[11px] bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
               {rotationStr}
             </span>
           </div>
         )}
 
         {isWindow && (
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-[var(--ide-text-muted)]">Borde inferior:</span>
-            <span className="font-mono">{openingVerticalBounds(entity.data, 'window').bottom.toFixed(2)} m</span>
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+            <span className="text-[11px] text-[var(--ide-text)] font-medium">Borde inferior:</span>
+            <span className="justify-self-end font-mono text-[var(--ide-text)]">{openingVerticalBounds(entity.data, 'window').bottom.toFixed(2)} m</span>
           </div>
         )}
 
         {(entity.data.color || entity.data.material) && (
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] text-[var(--ide-text-muted)] font-sans flex items-center gap-1.5">
+          <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-2">
+            <span className="text-[11px] text-[var(--ide-text)] font-medium font-sans flex items-center gap-1.5">
               <Palette className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
               <span>Acabado:</span>
             </span>
-            <span className="font-mono text-[var(--ide-text)] text-[11px] capitalize bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
+            <span className="min-w-0 justify-self-end break-words text-right font-mono text-[var(--ide-text)] text-[11px] capitalize bg-[var(--ide-control-bg)] px-2 py-0.5 rounded border border-[var(--ide-panel-border)]">
               {[entity.data.material, entity.data.color].filter(Boolean).join(' • ')}
             </span>
           </div>
         )}
       </div>
 
-      <div className="px-3.5 py-2.5 glass-panel-header border-t border-[var(--ide-panel-border)] backdrop-blur-md flex items-center justify-between gap-2">
+      <div className="px-3.5 py-2.5 bg-[var(--ide-panel-solid)] border-t border-[var(--ide-panel-border)] flex flex-wrap items-center justify-between gap-2">
         {sourceRef ? (
-          <span className="text-[10px] text-[var(--ide-text-muted)] font-mono truncate">
+          <span className="min-w-0 flex-1 text-[10px] text-[var(--ide-text)] font-mono break-all">
             {sourceRef.file}:{sourceRef.line}
           </span>
         ) : (
@@ -217,7 +217,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
               e.stopPropagation();
               onClose();
             }}
-            className="flex items-center gap-1 px-3 py-1 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] border border-[var(--ide-panel-border)] text-[11px] font-medium transition-all cursor-pointer active:scale-95"
+            className="flex items-center gap-1 px-3 py-1 rounded-xl bg-[var(--ide-btn-bg)] hover:brightness-125 text-[var(--ide-text)] border border-[var(--ide-btn-border)] text-[11px] font-medium transition-all cursor-pointer active:scale-95"
           >
             <span>Cerrar</span>
           </button>
