@@ -893,10 +893,27 @@ class SpatialSemanticAnalyzer:
             self._active_room, orientation, transfer.states,
         )
 
+    @staticmethod
+    def _element_identity(node: dict[str, Any], name_key: str) -> tuple[str, bool]:
+        name = node[name_key]
+        index = node.get("object_index")
+        if index is None:
+            return name, True
+        constant = evaluate_numeric_constant(index)
+        if isinstance(constant, Known) and type(constant.value) is int and constant.value >= 0:
+            return f"{name}[{constant.value}]", True
+        # The interpreter resolves dynamic or invalid indices at execution.
+        return f"{name}[]", False
+
     def _declare_element(self, node: dict[str, Any]) -> None:
         if not self._linear_analysis_enabled or self._active_room is None:
             return
-        name = node["name"]
+        name, known = self._element_identity(node, "name")
+        if not known:
+            self._abstract_state.set_states(
+                self._active_room, name, frozenset({AbstractElementState.TOP}),
+            )
+            return
         abstract = declare_abstract_element(
             self._abstract_state.states_for(self._active_room, name)
         )
@@ -921,8 +938,13 @@ class SpatialSemanticAnalyzer:
     ) -> None:
         if not self._linear_analysis_enabled:
             return
-        name = node["object_name"]
+        name, known = self._element_identity(node, "object_name")
         if self._active_room is not None:
+            if not known:
+                self._abstract_state.set_states(
+                    self._active_room, name, frozenset({AbstractElementState.TOP}),
+                )
+                return
             abstract = apply_abstract_operation(
                 self._abstract_state.states_for(self._active_room, name), operation,
             )

@@ -303,7 +303,7 @@ class Interpreter:
             for property_node in node.get("properties", [])
         )
         builder.declare_element(
-            name=node["name"],
+            name=self._spatial_name(node, "name"),
             element_kind=element_kind,
             object_type=object_type,
             properties=properties,
@@ -312,24 +312,39 @@ class Interpreter:
 
     def _place_spatial_element(self, node: dict[str, Any]) -> None:
         self._require_scene_builder().place_element(
-            name=node["object_name"],
+            name=self._spatial_name(node, "object_name"),
             position=self._evaluate_vector(node["position"]),
             source=self._source_location(node),
         )
 
     def _move_spatial_element(self, node: dict[str, Any]) -> None:
         self._require_scene_builder().move_element(
-            name=node["object_name"],
+            name=self._spatial_name(node, "object_name"),
             position=self._evaluate_vector(node["position"]),
             source=self._source_location(node),
         )
 
     def _rotate_spatial_element(self, node: dict[str, Any]) -> None:
         self._require_scene_builder().rotate_element(
-            name=node["object_name"],
+            name=self._spatial_name(node, "object_name"),
             rotation=self._evaluate_vector(node["rotation"]),
             source=self._source_location(node),
         )
+
+    def _spatial_name(self, node: dict[str, Any], name_key: str) -> str:
+        name = node[name_key]
+        index_node = node.get("object_index")
+        if index_node is None:
+            return name
+        index = self._evaluate(index_node)
+        if type(index) is not int or index < 0:
+            self._fail(
+                index_node,
+                "RUN_INVALID_SPATIAL_INDEX",
+                f"El índice de '{name}' debe ser un entero mayor o igual que cero.",
+                "Usa un índice como 0 o un contador entero del ciclo.",
+            )
+        return f"{name}[{index}]"
 
     def _evaluate_vector(self, node: dict[str, Any]) -> Vector3:
         components = []

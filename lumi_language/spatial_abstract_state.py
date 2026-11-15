@@ -261,9 +261,14 @@ class SpatialAbstractState:
     def states_for(self, room: str, name: str) -> ElementStates:
         if self.unknown_global_effects or room in self.unknown_rooms:
             return frozenset({AbstractElementState.TOP})
-        return self.rooms.get(room, {}).get(
-            name, frozenset({AbstractElementState.ABSENT}),
-        )
+        elements = self.rooms.get(room, {})
+        base, bracket, _ = name.partition("[")
+        if bracket and f"{base}[]" in elements:
+            return join_element_states(
+                elements.get(name, frozenset({AbstractElementState.ABSENT})),
+                elements[f"{base}[]"],
+            )
+        return elements.get(name, frozenset({AbstractElementState.ABSENT}))
 
     def set_states(self, room: str, name: str, states: ElementStates) -> None:
         self.rooms.setdefault(room, {})[name] = states

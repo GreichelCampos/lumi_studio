@@ -1,6 +1,6 @@
 """AST node definitions for the Lumi language."""
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 
@@ -156,6 +156,7 @@ class SpatialObjectDeclarationNode:
     file: str
     line: int
     column: int
+    object_index: Any | None = field(default=None, metadata={"omit_if_none": True})
 
 
 @dataclass
@@ -201,6 +202,7 @@ class PlaceObjectNode:
     file: str
     line: int
     column: int
+    object_index: Any | None = field(default=None, metadata={"omit_if_none": True})
 
 
 @dataclass
@@ -210,6 +212,7 @@ class MoveObjectNode:
     file: str
     line: int
     column: int
+    object_index: Any | None = field(default=None, metadata={"omit_if_none": True})
 
 
 @dataclass
@@ -219,6 +222,7 @@ class RotateObjectNode:
     file: str
     line: int
     column: int
+    object_index: Any | None = field(default=None, metadata={"omit_if_none": True})
 
 
 @dataclass
