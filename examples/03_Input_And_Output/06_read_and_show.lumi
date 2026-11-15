@@ -1,0 +1,5 @@
+principal {
+    texto nombre = leer("Escriba su nombre:")>>
+    mostrar("Nombre recibido:")>>
+    mostrar(nombre)>>
+}

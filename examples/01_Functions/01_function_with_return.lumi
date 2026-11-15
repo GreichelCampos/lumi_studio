@@ -1,0 +1,9 @@
+funcion entero cuadrado(entero valor) {
+    retornar valor * valor>>
+}
+
+principal {
+    entero resultado = cuadrado(6)>>
+    mostrar("Resultado del cuadrado:")>>
+    mostrar(resultado)>>
+}

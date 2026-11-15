@@ -1,0 +1,7 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        pared pared_diagonal {
+            orientacion "diagonal">>
+        }
+    }
+}

@@ -1,0 +1,13 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        ventana ventana_sur {
+            orientacion "sur">>
+            ancho 1.2>>
+            alto 1>>
+            desplazamiento 2>>
+            elevacion 0.9>>
+            color "blanco">>
+            material "vidrio">>
+        }
+    }
+}

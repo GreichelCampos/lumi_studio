@@ -1,0 +1,12 @@
+funcion entero siguiente(entero valor) {
+    retornar valor + 1>>
+}
+
+funcion entero duplicar(entero valor) {
+    retornar valor * 2>>
+}
+
+principal {
+    mostrar("Doble del siguiente de 4:")>>
+    mostrar(duplicar(siguiente(4)))>>
+}

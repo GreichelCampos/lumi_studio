@@ -1,0 +1,12 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        puerta entrada {
+            orientacion "norte">>
+            ancho 1>>
+            alto 2>>
+            desplazamiento 2.5>>
+        }
+        silla silla_bloqueando { }
+        colocar silla_bloqueando [0, 0, -2.2]>>
+    }
+}

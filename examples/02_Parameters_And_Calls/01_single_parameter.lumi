@@ -1,0 +1,8 @@
+funcion entero duplicar(entero valor) {
+    retornar valor * 2>>
+}
+
+principal {
+    mostrar("Doble de 7:")>>
+    mostrar(duplicar(7))>>
+}

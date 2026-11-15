@@ -1,0 +1,12 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        puerta entrada {
+            orientacion "norte">>
+            ancho 0.9>>
+            alto 2.1>>
+            desplazamiento 0.5>>
+            color "cafe">>
+            material "madera">>
+        }
+    }
+}

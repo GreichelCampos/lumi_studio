@@ -1,0 +1,7 @@
+principal {
+    si verdadero {
+        texto mensaje_local = "Visible dentro del bloque">>
+        mostrar(mensaje_local)>>
+    }
+    mostrar(mensaje_local)>>
+}

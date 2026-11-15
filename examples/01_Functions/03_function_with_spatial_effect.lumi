@@ -1,0 +1,14 @@
+funcion vacio preparar_mesa() {
+    mesa mesa_defensa {
+        color "azul">>
+        material "madera">>
+    }
+    colocar mesa_defensa [0, 0, 0]>>
+    rotar mesa_defensa [0, 90, 0]>>
+}
+
+principal {
+    habitacion sala(6, 5, 3) {
+        preparar_mesa()>>
+    }
+}

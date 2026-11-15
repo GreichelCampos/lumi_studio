@@ -1,0 +1,12 @@
+funcion vacio centrar_mesa() {
+    mover mesa_funcion [0, 0, 0]>>
+    rotar mesa_funcion [0, 90, 0]>>
+}
+
+principal {
+    habitacion sala(7, 5, 3) {
+        mesa mesa_funcion { }
+        colocar mesa_funcion [2, 0, 1]>>
+        centrar_mesa()>>
+    }
+}

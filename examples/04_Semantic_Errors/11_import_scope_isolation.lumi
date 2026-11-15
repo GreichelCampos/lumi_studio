@@ -1,0 +1,6 @@
+entero secreto = 99>>
+importar "11_import_scope_module.lumi" usar revelar>>
+
+principal {
+    mostrar(revelar())>>
+}

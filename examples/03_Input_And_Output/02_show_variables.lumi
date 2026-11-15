@@ -1,0 +1,11 @@
+principal {
+    texto nombre = "Lumi">>
+    entero cantidad = 4>>
+    decimal altura = 2.5>>
+    booleano disponible = verdadero>>
+
+    mostrar(nombre)>>
+    mostrar(cantidad)>>
+    mostrar(altura)>>
+    mostrar(disponible)>>
+}

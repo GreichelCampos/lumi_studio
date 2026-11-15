@@ -1,0 +1,8 @@
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}
+
+principal {
+    mostrar("Area calculada:")>>
+    mostrar(calcular_area(5, 4))>>
+}

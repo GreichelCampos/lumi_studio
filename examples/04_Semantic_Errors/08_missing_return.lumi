@@ -1,0 +1,7 @@
+funcion entero calcular() {
+    mostrar("La funcion termina sin retornar un entero")>>
+}
+
+principal {
+    mostrar(calcular())>>
+}

@@ -1,0 +1,8 @@
+funcion vacio saludar() {
+    mostrar("Hola desde una funcion vacio")>>
+}
+
+principal {
+    saludar()>>
+    mostrar("La ejecucion continua")>>
+}

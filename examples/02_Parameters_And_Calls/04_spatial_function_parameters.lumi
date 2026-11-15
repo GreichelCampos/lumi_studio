@@ -1,0 +1,14 @@
+funcion vacio ubicar_mesa(decimal x, decimal z, decimal giro) {
+    mesa mesa_parametrizada {
+        color "naranja">>
+        material "madera">>
+    }
+    colocar mesa_parametrizada [x, 0, z]>>
+    rotar mesa_parametrizada [0, giro, 0]>>
+}
+
+principal {
+    habitacion sala(7, 6, 3) {
+        ubicar_mesa(1.5, -1, 45)>>
+    }
+}

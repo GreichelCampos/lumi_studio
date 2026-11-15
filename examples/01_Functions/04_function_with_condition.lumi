@@ -1,0 +1,15 @@
+funcion vacio agregar_silla(booleano permitida) {
+    si permitida {
+        silla silla_defensa {
+            color "verde">>
+            material "madera">>
+        }
+        colocar silla_defensa [1, 0, 0]>>
+    }
+}
+
+principal {
+    habitacion estudio(6, 5, 3) {
+        agregar_silla(verdadero)>>
+    }
+}

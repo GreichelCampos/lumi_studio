@@ -1,0 +1,11 @@
+funcion vacio sacar_sofa() {
+    mover sofa_funcion [2.5, 0, 0]>>
+}
+
+principal {
+    habitacion sala(6, 5, 3) {
+        sofa sofa_funcion { }
+        colocar sofa_funcion [0, 0, 0]>>
+        sacar_sofa()>>
+    }
+}

@@ -1,0 +1,18 @@
+principal {
+    habitacion sala(8, 6, 3) {
+        mesa mesa_centro {
+            color "azul">>
+            material "madera">>
+        }
+        silla silla_lectura {
+            color "verde">>
+        }
+        sofa sofa_descanso {
+            material "tela">>
+        }
+
+        colocar mesa_centro [-1.5, 0, 0]>>
+        colocar silla_lectura [1, 0, 1]>>
+        colocar sofa_descanso [1.5, 0, -1.5]>>
+    }
+}

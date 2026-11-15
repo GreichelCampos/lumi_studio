@@ -1,0 +1,4 @@
+principal {
+    mostrar("Bienvenida a Lumi")>>
+    mostrar("Este mensaje viene de mostrar")>>
+}

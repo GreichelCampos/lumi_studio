@@ -1,0 +1,11 @@
+funcion entero obtener() {
+    retornar 1>>
+}
+
+funcion entero obtener() {
+    retornar 2>>
+}
+
+principal {
+    mostrar(obtener())>>
+}

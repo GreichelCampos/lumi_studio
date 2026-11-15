@@ -1,0 +1,7 @@
+funcion entero sumar(entero primero, entero segundo) {
+    retornar primero + segundo>>
+}
+
+principal {
+    mostrar(sumar(5))>>
+}
