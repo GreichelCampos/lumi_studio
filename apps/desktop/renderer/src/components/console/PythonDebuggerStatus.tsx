@@ -1,5 +1,6 @@
 import type { CompileResult, DiagnosticItem } from '../../types';
 import { getCompileResultSummary } from './outputLogUtils';
+import { ExternalLink } from 'lucide-react';
 
 interface Props {
   result: CompileResult;
@@ -17,7 +18,8 @@ export function PythonDebuggerStatus({ result, onNavigateToDiagnostic }: Props) 
         <div key={diagnostic.id} className="border-l-2 border-rose-400 pl-2">
           <p>{diagnostic.code}: {diagnostic.description}</p>
           {onNavigateToDiagnostic && (
-            <button className="underline" onClick={() => onNavigateToDiagnostic(diagnostic)}>
+            <button className="underline inline-flex items-center gap-1.5" onClick={() => onNavigateToDiagnostic(diagnostic)}>
+              <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
               Ver diagnóstico en {diagnostic.file}:{diagnostic.line}
             </button>
           )}

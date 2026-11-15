@@ -120,9 +120,10 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-[var(--ide-btn-bg)] hover:brightness-110 border border-[var(--ide-panel-border)] text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] font-medium text-xs transition-all active:scale-95"
+              className="px-4 py-2 rounded-xl bg-[var(--ide-btn-bg)] hover:brightness-110 border border-[var(--ide-panel-border)] text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] font-medium text-xs transition-all active:scale-95 flex items-center gap-1.5"
             >
-              Cancelar
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Cancelar</span>
             </button>
             <button
               type="submit"

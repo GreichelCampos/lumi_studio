@@ -29,6 +29,7 @@ import { resolveDebugStep } from './services/editor/debugStepNavigation';
 import { relativePath } from './services/integration/projectInput';
 import type { ViewportWindowState } from './viewportBridge';
 import type { StartupBridge } from './startupBridge';
+import { ChevronUp, X } from 'lucide-react';
 
 const EXPLORER_MIN_WIDTH = 220;
 const EXPLORER_MAX_WIDTH = 480;
@@ -648,7 +649,7 @@ export default function App() {
       />
       {isRealBackend && <InteractiveInputDialog />}
       {storageError && <div role="alert" className="bg-rose-950 text-rose-100 px-4 py-2 text-sm z-[60]">
-        {storageError} <button onClick={clearStorageError} className="underline ml-3">Cerrar aviso</button>
+        {storageError} <button onClick={clearStorageError} className="underline ml-3 inline-flex items-center gap-1"><X className="w-3.5 h-3.5" aria-hidden="true" /><span>Cerrar aviso</span></button>
       </div>}
       {currentProject && !entryFile && <div role="status" className="px-4 py-2 text-xs text-amber-200">
         Selecciona el archivo principal desde el explorador antes de compilar. Esta selección se guarda en esta computadora.
@@ -780,8 +781,10 @@ export default function App() {
             className="console-restore-button"
             onClick={() => setIsConsoleVisible(true)}
             title="Mostrar panel inferior"
+            aria-label="Mostrar panel inferior"
           >
-            Mostrar panel
+            <ChevronUp className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Mostrar panel</span>
           </button>
           )}
         </>

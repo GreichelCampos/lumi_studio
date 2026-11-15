@@ -9,7 +9,11 @@ import {
   Trash2, 
   Check, 
   Sparkles,
-  Layers
+  Layers,
+  FolderPlus,
+  HardDrive,
+  Save,
+  ArrowRight
 } from 'lucide-react';
 
 interface OpenProjectModalProps {
@@ -106,9 +110,9 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {onImportLocalProject && legacyProjects.length > 0 && <div className="text-xs space-y-2 border p-3 rounded">
             <p>Proyectos anteriores del almacenamiento local. Guarda una copia en disco para trabajar con ellos:</p>
-            {legacyProjects.map(project => <button key={project.id} className="block underline" onClick={async () => {
+            {legacyProjects.map(project => <button key={project.id} className="flex items-center gap-1.5 underline" onClick={async () => {
               if (await onImportLocalProject(project.id)) onClose();
-            }}>Guardar copia de {project.name}...</button>)}
+            }}><Save className="w-3.5 h-3.5" aria-hidden="true" /><span>Guardar copia de {project.name}...</span></button>)}
           </div>}
           {filteredProjects.length === 0 ? (
             <div className="text-center py-10 space-y-3">
@@ -122,9 +126,10 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
                     onClose();
                     onNewProjectClick();
                   }}
-                  className="px-4 py-2 rounded-xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 text-xs font-semibold hover:bg-[#4d6932]/50 transition-all"
+                  className="px-4 py-2 rounded-xl bg-[#4d6932]/30 text-[#f3ebd6] border border-[#4d6932]/50 text-xs font-semibold hover:bg-[#4d6932]/50 transition-all inline-flex items-center gap-1.5"
                 >
-                  Crear un nuevo proyecto
+                  <FolderPlus className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span>Crear un nuevo proyecto</span>
                 </button>
               )}
             </div>
@@ -183,13 +188,14 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
                         onSelectProject(project.id);
                         onClose();
                       }}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
                         isCurrent
                           ? 'bg-[#f3ebd6] text-[#082016] hover:bg-[#fff9ec]'
                           : 'bg-[#1a422f]/60 text-[#f3ebd6] hover:bg-[#1a422f]'
                       }`}
                     >
-                      {isCurrent ? 'Continuar' : 'Abrir'}
+                      <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                      <span>{isCurrent ? 'Continuar' : 'Abrir'}</span>
                     </button>
 
                     {onDeleteProject && (
@@ -218,25 +224,27 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
             Total: <strong className="text-[#f3ebd6] font-mono">{projects.length}</strong> {projects.length === 1 ? 'proyecto' : 'proyectos'}
           </div>
           <div className="flex items-center gap-2.5">
-            {onOpenFromDisk && <button className="text-xs underline" onClick={async () => {
+            {onOpenFromDisk && <button className="text-xs underline inline-flex items-center gap-1.5" onClick={async () => {
               if (await onOpenFromDisk()) onClose();
-            }}>Abrir carpeta del disco...</button>}
+            }}><HardDrive className="w-3.5 h-3.5" aria-hidden="true" /><span>Abrir carpeta del disco...</span></button>}
             {onNewProjectClick && (
               <button
                 onClick={() => {
                   onClose();
                   onNewProjectClick();
                 }}
-                className="px-4 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs shadow-lg shadow-[#02110c]/40 border border-[#f3ebd6] transition-all active:scale-95"
+                className="px-4 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs shadow-lg shadow-[#02110c]/40 border border-[#f3ebd6] transition-all active:scale-95 flex items-center gap-1.5"
               >
-                Nuevo Proyecto...
+                <FolderPlus className="w-3.5 h-3.5" aria-hidden="true" />
+                <span>Nuevo Proyecto...</span>
               </button>
             )}
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95"
+              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95 flex items-center gap-1.5"
             >
-              Cerrar
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Cerrar</span>
             </button>
           </div>
         </div>

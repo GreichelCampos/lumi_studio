@@ -7,6 +7,7 @@ import {
   Boxes, 
   Sparkles, 
   RotateCcw, 
+  Check,
   Settings as SettingsIcon 
 } from 'lucide-react';
 import { 
@@ -187,9 +188,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#000000)] font-bold text-xs shadow-lg transition-all"
+            className="px-5 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#000000)] font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
           >
-            Aceptar y Guardar
+            <Check className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Aceptar y Guardar</span>
           </button>
         </div>
       </div>

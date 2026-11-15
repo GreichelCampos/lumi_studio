@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
+import { Send } from 'lucide-react';
 
 interface Props {
   scopeKey: string;
@@ -51,7 +52,10 @@ function InputSession({ prompt, onSubmit, validate }: Props) {
         aria-describedby={`${id}-prompt${error ? ` ${id}-error` : ''}`} aria-invalid={Boolean(error)}
         onChange={event => { setValue(event.target.value); setError(''); setStatus('waiting'); }}
         className="w-full rounded border border-[var(--ide-panel-border)] bg-[var(--ide-control-bg)] p-2" />
-      <button type="submit" disabled={disabled} className="glass-btn px-3 py-1 disabled:opacity-40">Enviar entrada</button>
+      <button type="submit" disabled={disabled} className="glass-btn px-3 py-1 disabled:opacity-40 inline-flex items-center gap-1.5">
+        <Send className="w-3.5 h-3.5" aria-hidden="true" />
+        <span>Enviar entrada</span>
+      </button>
       <p role="status" aria-live="polite">{status === 'sending' ? 'Enviando entrada…'
         : status === 'sent' ? 'Entrada enviada.' : 'Esperando datos.'}</p>
       {error && <p id={`${id}-error`} role="alert">{error}</p>}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { validateProjectName, validateProjectLocation } from '../../utils/validation';
-import { X, FolderPlus, Sparkles, Folder, AlertCircle } from 'lucide-react';
+import { X, FolderPlus, Sparkles, Folder, FolderOpen, AlertCircle } from 'lucide-react';
 
 interface NewProjectModalProps {
   isOpen: boolean;
@@ -137,10 +137,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             <p className="text-[11px] text-[#8f9d95] mt-1">
               {onChooseLocation ? 'Se creará una carpeta dentro de la ubicación elegida.' : 'Almacenamiento local del navegador.'}
             </p>
-            {onChooseLocation && <button type="button" className="text-xs underline" onClick={async () => {
+            {onChooseLocation && <button type="button" className="text-xs underline inline-flex items-center gap-1.5" onClick={async () => {
               try { const chosen = await onChooseLocation(); if (chosen) setLocation(chosen); }
               catch (error) { setErrorMessage(error instanceof Error ? error.message : 'No se pudo elegir la carpeta.'); }
-            }}>Elegir carpeta...</button>}
+            }}><FolderOpen className="w-3.5 h-3.5" aria-hidden="true" /><span>Elegir carpeta...</span></button>}
           </div>
 
           <div>
@@ -167,9 +167,10 @@ export const NewProjectModal: React.FC<NewProjectModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95"
+              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95 flex items-center gap-1.5"
             >
-              Cancelar
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Cancelar</span>
             </button>
             <button
               type="submit"

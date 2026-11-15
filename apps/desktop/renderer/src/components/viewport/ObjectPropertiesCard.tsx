@@ -219,6 +219,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
             }}
             className="flex items-center gap-1 px-3 py-1 rounded-xl bg-[var(--ide-btn-bg)] hover:brightness-125 text-[var(--ide-text)] border border-[var(--ide-btn-border)] text-[11px] font-medium transition-all cursor-pointer active:scale-95"
           >
+            <X className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Cerrar</span>
           </button>
         </div>

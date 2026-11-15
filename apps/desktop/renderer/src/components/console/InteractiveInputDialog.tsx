@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { InputPrompt } from '../../services/integration/desktopBridge';
 import { InteractiveInputForm } from './InteractiveInputForm';
+import { X } from 'lucide-react';
 
 export function InteractiveInputDialog() {
   const [prompt, setPrompt] = useState<InputPrompt | null>(null);
@@ -37,7 +38,8 @@ function PromptDialog({ prompt }: { prompt: InputPrompt }) {
         prompt={prompt.prompt || 'El programa está esperando una respuesta.'}
         validate={value => value.length > 16_384 ? 'Usa hasta 16.384 caracteres.' : null}
         onSubmit={reply} />
-      <button type="button" className="mt-3 text-xs underline" onClick={() => void cancel()}>
+      <button type="button" className="mt-3 text-xs underline inline-flex items-center gap-1.5" onClick={() => void cancel()}>
+        <X className="w-3.5 h-3.5" aria-hidden="true" />
         Cancelar ejecución
       </button>
       {cancelError && <p role="alert">{cancelError}</p>}

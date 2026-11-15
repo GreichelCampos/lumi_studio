@@ -143,6 +143,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
                 : 'glass-tab-inactive text-[var(--ide-text-muted)] hover:text-[var(--ide-text)]'
             }`}
           >
+            <Terminal className="w-3.5 h-3.5 text-[var(--ide-accent)]" aria-hidden="true" />
             <span>Salida</span>
           </button>
 
@@ -155,6 +156,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
                 : 'glass-tab-inactive text-[var(--ide-text-muted)] hover:text-[var(--ide-text)]'
             }`}
           >
+            <AlertCircle className="w-3.5 h-3.5 text-rose-400" aria-hidden="true" />
             <span>Diagnósticos</span>
             {diagnostics.length > 0 && (
               <span

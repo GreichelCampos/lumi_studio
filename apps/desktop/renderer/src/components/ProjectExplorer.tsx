@@ -6,7 +6,6 @@ import {
   FileCode, 
   ChevronRight, 
   ChevronDown, 
-  Plus, 
   Trash2, 
   Layers, 
   BookOpen,
@@ -85,7 +84,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
             title="Nuevo archivo .lumi"
             aria-label="Nuevo archivo .lumi"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <FilePlus className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={onNewProject}

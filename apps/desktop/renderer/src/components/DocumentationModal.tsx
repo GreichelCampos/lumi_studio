@@ -1,7 +1,7 @@
 import React from 'react';
 import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS } from '../data/documentation';
 import { LumiMascot } from './LumiMascot';
-import { X, Sparkles, Code2 } from 'lucide-react';
+import { X, Sparkles, Code2, Check } from 'lucide-react';
 
 interface DocumentationModalProps {
   isOpen: boolean;
@@ -146,9 +146,10 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         <div className="px-6 py-3.5 glass-panel-header border-t border-[#f3ebd6]/15 flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs transition-all shadow-lg shadow-[#02110c]/40"
+            className="px-5 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs transition-all shadow-lg shadow-[#02110c]/40 flex items-center gap-1.5"
           >
-            Entendido
+            <Check className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>Entendido</span>
           </button>
         </div>
       </div>

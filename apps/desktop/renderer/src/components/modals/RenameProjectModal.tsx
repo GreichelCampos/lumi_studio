@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Pencil, X } from 'lucide-react';
 
 interface Props {
   name: string | null;
@@ -20,8 +21,16 @@ export function RenameProjectModal({ name, onClose, onRename }: Props) {
       <h2>Renombrar proyecto</h2>
       <input aria-label="Nuevo nombre del proyecto" autoFocus value={value} onChange={event => setValue(event.target.value)} className="bg-[#082016] p-2 border rounded" />
       <p className="text-xs">Se renombra la carpeta; el contenido de los archivos se conserva.</p>
-      <button type="button" disabled={busy} onClick={onClose}>Cancelar</button>{' '}
-      <button type="submit" disabled={busy || !value.trim()}>Renombrar</button>
+      <div className="flex items-center justify-end gap-2">
+        <button type="button" disabled={busy} onClick={onClose} className="glass-btn px-3 py-1.5 flex items-center gap-1.5 disabled:opacity-40">
+          <X className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>Cancelar</span>
+        </button>
+        <button type="submit" disabled={busy || !value.trim()} className="glass-btn px-3 py-1.5 flex items-center gap-1.5 disabled:opacity-40">
+          <Pencil className="w-3.5 h-3.5" aria-hidden="true" />
+          <span>Renombrar</span>
+        </button>
+      </div>
     </form>
   </div>;
 }

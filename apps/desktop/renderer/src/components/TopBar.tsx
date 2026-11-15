@@ -19,8 +19,27 @@ import {
   Download,
   Code2,
   Check,
-  Settings
+  Settings,
+  FilePlus,
+  SaveAll,
+  Pencil,
+  FileOutput,
+  FileInput,
+  WandSparkles,
+  BedDouble,
+  CircleHelp,
+  Info,
+  type LucideIcon
 } from 'lucide-react';
+
+type MenuItem = {
+  label: string;
+  action: () => void;
+  shortcut?: string;
+  icon?: LucideIcon;
+};
+
+type MenuDivider = { divider: true };
 
 interface TopBarProps {
   isRealBackend?: boolean;
@@ -137,29 +156,34 @@ export const TopBar: React.FC<TopBarProps> = ({
     return () => window.removeEventListener('keydown', handleShortcut);
   }, []);
 
-  const menus = [
+  const menus: Array<{
+    id: string;
+    label: string;
+    items: Array<MenuItem | MenuDivider>;
+    directAction?: () => void;
+  }> = [
     {
       id: 'archivo',
       label: 'Archivo',
       items: [
-        { label: 'Nuevo archivo .lumi', action: onNewFile, shortcut: 'Ctrl+N' },
-        { label: 'Guardar archivo actual', action: onSaveFile, shortcut: 'Ctrl+S' },
-        ...(onSaveAs ? [{ label: 'Guardar archivo como...', action: onSaveAs }] : []),
-        ...(onRenameProject ? [{ label: 'Renombrar proyecto...', action: onRenameProject }] : []),
-        { label: 'Guardar todos los cambios', action: onSaveAll, shortcut: 'Ctrl+Shift+S' },
+        { label: 'Nuevo archivo .lumi', action: onNewFile, shortcut: 'Ctrl+N', icon: FilePlus },
+        { label: 'Guardar archivo actual', action: onSaveFile, shortcut: 'Ctrl+S', icon: Save },
+        ...(onSaveAs ? [{ label: 'Guardar archivo como...', action: onSaveAs, icon: SaveAll }] : []),
+        ...(onRenameProject ? [{ label: 'Renombrar proyecto...', action: onRenameProject, icon: Pencil }] : []),
+        { label: 'Guardar todos los cambios', action: onSaveAll, shortcut: 'Ctrl+Shift+S', icon: SaveAll },
         { divider: true },
-        { label: 'Nuevo proyecto...', action: onNewProject, shortcut: '' },
-        { label: 'Abrir proyecto...', action: onOpenProjectModal, shortcut: 'Ctrl+O' },
+        { label: 'Nuevo proyecto...', action: onNewProject, shortcut: '', icon: FolderPlus },
+        { label: 'Abrir proyecto...', action: onOpenProjectModal, shortcut: 'Ctrl+O', icon: FolderOpen },
         { divider: true },
         { 
           label: 'Exportar escena (.lumic)...',
           action: handleExport, 
-          shortcut: 'Ctrl+E' 
+          shortcut: 'Ctrl+E', icon: FileOutput
         },
         { 
           label: 'Abrir escena (.lumic)...',
           action: handleTriggerImport, 
-          shortcut: 'Ctrl+Shift+O' 
+          shortcut: 'Ctrl+Shift+O', icon: FileInput
         },
       ]
     },
@@ -170,18 +194,21 @@ export const TopBar: React.FC<TopBarProps> = ({
         { 
           label: 'Formatear código Lumi (no disponible)',
           action: () => showToast('El formateador de código Lumi todavía no está implementado.'),
-          shortcut: ''
+          shortcut: '',
+          icon: WandSparkles
         },
         { 
           label: 'Guardar espacio de trabajo', 
           action: onSaveAll, 
-          shortcut: '' 
+          shortcut: '',
+          icon: SaveAll
         },
         { divider: true },
         {
           label: 'Configuración...',
           action: () => onOpenSettings && onOpenSettings(),
-          shortcut: 'Ctrl+,'
+          shortcut: 'Ctrl+,',
+          icon: Settings
         },
       ]
     },
@@ -192,7 +219,8 @@ export const TopBar: React.FC<TopBarProps> = ({
         { 
           label: 'Habitación...', 
           action: onInsertRoomModal, 
-          shortcut: 'Alt+H' 
+          shortcut: 'Alt+H',
+          icon: BedDouble
         },
       ]
     },
@@ -206,8 +234,8 @@ export const TopBar: React.FC<TopBarProps> = ({
           shortcut: currentProject?.id === p.id ? '✓' : '',
         })),
         { divider: true },
-        { label: 'Crear nuevo proyecto...', action: onNewProject, shortcut: '' },
-        { label: 'Gestionar todos los proyectos...', action: onOpenProjectModal, shortcut: '' },
+        { label: 'Crear nuevo proyecto...', action: onNewProject, shortcut: '', icon: FolderPlus },
+        { label: 'Gestionar todos los proyectos...', action: onOpenProjectModal, shortcut: '', icon: FolderOpen },
       ]
     },
     {
@@ -220,10 +248,10 @@ export const TopBar: React.FC<TopBarProps> = ({
       id: 'ayuda',
       label: 'Ayuda',
       items: [
-        { label: 'Ayuda de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1' },
-        { label: 'Configuración del IDE', action: () => onOpenSettings && onOpenSettings(), shortcut: 'Ctrl+,' },
+        { label: 'Ayuda de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1', icon: CircleHelp },
+        { label: 'Configuración del IDE', action: () => onOpenSettings && onOpenSettings(), shortcut: 'Ctrl+,', icon: Settings },
         { divider: true },
-        { label: 'Acerca de Estudio Lumi', action: onOpenDocs, shortcut: '' },
+        { label: 'Acerca de Estudio Lumi', action: onOpenDocs, shortcut: '', icon: Info },
       ]
     }
   ];
@@ -329,7 +357,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                         }}
                         className="w-full text-left px-3.5 py-1.5 hover:bg-[var(--ide-btn-bg)] hover:text-[var(--ide-text)] text-[var(--ide-text)] flex items-center justify-between transition-colors"
                       >
-                        <span>{'label' in item ? item.label : ''}</span>
+                        <span className="flex min-w-0 items-center gap-2">
+                          {'icon' in item && item.icon && <item.icon className="w-3.5 h-3.5 flex-shrink-0 text-[var(--ide-text-muted)]" aria-hidden="true" />}
+                          <span className="truncate">{'label' in item ? item.label : ''}</span>
+                        </span>
                         {'shortcut' in item && item.shortcut && (
                           <span className="text-[10px] text-[var(--ide-text-muted)] font-mono">
                             {item.shortcut}

@@ -121,9 +121,10 @@ export const RenameFileModal: React.FC<RenameFileModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95"
+              className="px-4 py-2 rounded-xl bg-white/[0.08] hover:bg-white/[0.14] border border-[#f3ebd6]/15 text-[#d5cbb2] hover:text-[#f3ebd6] font-medium text-xs transition-all active:scale-95 flex items-center gap-1.5"
             >
-              Cancelar
+              <X className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Cancelar</span>
             </button>
             <button
               type="submit"

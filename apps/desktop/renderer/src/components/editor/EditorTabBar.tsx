@@ -4,7 +4,7 @@ import { useEditorTabScroll } from '../../hooks/useEditorTabScroll';
 import { 
   FileCode, 
   X, 
-  Plus, 
+  FilePlus,
   Star, 
   ChevronLeft, 
   ChevronRight 
@@ -134,7 +134,7 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
             title="Crear nuevo archivo .lumi"
             aria-label="Crear nuevo archivo .lumi"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <FilePlus className="w-3.5 h-3.5" />
           </button>
         </div>
 
