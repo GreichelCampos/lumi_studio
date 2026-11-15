@@ -87,6 +87,7 @@ class SpatialSemanticAnalyzer:
         self._active_room: str | None = None
         self._elements: dict[str, SpatialElementState] = {}
         self._abstract_state = SpatialAbstractState()
+        self._analysis_complete = True
 
     @contextmanager
     def suspend_linear_analysis(self):
@@ -138,6 +139,12 @@ class SpatialSemanticAnalyzer:
 
     def handles(self, node_type: str) -> bool:
         return node_type in SPATIAL_NODE_TYPES
+
+    @property
+    def analysis_complete(self) -> bool:
+        """Whether spatial transfer analysis reached a determinate result."""
+
+        return self._analysis_complete and self._abstract_state.analysis_complete
 
     def analyze_if(
         self,
@@ -215,11 +222,21 @@ class SpatialSemanticAnalyzer:
     ) -> None:
         """Emit only cumulative failures justified on every alternative."""
 
-        if not routes or any(not route for route in routes):
+        if not routes:
+            return
+        if any(not route for route in routes):
+            if any(route for route in routes):
+                self._analysis_complete = False
             return
         common_keys = {record[0] for record in routes[0]}
         for route in routes[1:]:
             common_keys.intersection_update(record[0] for record in route)
+        if any(
+            record[0] not in common_keys
+            for route in routes
+            for record in route
+        ):
+            self._analysis_complete = False
         if not common_keys:
             return
         for route in routes:
@@ -229,6 +246,7 @@ class SpatialSemanticAnalyzer:
 
     def _emit_transition_record(self, record: tuple) -> None:
         if self._transition_diagnostic_suspensions:
+            self._analysis_complete = False
             return
         if self._route_diagnostic_collectors:
             self._route_diagnostic_collectors[-1].append(record)
@@ -350,7 +368,57 @@ class SpatialSemanticAnalyzer:
         """Conservatively forget facts an unsupported call may modify."""
 
         if self._linear_analysis_enabled:
+            self._analysis_complete = False
             self._abstract_state.mark_unknown_effects(self._active_room)
+
+    def executable_pending_calls(
+        self,
+        effects: EffectSequence,
+        bindings: dict[str, dict[str, Any] | None],
+    ) -> tuple[SpatialEffect, ...]:
+        """Return calls that may execute after substituting known arguments."""
+
+        result: list[SpatialEffect] = []
+
+        def visit(effect) -> None:
+            if isinstance(effect, SpatialEffect):
+                if effect.kind is SpatialEffectKind.PENDING_CALL:
+                    result.append(effect)
+                return
+            if isinstance(effect, EffectSequence):
+                for item in effect.effects:
+                    visit(item)
+                return
+            if isinstance(effect, ConditionalEffects):
+                condition = self._substitute(effect.condition, bindings)
+                if (
+                    condition.get("node") == "LiteralNode"
+                    and condition.get("literal_kind") == "booleano"
+                ):
+                    visit(
+                        effect.then_effects
+                        if condition.get("value") is True
+                        else effect.else_effects
+                    )
+                    return
+                visit(effect.then_effects)
+                visit(effect.else_effects)
+                return
+            if isinstance(effect, AlternativeEffects):
+                for branch in effect.branches:
+                    visit(branch)
+                visit(effect.default_effects)
+                return
+            if isinstance(effect, RoomEffects):
+                visit(effect.body)
+                return
+            if isinstance(effect, RepeatedEffects):
+                visit(effect.initial_effects)
+                visit(effect.body)
+                visit(effect.iteration_effects)
+
+        visit(effects)
+        return tuple(result)
 
     def analyze_recursive_transfer(
         self,
@@ -405,6 +473,21 @@ class SpatialSemanticAnalyzer:
                     return False
                 continue
             if isinstance(effect, ConditionalEffects):
+                condition = self._substitute(effect.condition, bindings)
+                if (
+                    condition.get("node") == "LiteralNode"
+                    and condition.get("literal_kind") == "booleano"
+                ):
+                    selected = (
+                        effect.then_effects
+                        if condition.get("value") is True
+                        else effect.else_effects
+                    )
+                    if not self._apply_effect_sequence(
+                        selected, bindings, apply_call,
+                    ):
+                        return False
+                    continue
                 if not self._apply_effect_alternatives(
                     (effect.then_effects, effect.else_effects),
                     bindings, apply_call,
@@ -817,6 +900,11 @@ class SpatialSemanticAnalyzer:
         abstract = declare_abstract_element(
             self._abstract_state.states_for(self._active_room, name)
         )
+        if abstract.classification in {
+            TransferClassification.POSSIBLE_ERROR,
+            TransferClassification.UNKNOWN,
+        }:
+            self._analysis_complete = False
         if abstract.confirmed_reason is not None:
             self._report_transition(
                 abstract.confirmed_reason, node, room_name=self._active_room,
@@ -838,6 +926,11 @@ class SpatialSemanticAnalyzer:
             abstract = apply_abstract_operation(
                 self._abstract_state.states_for(self._active_room, name), operation,
             )
+            if abstract.classification in {
+                TransferClassification.POSSIBLE_ERROR,
+                TransferClassification.UNKNOWN,
+            }:
+                self._analysis_complete = False
             if abstract.confirmed_reason is not None:
                 self._report_transition(
                     abstract.confirmed_reason, node, room_name=self._active_room,

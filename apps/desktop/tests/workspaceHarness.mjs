@@ -32,3 +32,39 @@ export async function launchDesktop(env, workspace) {
   await desktop.evaluate(({ dialog }) => { dialog.showMessageBoxSync = () => 1; });
   return desktop;
 }
+
+export async function waitForStudioReady(page, {
+  requireViewport = false,
+  expectedBackendAvailable = true,
+  timeout = 30_000,
+} = {}) {
+  try {
+    await page.locator('textarea').waitFor({ state: 'visible', timeout });
+    if (requireViewport) {
+      await page.locator('#viewport-3d-main').waitFor({ state: 'visible', timeout });
+    }
+  } catch (error) {
+    throw new Error(
+      `El renderer de Lumi Studio no quedó listo en ${page.url()}: ${error.message}`,
+      { cause: error },
+    );
+  }
+
+  const backend = await page.evaluate(async () => {
+    const bridge = window.lumiDesktop;
+    if (!bridge || typeof bridge.availability !== 'function') {
+      return { bridgeAvailable: false, availability: null };
+    }
+    return { bridgeAvailable: true, availability: await bridge.availability() };
+  });
+  if (!backend.bridgeAvailable) {
+    throw new Error('El renderer cargó sin el puente preload window.lumiDesktop.');
+  }
+  if (backend.availability?.available !== expectedBackendAvailable) {
+    throw new Error(
+      `Disponibilidad de Python inesperada: se esperaba ${expectedBackendAvailable}, `
+      + `pero se obtuvo ${JSON.stringify(backend.availability)}.`,
+    );
+  }
+  return backend.availability;
+}

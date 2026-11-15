@@ -38,11 +38,11 @@ def test_published_help_examples_parse_with_the_real_python_parser(help_sections
     assert bool(program.statements) == (index != 4)
 
 
-def test_complete_spatial_help_does_not_claim_a_generated_scene(help_sections):
+def test_complete_spatial_help_reports_completed_without_generated_scene(help_sections):
     result = CompilerService().compile(help_sections[0]["code"], "ayuda.lumi")
-    assert result.status is CompilationStatus.INCOMPLETE
+    assert result.status is CompilationStatus.COMPLETED
+    assert result.limitations == ()
     assert result.diagnostics == ()
-    assert result.limitations
 
 
 def test_incomplete_architectural_help_is_rejected_semantically(help_sections):

@@ -101,12 +101,13 @@ def test_imported_runtime_error_keeps_imported_file_location():
     assert result.diagnostics[0].file == "roto.lumi"
 
 
-def test_room_execution_publishes_runtime_scene_despite_analysis_limitation():
+def test_room_execution_publishes_runtime_scene_after_complete_analysis():
     result = ExecutionService().execute_source(
         "habitacion sala(5, 4, 2.7) {}", "principal.lumi"
     )
 
-    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.compilation.status == CompilationStatus.COMPLETED
+    assert result.compilation.limitations == ()
     assert result.status == ExecutionStatus.COMPLETED
     assert result.succeeded
     assert result.diagnostics == ()
@@ -179,7 +180,7 @@ def test_dynamic_invalid_dimension_remains_a_runtime_validation():
         "principal.lumi",
     )
 
-    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.compilation.status == CompilationStatus.COMPLETED
     assert result.status == ExecutionStatus.FAILED
     assert result.execution_attempted
     assert result.scene_plan is None
@@ -188,13 +189,14 @@ def test_dynamic_invalid_dimension_remains_a_runtime_validation():
     ]
 
 
-def test_uncalled_spatial_function_keeps_analysis_limitation_but_execution_succeeds():
+def test_uncalled_spatial_function_does_not_create_analysis_limitation():
     result = ExecutionService().execute_source(
         "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} } mostrar(1)>>",
         "principal.lumi",
     )
 
-    assert result.compilation.status == CompilationStatus.INCOMPLETE
+    assert result.compilation.status == CompilationStatus.COMPLETED
+    assert result.compilation.limitations == ()
     assert result.status == ExecutionStatus.COMPLETED
     assert result.execution_attempted
     assert result.succeeded

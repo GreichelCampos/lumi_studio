@@ -56,7 +56,7 @@ def test_distinct_nested_body_diagnostics_survive_shared_visits():
 
 
 @pytest.mark.parametrize("location", ["entry", "direct", "transitive", "shared", "none"])
-def test_spatial_limitations_use_all_successful_asts_and_keep_wire_contract(location):
+def test_unused_spatial_syntax_in_successful_asts_is_not_a_limitation(location):
     room = 'funcion vacio unused() { habitacion sala(5, 4, 3) {} }'
     sources = {**SOURCES, "C": 'funcion entero h() { retornar 3>> }'}
     entry = ENTRY
@@ -69,15 +69,15 @@ def test_spatial_limitations_use_all_successful_asts_and_keep_wire_contract(loca
         sources[target] += room
     result = CompilerService().compile(entry, "A", sources=sources)
     assert result.diagnostics == ()
-    expected = () if location == "none" else (AnalysisLimitation.SPATIAL_SEMANTICS_UNAVAILABLE,)
+    expected = ()
     assert result.limitations == expected
-    assert result.status == (CompilationStatus.COMPLETED if location == "none" else CompilationStatus.INCOMPLETE)
+    assert result.status == CompilationStatus.COMPLETED
     serialized = serialize_compilation(result)
     assert set(serialized) == {"file", "status", "stage", "program", "imported_programs", "diagnostics", "limitations"}
     assert set(serialized["imported_programs"]) == ({"B"} if location == "transitive" else {"B", "D"})
     wire = adapt_result(Request("regression", "analyze", "A", {"A": entry, **sources}), result)
     assert wire["protocolVersion"] == "1.0.0"
-    assert wire["result"]["limitations"] == ([] if location == "none" else ["spatial_semantics_unavailable"])
+    assert wire["result"]["limitations"] == []
 
 
 @pytest.mark.parametrize("broken", ['funcion entero h() {', '@'])

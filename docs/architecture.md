@@ -62,9 +62,10 @@ de la operación. Los errores léxicos sin ubicación estructurada se muestran c
 `analyze` no ejecuta instrucciones ni genera escena. `execute` llama al intérprete
 y puede devolver `result.scenePlan` con `capabilities.scenePlan: true` si termina
 correctamente y hay habitaciones. Sin escena, el campo se omite y el adaptador
-lo representa como `null`. El análisis puede conservar `analysisStatus: incomplete`
-y su limitación espacial aunque la ejecución tenga `status: completed` y escena.
-No equivale a validar colisiones o todas las reglas espaciales.
+lo representa como `null`. Un análisis espacial determinado usa
+`analysisStatus: completed`; `incomplete` con `spatial_semantics_unavailable`
+se reserva para efectos desconocidos o resultados abstractos parciales. Este estado
+es independiente de que una ejecución posterior produzca una escena.
 
 `debugTrace`, `interactiveInput` y `cancellation` permanecen en `false`; los
 resultados Python contienen `debugSteps: []` en el IDE. Se correlacionan solicitudes y se descartan

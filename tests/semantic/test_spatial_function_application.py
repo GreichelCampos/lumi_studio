@@ -267,8 +267,13 @@ def test_conditional_effects_join_possible_element_presence():
     declaration = function(
         "elegir", [conditional], [parameter("condicion", "booleano")],
     )
+    variable = node(
+        "VariableDeclarationNode", type="booleano", name="opcion",
+        value=literal(True),
+    )
     analyzer, _ = analyze(
-        declaration, room("sala", [call("elegir", [literal(True)])]),
+        declaration, variable,
+        room("sala", [call("elegir", [identifier("opcion")])]),
     )
     state = analyzer.spatial_analyzer._abstract_state
     possible = frozenset({

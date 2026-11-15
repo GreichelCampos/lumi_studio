@@ -215,7 +215,7 @@ def test_imported_module_top_level_spatial_code_is_not_applied():
     assert analyzer.spatial_analyzer._abstract_state.room_presence == {}
 
 
-def test_compiler_keeps_spatial_capability_limitation_for_imported_source():
+def test_compiler_reports_complete_imported_spatial_effects():
     result = CompilerService().compile_project(
         {
             "A": 'importar "B" usar preparar>> habitacion sala(5, 4, 3) { preparar()>> }',
@@ -224,5 +224,6 @@ def test_compiler_keeps_spatial_capability_limitation_for_imported_source():
         entry_file="A",
     )
 
-    assert result.status is CompilationStatus.INCOMPLETE
+    assert result.status is CompilationStatus.COMPLETED
     assert result.diagnostics == ()
+    assert result.limitations == ()

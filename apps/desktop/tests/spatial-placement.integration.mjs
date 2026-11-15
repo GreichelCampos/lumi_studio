@@ -4,7 +4,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { startVite } from '../scripts/development.mjs';
-import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
+import { launchDesktop, temporaryWorkspace, waitForStudioReady } from './workspaceHarness.mjs';
 
 const workspace = await temporaryWorkspace();
 const evidence = fileURLToPath(new URL(`../../../implementation_tools/integration_reports/spatial-placement-${Date.now()}-${process.pid}/`, import.meta.url));
@@ -25,7 +25,7 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor({ timeout: 30_000 });
+  await waitForStudioReady(page, { requireViewport: true });
   await page.locator('textarea').waitFor();
   await page.evaluate(async () => {
     const { ThreeSceneManager } = await import('/src/components/viewport/ThreeSceneManager.ts');
@@ -136,7 +136,7 @@ try {
 
   const invalidSource = 'habitacion invalida(6,5,3) { piso uno {} piso dos {} }';
   const invalid = await wire(invalidSource);
-  assert.equal(invalid.status, 'failed');
+  assert.equal(invalid.status, 'blocked');
   assert.equal(invalid.result.diagnostics[0].code, 'SPA_MULTIPLE_FLOORS');
   assert.equal(invalid.result.capabilities.scenePlan, false);
   assert.equal(Object.hasOwn(invalid.result, 'scenePlan'), false);

@@ -7,7 +7,7 @@ export const RUNTIME_SCENE_SOURCE = [
   '  piso suelo { material "madera">> color "beige">> }',
   '  mesa mesa1 { color "rojo">> }',
   '  colocar mesa1 [0, 0, 0]>>',
-  '  si verdadero { mover mesa1 [destino(2), 0, -1]>> }',
+  '  si verdadero { mover mesa1 [destino(1), 0, -1]>> }',
   '  entero angulo = 0>>',
   '  mientras angulo < 90 { angulo = angulo + 30>> rotar mesa1 [0, angulo, 0]>> }',
   '}',
@@ -22,7 +22,7 @@ export function assertRuntimeRoom(room) {
   const item = room.objects[0];
   assert.equal(item.name, 'mesa1');
   assert.equal(item.type, 'mesa');
-  assert.deepEqual(item.position, [3, 0, -1]);
+  assert.deepEqual(item.position, [2, 0, -1]);
   assert.deepEqual(item.rotation, [0, 90, 0]);
   assert.deepEqual(item.dimensions, [1.2, 0.5, 0.8]);
   assert.equal(item.color, 'rojo');

@@ -131,7 +131,7 @@ Esta validación es estructural. No reemplaza `SpatialValidator` ni implementa c
 - La ejecución, construcción y validación espacial deben terminar sin diagnósticos.
 - Debe existir al menos una habitación; un `ScenePlan` interno vacío no se envía.
 - `capabilities.scenePlan` es `true` exactamente cuando el payload contiene `scenePlan`.
-- Un programa espacial ejecutado correctamente puede tener `status: completed` y `analysisStatus: incomplete` con la limitación `spatial_semantics_unavailable`.
+- Un programa espacial cuyo análisis abstracto queda determinado usa `analysisStatus: completed`; `incomplete` y `spatial_semantics_unavailable` se reservan para resultados realmente parciales o desconocidos.
 - Un diagnóstico runtime o espacial produce `status: failed`, `scenePlan` ausente y capacidad `false`.
 - Un fallo de adaptación produce una respuesta de infraestructura `SERIALIZATION_ERROR`; no se publica una escena parcial.
 - `analyze` nunca ejecuta ni publica una escena.

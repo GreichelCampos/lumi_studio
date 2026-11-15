@@ -118,7 +118,9 @@ class CompilerService:
         # The catalog supports explicit imports inside imported bodies. It does
         # not define symbols; the public import map remains direct imports.
         semantic = SemanticAnalyzer().analyze(program, context.successful_programs)
-        limitations = analysis_limitations(context.successful_programs.values())
+        limitations = analysis_limitations(
+            spatial_analysis_complete=semantic.spatial_analysis_complete,
+        )
         status = CompilationStatus.COMPLETED
         if semantic.diagnostics:
             status = CompilationStatus.FAILED

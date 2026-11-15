@@ -125,6 +125,10 @@ class Interpreter:
         self._call_depth = 0
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
+        self._module_environments: dict[str, RuntimeEnvironment] = {}
+        self._module_function_scopes: dict[str, RuntimeFunctionScope] = {}
+        self._initialized_modules: set[str] = set()
+        self._initializing_modules: set[str] = set()
         self._scene_builder: ScenePlanBuilder | None = None
 
     def execute(
@@ -139,6 +143,10 @@ class Interpreter:
         self.function_scope = RuntimeFunctionScope()
         self._call_depth = 0
         self._has_import_context = imported_programs is not None
+        self._module_environments = {}
+        self._module_function_scopes = {}
+        self._initialized_modules = set()
+        self._initializing_modules = set()
         self.imported_programs = {
             file_name: normalize_ast(imported_program)
             for file_name, imported_program in (imported_programs or {}).items()
@@ -595,12 +603,60 @@ class Interpreter:
                 "Cambie uno de los nombres o elimine la importación.",
             )
 
-        runtime_function = RuntimeFunction(
-            declaration=function,
-            closure_environment=self.environment,
-            closure_scope=self.function_scope,
-        )
+        _, module_scope = self._ensure_module_runtime(file_name)
+        runtime_function = module_scope.resolve(symbol_name)
+        if runtime_function is None:
+            self._fail(
+                node,
+                "RUN_IMPORT_INVALID_AST",
+                f"La función importada '{symbol_name}' no pudo registrarse en su módulo.",
+                "Vuelva a generar el AST del archivo importado.",
+            )
         self.function_scope.define(symbol_name, runtime_function)
+
+    def _ensure_module_runtime(
+        self, file_name: str,
+    ) -> tuple[RuntimeEnvironment, RuntimeFunctionScope]:
+        """Initialize an imported module in its own lexical environment."""
+
+        environment = self._module_environments.get(file_name)
+        function_scope = self._module_function_scopes.get(file_name)
+        if environment is not None and function_scope is not None:
+            if file_name in self._initialized_modules or file_name in self._initializing_modules:
+                return environment, function_scope
+        else:
+            environment = RuntimeEnvironment()
+            function_scope = RuntimeFunctionScope()
+            self._module_environments[file_name] = environment
+            self._module_function_scopes[file_name] = function_scope
+
+        program = self.imported_programs[file_name]
+        statements = program.get("statements", [])
+        for statement in statements:
+            if statement.get("node") != "FunctionDeclarationNode":
+                continue
+            function_scope.define(
+                statement["name"],
+                RuntimeFunction(statement, environment, function_scope),
+            )
+
+        previous_environment = self.environment
+        previous_function_scope = self.function_scope
+        self._initializing_modules.add(file_name)
+        try:
+            self.environment = environment
+            self.function_scope = function_scope
+            for statement in statements:
+                if statement.get("node") in {
+                    "VariableDeclarationNode", "ImportNode",
+                }:
+                    self._execute_node(statement)
+            self._initialized_modules.add(file_name)
+        finally:
+            self._initializing_modules.discard(file_name)
+            self.environment = previous_environment
+            self.function_scope = previous_function_scope
+        return environment, function_scope
 
     def _evaluate_binary(self, node: dict[str, Any]) -> Any:
         left = self._evaluate(node["left"])

@@ -1,4 +1,4 @@
-import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
+import { launchDesktop, temporaryWorkspace, waitForStudioReady } from './workspaceHarness.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { mkdir, readFile } from 'node:fs/promises';
@@ -31,7 +31,7 @@ try {
   delete env.ELECTRON_RUN_AS_NODE;
   desktop = await launchDesktop(env, workspace);
   const page = await desktop.firstWindow();
-  await page.getByLabel('Modo Python real').waitFor();
+  await waitForStudioReady(page);
   const iconUrl = new URL('../resources/lumi-taskbar-adapted.ico', import.meta.url);
   const ico = await readFile(iconUrl);
   const sourceBytes = await readFile(new URL('../resources/lumi-taskbar.png', import.meta.url));

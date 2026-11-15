@@ -3,7 +3,7 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { setTimeout } from 'node:timers/promises';
 import { startVite } from '../scripts/development.mjs';
-import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
+import { launchDesktop, temporaryWorkspace, waitForStudioReady } from './workspaceHarness.mjs';
 
 const workspace = await temporaryWorkspace();
 const vite = await startVite(Number(process.env.LUMI_TEST_PORT ?? 5177));
@@ -15,10 +15,8 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor();
-  await page.locator('textarea').waitFor();
+  await waitForStudioReady(page, { requireViewport: true });
   const viewport = page.locator('#viewport-3d-main');
-  await viewport.getByText('Sin ScenePlan en esta respuesta', { exact: true }).waitFor();
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   let basic;
   for (const [version, name] of [['1.0.0', 'valid-basic'], ['1.0.0', 'valid-debug'], ['1.1.0', 'valid-mixed']]) {

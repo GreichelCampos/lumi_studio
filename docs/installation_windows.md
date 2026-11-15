@@ -26,8 +26,11 @@ debe registrarse el SHA-256 y la revisión de código del paquete que se entregu
    sin asistente de selección de directorio y sin solicitar instalación global.
 4. Abre **Estudio Lumi** desde el menú Inicio o el acceso directo disponible.
    El instalador no inicia la aplicación automáticamente.
-5. Comprueba que la interfaz indique **Modo Python real**. Crea un proyecto y
-   ejecuta el ejemplo del [manual](user_manual.md#analizar-y-ejecutar).
+5. Crea un proyecto y ejecuta el ejemplo del
+   [manual](user_manual.md#analizar-y-ejecutar). La salida debe mostrar una
+   respuesta de Python y no un error de infraestructura. Para un diagnóstico
+   técnico, abre las herramientas de desarrollo y comprueba que
+   `await window.lumiDesktop.availability()` devuelve `available: true`.
 
 Windows o el antivirus pueden advertir sobre un ejecutable sin firma. Comprueba
 su procedencia y, si el distribuidor facilita un SHA-256, contrástalo antes de

@@ -4,7 +4,7 @@ import { readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { temporaryWorkspace } from './workspaceHarness.mjs';
+import { temporaryWorkspace, waitForStudioReady } from './workspaceHarness.mjs';
 import { verifyRuntimeScene } from './packagedRuntimeScene.mjs';
 
 const directory = resolve(process.env.LUMI_PACKAGED_DIR ?? 'dist/release/win-unpacked');
@@ -31,7 +31,7 @@ try {
   page.on('pageerror', error => failures.push(error.message));
   const requests = [];
   page.on('request', request => requests.push(request.url()));
-  await page.getByLabel('Modo Python real').waitFor();
+  await waitForStudioReady(page, { requireViewport: true });
   assert.equal(page.url(), 'lumi-app://ide/index.html');
   const identity = await desktop.evaluate(({ app, BrowserWindow }) => ({
     packaged: app.isPackaged, profile: app.getPath('userData'),
@@ -59,7 +59,7 @@ try {
     entryFile: 'principal.lumi', files: { 'principal.lumi': 'principal { habitacion sala(5,4,2.7) {} }' },
   }));
   assert.equal(analyzed.ok, true);
-  assert.equal(analyzed.response.status, 'incomplete');
+  assert.equal(analyzed.response.status, 'completed');
   assert.equal(analyzed.response.result.capabilities.scenePlan, false);
   const failed = await page.evaluate(() => window.lumiDesktop.execute({
     entryFile: 'principal.lumi', files: { 'principal.lumi': 'mostrar(4 / 0)>>' },
@@ -89,7 +89,7 @@ try {
   await rename(runtime, runtime + '.unavailable'); runtimeMoved = true;
   desktop = await launch();
   const missing = await desktop.firstWindow();
-  await missing.getByLabel('Modo Python real').waitFor();
+  await waitForStudioReady(missing, { expectedBackendAvailable: false });
   await missing.locator('textarea').fill('mostrar("NO_SIMULAR")>>');
   await missing.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await missing.getByText(/Reinstala Estudio Lumi/).first().waitFor();

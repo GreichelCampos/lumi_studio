@@ -135,9 +135,9 @@ def test_protocol_executes_transitive_import_without_new_response_fields():
     assert wire["result"]["diagnostics"] == []
 
 
-def test_incomplete_spatial_compilation_keeps_existing_execution_policy():
+def test_completed_spatial_compilation_keeps_existing_execution_policy():
     compilation = CompilerService().compile('habitacion sala(5, 4, 3) {}', "A")
-    assert compilation.status is CompilationStatus.INCOMPLETE
+    assert compilation.status is CompilationStatus.COMPLETED
     execution = ExecutionService().execute(compilation)
     assert execution.succeeded
     assert execution.scene_plan is not None

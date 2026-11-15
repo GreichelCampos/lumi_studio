@@ -178,6 +178,7 @@ class SemanticAnalysisResult:
     """Diagnostics produced while validating a parsed Lumi program."""
 
     diagnostics: list[Diagnostic] = field(default_factory=list)
+    spatial_analysis_complete: bool = True
 
     @property
     def succeeded(self) -> bool:
@@ -221,6 +222,9 @@ class SemanticAnalyzer:
         self._analyzed_function_bodies: set[tuple[int, int]] = set()
         self.imported_programs: dict[str, dict[str, Any]] = {}
         self._has_import_context = False
+        self._module_scopes: dict[str, SymbolTable] = {}
+        self._initializing_modules: set[str] = set()
+        self._current_module_file: str | None = None
         self.spatial_analyzer = self._create_spatial_analyzer()
 
     def analyze(
@@ -245,6 +249,9 @@ class SemanticAnalyzer:
         self._function_declarations = {}
         self._analyzed_function_bodies = set()
         self._has_import_context = imported_programs is not None
+        self._module_scopes = {}
+        self._initializing_modules = set()
+        self._current_module_file = None
         self.spatial_analyzer = self._create_spatial_analyzer()
         self.imported_programs = {
             file_name: normalize_ast(imported_program)
@@ -255,6 +262,9 @@ class SemanticAnalyzer:
             self._predeclare_functions(normalized_program.get("statements", []))
         self._analyze_node(normalized_program)
         self._resolve_function_dependencies()
+        self.result.spatial_analysis_complete = (
+            self.spatial_analyzer.analysis_complete
+        )
         return self.result
 
     def _analyze_node(self, node: dict[str, Any]) -> None:
@@ -939,6 +949,8 @@ class SemanticAnalyzer:
             file=node["file"],
             line=node["line"],
             column=node["column"],
+            source_file=self._current_module_file,
+            is_imported=self._current_module_file is not None,
             parameters=tuple(parameters),
             return_type=return_type,
         )
@@ -1157,6 +1169,11 @@ class SemanticAnalyzer:
             return
         component = self._recursive_component(identity)
         if component is not None and component not in self._active_recursive_components:
+            if not self._entry_reaches_recursive_component(
+                identity, arguments, component,
+            ):
+                self._apply_function_summary_once(identity, arguments)
+                return
             self._apply_recursive_component(identity, arguments, component)
             return
         self._apply_function_summary_once(identity, arguments)
@@ -1243,6 +1260,37 @@ class SemanticAnalyzer:
         finally:
             self._active_recursive_components.pop()
 
+    def _entry_reaches_recursive_component(
+        self,
+        identity: FunctionIdentity,
+        arguments: list[dict[str, Any]],
+        component: frozenset[FunctionIdentity],
+    ) -> bool:
+        """Whether this invocation can take an edge inside its recursive SCC."""
+
+        summary = next(
+            (
+                item for item in self._function_effect_summaries.values()
+                if item.function_identity == identity
+            ),
+            None,
+        )
+        if summary is None:
+            return True
+        bindings = {
+            parameter: self._abstract_argument(argument)
+            for parameter, argument in zip(summary.parameters, arguments)
+        }
+        for effect in self.spatial_analyzer.executable_pending_calls(
+            summary.effects, bindings,
+        ):
+            resolution, target = self._call_resolutions.get(
+                id(effect.source_node), (CallResolution.UNDECLARED, None),
+            )
+            if resolution is CallResolution.RESOLVED and target in component:
+                return True
+        return False
+
     def _recursive_component(
         self, identity: FunctionIdentity,
     ) -> frozenset[FunctionIdentity] | None:
@@ -1297,7 +1345,9 @@ class SemanticAnalyzer:
         }
         graph = {identity: set() for identity in summaries}
         for identity, summary in summaries.items():
-            for effect in pending_calls(summary.effects):
+            for effect in self.spatial_analyzer.executable_pending_calls(
+                summary.effects, {},
+            ):
                 resolution, target = self._call_resolutions.get(
                     id(effect.source_node), (CallResolution.UNDECLARED, None),
                 )
@@ -1317,7 +1367,9 @@ class SemanticAnalyzer:
         for summary in self._function_effect_summaries.values():
             if summary.function_identity not in component:
                 continue
-            for effect in pending_calls(summary.effects):
+            for effect in self.spatial_analyzer.executable_pending_calls(
+                summary.effects, {},
+            ):
                 _, target = self._call_resolutions.get(
                     id(effect.source_node), (CallResolution.UNDECLARED, None),
                 )
@@ -1577,6 +1629,16 @@ class SemanticAnalyzer:
         if signature is None:
             return
         return_type, parameters = signature
+        module_scope = self._ensure_module_scope(file_name)
+        module_symbol = module_scope.resolve(symbol_name)
+        if module_symbol is None or module_symbol.kind is not SymbolKind.FUNCTION:
+            self._add_import_diagnostic(
+                node,
+                "IMPORT_INVALID_SIGNATURE",
+                f"La función importada '{symbol_name}' no pudo registrarse en su módulo.",
+                "Corrija la declaración de la función importada.",
+            )
+            return
         symbol = Symbol(
             name=symbol_name,
             kind=SymbolKind.FUNCTION,
@@ -1590,25 +1652,40 @@ class SemanticAnalyzer:
             return_type=return_type,
         )
         self.current_scope.define(symbol)
-        identity = self._function_identity(
-            symbol, self.current_scope,
-        )
+        identity = self._function_identity_by_symbol[id(module_symbol)]
         self._function_identity_by_symbol[id(symbol)] = identity
-        self._function_declarations[identity] = (
-            function, symbol, self.current_scope,
-        )
-        summary = extract_function_effects(
-            function,
-            scope_id=id(self.current_scope),
-            function_identity=identity,
-        )
-        self._function_effect_summaries[
-            (summary.scope_id, summary.declaration_id)
-        ] = summary
-        self._analyze_function_body(function, symbol)
-        self._analyzed_function_bodies.add(
-            (id(self.current_scope), id(function))
-        )
+        self._ensure_function_dependencies_linked(identity)
+
+    def _ensure_module_scope(self, file_name: str) -> SymbolTable:
+        """Create one isolated lexical scope for an imported module."""
+
+        existing = self._module_scopes.get(file_name)
+        if existing is not None:
+            return existing
+        module_scope = SymbolTable(scope_name=f"module:{file_name}")
+        self._module_scopes[file_name] = module_scope
+        if file_name in self._initializing_modules:
+            return module_scope
+        program = self.imported_programs[file_name]
+        statements = program.get("statements", [])
+        previous_scope = self.current_scope
+        previous_module = self._current_module_file
+        self._initializing_modules.add(file_name)
+        try:
+            self.current_scope = module_scope
+            self._current_module_file = file_name
+            self._predeclare_functions(statements)
+            for statement in statements:
+                node_type = statement.get("node")
+                if node_type == "VariableDeclarationNode":
+                    self._analyze_variable_declaration(statement)
+                elif node_type == "ImportNode":
+                    self._analyze_import(statement)
+        finally:
+            self._initializing_modules.discard(file_name)
+            self.current_scope = previous_scope
+            self._current_module_file = previous_module
+        return module_scope
 
     def _function_identity(
         self, symbol: Symbol, scope: SymbolTable,

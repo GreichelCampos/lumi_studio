@@ -87,7 +87,7 @@ async function assertSceneCleared(viewport) {
 export async function verifyRuntimeScene(page, evidenceDirectory) {
   await mkdir(evidenceDirectory, { recursive: true });
   const wire = await executeWire(page, RUNTIME_SCENE_SOURCE);
-  assert.equal(wire.status, 'completed');
+  assert.equal(wire.status, 'completed', JSON.stringify(wire));
   assert.equal(wire.result.capabilities.scenePlan, true);
   assert.equal(wire.result.capabilities.debugTrace, false);
   assertRuntimeRoom(wire.result.scenePlan.rooms[0]);
@@ -105,14 +105,14 @@ export async function verifyRuntimeScene(page, evidenceDirectory) {
   await page.mouse.click(rendered.pick.x, rendered.pick.y);
   const card = viewport.locator('#object-properties-card');
   await card.getByText('mesa1', { exact: true }).waitFor();
-  await card.getByText('X: 3.00m, Y: 0.00m, Z: -1.00m', { exact: true }).waitFor();
+  await card.getByText('X: 2.00m, Y: 0.00m, Z: -1.00m', { exact: true }).waitFor();
   await card.getByText('X: 0°, Y: 90°, Z: 0°', { exact: true }).waitFor();
   await page.screenshot({ path: join(evidenceDirectory, 'runtime-scene.png') });
   await card.locator('#btn-close-object-card').click();
 
   const invalidSource = 'principal { habitacion invalida(0, 4, 3) {} }';
   const invalid = await executeWire(page, invalidSource);
-  assert.equal(invalid.status, 'failed');
+  assert.equal(invalid.status, 'blocked');
   assert.equal(invalid.result.diagnostics[0].code, 'SPA_INVALID_DIMENSION');
   assert.equal(invalid.result.capabilities.scenePlan, false);
   assert.equal(Object.hasOwn(invalid.result, 'scenePlan'), false);

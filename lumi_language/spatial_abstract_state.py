@@ -218,6 +218,34 @@ class SpatialAbstractState:
     unknown_global_effects: bool = False
     unknown_rooms: set[str] = field(default_factory=set)
 
+    @property
+    def analysis_complete(self) -> bool:
+        """Whether every tracked spatial fact has one known abstract value."""
+
+        if self.unknown_global_effects or self.unknown_rooms:
+            return False
+        element_states = (
+            states
+            for elements in self.rooms.values()
+            for states in elements.values()
+        )
+        presence_states = (
+            *self.room_presence.values(),
+            *self.floor_presence.values(),
+            *(
+                states
+                for walls in self.wall_presence.values()
+                for states in walls.values()
+            ),
+        )
+        return all(
+            len(states) == 1 and AbstractElementState.TOP not in states
+            for states in element_states
+        ) and all(
+            len(states) == 1 and AbstractPresence.TOP not in states
+            for states in presence_states
+        )
+
     def copy(self) -> "SpatialAbstractState":
         return SpatialAbstractState(
             rooms={room: dict(elements) for room, elements in self.rooms.items()},

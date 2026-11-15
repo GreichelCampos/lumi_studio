@@ -9,7 +9,10 @@ FUNCTION = "funcion entero f() { retornar 1>> }"
 
 def test_service_obtains_transitive_context_without_expanding_public_imports():
     service = CompilerService()
-    sources = {"B": 'importar "C" usar f>> ' + FUNCTION, "C": FUNCTION}
+    sources = {
+        "B": 'importar "C" usar g>> ' + FUNCTION,
+        "C": "funcion entero g() { retornar 2>> }",
+    }
     result, context = service._compile_with_dependencies('importar "B" usar f>>', "A", sources=sources)
     assert result.succeeded
     assert context.complete

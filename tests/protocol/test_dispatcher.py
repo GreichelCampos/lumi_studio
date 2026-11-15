@@ -80,13 +80,13 @@ def test_imports_and_explicit_entry_use_real_services():
     assert message == original
 
 
-def test_spatial_analysis_remains_incomplete_without_execution():
+def test_complete_spatial_analysis_is_reported_without_execution():
     result = RequestDispatcher().dispatch(
         request("habitacion sala(5, 4, 2.7) {}", "analyze")
     )
-    assert result["status"] == "incomplete"
-    assert result["result"]["analysisStatus"] == "incomplete"
-    assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]
+    assert result["status"] == "completed"
+    assert result["result"]["analysisStatus"] == "completed"
+    assert result["result"]["limitations"] == []
     assert result["result"]["capabilities"]["scenePlan"] is False
     assert "scenePlan" not in result["result"]
 
@@ -133,7 +133,7 @@ def test_switching_between_secondary_and_main_entry_preserves_project_sources():
 
     assert secondary_result["status"] == "failed"
     assert secondary_result["result"]["diagnostics"][0]["code"] == "SPA_INVALID_DIMENSION"
-    assert main_result["status"] == "incomplete"
+    assert main_result["status"] == "completed"
     assert main_result["result"]["diagnostics"] == []
 
 
@@ -147,7 +147,7 @@ def test_secondary_entry_resolves_its_imports_from_the_complete_project_snapshot
 
     result = RequestDispatcher().dispatch(message)
 
-    assert result["status"] == "incomplete"
+    assert result["status"] == "completed"
     assert result["result"]["diagnostics"] == []
 
 
@@ -156,8 +156,8 @@ def test_spatial_execution_publishes_validated_runtime_scene():
         request("habitacion sala(5, 4, 2.7) {}", "execute")
     )
     assert result["status"] == "completed"
-    assert result["result"]["analysisStatus"] == "incomplete"
-    assert result["result"]["limitations"] == ["spatial_semantics_unavailable"]
+    assert result["result"]["analysisStatus"] == "completed"
+    assert result["result"]["limitations"] == []
     assert result["result"]["diagnostics"] == []
     assert result["result"]["capabilities"]["scenePlan"] is True
     assert result["result"]["scenePlan"]["rooms"][0]["name"] == "sala"

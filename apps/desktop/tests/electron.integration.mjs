@@ -1,4 +1,4 @@
-import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
+import { launchDesktop, temporaryWorkspace, waitForStudioReady } from './workspaceHarness.mjs';
 import assert from 'node:assert/strict';
 import { mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
@@ -14,7 +14,7 @@ try {
   const page = await desktop.firstWindow();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await page.getByLabel('Modo Python real').waitFor({ timeout: 30_000 });
+  await waitForStudioReady(page);
   const preferences = await desktop.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows()[0].webContents.getLastWebPreferences());
   assert.equal(preferences.contextIsolation, true);
   assert.equal(preferences.nodeIntegration, false);
@@ -61,7 +61,7 @@ try {
   const unavailableEnv = { ...env, LUMI_PYTHON: fileURLToPath(new URL('../test-results/missing-python.exe', import.meta.url)) };
   desktop = await launchDesktop(unavailableEnv, workspace);
   const unavailablePage = await desktop.firstWindow();
-  await unavailablePage.getByLabel('Modo Python real').waitFor();
+  await waitForStudioReady(unavailablePage, { expectedBackendAvailable: false });
   await unavailablePage.locator('textarea').fill('mostrar("NO_DEBE_SIMULAR")>>');
   await unavailablePage.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
   await unavailablePage.getByText(/\[Infraestructura\].*No se pudo iniciar Python/).first().waitFor();

@@ -29,7 +29,8 @@ def test_runtime_scene_reaches_protocol_with_final_object_state():
 
     assert response["status"] == "completed"
     payload = response["result"]
-    assert payload["analysisStatus"] == "incomplete"
+    assert payload["analysisStatus"] == "completed"
+    assert payload["limitations"] == []
     assert payload["capabilities"]["scenePlan"] is True
     room = payload["scenePlan"]["rooms"][0]
     assert room["floor"] == {"material": "madera", "color": "beige"}

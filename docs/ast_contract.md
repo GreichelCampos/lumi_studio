@@ -236,7 +236,7 @@ La caché reutiliza únicamente módulos cuyo análisis sintáctico terminó sin
 
 Los servicios proporcionan ese catálogo de AST exitosos al analizador semántico y, mediante transporte privado del resultado, al intérprete. El mapa público `imported_programs` conserva únicamente imports directos; ni la serialización pública ni el protocolo Python–IDE incorporan campos nuevos. La disponibilidad de un AST no otorga visibilidad a sus símbolos: cada `ImportNode` incorpora exclusivamente el símbolo solicitado.
 
-La clasificación de limitaciones espaciales inspecciona todos los AST exitosos alcanzados, incluidos los transitivos, y conserva el motivo `spatial_semantics_unavailable` sin duplicarlo por dependencias compartidas. Esta política detecta construcciones por su presencia en el AST, incluso dentro de funciones no solicitadas o no ejecutadas; no afirma que esas construcciones se ejecuten ni valida su corrección espacial. Por ello, un módulo transitivo puede producir estado `incomplete` aunque la función importada no use sus construcciones espaciales. Los errores semánticos conservan la precedencia de `failed`.
+La clasificación de limitaciones espaciales utiliza el resultado real del análisis abstracto. La presencia de sintaxis espacial, incluso en un AST transitivo o en una función no ejecutada, no produce por sí sola `spatial_semantics_unavailable`. Un estado espacial determinado termina como `completed`; los efectos desconocidos o los caminos cuyo resultado no puede decidirse conservan `incomplete` y esa limitación. Los errores semánticos comprobados conservan la precedencia de `failed` y sus diagnósticos.
 
 ## 5. Contrato de Diagnostic
 

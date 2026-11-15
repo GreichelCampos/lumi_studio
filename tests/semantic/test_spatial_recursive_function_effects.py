@@ -62,6 +62,19 @@ def test_conditional_recursion_keeps_accumulated_failures_possible():
     assert analyzer.spatial_analyzer._abstract_state.unknown_rooms == {"sala"}
 
 
+def test_false_conditional_mutual_recursion_does_not_apply_unreachable_effects():
+    analyzer, result = analyze(
+        "funcion vacio entrada(booleano ejecutar) { "
+        "si ejecutar { efectos()>> } } "
+        "funcion vacio efectos() { mesa fantasma {} entrada(falso)>> } "
+        "habitacion sala(5, 4, 3) { entrada(falso)>> }"
+    )
+
+    assert result.succeeded
+    assert analyzer.spatial_analyzer._abstract_state.room_elements("sala") == {}
+    assert analyzer.spatial_analyzer._abstract_state.unknown_rooms == set()
+
+
 def test_mutual_recursion_applies_each_component_member_without_python_recursion():
     analyzer, result = analyze(
         "funcion vacio a() { mesa desde_a {} b()>> } "

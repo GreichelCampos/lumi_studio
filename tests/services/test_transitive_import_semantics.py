@@ -123,13 +123,14 @@ def test_runtime_receives_transitive_catalog_for_explicit_nested_import():
     assert list(compilation.imported_programs) == ["B"]
 
 
-@pytest.mark.parametrize("source", [
-    'importar "B" usar f>> mostrar(h())>>',
-    'importar "B" usar f>>',
-])
-def test_catalog_does_not_change_visibility_or_top_level_import_propagation(source):
+def test_top_level_module_import_is_visible_only_inside_that_module():
     sources = {**SOURCES, "B": 'importar "C" usar h>> funcion entero f() { retornar h()>> }'}
-    result = CompilerService().compile(source, "A", sources=sources)
-    assert not result.succeeded
-    assert all(d.code == "SEM_UNDECLARED_FUNCTION" for d in result.diagnostics)
-    assert any(d.file == "B" for d in result.diagnostics)
+    valid = CompilerService().compile('importar "B" usar f>>', "A", sources=sources)
+    invalid = CompilerService().compile(
+        'importar "B" usar f>> mostrar(h())>>', "A", sources=sources,
+    )
+
+    assert valid.succeeded
+    diagnostic, = invalid.diagnostics
+    assert diagnostic.code == "SEM_UNDECLARED_FUNCTION"
+    assert diagnostic.file == "A"
