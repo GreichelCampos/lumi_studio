@@ -1,0 +1,135 @@
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}
+
+
+funcion vacio organizar_puestos() {
+    colocar escritorio_analisis [-2.2, 0, -1.2]>>
+    colocar silla_analisis [-2.2, 0, -0.3]>>
+    rotar silla_analisis [0, 180, 0]>>
+
+    colocar escritorio_diseno [1, 0, -1.2]>>
+    colocar silla_diseno [1, 0, -0.3]>>
+    rotar silla_diseno [0, 180, 0]>>
+
+    colocar escritorio_desarrollo [-2.2, 0, 1.2]>>
+    colocar silla_desarrollo [-2.2, 0, 2.1]>>
+    rotar silla_desarrollo [0, 180, 0]>>
+
+    colocar escritorio_pruebas [1, 0, 1.2]>>
+    colocar silla_pruebas [1, 0, 2.1]>>
+    rotar silla_pruebas [0, 180, 0]>>
+}
+
+funcion vacio preparar_espera(decimal x, decimal z) {
+    colocar sofa_espera [x, 0, z]>>
+    rotar sofa_espera [0, 90, 0]>>
+}
+
+principal {
+    decimal ancho = 10>>
+    decimal largo = 8>>
+    decimal alto = 3.2>>
+    decimal area = calcular_area(ancho, largo)>>
+
+    mostrar("Area de oficina:")>>
+    mostrar(area)>>
+
+    booleano oficina_abierta = verdadero>>
+    si oficina_abierta {
+        mostrar("Oficina preparada para trabajar")>>
+    }
+
+    habitacion oficina(ancho, largo, alto) {
+        piso piso_oficina {
+            color "#d6d3d1">>
+            material "madera">>
+        }
+
+        pared pared_oeste {
+            orientacion "oeste">>
+            color "#e2e8f0">>
+            material "concreto">>
+        }
+
+        puerta entrada_principal {
+            orientacion "norte">>
+            ancho 1>>
+            alto 2.2>>
+            desplazamiento 0.5>>
+            color "#78350f">>
+            material "madera">>
+        }
+
+        ventana ventana_sur {
+            orientacion "sur">>
+            ancho 2.4>>
+            alto 1.2>>
+            desplazamiento 1>>
+            elevacion 1.1>>
+            material "vidrio">>
+        }
+
+        ventana ventana_este {
+            orientacion "este">>
+            ancho 2>>
+            alto 1.2>>
+            desplazamiento 2>>
+            elevacion 1.1>>
+            material "vidrio">>
+        }
+
+        escritorio escritorio_analisis {
+            color "#f8fafc">>
+            material "madera">>
+        }
+        silla silla_analisis { color "#2563eb">> }
+
+        escritorio escritorio_diseno {
+            color "#f8fafc">>
+            material "madera">>
+        }
+        silla silla_diseno { color "#7c3aed">> }
+
+        escritorio escritorio_desarrollo {
+            color "#f8fafc">>
+            material "madera">>
+        }
+        silla silla_desarrollo { color "#059669">> }
+
+        escritorio escritorio_pruebas {
+            color "#f8fafc">>
+            material "madera">>
+        }
+        silla silla_pruebas { color "#dc2626">> }
+
+        sofa sofa_espera {
+            color "#475569">>
+            material "tela">>
+        }
+        estanteria archivo_documentos {
+            color "#92400e">>
+            material "madera">>
+        }
+        armario armario_equipos {
+            color "#64748b">>
+            material "metal">>
+        }
+        planta planta_oficina {
+            color "#16a34a">>
+        }
+
+        organizar_puestos()>>
+        preparar_espera(3.5, 2.8)>>
+
+        colocar archivo_documentos [-4.3, 0, 1.5]>>
+        colocar armario_equipos [4.2, 0, 0]>>
+        colocar planta_oficina [-4.2, 0, -2.5]>>
+
+        entero angulo_planta = 0>>
+        hacer entero paso = 0; paso < 3; paso = paso + 1 {
+            angulo_planta = angulo_planta + 30>>
+            rotar planta_oficina [0, angulo_planta, 0]>>
+        }
+    }
+}
