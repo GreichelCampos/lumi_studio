@@ -98,15 +98,14 @@ describe('TopBar Component', () => {
     expect(importBtn).toBeInTheDocument();
   });
 
-  it('offers one primary Lumi action and analyzes from the menu', () => {
+  it('compiles once from the direct Compilar action and keeps Ejecutar Lumi separate', () => {
     const onCompile = vi.fn();
     const onRun = vi.fn();
     render(<TopBar {...defaultProps} isRealBackend onCompile={onCompile} onRun={onRun} />);
     expect(screen.getByText(/Penthouse Moderno/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Compilar' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Compilar' })).toBeInTheDocument();
     expect(screen.queryByText('Analizar código')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Ejecutar' }));
-    fireEvent.click(screen.getByText('Analizar código'));
+    fireEvent.click(screen.getByRole('button', { name: 'Compilar' }));
     expect(onCompile).toHaveBeenCalledTimes(1);
     expect(onRun).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Ejecutar Lumi' }));

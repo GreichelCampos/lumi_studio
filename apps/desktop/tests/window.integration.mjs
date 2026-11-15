@@ -100,11 +100,12 @@ try {
     return Math.abs(width - 1200) <= 1 && Math.abs(height - 800) <= 1;
   }, 'Resize failed (including one DIP of Windows scaling tolerance)');
 
-  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Ejecutar', 'Ayuda']) {
+  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Ayuda']) {
     const button = page.getByRole('button', { name: menu, exact: true }).first();
     await button.click();
     await button.click();
   }
+  assert.equal(await page.getByRole('button', { name: 'Compilar', exact: true }).count(), 1);
   const editor = page.locator('textarea');
   await editor.fill('mostrar("ATAJO_F5")>>');
   await editor.focus();

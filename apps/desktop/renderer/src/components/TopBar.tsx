@@ -211,11 +211,10 @@ export const TopBar: React.FC<TopBarProps> = ({
       ]
     },
     {
-      id: 'ejecutar',
-      label: 'Ejecutar',
-      items: [
-        { label: 'Analizar código', action: onCompile, shortcut: 'F5' },
-      ]
+      id: 'compilar',
+      label: 'Compilar',
+      directAction: onCompile,
+      items: []
     },
     {
       id: 'ayuda',
@@ -299,7 +298,13 @@ export const TopBar: React.FC<TopBarProps> = ({
           {menus.map((menu) => (
             <div key={menu.id} className="relative">
               <button
-                onClick={() => setOpenMenu(openMenu === menu.id ? null : menu.id)}
+                onClick={() => {
+                  if ('directAction' in menu && menu.directAction) {
+                    menu.directAction();
+                    return;
+                  }
+                  setOpenMenu(openMenu === menu.id ? null : menu.id);
+                }}
                 className={`px-2.5 py-1 rounded-xl text-xs font-medium transition-all ${
                   openMenu === menu.id
                     ? 'bg-[var(--ide-btn-bg)] text-[var(--ide-text)] border border-[var(--ide-btn-border)] shadow-sm'

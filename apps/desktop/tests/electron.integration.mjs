@@ -30,8 +30,7 @@ try {
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-output.png', import.meta.url)), fullPage: true });
   // CompilerService must call analyze, which must not evaluate the division.
   await editor.fill('mostrar(4 / 0)>>');
-  await page.getByRole('button', { name: 'Ejecutar', exact: true }).click();
-  await page.getByText('Analizar código', { exact: true }).click();
+  await page.getByRole('button', { name: 'Compilar', exact: true }).click();
   await page.getByText('[Python · Análisis] completed', { exact: true }).waitFor();
   assert.equal(await page.getByTestId('output-log-view').getByText('Análisis terminado', { exact: true }).count(), 1);
   assert.equal(await page.getByText(/Válido para 3D/).count(), 0);
@@ -45,8 +44,7 @@ try {
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).scrollIntoViewIfNeeded();
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-python.png', import.meta.url)), fullPage: true });
   await editor.fill('principal {\n  @\n}');
-  await page.getByRole('button', { name: 'Ejecutar', exact: true }).click();
-  await page.getByText('Analizar código', { exact: true }).click();
+  await page.getByRole('button', { name: 'Compilar', exact: true }).click();
   await page.locator('#tab-salida-btn').click();
   await page.getByText('[Python · Análisis] failed', { exact: true }).waitFor();
   assert.equal(await page.getByText('Fallo de infraestructura', { exact: true }).count(), 0);
@@ -61,8 +59,7 @@ try {
     '  habitacion sala(7, 5, 3) {}',
     '}',
   ].join('\n'));
-  await page.getByRole('button', { name: 'Ejecutar', exact: true }).click();
-  await page.getByText('Analizar código', { exact: true }).click();
+  await page.getByRole('button', { name: 'Compilar', exact: true }).click();
   await page.getByTestId('output-log-view').getByText('Análisis terminado', { exact: true }).waitFor();
   const inputDialog = page.getByRole('dialog', { name: 'Entrada del programa Lumi' });
   assert.equal(await inputDialog.count(), 0);
