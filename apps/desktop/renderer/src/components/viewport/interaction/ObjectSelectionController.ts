@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 
+export type PickableEntity = string | ((hit: THREE.Intersection) => string | null);
+
 export interface ObjectSelectionControllerOptions {
   domElement: HTMLCanvasElement;
   scene: THREE.Scene;
@@ -15,7 +17,7 @@ export class ObjectSelectionController {
 
   private raycaster = new THREE.Raycaster();
   private mouse = new THREE.Vector2();
-  private pickableMeshes = new Map<THREE.Object3D, string>();
+  private pickableMeshes = new Map<THREE.Object3D, PickableEntity>();
 
   private pointerDownHandler: ((e: PointerEvent) => void) | null = null;
   private pointerUpHandler: ((e: PointerEvent) => void) | null = null;
@@ -30,7 +32,7 @@ export class ObjectSelectionController {
     this.setupListeners();
   }
 
-  public registerPickable(mesh: THREE.Object3D, entityId: string): void {
+  public registerPickable(mesh: THREE.Object3D, entityId: PickableEntity): void {
     this.pickableMeshes.set(mesh, entityId);
   }
 
@@ -75,8 +77,9 @@ export class ObjectSelectionController {
           if (hit.object.userData.ignorePicking) continue;
           let curr: THREE.Object3D | null = hit.object;
           while (curr && curr !== this.scene) {
-            if (this.pickableMeshes.has(curr)) {
-              clickedEntityId = this.pickableMeshes.get(curr) || null;
+            const entity = this.pickableMeshes.get(curr);
+            if (entity !== undefined) {
+              clickedEntityId = typeof entity === 'string' ? entity : entity(hit);
               break;
             }
             curr = curr.parent;

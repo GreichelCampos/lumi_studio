@@ -29,11 +29,34 @@ function expectVisible(controller: CameraController, item: PlacedSpatialObject) 
 }
 
 describe('real camera and OrbitControls focus regression', () => {
+  it('pans by keyboard in the floor plane and keeps the camera above it', () => {
+    const container = document.createElement('div');
+    const canvas = document.createElement('canvas');
+    Object.defineProperties(canvas, { clientWidth: { value: 800 }, clientHeight: { value: 600 } });
+    canvas.getBoundingClientRect = () => new DOMRect(0, 0, 800, 600);
+    const controller = new CameraController({ container, rendererDomElement: canvas });
+    const camera = controller.getCamera();
+    const controls = controller.getControls();
+    const before = controls.target.clone();
+    canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', code: 'ArrowUp', cancelable: true }));
+    controller.update();
+    expect(controls.target.distanceTo(before)).toBeGreaterThan(0);
+    expect(controls.target.y).toBeCloseTo(before.y);
+    expect(controls.zoomToCursor).toBe(true);
+
+    camera.position.y -= 100;
+    controls.target.y -= 100;
+    controller.update();
+    expect(camera.position.y).toBeGreaterThan(0);
+    expect(controls.target.y).toBeGreaterThanOrEqual(0);
+    controller.dispose();
+  });
   it.each([0.1, 5, 100])('keeps consecutive, rotated objects fully visible in a %s m room', scale => {
     const container = document.createElement('div');
     const canvas = document.createElement('canvas');
     Object.defineProperties(container, { clientWidth: { value: 800 }, clientHeight: { value: 600 } });
     Object.defineProperties(canvas, { clientWidth: { value: 800 }, clientHeight: { value: 600 } });
+    canvas.getBoundingClientRect = () => new DOMRect(0, 0, 800, 600);
     const controller = new CameraController({ container, rendererDomElement: canvas });
     const first = createMockSpatialObject({ dimensions: [scale / 4, scale * 0.33, scale / 5] });
     const second = createMockSpatialObject({ id: 'rotated', position: [scale, scale / 8, -scale], dimensions: [scale / 3, scale / 2, scale / 4], rotation: [25, 65, -15] });

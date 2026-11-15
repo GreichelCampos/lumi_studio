@@ -5,7 +5,8 @@ import { CameraController } from './camera/CameraController';
 import { RoomFactory, WallMeshRecord } from './factories/RoomFactory';
 import { OpeningFactory } from './factories/OpeningFactory';
 import { FurnitureFactory } from './factories/FurnitureFactory';
-import { ObjectSelectionController } from './interaction/ObjectSelectionController';
+import { FurnitureInstanceBatch } from './factories/FurnitureInstanceBatch';
+import { ObjectSelectionController, type PickableEntity } from './interaction/ObjectSelectionController';
 import { ThreeResourceDisposer } from './resources/ThreeResourceDisposer';
 import { calculateSceneBounds, calculateVisualScale } from './helpers/sceneScale';
 import { calculateWallOcclusion } from './helpers/spatialMath';
@@ -13,6 +14,8 @@ import { IdeThemeDefinition, SpatialBackgroundMode } from '../../types/settings'
 import { validateViewportScene } from './helpers/validateViewportScene';
 import { roomRenderKey, objectDiagnosticKey } from './helpers/roomRenderKey';
 import type { VisualStateUpdate } from './interaction/VisualState';
+
+const instancedFurnitureTypes = new Set(['silla', 'mesa', 'sofa', 'cama', 'planta']);
 
 export interface ThreeSceneManagerOptions {
   container: HTMLDivElement;
@@ -242,7 +245,7 @@ export class ThreeSceneManager {
     }
 
     const nextUpdates = new Map<string, VisualStateUpdate[]>();
-    const nextPickables: Array<[THREE.Object3D, string]> = [];
+    const nextPickables: Array<[THREE.Object3D, PickableEntity]> = [];
     const register = (id: string, update: VisualStateUpdate) => {
       const entries = nextUpdates.get(id) ?? [];
       entries.push(update); nextUpdates.set(id, entries);
@@ -269,7 +272,34 @@ export class ThreeSceneManager {
           update => register(win.id, update));
         roomRoot.add(group); nextPickables.push([group, win.id]);
       }
-      for (const [index, item] of room.objects.filter(isPlacedSpatialObject).entries()) {
+      const placed = room.objects.filter(isPlacedSpatialObject);
+      const furnitureByStyle = new Map<string, number[]>();
+      for (const [index, item] of placed.entries()) {
+        const type = item.type.toLowerCase();
+        if (!instancedFurnitureTypes.has(type)) continue;
+        const style = JSON.stringify([type, item.dimensions, item.color, item.material]);
+        const indices = furnitureByStyle.get(style) ?? [];
+        indices.push(index);
+        furnitureByStyle.set(style, indices);
+      }
+
+      const batched = new Set<number>();
+      for (const indices of furnitureByStyle.values()) {
+        if (indices.length < 32) continue;
+        const batch = new FurnitureInstanceBatch(indices.map(index => placed[index]), this.isWireframe);
+        roomRoot.add(batch.group);
+        nextPickables.push([batch.group, hit => batch.pick(hit)]);
+        for (const [instance, index] of indices.entries()) {
+          const item = placed[index];
+          batched.add(index);
+          batch.update(instance, item, activeEntityId === item.id, debugActiveObjectId === item.id);
+          register(item.id, (selected, debug) =>
+            batch.update(instance, this.visualItems[index], selected, debug));
+        }
+      }
+
+      for (const [index, item] of placed.entries()) {
+        if (batched.has(index)) continue;
         const group = FurnitureFactory.createFurnitureMesh(item, activeEntityId === item.id,
           this.isWireframe, debugActiveObjectId === item.id,
           update => register(item.id, (selected, debug) => update(selected, debug, this.visualItems[index])));

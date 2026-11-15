@@ -42,6 +42,11 @@ export class CameraController {
     this.controls.minZoom = 0.4;
     this.controls.maxZoom = 3.5;
     this.controls.enablePan = true;
+    this.controls.screenSpacePanning = false;
+    this.controls.zoomToCursor = true;
+    options.rendererDomElement.tabIndex = 0;
+    options.rendererDomElement.setAttribute('aria-label', 'Visor 3D. Usa las flechas para desplazarte y la rueda para acercarte al cursor.');
+    this.controls.listenToKeyEvents(options.rendererDomElement);
     this.controls.panSpeed = 0.9;
     this.controls.rotateSpeed = 0.75;
     this.controls.target.set(0, 0.8, 0);
@@ -57,6 +62,14 @@ export class CameraController {
 
   public update(): void {
     this.controls.update();
+
+    // Keep the orbit target above the floor and preserve the viewing angle.
+    const lift = Math.max(0, -this.controls.target.y, 0.0001 - this.camera.position.y);
+    if (lift > 0) {
+      this.camera.position.y += lift;
+      this.controls.target.y += lift;
+      this.camera.updateMatrixWorld();
+    }
   }
 
   public handleResize(room?: RoomModel | null): void {

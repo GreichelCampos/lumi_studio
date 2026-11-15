@@ -342,9 +342,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   return (
     <div id="viewport-3d-main" className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none">
-      {scenePlan && <div role="status" className="px-3 py-1 text-[10px] text-[var(--ide-text-muted)]">
+      {scenePlan && sceneSource !== 'python' && <div role="status" className="px-3 py-1 text-[10px] text-[var(--ide-text-muted)]">
         {sceneSource === 'artifact' ? 'Archivo .lumic importado · no implica generación espacial desde Python'
-          : sceneSource === 'python' ? 'ScenePlan recibido de Python' : 'ScenePlan simulado · datos de demostración'}
+          : 'ScenePlan simulado · datos de demostración'}
       </div>}
       <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 glass-panel-header z-10">
         <div className="flex items-center gap-1.5 min-w-0 flex-wrap">

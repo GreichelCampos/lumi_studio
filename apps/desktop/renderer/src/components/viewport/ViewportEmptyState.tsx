@@ -10,8 +10,8 @@ interface ViewportEmptyStateProps {
 }
 
 const initialShortcuts = [
-  { key: 'F5', label: 'Compilar' },
-  { key: 'F6', label: 'Ejecutar' },
+  { key: 'F5', label: 'Analizar código' },
+  { key: 'F6', label: 'Ejecutar Lumi' },
 ];
 
 export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
@@ -24,8 +24,8 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       icon: Box,
       iconColor: 'text-[var(--ide-accent)]', bgColor: 'bg-[var(--ide-accent-bg)]',
       borderColor: 'border-[var(--ide-panel-border)]',
-      title: 'Sin ScenePlan en esta respuesta',
-      description: 'Compilar analiza el código. Ejecutar Python puede generar una escena con habitaciones y muebles colocados; revisa la consola si no se recibió una escena. También puedes importar un .lumic válido.',
+      title: 'Sin escena 3D',
+      description: 'Usa Ejecutar Lumi (F6) con una habitación en el programa o importa un archivo .lumic. Si la ejecución se detuvo, revisa Diagnósticos.',
       actionText: '', actionFn: undefined,
     },
     no_compile: {
@@ -44,7 +44,7 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       bgColor: 'bg-[var(--ide-accent-bg)]',
       borderColor: 'border-[var(--ide-accent)]/40',
       title: 'Análisis finalizado',
-      description: 'Compilar analiza el código, pero no ejecuta el programa ni genera la visualización. Usá Ejecutar Python (F6) para visualizar la habitación.',
+      description: 'Usá Ejecutar Lumi (F6) para visualizar la habitación.',
       actionText: '',
       actionFn: undefined,
     },
@@ -54,7 +54,7 @@ export const ViewportEmptyState: React.FC<ViewportEmptyStateProps> = ({
       bgColor: 'bg-amber-950/40',
       borderColor: 'border-amber-500/30',
       title: 'Análisis incompleto',
-      description: 'El código fue analizado, pero algunas comprobaciones todavía no están disponibles. Revisá la consola para conocer las capacidades pendientes',
+      description: 'El código fue analizado, pero algunas comprobaciones todavía no están disponibles. Usá Ejecutar Lumi (F6) para comprobar el espacio y dibujar la escena.',
       actionText: '',
       actionFn: undefined,
     },

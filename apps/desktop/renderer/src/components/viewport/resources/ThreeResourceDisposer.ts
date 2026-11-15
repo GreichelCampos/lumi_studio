@@ -9,6 +9,7 @@ export class ThreeResourceDisposer {
     const materials = new Set<THREE.Material>();
     const textures = new Set<THREE.Texture>();
     obj.traverse((child) => {
+      if (child instanceof THREE.InstancedMesh) child.dispose();
       if (child instanceof THREE.Mesh || child instanceof THREE.Line || child instanceof THREE.Points || child instanceof THREE.Sprite) {
         if ('geometry' in child) geometries.add(child.geometry);
         for (const material of Array.isArray(child.material) ? child.material : [child.material]) materials.add(material);

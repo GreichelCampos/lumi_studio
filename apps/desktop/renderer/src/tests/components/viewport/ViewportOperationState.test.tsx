@@ -19,10 +19,10 @@ describe('Viewport operation lifecycle', () => {
     render(<Viewport3D scenePlan={null} isCompiled={false} />);
     expect(screen.getByText('Todo listo para comenzar')).toBeInTheDocument();
     expect(screen.getByText('F5')).toBeInTheDocument();
-    expect(screen.getByText('Compilar')).toBeInTheDocument();
+    expect(screen.getByText('Analizar código')).toBeInTheDocument();
     expect(screen.getByText('F6')).toBeInTheDocument();
-    expect(screen.getByText('Ejecutar')).toBeInTheDocument();
-    expect(screen.queryByText('Sin ScenePlan en esta respuesta')).not.toBeInTheDocument();
+    expect(screen.getByText('Ejecutar Lumi')).toBeInTheDocument();
+    expect(screen.queryByText('Sin escena 3D')).not.toBeInTheDocument();
   });
 
   it('shows a completed analysis as finalized', () => {
@@ -30,7 +30,7 @@ describe('Viewport operation lifecycle', () => {
       operation: 'analyze' as const, status: 'completed' as const, scenePlan: null };
     render(<Viewport3D scenePlan={null} isCompiled lastCompileResult={analysis} />);
     expect(screen.getByText('Análisis finalizado')).toBeInTheDocument();
-    expect(screen.queryByText('Sin ScenePlan en esta respuesta')).not.toBeInTheDocument();
+    expect(screen.queryByText('Sin escena 3D')).not.toBeInTheDocument();
   });
 
   it('shows an incomplete analysis and its pending capabilities', () => {
@@ -38,7 +38,7 @@ describe('Viewport operation lifecycle', () => {
       operation: 'analyze' as const, status: 'incomplete' as const, success: false, scenePlan: null };
     render(<Viewport3D scenePlan={null} isCompiled lastCompileResult={analysis} />);
     expect(screen.getByText('Análisis incompleto')).toBeInTheDocument();
-    expect(screen.getByText('El código fue analizado, pero algunas comprobaciones todavía no están disponibles. Revisá la consola para conocer las capacidades pendientes')).toBeInTheDocument();
+    expect(screen.getByText('El código fue analizado, pero algunas comprobaciones todavía no están disponibles. Usá Ejecutar Lumi (F6) para comprobar el espacio y dibujar la escena.')).toBeInTheDocument();
   });
 
   it('keeps the analysis failure state', () => {
@@ -54,7 +54,7 @@ describe('Viewport operation lifecycle', () => {
     render(<Viewport3D scenePlan={null} isCompiled lastCompileResult={{
       ...FIXTURE_COMPILATION_SUCCESS, origin: 'python', operation: 'execute', status: 'completed', scenePlan: null,
     }} />);
-    expect(screen.getByText('Sin ScenePlan en esta respuesta')).toBeInTheDocument();
+    expect(screen.getByText('Sin escena 3D')).toBeInTheDocument();
   });
 
   it('shows an execution error without reusing an earlier scene', () => {
