@@ -106,6 +106,9 @@ class _FunctionReturn(Exception):
         self.value = value
 
 
+MAX_CALL_DEPTH = 64
+
+
 class Interpreter:
     """Execute validated dictionary-based AST fixtures independently of parser."""
 
@@ -505,6 +508,9 @@ class Interpreter:
                 "Proporcione la cantidad de argumentos definida por la función.",
             )
 
+        if self._call_depth >= MAX_CALL_DEPTH:
+            self._fail_call_depth(node)
+
         previous_environment = self.environment
         previous_function_scope = self.function_scope
         self.environment = RuntimeEnvironment(
@@ -522,10 +528,21 @@ class Interpreter:
             except _FunctionReturn as returned:
                 return returned.value
             return None
+        except RecursionError:
+            # Deep expressions can exhaust the host stack before the call budget.
+            self._fail_call_depth(node)
         finally:
             self._call_depth -= 1
             self.environment = previous_environment
             self.function_scope = previous_function_scope
+
+    def _fail_call_depth(self, node: dict[str, Any]) -> None:
+        self._fail(
+            node,
+            "RUN_CALL_DEPTH_EXCEEDED",
+            f"Lumi alcanzó el límite de profundidad de llamadas al intentar llamar a '{node['name']}' (máximo {MAX_CALL_DEPTH}).",
+            "Si la función es recursiva, agrega un caso base y comprueba que cada llamada se acerque a él. Para llamadas muy profundas, usa un ciclo.",
+        )
 
     def _execute_import(self, node: dict[str, Any]) -> None:
         file_name = node["file_name"]

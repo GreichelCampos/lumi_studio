@@ -192,8 +192,21 @@ class Parser:
         token = self.advance()
 
         if token.type == TokenType.INTEGER_LITERAL:
+            try:
+                value = int(token.lexeme)
+            except ValueError as error:
+                diagnostic = Diagnostic(
+                    category=DiagnosticCategory.SYNTACTIC,
+                    code="SYN_INTEGER_LITERAL_TOO_LONG",
+                    file=token.file, line=token.line, column=token.column,
+                    description="El entero escrito tiene demasiados dígitos.",
+                    suggestion="Usa un entero más corto.",
+                )
+                self._own_diagnostics.append(diagnostic)
+                self.diagnostics.append(diagnostic)
+                raise ParserError(diagnostic) from error
             return LiteralNode(
-                value=int(token.lexeme),
+                value=value,
                 literal_kind="entero",
                 file=token.file,
                 line=token.line,

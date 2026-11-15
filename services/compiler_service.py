@@ -1,9 +1,10 @@
 """Analyze source through public core APIs; never execute or generate a scene."""
 
-from dataclasses import replace
+from dataclasses import fields, is_dataclass, replace
 from types import MappingProxyType
 from typing import Mapping
 
+from lumi_language.diagnostics import Diagnostic, DiagnosticCategory
 from lumi_language.import_context import _ImportResolutionContext, ModuleRecord, ModuleState
 from lumi_language.import_resolver import InMemoryImportResolver
 from lumi_language.lexer import Lexer
@@ -13,6 +14,33 @@ from lumi_language.semantic_analyzer import SemanticAnalyzer
 
 from .analysis_capabilities import analysis_limitations
 from .results import AnalysisStage, CompilationResult, CompilationStatus
+
+
+MAX_AST_DEPTH = 128
+
+
+def _deep_source_node(program):
+    pending = [(program, 0)]
+    while pending:
+        node, depth = pending.pop()
+        if is_dataclass(node):
+            if depth > MAX_AST_DEPTH:
+                return node
+            pending.extend((getattr(node, field.name), depth + 1) for field in fields(node))
+        elif isinstance(node, (list, tuple)):
+            pending.extend((item, depth) for item in node)
+    return None
+
+
+def _complex_source_result(entry: str, location) -> CompilationResult:
+    diagnostic = Diagnostic(
+        category=DiagnosticCategory.SYNTACTIC,
+        code="SYN_PROGRAM_TOO_DEEP",
+        file=location.file, line=location.line, column=location.column,
+        description="El código supera la profundidad que Lumi puede analizar.",
+        suggestion="Divide la expresión o el bloque en instrucciones más pequeñas.",
+    )
+    return CompilationResult(entry, CompilationStatus.FAILED, AnalysisStage.SYNTACTIC, diagnostics=(diagnostic,))
 
 
 def _source_snapshot(sources: Mapping[str, str]) -> dict[str, str]:
@@ -29,8 +57,8 @@ def _source_snapshot(sources: Mapping[str, str]) -> dict[str, str]:
 class CompilerService:
     """Facade for analysis of one entry and explicitly supplied in-memory imports.
 
-    Only LexerError and ParserError become failed analysis results. Unexpected
-    exceptions propagate unchanged with their traceback: they are not student
+    Syntax errors and excessive source nesting become failed analysis results.
+    Unexpected exceptions propagate unchanged with their traceback: they are not student
     diagnostics. No disk access, path normalization or new import policy is added.
     """
 
@@ -98,6 +126,8 @@ class CompilerService:
                 diagnostics=tuple(parser.diagnostics), lexical_error=str(error),
                 lexical_error_location=error.location,
             )
+        except RecursionError:
+            return _complex_source_result(file, parser.peek())
         except ParserError as error:
             diagnostics = list(parser.diagnostics)
             if error.diagnostic not in diagnostics:
@@ -117,6 +147,10 @@ class CompilerService:
 
         # The catalog supports explicit imports inside imported bodies. It does
         # not define symbols; the public import map remains direct imports.
+        for source_program in (program, *context.successful_programs.values()):
+            deep_node = _deep_source_node(source_program)
+            if deep_node is not None:
+                return _complex_source_result(file, deep_node)
         semantic = SemanticAnalyzer().analyze(program, context.successful_programs)
         limitations = analysis_limitations(
             spatial_analysis_complete=semantic.spatial_analysis_complete,
