@@ -112,6 +112,14 @@ describe('TopBar Component', () => {
     expect(onRun).toHaveBeenCalledTimes(1);
   });
 
+  it('uses one direct execution button without a dropdown', () => {
+    render(<TopBar {...defaultProps} isRealBackend />);
+    expect(screen.getByRole('button', { name: 'Ejecutar Lumi' })).toHaveAttribute('title', 'Ejecutar archivo activo (F6)');
+    expect(screen.queryByRole('button', { name: 'Opciones de ejecución' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Ejecutar proyecto')).not.toBeInTheDocument();
+    expect(screen.queryByText('Ejecutar archivo actual')).not.toBeInTheDocument();
+  });
+
   it('reports that formatting is unavailable without claiming to change the source', () => {
     render(<TopBar {...defaultProps} />);
     fireEvent.click(screen.getByRole('button', { name: 'Editar' }));

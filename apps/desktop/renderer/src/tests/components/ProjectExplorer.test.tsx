@@ -51,4 +51,18 @@ describe('ProjectExplorer Component', () => {
 
     expect(handleNewFile).toHaveBeenCalledTimes(1);
   });
+
+  it('debe conservar el nombre completo y la ruta como ayuda para nombres largos', () => {
+    const longFile = createMockFile({
+      id: 'f-long',
+      name: 'distribucion_arquitectonica_principal.lumi',
+      path: 'CasaEjemplo/planos/distribucion_arquitectonica_principal.lumi',
+    });
+    const longNameProject = createMockProject({ files: [longFile] });
+
+    render(<ProjectExplorer {...defaultProps} currentProject={longNameProject} projects={[longNameProject]} />);
+
+    expect(screen.getByText(longFile.name)).toBeInTheDocument();
+    expect(screen.getByTitle(`${longFile.name} — ${longFile.path}`)).toBeInTheDocument();
+  });
 });

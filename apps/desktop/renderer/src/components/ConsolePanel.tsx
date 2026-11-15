@@ -25,6 +25,7 @@ import {
   Bug, 
   CheckCircle2, 
   RefreshCw,
+  ChevronDown,
 } from 'lucide-react';
 
 interface ConsolePanelProps {
@@ -52,6 +53,7 @@ interface ConsolePanelProps {
   onLumiClick?: () => void;
   isStale?: boolean;
   lastCompileResult?: CompileResult | null;
+  onCollapse?: () => void;
 }
 
 export const ConsolePanel: React.FC<ConsolePanelProps> = ({
@@ -79,6 +81,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
   onLumiClick,
   isStale = false,
   lastCompileResult = null,
+  onCollapse,
 }) => {
   const [activeMainTab, setActiveMainTab] = useState<'salida' | 'diagnosticos' | 'depurador'>('salida');
   const [ideEvents, setIdeEvents] = useState<IdeLogEvent[]>(() => ideLogger.getHistory());
@@ -228,6 +231,18 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
               <span>{lastCompileResult?.status === 'incomplete' ? getCompileResultSummary(lastCompileResult).label
                 : `${warningCount} advertencia${warningCount !== 1 ? 's' : ''}`}</span>
             </span>
+          )}
+
+          {onCollapse && (
+            <button
+              type="button"
+              onClick={onCollapse}
+              className="p-1.5 rounded-lg text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] transition-colors"
+              title="Ocultar panel inferior"
+              aria-label="Ocultar panel inferior"
+            >
+              <ChevronDown className="w-4 h-4" />
+            </button>
           )}
         </div>
       </div>

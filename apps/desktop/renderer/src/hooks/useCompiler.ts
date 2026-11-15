@@ -69,7 +69,7 @@ export function useCompiler(options?: UseCompilerOptions) {
 
       try {
         const targetEntry = compilerService.mode === 'python'
-          ? projectEntry(project, operation === 'analyze' ? activeFileId : undefined).name
+          ? projectEntry(project, activeFileId).name
           : project.files.find((f) => f.id === activeFileId)?.name ||
             project.files.find((f) => f.isEntry)?.name ||
             project.files[0]?.name ||
@@ -78,7 +78,7 @@ export function useCompiler(options?: UseCompilerOptions) {
 
         const rawResult = operation === 'analyze'
           ? await compilerService.compile(project, { activeFileId })
-          : await compilerService.execute?.(project);
+          : await compilerService.execute?.(project, { activeFileId });
         if (!rawResult) throw new Error('El servicio no admite ejecución real.');
 
         // Si se inició una compilación más reciente o se cargó un artefacto, descartar este resultado
@@ -146,7 +146,7 @@ export function useCompiler(options?: UseCompilerOptions) {
     [runOperation]
   );
   const runExecute = useCallback(
-    (project: LumiProject, revision?: number) => runOperation(project, undefined, revision, 'execute'),
+    (project: LumiProject, revision?: number, activeFileId?: string) => runOperation(project, activeFileId, revision, 'execute'),
     [runOperation]
   );
 

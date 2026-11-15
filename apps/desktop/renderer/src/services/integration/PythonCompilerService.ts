@@ -1,5 +1,5 @@
 import type { LumiProject, CompileResult } from '../../types';
-import type { CompilerService, CompileOptions } from '../compiler/CompilerService';
+import type { CompilerService, CompileOptions, ExecuteOptions } from '../compiler/CompilerService';
 import type { DesktopBridge } from './desktopBridge';
 import { validateProtocolResponse } from './protocol/responseValidator';
 import type { Operation } from './protocol/types';
@@ -28,7 +28,9 @@ export class PythonCompilerService implements CompilerService {
     const activeFileId = typeof options === 'object' ? options.activeFileId : undefined;
     return this.run('analyze', project, activeFileId);
   }
-  execute(project: LumiProject): Promise<CompileResult> { return this.run('execute', project); }
+  execute(project: LumiProject, options?: ExecuteOptions): Promise<CompileResult> {
+    return this.run('execute', project, options?.activeFileId);
+  }
 
   private async run(operation: Operation, project: LumiProject, preferredFileId?: string): Promise<CompileResult> {
     if (!this.bridge) throw new Error('El puente seguro de Electron no está disponible. No se utilizará el mock.');

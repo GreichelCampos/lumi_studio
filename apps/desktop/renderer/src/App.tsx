@@ -28,6 +28,13 @@ import { resolveDebugStep } from './services/editor/debugStepNavigation';
 import { relativePath } from './services/integration/projectInput';
 import type { ViewportWindowState } from './viewportBridge';
 
+const EXPLORER_MIN_WIDTH = 220;
+const EXPLORER_MAX_WIDTH = 480;
+const CONSOLE_MIN_HEIGHT = 140;
+const CONSOLE_MAX_HEIGHT = 420;
+
+const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
+
 export default function App() {
   const {
     projects,
@@ -71,6 +78,11 @@ export default function App() {
   const [showDocsModal, setShowDocsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [hasExecutedScene, setHasExecutedScene] = useState(false);
+  const [explorerWidth, setExplorerWidth] = useState(280);
+  const [consoleHeight, setConsoleHeight] = useState(210);
+  const [isConsoleVisible, setIsConsoleVisible] = useState(true);
+  const [activeResize, setActiveResize] = useState<'explorer' | 'console' | null>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
   const viewportSessionRef = useRef<string | null>(null);
   const viewportSessionSequenceRef = useRef(0);
   const activeFileIdentity = useMemo(() => {
@@ -145,16 +157,35 @@ export default function App() {
   }, [currentProject, activeFileId, getFileContent, runCompile, projectRevision]);
 
   const handleRunExecution = useCallback(async () => {
+    if (isCompiling) {
+      ideLogger.logExecutionAborted('Ya hay una compilación o ejecución en curso.');
+      return;
+    }
     if (!currentProject) {
       ideLogger.logExecutionAborted('No hay un proyecto abierto.');
       return;
     }
 
     if (isRealBackend) {
+      const temporaryEntryId = activeFileId || undefined;
+      const targetFile = temporaryEntryId
+        ? currentProject.files.find(file => file.id === temporaryEntryId)
+        : undefined;
+      if (!targetFile) {
+        ideLogger.logExecutionAborted('No hay un archivo Lumi activo que se pueda ejecutar.');
+        return;
+      }
+
+      // Una ejecución nueva nunca debe mostrar ni conservar la escena o selección anterior.
+      viewportSessionRef.current = null;
+      setActiveObjectId(null);
+      setHasExecutedScene(false);
+      window.lumiViewport?.clear();
+      ideLogger.log('info', `Ejecutando archivo activo: ${targetFile.name}`, undefined, 'Ejecutor');
       const result = await runExecute({
         ...currentProject,
         files: currentProject.files.map((file) => ({ ...file, content: getFileContent(file) })),
-      }, projectRevision);
+      }, projectRevision, temporaryEntryId);
       if (result?.success && result.scenePlan) {
         const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
         viewportSessionRef.current = sessionId;
@@ -165,6 +196,8 @@ export default function App() {
           scenePlan: result.scenePlan, sceneSource: 'python', legacyPlacement: false,
           activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
         });
+      } else {
+        window.lumiViewport?.clear();
       }
       return;
     }
@@ -213,7 +246,8 @@ export default function App() {
       ideLogger.logExecutionStarted(currentProject.name, lastCompileResult.scenePlan.rooms.length, totalObjs);
     }
   }, [currentProject, isStale, lastCompileResult, hasBlockingErrors, setScenePlan,
-    isRealBackend, runExecute, getFileContent, projectRevision, sceneSource, legacyPlacement, setActiveObjectId]);
+    isRealBackend, runExecute, getFileContent, projectRevision, sceneSource, legacyPlacement, setActiveObjectId,
+    activeFileId, entryFile, isCompiling]);
 
   const handleExportLumic = useCallback(() => {
     return LumicFileService.exportLumic(lastCompileResult, currentProject);
@@ -508,6 +542,47 @@ export default function App() {
     [diagnostics, currentProject, isRealBackend, activeFileId]
   );
 
+  useEffect(() => {
+    if (!activeResize) return;
+
+    const handlePointerMove = (event: PointerEvent) => {
+      const bounds = workspaceRef.current?.getBoundingClientRect();
+      if (!bounds) return;
+
+      if (activeResize === 'explorer') {
+        const availableWidth = Math.max(EXPLORER_MIN_WIDTH, bounds.width - 320);
+        setExplorerWidth(clamp(event.clientX - bounds.left, EXPLORER_MIN_WIDTH, Math.min(EXPLORER_MAX_WIDTH, availableWidth)));
+      } else {
+        const availableHeight = Math.max(CONSOLE_MIN_HEIGHT, bounds.height - 180);
+        setConsoleHeight(clamp(bounds.bottom - event.clientY, CONSOLE_MIN_HEIGHT, Math.min(CONSOLE_MAX_HEIGHT, availableHeight)));
+      }
+    };
+    const stopResize = () => setActiveResize(null);
+
+    document.body.classList.add('ide-is-resizing');
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', stopResize, { once: true });
+    return () => {
+      document.body.classList.remove('ide-is-resizing');
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', stopResize);
+    };
+  }, [activeResize]);
+
+  const resizeExplorerWithKeyboard = useCallback((event: React.KeyboardEvent) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    event.preventDefault();
+    const delta = event.key === 'ArrowRight' ? 16 : -16;
+    setExplorerWidth((width) => clamp(width + delta, EXPLORER_MIN_WIDTH, EXPLORER_MAX_WIDTH));
+  }, []);
+
+  const resizeConsoleWithKeyboard = useCallback((event: React.KeyboardEvent) => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return;
+    event.preventDefault();
+    const delta = event.key === 'ArrowUp' ? 16 : -16;
+    setConsoleHeight((height) => clamp(height + delta, CONSOLE_MIN_HEIGHT, CONSOLE_MAX_HEIGHT));
+  }, []);
+
   return (
     <div className="flex flex-col h-screen w-screen bg-[var(--ide-bg,#02110c)] text-[var(--ide-text,#f5ede0)] overflow-hidden font-sans select-none transition-colors duration-250">
       <TopBar
@@ -543,7 +618,10 @@ export default function App() {
         Selecciona el archivo principal desde el explorador antes de compilar. Esta selección se guarda en esta computadora.
       </div>}
 
-      <div className="relative flex-1 grid grid-rows-[1fr_235px] xl:grid-rows-[1fr_210px] gap-3 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250">
+      <div
+        ref={workspaceRef}
+        className="relative flex-1 flex flex-col gap-0 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250"
+      >
         <div 
           className="absolute top-10 left-1/4 w-96 h-96 rounded-full blur-3xl pointer-events-none -z-10 opacity-30 transition-all duration-300"
           style={{ backgroundColor: 'var(--ide-accent-bg, rgba(26,66,47,0.4))' }}
@@ -557,8 +635,8 @@ export default function App() {
           style={{ backgroundColor: 'var(--ide-btn-bg, rgba(26,66,47,0.3))' }}
         />
 
-        <div className="grid grid-cols-12 gap-3 min-h-0 h-full">
-          <div className="col-span-12 md:col-span-3 lg:col-span-2 h-full min-h-0">
+        <div className="flex flex-1 min-h-0 min-w-0">
+          <aside className="h-full min-h-0 flex-none" style={{ width: explorerWidth }}>
                 <ProjectExplorer
                   currentProject={currentProject}
                   projects={projects}
@@ -574,9 +652,22 @@ export default function App() {
                   onOpenDocs={() => setShowDocsModal(true)}
                   isDirty={isDirty}
                 />
-          </div>
+          </aside>
 
-          <div className="col-span-12 md:col-span-9 lg:col-span-10 h-full min-h-0">
+          <div
+            className="ide-resize-handle ide-resize-handle-x"
+            role="separator"
+            aria-label="Redimensionar explorador"
+            aria-orientation="vertical"
+            aria-valuemin={EXPLORER_MIN_WIDTH}
+            aria-valuemax={EXPLORER_MAX_WIDTH}
+            aria-valuenow={Math.round(explorerWidth)}
+            tabIndex={0}
+            onPointerDown={(event) => { event.preventDefault(); setActiveResize('explorer'); }}
+            onKeyDown={resizeExplorerWithKeyboard}
+          />
+
+          <main className="flex-1 h-full min-h-0 min-w-0">
                 <CodeEditor
                   files={currentProject ? currentProject.files : []}
                   activeFileId={activeFileId}
@@ -596,10 +687,29 @@ export default function App() {
                   breakpoints={breakpoints}
                   onToggleBreakpoint={toggleBreakpoint}
                 />
-          </div>
+          </main>
         </div>
 
-        <div className="h-full min-h-0">
+        <>
+          {isConsoleVisible && (
+          <div
+            className="ide-resize-handle ide-resize-handle-y"
+            role="separator"
+            aria-label="Redimensionar panel inferior"
+            aria-orientation="horizontal"
+            aria-valuemin={CONSOLE_MIN_HEIGHT}
+            aria-valuemax={CONSOLE_MAX_HEIGHT}
+            aria-valuenow={Math.round(consoleHeight)}
+            tabIndex={0}
+            onPointerDown={(event) => { event.preventDefault(); setActiveResize('console'); }}
+            onKeyDown={resizeConsoleWithKeyboard}
+          />
+          )}
+          <div
+            className={`min-h-0 flex-none ${isConsoleVisible ? '' : 'hidden'}`}
+            style={{ height: isConsoleVisible ? consoleHeight : 0 }}
+            aria-hidden={!isConsoleVisible}
+          >
             <ConsolePanel
               lumiState={lumiState}
               logs={logs}
@@ -625,8 +735,20 @@ export default function App() {
               onLumiClick={() => setShowDocsModal(true)}
               isStale={isStale}
               lastCompileResult={lastCompileResult}
+              onCollapse={() => setIsConsoleVisible(false)}
             />
-        </div>
+          </div>
+          {!isConsoleVisible && (
+          <button
+            type="button"
+            className="console-restore-button"
+            onClick={() => setIsConsoleVisible(true)}
+            title="Mostrar panel inferior"
+          >
+            Mostrar panel
+          </button>
+          )}
+        </>
       </div>
 
       <NewProjectModal

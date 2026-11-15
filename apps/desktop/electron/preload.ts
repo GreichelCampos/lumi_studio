@@ -49,6 +49,7 @@ contextBridge.exposeInMainWorld('lumiWorkspace', workspace);
 const viewport: ViewportWindowBridge = Object.freeze({
   show: (state: ViewportWindowState) => ipcRenderer.invoke('lumi:viewport:show', state),
   update: (state: ViewportWindowState) => ipcRenderer.send('lumi:viewport:update', state),
+  clear: () => ipcRenderer.send('lumi:viewport:clear'),
   onState: (listener: (state: ViewportWindowState) => void) => {
     const handler = (_event: Electron.IpcRendererEvent, state: ViewportWindowState) => listener(state);
     ipcRenderer.on('lumi:viewport:state', handler);

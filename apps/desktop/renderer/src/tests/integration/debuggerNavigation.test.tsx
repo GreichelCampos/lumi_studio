@@ -17,6 +17,7 @@ let viewportSelectionListener: ((selection: ViewportSelection) => void) | null =
 const viewportBridge = {
   show: vi.fn(async (_state: ViewportWindowState) => undefined),
   update: vi.fn((_state: ViewportWindowState) => undefined),
+  clear: vi.fn(),
   onState: vi.fn(() => () => undefined),
   selectObject: vi.fn(),
   onObjectSelected: vi.fn((listener: (selection: ViewportSelection) => void) => {
@@ -60,8 +61,10 @@ vi.mock('../../components/modals/SettingsModal', () => ({ SettingsModal: () => n
 vi.mock('../../components/DocumentationModal', () => ({ DocumentationModal: () => null }));
 vi.mock('../../components/CodeEditor', () => ({ CodeEditor: (props: {
   activeFileId: string; openTabIds: string[]; highlightedLine: number | null;
+  onSelectFile(id: string): void;
   sourceNavigation: { fileId: string; line: number; column?: number } | null;
-}) => <output data-testid="editor">{JSON.stringify(props)}</output> }));
+}) => <><output data-testid="editor">{JSON.stringify(props)}</output>
+  <button onClick={() => props.onSelectFile('other')}>Activar archivo secundario</button></> }));
 vi.mock('../../components/ConsolePanel', () => ({ ConsolePanel: (props: {
   onStepChange(index: number): void; currentStepIndex: number;
 }) => <button onClick={() => props.onStepChange(props.currentStepIndex + 1)}>Siguiente fixture</button> }));
@@ -80,6 +83,7 @@ beforeEach(() => {
   state.runExecute.mockReset();
   viewportBridge.show.mockClear();
   viewportBridge.update.mockClear();
+  viewportBridge.clear.mockClear();
   viewportSelectionListener = null;
   window.lumiViewport = viewportBridge;
 });
@@ -106,6 +110,18 @@ describe('App explicit compiler operations', () => {
     fireEvent.click(screen.getByText('Ejecutar prueba'));
     expect(state.runExecute).toHaveBeenCalledTimes(1);
     fireEvent.keyDown(window, { key: 'F6' });
+    expect(state.runExecute).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses the active editor file for both the button and F6', () => {
+    render(<App />);
+    fireEvent.click(screen.getByText('Activar archivo secundario'));
+
+    fireEvent.click(screen.getByText('Ejecutar prueba'));
+    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1, 'other');
+
+    fireEvent.keyDown(window, { key: 'F6' });
+    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1, 'other');
     expect(state.runExecute).toHaveBeenCalledTimes(2);
   });
 

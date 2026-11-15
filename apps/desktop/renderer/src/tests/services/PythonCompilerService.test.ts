@@ -88,6 +88,21 @@ describe('Real compiler adapter', () => {
     expect(api.execute).toHaveBeenCalledWith(expect.objectContaining({ entryFile: 'principal.lumi' }));
   });
 
+  it('executes the requested current file temporarily and keeps every project source', async () => {
+    const raw = reply();
+    if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
+    raw.response.result.entryFile = 'otro.lumi';
+    const value = project();
+    const api = bridge(raw);
+
+    await new PythonCompilerService(api).execute(value, { activeFileId: 'active' });
+
+    expect(api.execute).toHaveBeenCalledWith({ entryFile: 'otro.lumi', files: {
+      'otro.lumi': '@', 'principal.lumi': 'mostrar("BORRADOR")>>',
+    } });
+    expect(value.entryFileId).toBe('main');
+  });
+
   it('delivers a validated backend scene to the IDE result', async () => {
     const raw = reply();
     if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');

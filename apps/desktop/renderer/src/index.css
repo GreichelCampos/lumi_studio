@@ -316,3 +316,72 @@
   background: var(--ide-active-line, rgba(255, 255, 255, 0.08));
   border-left: 3px solid var(--ide-accent, #007acc);
 }
+
+.ide-resize-handle {
+  position: relative;
+  flex: none;
+  touch-action: none;
+  outline: none;
+  z-index: 30;
+}
+
+.ide-resize-handle::after {
+  content: '';
+  position: absolute;
+  background: var(--ide-panel-border);
+  opacity: 0;
+  transition: opacity 120ms ease, background-color 120ms ease;
+}
+
+.ide-resize-handle:hover::after,
+.ide-resize-handle:focus-visible::after {
+  background: var(--ide-accent);
+  opacity: 0.75;
+}
+
+.ide-resize-handle-x {
+  width: 12px;
+  cursor: col-resize;
+}
+
+.ide-resize-handle-x::after {
+  inset: 8px 5px;
+  width: 2px;
+  border-radius: 9999px;
+}
+
+.ide-resize-handle-y {
+  height: 12px;
+  cursor: row-resize;
+}
+
+.ide-resize-handle-y::after {
+  inset: 5px 8px;
+  height: 2px;
+  border-radius: 9999px;
+}
+
+.ide-is-resizing,
+.ide-is-resizing * {
+  cursor: inherit !important;
+  user-select: none !important;
+}
+
+.console-restore-button {
+  align-self: flex-end;
+  margin-top: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--ide-panel-border);
+  border-radius: var(--ide-radius-sm, 12px);
+  background: var(--ide-btn-bg);
+  color: var(--ide-text-muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.console-restore-button:hover,
+.console-restore-button:focus-visible {
+  color: var(--ide-text);
+  border-color: var(--ide-accent);
+  outline: none;
+}

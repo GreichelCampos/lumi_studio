@@ -70,7 +70,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
       id="project-explorer-panel"
       className="relative w-full h-full flex flex-col glass-panel shadow-2xl overflow-hidden select-none"
     >
-      <div className="flex items-center justify-between px-4 py-3 glass-panel-header">
+      <div className="flex items-center justify-between px-3 py-2 glass-panel-header">
         <div className="flex items-center gap-2">
           <Layers className="w-4 h-4 text-[var(--ide-accent)] drop-shadow-[0_0_8px_var(--ide-accent-bg)]" />
           <span className="text-xs font-semibold text-[var(--ide-accent)] uppercase tracking-wider">
@@ -106,12 +106,12 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         </div>
       </div>
 
-      <div className="px-3 pt-2.5 pb-2.5 border-b border-[var(--ide-panel-border)]">
+      <div className="px-2 py-2 border-b border-[var(--ide-panel-border)]">
         <div className="relative">
           {currentProject ? (
             <button
               onClick={() => setShowProjectPicker(!showProjectPicker)}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-xl glass-btn text-xs text-[var(--ide-text)] font-medium transition-all"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg glass-btn text-xs text-[var(--ide-text)] font-medium transition-all"
             >
               <div className="flex items-center gap-2 truncate">
                 <span className="w-2 h-2 rounded-full bg-[var(--ide-accent)] shadow-[0_0_8px_rgba(255,255,255,0.4)] flex-shrink-0" />
@@ -181,7 +181,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-2 py-3">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden px-1.5 py-2">
         {!currentProject ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 py-8 space-y-3">
             <div className="p-3 rounded-2xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] text-[var(--ide-accent)]">
@@ -212,7 +212,8 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
           <div className="mb-1">
             <div
               onClick={() => setFolderOpen(!folderOpen)}
-              className="flex items-center justify-between px-2 py-1.5 rounded-lg text-xs font-semibold text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] cursor-pointer select-none transition-colors"
+              className="flex items-center justify-between px-1.5 py-1 rounded-lg text-xs font-semibold text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] cursor-pointer select-none transition-colors"
+              title={currentProject.name}
             >
               <div className="flex items-center gap-1.5 truncate">
                 {folderOpen ? <ChevronDown className="w-3.5 h-3.5 text-[var(--ide-accent)] flex-shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 text-[var(--ide-text-muted)] flex-shrink-0" />}
@@ -225,7 +226,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
             </div>
 
             {folderOpen && (
-              <div className="ml-3 pl-2 border-l border-[var(--ide-panel-border)] mt-1 space-y-0.5">
+              <div className="ml-3 pl-1 border-l border-[var(--ide-panel-border)] mt-0.5 space-y-px">
                 {currentProject.files.length === 0 ? (
                   <div className="py-4 text-center px-2">
                     <p className="text-[11px] text-[var(--ide-text-muted)] mb-2">No hay archivos en este proyecto</p>
@@ -248,17 +249,17 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                       <div
                         key={file.id}
                         data-testid={`explorer-file-${file.id}`}
-                        title={file.path}
+                        title={`${file.name}${file.path && file.path !== file.name ? ` — ${file.path}` : ''}`}
                         onClick={() => onSelectFile(file.id)}
-                        className={`group relative flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-mono cursor-pointer transition-all ${
+                        className={`group relative flex items-center px-1.5 py-1 rounded-lg text-xs font-mono cursor-pointer transition-all ${
                           isActive
                             ? 'bg-[var(--ide-btn-bg)] text-[var(--ide-text)] border border-[var(--ide-btn-border)] font-semibold shadow-sm'
                             : 'text-[var(--ide-text-muted)] hover:bg-[var(--ide-btn-bg)] hover:text-[var(--ide-text)] border border-transparent'
                         }`}
                       >
-                        <div className="flex items-center gap-2 min-w-0 pr-1 truncate">
+                        <div className="flex items-center gap-1.5 min-w-0 flex-1">
                           <FileCode className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-[var(--ide-accent)]' : 'text-[var(--ide-text-muted)]'}`} />
-                          <span className="truncate">{file.name}</span>
+                          <span className="truncate min-w-0 flex-1">{file.name}</span>
                           
                           {isFileDirty && (
                             <span 
@@ -269,7 +270,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
 
                           {isEntry && (
                             <span 
-                              className="text-[9px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1 py-0.2 rounded tracking-tight flex-shrink-0"
+                              className="text-[8px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1 rounded tracking-tight flex-shrink-0"
                               title="Archivo principal de compilación (Punto de entrada)"
                             >
                               PRINCIPAL
@@ -277,7 +278,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                           )}
                         </div>
 
-                        <div className="relative flex items-center gap-0.5 flex-shrink-0">
+                        <div className="relative flex items-center flex-shrink-0 ml-0.5">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();

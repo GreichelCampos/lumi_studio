@@ -62,6 +62,11 @@ export function registerViewportWindow(owner: BrowserWindow, renderer: URL, icon
     if (!state || next.sessionId !== state.sessionId) return;
     state = next; sendState();
   });
+  ipcMain.on('lumi:viewport:clear', event => {
+    if (!isOwner(event)) return;
+    state = null;
+    if (viewport && !viewport.isDestroyed()) viewport.close();
+  });
   ipcMain.on('lumi:viewport:selected', (event, selection: ViewportSelection) => {
     if (!isViewport(event) || !state || !selection || selection.sessionId !== state.sessionId
       || (selection.objectId !== null && typeof selection.objectId !== 'string')) return;
@@ -71,6 +76,7 @@ export function registerViewportWindow(owner: BrowserWindow, renderer: URL, icon
   return () => {
     ipcMain.removeHandler('lumi:viewport:show');
     ipcMain.removeAllListeners('lumi:viewport:update');
+    ipcMain.removeAllListeners('lumi:viewport:clear');
     ipcMain.removeAllListeners('lumi:viewport:selected');
     if (viewport && !viewport.isDestroyed()) viewport.destroy();
     viewport = null; state = null;

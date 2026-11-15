@@ -18,6 +18,7 @@ export interface ViewportSelection {
 export interface ViewportWindowBridge {
   show(state: ViewportWindowState): Promise<void>;
   update(state: ViewportWindowState): void;
+  clear(): void;
   onState(listener: (state: ViewportWindowState) => void): () => void;
   selectObject(selection: ViewportSelection): void;
   onObjectSelected(listener: (selection: ViewportSelection) => void): () => void;

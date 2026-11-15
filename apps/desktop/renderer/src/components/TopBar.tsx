@@ -374,7 +374,7 @@ export const TopBar: React.FC<TopBarProps> = ({
                 ? 'bg-black/10 dark:bg-white/5 text-[var(--ide-text-muted)] cursor-not-allowed border border-[var(--ide-panel-border)]'
                 : 'bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#02110c)] shadow-lg border border-[var(--ide-accent)] active:scale-95'
             }`}
-            title={isRealBackend ? 'Ejecutar Lumi (F6)' : 'Ejecutar y renderizar espacio 3D (F6)'}
+            title={isRealBackend ? 'Ejecutar archivo activo (F6)' : 'Ejecutar y renderizar espacio 3D (F6)'}
           >
             <Play className={`w-3.5 h-3.5 ${canRun === false || hasBlockingErrors ? 'opacity-40' : 'fill-current'}`} />
             <span>{isRealBackend ? 'Ejecutar Lumi' : 'Ejecutar 3D'}</span>
