@@ -2,10 +2,10 @@
 
 import sys
 import traceback
-from typing import TextIO
+from typing import Callable, TextIO
 
 from services.compiler_service import CompilerService
-from services.execution_service import ExecutionService, InputUnavailableError
+from services.execution_service import ExecutionService, InputCancelledError, InputUnavailableError
 
 from .adapters import adapt_result
 from .errors import ProtocolError, error_response
@@ -30,7 +30,7 @@ class RequestDispatcher:
         self._log = log if log is not None else sys.stderr
         self._request_ids: set[str] = set()
 
-    def dispatch(self, raw: object) -> Response:
+    def dispatch(self, raw: object, *, input_provider: Callable[[str], str] | None = None) -> Response:
         request_id, operation = correlation(raw)
         try:
             request = validate_request(raw)
@@ -44,8 +44,21 @@ class RequestDispatcher:
         self._request_ids.add(request.request_id)
         try:
             compilation = self._compiler.compile_project(request.files, entry_file=request.entry_file)
-            execution = self._executor.execute(compilation) if request.operation == "execute" else None
-            return adapt_result(request, compilation, execution)
+            execution = None
+            if request.operation == "execute":
+                execution = (
+                    self._executor.execute(compilation) if input_provider is None
+                    else self._executor.execute(compilation, input_provider=input_provider)
+                )
+            response = adapt_result(request, compilation, execution)
+            if response["status"] != "error":
+                response["result"]["capabilities"]["interactiveInput"] = input_provider is not None
+            return response
+        except InputCancelledError:
+            return error_response(
+                "INPUT_CANCELLED", "Se canceló la ejecución mientras esperaba una respuesta.",
+                kind="infrastructure", request_id=request.request_id, operation=request.operation,
+            )
         except InputUnavailableError:
             traceback.print_exc(file=self._log)
             return error_response(

@@ -11,7 +11,6 @@ describe('TopBar Component', () => {
     lumiState: 'ready' as const,
     onCompile: vi.fn(),
     onRun: vi.fn(),
-    isCompiling: false,
     projects: [project],
     currentProject: project,
     onSelectProject: vi.fn(),
@@ -23,19 +22,6 @@ describe('TopBar Component', () => {
     onSaveAll: vi.fn(),
     onInsertRoomModal: vi.fn(),
   };
-
-  it('debe renderizar el nombre del proyecto activo y disparar la compilación al hacer clic en Compilar', () => {
-    const handleCompile = vi.fn();
-
-    render(<TopBar {...defaultProps} onCompile={handleCompile} />);
-
-    expect(screen.getByText(/Penthouse Moderno/i)).toBeInTheDocument();
-
-    const compileBtn = screen.getByTitle(/compilar y validar/i);
-    fireEvent.click(compileBtn);
-
-    expect(handleCompile).toHaveBeenCalledTimes(1);
-  });
 
   it('debe deshabilitar el botón Ejecutar cuando canRun es false o hasBlockingErrors es true', () => {
     const { rerender } = render(
@@ -112,17 +98,18 @@ describe('TopBar Component', () => {
     expect(importBtn).toBeInTheDocument();
   });
 
-  it('describes Python menu actions without promising scene generation or live debugging', () => {
+  it('offers one primary Lumi action and analyzes from the menu', () => {
     const onCompile = vi.fn();
     const onRun = vi.fn();
     render(<TopBar {...defaultProps} isRealBackend onCompile={onCompile} onRun={onRun} />);
-    fireEvent.click(screen.getAllByRole('button', { name: 'Compilar' })[0]);
-    expect(screen.queryByText('Generar AST & ScenePlan')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText('Analizar archivo principal'));
-    expect(onCompile).toHaveBeenCalledTimes(1);
+    expect(screen.getByText(/Penthouse Moderno/i)).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Compilar' })).not.toBeInTheDocument();
+    expect(screen.queryByText('Analizar código')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ejecutar' }));
-    expect(screen.queryByText('Modo Depuración Espacial')).not.toBeInTheDocument();
-    fireEvent.click(screen.getByText('Ejecutar archivo principal'));
+    fireEvent.click(screen.getByText('Analizar código'));
+    expect(onCompile).toHaveBeenCalledTimes(1);
+    expect(onRun).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Ejecutar Lumi' }));
     expect(onRun).toHaveBeenCalledTimes(1);
   });
 

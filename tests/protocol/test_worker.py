@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 import subprocess
 import sys
+from uuid import UUID
 
 import pytest
 
@@ -38,6 +39,30 @@ def test_real_process_handles_consecutive_requests_unicode_and_errors():
     assert messages[0]["requestId"] is None
     assert messages[1]["result"]["output"] == ["¡Lumi, habitación 🏠!"]
     assert messages[2]["result"]["diagnostics"][0]["code"] == "RUN_DIVISION_BY_ZERO"
+
+
+@pytest.mark.parametrize(
+    "value, token, expected",
+    [("María", "a", None), ("", "a", None), (None, "a", "INPUT_CANCELLED"),
+     ("tardía", "b", "INPUT_UNAVAILABLE")],
+)
+def test_interactive_worker_correlates_reply_and_keeps_session(value, token, expected, monkeypatch):
+    monkeypatch.setattr("services.worker.uuid4", lambda: UUID(hex="a" * 32))
+    request = json.loads(frame("interactive", 'mostrar(leer("¿Nombre?"))>>'))
+    request["interactiveInput"] = True
+    reply = {"type": "inputReply", "requestId": "interactive", "inputId": token * 32, "value": value}
+    data = b"".join(json.dumps(item).encode() + b"\n" for item in (request, reply))
+    output = BytesIO()
+    run_worker(BytesIO(data + frame("next", "mostrar(7)>>")), output, StringIO())
+    prompt, result, following = map(json.loads, output.getvalue().splitlines())
+    assert prompt == {"type": "inputRequest", "requestId": "interactive", "inputId": "a" * 32, "prompt": "¿Nombre?"}
+    if expected:
+        assert result["error"]["code"] == expected
+    else:
+        assert result["status"] == "completed"
+        assert result["result"]["capabilities"]["interactiveInput"] is True
+        assert result["result"]["output"] == [value]
+    assert following["result"]["output"] == ["7"]
 
 
 def test_live_process_flushes_each_response_before_eof():

@@ -116,7 +116,11 @@ de las últimas modificaciones.
 Compilar una habitación puede informar análisis incompleto sin escena; Ejecutar
 puede completar el programa y entregar ScenePlan aunque el análisis conserve esa
 limitación. No intentes corregir ese estado cambiando dimensiones válidas.
-No hay entrada interactiva disponible ni depuración en vivo del intérprete.
+En Electron, al ejecutar un programa con `leer("Pregunta")`, se abre un
+formulario de texto. Escribe la respuesta y pulsa **Enviar entrada** o **Enter**
+para continuar. Puedes enviar una respuesta vacía o cancelar mientras el
+programa espera. F5 analiza el código sin pedir datos. El depurador visual
+reproduce pasos importados o simulados.
 
 ## Generar una escena mediante Python
 

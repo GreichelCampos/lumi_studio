@@ -48,7 +48,7 @@ class DiagnosticDTO(TypedDict):
 class Capabilities(TypedDict):
     scenePlan: bool
     debugTrace: Literal[False]
-    interactiveInput: Literal[False]
+    interactiveInput: bool
     cancellation: Literal[False]
 
 
@@ -85,6 +85,13 @@ class ErrorResponse(TypedDict):
     operation: Operation | None
     status: Literal["error"]
     error: ErrorDetail
+
+
+class InputRequest(TypedDict):
+    type: Literal["inputRequest"]
+    requestId: str
+    inputId: str
+    prompt: str
 
 
 Response = ResultResponse | ErrorResponse

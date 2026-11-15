@@ -1,11 +1,17 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import type { BackendInput, DesktopBridge } from '../renderer/src/services/integration/desktopBridge';
+import type { BackendInput, DesktopBridge, InputPrompt, InputReply } from '../renderer/src/services/integration/desktopBridge';
 import type { WindowControlsBridge } from '../renderer/src/windowBridge';
 import type { WorkspaceBridge } from '../renderer/src/services/storage/workspaceBridge';
 
 const bridge: DesktopBridge = Object.freeze({
   analyze: (input: BackendInput) => ipcRenderer.invoke('lumi:analyze', input),
-  execute: (input: BackendInput) => ipcRenderer.invoke('lumi:execute', input),
+  execute: (input: BackendInput, interactive?: boolean) => ipcRenderer.invoke('lumi:execute', input, interactive),
+  onInputPrompt: (listener: (prompt: InputPrompt | null) => void) => {
+    const handler = (_event: Electron.IpcRendererEvent, prompt: InputPrompt | null) => listener(prompt);
+    ipcRenderer.on('lumi:inputPrompt', handler);
+    return () => { ipcRenderer.removeListener('lumi:inputPrompt', handler); };
+  },
+  replyInput: (reply: InputReply) => ipcRenderer.invoke('lumi:replyInput', reply),
   availability: () => ipcRenderer.invoke('lumi:availability'),
 });
 contextBridge.exposeInMainWorld('lumiDesktop', bridge);

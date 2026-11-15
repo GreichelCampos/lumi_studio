@@ -3,6 +3,7 @@ import { backendError, WorkerError } from './backendError';
 import { validateInput } from './requestValidation';
 import { trustedFrame } from './security';
 import type { PythonWorker } from './pythonWorker';
+import type { InputPrompt } from '../renderer/src/services/integration/desktopBridge';
 
 export function registerIpc(window: BrowserWindow, worker: PythonWorker, renderer: URL): () => void {
   function authorize(event: IpcMainInvokeEvent): void {
@@ -12,18 +13,33 @@ export function registerIpc(window: BrowserWindow, worker: PythonWorker, rendere
     }
   }
   for (const operation of ['analyze', 'execute'] as const) {
-    ipcMain.handle(`lumi:${operation}`, async (event, raw: unknown) => {
+    ipcMain.handle(`lumi:${operation}`, async (event, raw: unknown, interactive?: unknown) => {
       try {
         authorize(event);
         const input = validateInput(raw);
-        return { ok: true, response: await worker.request(operation, input) };
+        const onInput = operation === 'execute' && interactive === true
+          ? (prompt: InputPrompt | null) => {
+              const currentFrame = window.webContents.isDestroyed() ? null : window.webContents.mainFrame;
+              if (currentFrame && currentFrame === event.senderFrame && trustedFrame(currentFrame.url, renderer)) {
+                currentFrame.send('lumi:inputPrompt', prompt);
+              }
+            }
+          : undefined;
+        return { ok: true, response: await worker.request(operation, input, onInput) };
       } catch (error) { return { ok: false, error: backendError(error) }; }
     });
   }
+  ipcMain.handle('lumi:replyInput', (event, raw: unknown) => {
+    try {
+      authorize(event);
+      worker.replyInput(raw);
+      return { ok: true };
+    } catch (error) { return { ok: false, error: backendError(error) }; }
+  });
   ipcMain.handle('lumi:availability', (event) => {
     authorize(event); return worker.availability();
   });
   return () => {
-    for (const channel of ['lumi:analyze', 'lumi:execute', 'lumi:availability']) ipcMain.removeHandler(channel);
+    for (const channel of ['lumi:analyze', 'lumi:execute', 'lumi:availability', 'lumi:replyInput']) ipcMain.removeHandler(channel);
   };
 }

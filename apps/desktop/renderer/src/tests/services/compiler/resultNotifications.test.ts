@@ -15,8 +15,8 @@ function pythonResult(overrides: Partial<CompileResult> = {}): CompileResult {
 
 describe('Python result notifications', () => {
   it.each([
-    [null, 'Esta respuesta no contiene ScenePlan ni trazas.'],
-    [createMockScenePlan(), 'ScenePlan recibido; las trazas todavía no están disponibles.'],
+    [null, 'Este programa no generó una escena 3D.'],
+    [createMockScenePlan(), 'La escena está lista para el visor 3D.'],
   ])('reports scene availability without claiming real traces', (scenePlan, expected) => {
     const listener = vi.fn();
     const unsubscribe = lumiAssistant.subscribe(listener);
@@ -32,7 +32,7 @@ describe('Python result notifications', () => {
     }
   });
 
-  it('keeps analysis limitations visible', () => {
+  it('explains how to check spatial rules after analysis', () => {
     const listener = vi.fn();
     const unsubscribe = lumiAssistant.subscribe(listener);
     try {
@@ -40,7 +40,7 @@ describe('Python result notifications', () => {
       const before = structuredClone(result);
       notifyCompileResult(result, vi.fn());
       expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
-        text: expect.stringContaining('El análisis espacial todavía está incompleto.'), state: 'warning',
+        text: expect.stringContaining('Usa Ejecutar Lumi (F6) para comprobar el espacio'), state: 'warning',
       }));
       expect(result).toEqual(before);
     } finally {
@@ -49,10 +49,10 @@ describe('Python result notifications', () => {
   });
 
   it.each([
-    ['analyze', 'completed', 'success', 'Compilar no ejecuta el programa ni genera una escena'],
+    ['analyze', 'completed', 'success', 'Usa Ejecutar Lumi (F6)'],
     ['analyze', 'failed', 'error', 'El análisis encontró un problema'],
-    ['execute', 'failed', 'error', 'La ejecución Python no pudo completarse'],
-    ['execute', 'blocked', 'error', 'La ejecución Python no pudo completarse'],
+    ['execute', 'failed', 'error', 'La ejecución de Lumi se detuvo'],
+    ['execute', 'blocked', 'error', 'La ejecución de Lumi se detuvo'],
   ] as const)('distinguishes %s results with status %s', (operation, status, state, message) => {
     const listener = vi.fn();
     const unsubscribe = lumiAssistant.subscribe(listener);

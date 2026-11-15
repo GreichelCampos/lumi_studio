@@ -9,6 +9,7 @@ import { CodeEditor } from './components/CodeEditor';
 import { Viewport3D } from './components/Viewport3D';
 import { findDeclaredWall } from './components/viewport/helpers/architecturalSelection';
 import { ConsolePanel } from './components/ConsolePanel';
+import { InteractiveInputDialog } from './components/console/InteractiveInputDialog';
 import { DocumentationModal } from './components/DocumentationModal';
 import { NewProjectModal } from './components/modals/NewProjectModal';
 import { OpenProjectModal } from './components/modals/OpenProjectModal';
@@ -335,6 +336,21 @@ export default function App() {
 
   const debugSelection = useMemo(() => resolveDebugStep(null, currentStep, legacyPlacement), [currentStep, legacyPlacement]);
 
+  const handleNavigateToSource = useCallback(
+    (sourceRef: SourceReference) => {
+      if (!currentProject) return;
+
+      const targetFile = findSourceFile(currentProject, sourceRef.file, isRealBackend);
+      if (!targetFile) {
+        ideLogger.log('warning', `No se pudo identificar el archivo de origen: ${sourceRef.file}.`, undefined, 'Editor');
+        return;
+      }
+      handleSelectFile(targetFile.id);
+      navigateToLocation(targetFile.id, sourceRef.line, sourceRef.column);
+    },
+    [currentProject, handleSelectFile, navigateToLocation, isRealBackend]
+  );
+
   const handleFocusObject = useCallback(
     (objectId: string | null) => {
       setActiveObjectId(objectId);
@@ -348,9 +364,7 @@ export default function App() {
         const obj = room.objects.find((o) => o.id === objectId);
         if (obj) {
           lumiAssistant.onEntitySelected(obj.name, 'Objeto');
-          if (obj.sourceRef?.line) {
-            setHighlightedLine(obj.sourceRef.line);
-          }
+          if (obj.sourceRef) handleNavigateToSource(obj.sourceRef);
           return;
         }
 
@@ -379,22 +393,7 @@ export default function App() {
         }
       }
     },
-    [scenePlan, setActiveObjectId, setHighlightedLine]
-  );
-
-  const handleNavigateToSource = useCallback(
-    (sourceRef: SourceReference) => {
-      if (!currentProject) return;
-
-      const targetFile = findSourceFile(currentProject, sourceRef.file, isRealBackend);
-      if (!targetFile) {
-        ideLogger.log('warning', `No se pudo identificar el archivo de origen: ${sourceRef.file}.`, undefined, 'Editor');
-        return;
-      }
-      handleSelectFile(targetFile.id);
-      navigateToLocation(targetFile.id, sourceRef.line, sourceRef.column);
-    },
-    [currentProject, handleSelectFile, navigateToLocation, isRealBackend]
+    [scenePlan, setActiveObjectId, setHighlightedLine, handleNavigateToSource]
   );
 
   const handleNavigateToDiagnostic = useCallback(
@@ -479,7 +478,6 @@ export default function App() {
         lumiState={lumiState}
         onCompile={handleCompileCurrent}
         onRun={handleRunExecution}
-        isCompiling={isCompiling}
         isStale={isStale}
         hasBlockingErrors={isRealBackend ? false : hasBlockingErrors}
         canRun={canRun}
@@ -500,6 +498,7 @@ export default function App() {
         onExportLumic={handleExportLumic}
         onImportLumicFile={handleImportLumicFile}
       />
+      {isRealBackend && <InteractiveInputDialog />}
       {storageError && <div role="alert" className="bg-rose-950 text-rose-100 px-4 py-2 text-sm z-[60]">
         {storageError} <button onClick={clearStorageError} className="underline ml-3">Cerrar aviso</button>
       </div>}

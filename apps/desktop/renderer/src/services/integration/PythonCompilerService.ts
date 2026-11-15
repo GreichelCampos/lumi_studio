@@ -34,7 +34,9 @@ export class PythonCompilerService implements CompilerService {
     if (!this.bridge) throw new Error('El puente seguro de Electron no está disponible. No se utilizará el mock.');
     const started = performance.now();
     const input = projectInput(project, preferredFileId);
-    const reply: unknown = await this.bridge[operation](input);
+    const reply: unknown = operation === 'execute' && this.bridge.onInputPrompt && this.bridge.replyInput
+      ? await this.bridge.execute(input, true)
+      : await this.bridge[operation](input);
     if (!isRecord(reply) || reply.ok !== true) {
       if (isRecord(reply) && reply.ok === false && isRecord(reply.error)
         && typeof reply.error.code === 'string' && typeof reply.error.message === 'string') {

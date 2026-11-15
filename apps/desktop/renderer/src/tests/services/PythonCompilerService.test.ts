@@ -32,7 +32,7 @@ function bridge(response = reply()): DesktopBridge {
 describe('Real compiler adapter', () => {
   it('labels the unavailable spatial capability without claiming that source has no rooms', () => {
     render(createElement(ViewportEmptyState, { type: 'scene_unavailable' }));
-    expect(screen.getByText('Sin ScenePlan en esta respuesta')).toBeInTheDocument();
+    expect(screen.getByText('Sin escena 3D')).toBeInTheDocument();
     expect(screen.queryByText('Sin habitaciones definidas')).not.toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
@@ -117,7 +117,7 @@ describe('Real compiler adapter', () => {
     raw.response.result.diagnostics = [{ category: 'RUNTIME', code: 'RUN_DIVISION_BY_ZERO',
       file: 'principal.lumi', line: 3, column: 9, description: 'No se puede dividir entre cero.' }];
     const result = await new PythonCompilerService(bridge(raw)).execute(project());
-    expect(result.diagnostics[0]).toMatchObject({ severity: 'unspecified', category: 'ejecucion',
+    expect(result.diagnostics[0]).toMatchObject({ severity: 'error', category: 'ejecucion',
       code: 'RUN_DIVISION_BY_ZERO', file: 'principal.lumi', line: 3, column: 9, blocking: true });
     expect(result.diagnostics[0].targetObjectId).toBeUndefined();
     expect(validateCompileResult(result).isValid).toBe(true);

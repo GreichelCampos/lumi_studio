@@ -34,7 +34,7 @@ export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '1. Estructura y Filosofía de Lumi',
     exampleKind: 'executable',
-    description: 'Compilar puede informar análisis espacial incompleto. Ejecutar Python genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
+    description: 'Analizar código revisa el programa. Ejecutar Lumi genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
     code: `principal {
   habitacion sala(5.0, 4.0, 2.7) {
     piso suelo {
@@ -89,7 +89,7 @@ si seleccion == nulo {
   {
     title: '4. Ciclo "hacer" y Modularidad',
     exampleKind: 'executable',
-    description: 'El punto y coma separa las cláusulas del ciclo hacer. Compilar analiza este programa; Ejecutar Python muestra 0, 1 y 2 en la consola.',
+    description: 'El punto y coma separa las cláusulas del ciclo hacer. Analizar código revisa este programa; Ejecutar Lumi muestra 0, 1 y 2 en la consola.',
     code: `funcion vacio mostrar_contadores(entero total) {
   hacer entero i = 0; i < total; i = i + 1 {
     mostrar(i)>>
@@ -106,6 +106,6 @@ principal {
     code: `-- Esta sección es informativa, no un programa de depuración.
 -- Los colores muestran los estados recibidos por el IDE.
 -- Un estado visual no demuestra detección automática de conflictos.
--- Compilar analiza; Ejecutar Python ejecuta las instrucciones admitidas.`
+-- Analizar código revisa; Ejecutar Lumi ejecuta las instrucciones admitidas.`
   }
 ];

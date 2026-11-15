@@ -67,11 +67,16 @@ lo representa como `null`. Un análisis espacial determinado usa
 se reserva para efectos desconocidos o resultados abstractos parciales. Este estado
 es independiente de que una ejecución posterior produzca una escena.
 
-`debugTrace`, `interactiveInput` y `cancellation` permanecen en `false`; los
-resultados Python contienen `debugSteps: []` en el IDE. Se correlacionan solicitudes y se descartan
-resultados reemplazados para evitar actualizar el proyecto con respuestas antiguas.
-El timeout termina el worker; una nueva solicitud puede reiniciarlo. No existe una
-sesión interactiva de entrada ni cancelación desde el programa.
+`debugTrace` y `cancellation` permanecen en `false`. Los resultados de Python
+contienen `debugSteps: []` en el IDE. Se correlacionan las solicitudes y se descartan
+los resultados reemplazados para evitar que actualicen el proyecto.
+
+Electron activa `interactiveInput` al ejecutar desde el IDE. Al llegar a `leer`,
+Python emite `inputRequest` y espera una trama `inputReply` con los mismos
+`requestId` e `inputId`. El usuario puede enviar texto vacío o cancelar con una
+respuesta `null`. El supervisor reserva el worker para esa ejecución y pausa su
+temporizador de cálculo mientras espera. Cada solicitud de entrada dispone de
+cinco minutos.
 
 ## Proyectos, escenas y reproducción
 

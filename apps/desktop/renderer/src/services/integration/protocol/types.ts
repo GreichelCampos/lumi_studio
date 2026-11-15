@@ -39,7 +39,7 @@ export interface ProtocolResult {
   capabilities: {
     scenePlan: boolean;
     debugTrace: false;
-    interactiveInput: false;
+    interactiveInput: boolean;
     cancellation: false;
   };
 }
@@ -60,7 +60,7 @@ export const PROTOCOL_ERROR_CODES = [
   'UNKNOWN_OPERATION', 'REQUEST_TOO_LARGE', 'DUPLICATE_REQUEST_ID', 'SESSION_LIMIT_REACHED',
 ] as const;
 export const INFRASTRUCTURE_ERROR_CODES = [
-  'INPUT_UNAVAILABLE', 'INTERNAL_ERROR', 'RESPONSE_TOO_LARGE', 'SERIALIZATION_ERROR',
+  'INPUT_UNAVAILABLE', 'INPUT_CANCELLED', 'INTERNAL_ERROR', 'RESPONSE_TOO_LARGE', 'SERIALIZATION_ERROR',
 ] as const;
 
 export interface ErrorResponse {

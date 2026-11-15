@@ -36,7 +36,7 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
     && (!Object.hasOwn(raw, 'lexicalError') || isText(raw.lexicalError))
     && isRecord(caps) && hasKeys(caps, ['scenePlan', 'debugTrace', 'interactiveInput', 'cancellation'])
     && typeof caps.scenePlan === 'boolean'
-    && caps.debugTrace === false && caps.interactiveInput === false && caps.cancellation === false;
+    && caps.debugTrace === false && typeof caps.interactiveInput === 'boolean' && caps.cancellation === false;
 }
 
 function coherentResult(envelope: Record<string, unknown>, result: Record<string, unknown>): boolean {

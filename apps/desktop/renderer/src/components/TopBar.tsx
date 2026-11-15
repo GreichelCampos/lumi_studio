@@ -3,7 +3,6 @@ import { LumiState, LumiProject } from '../types';
 import { LumiMascot } from './LumiMascot';
 import { useWindowControls } from '../hooks/useWindowControls';
 import { 
-  Hammer, 
   Play, 
   CheckCircle2, 
   AlertTriangle, 
@@ -28,7 +27,6 @@ interface TopBarProps {
   lumiState: LumiState;
   onCompile: () => void;
   onRun: () => void;
-  isCompiling: boolean;
   isStale?: boolean;
   hasBlockingErrors?: boolean;
   canRun?: boolean;
@@ -55,7 +53,6 @@ export const TopBar: React.FC<TopBarProps> = ({
   lumiState,
   onCompile,
   onRun,
-  isCompiling,
   isStale = false,
   hasBlockingErrors = false,
   canRun = true,
@@ -214,19 +211,10 @@ export const TopBar: React.FC<TopBarProps> = ({
       ]
     },
     {
-      id: 'compilar',
-      label: 'Compilar',
-      items: [
-        { label: 'Compilar código Lumi (F5)', action: onCompile, shortcut: 'F5' },
-        { label: isRealBackend ? 'Analizar archivo principal' : 'Compilación de demostración', action: onCompile, shortcut: '' },
-      ]
-    },
-    {
       id: 'ejecutar',
       label: 'Ejecutar',
       items: [
-        { label: isRealBackend ? 'Ejecutar con Python' : 'Ejecutar y renderizar 3D', action: onRun, shortcut: 'F6' },
-        { label: isRealBackend ? 'Ejecutar archivo principal' : 'Mostrar escena de demostración', action: onRun, shortcut: '' },
+        { label: 'Analizar código', action: onCompile, shortcut: 'F5' },
       ]
     },
     {
@@ -374,16 +362,6 @@ export const TopBar: React.FC<TopBarProps> = ({
           </button>
 
           <button
-            onClick={onCompile}
-            disabled={isCompiling}
-            className="flex items-center gap-1.5 px-3 py-1 rounded-xl glass-btn text-[var(--ide-text)] text-xs font-semibold hover:text-[var(--ide-text)] transition-all shadow-sm"
-            title="Compilar y validar sintaxis (F5)"
-          >
-            <Hammer className={`w-3.5 h-3.5 text-[var(--ide-accent)] ${isCompiling ? 'animate-spin' : ''}`} />
-            <span>{isCompiling ? 'Compilando...' : 'Compilar'}</span>
-          </button>
-
-          <button
             onClick={onRun}
             disabled={canRun === false || hasBlockingErrors}
             className={`flex items-center gap-1.5 px-3.5 py-1 rounded-xl text-xs font-bold transition-all ${
@@ -391,10 +369,10 @@ export const TopBar: React.FC<TopBarProps> = ({
                 ? 'bg-black/10 dark:bg-white/5 text-[var(--ide-text-muted)] cursor-not-allowed border border-[var(--ide-panel-border)]'
                 : 'bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#02110c)] shadow-lg border border-[var(--ide-accent)] active:scale-95'
             }`}
-            title={isRealBackend ? 'Ejecutar con Python (F6)' : 'Ejecutar y renderizar espacio 3D (F6)'}
+            title={isRealBackend ? 'Ejecutar Lumi (F6)' : 'Ejecutar y renderizar espacio 3D (F6)'}
           >
             <Play className={`w-3.5 h-3.5 ${canRun === false || hasBlockingErrors ? 'opacity-40' : 'fill-current'}`} />
-            <span>{isRealBackend ? 'Ejecutar Python' : 'Ejecutar 3D'}</span>
+            <span>{isRealBackend ? 'Ejecutar Lumi' : 'Ejecutar 3D'}</span>
           </button>
         </div>
       </div>

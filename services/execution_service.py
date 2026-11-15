@@ -12,6 +12,10 @@ class InputUnavailableError(RuntimeError):
     """Host input is unavailable; this is not a Lumi language diagnostic."""
 
 
+class InputCancelledError(RuntimeError):
+    """The user stopped an execution that was waiting for input."""
+
+
 def _unavailable_input(prompt: str) -> str:
     raise InputUnavailableError(
         "La ejecución requiere un proveedor de entrada configurado."
@@ -49,7 +53,9 @@ class ExecutionService:
         compilation = self._compiler.compile(source, file, sources=sources)
         return self.execute(compilation)
 
-    def execute(self, compilation: CompilationResult) -> ExecutionResult:
+    def execute(
+        self, compilation: CompilationResult, *, input_provider: Callable[[str], str] | None = None,
+    ) -> ExecutionResult:
         """Execute the snapshot as supplied; no recompilation or scene simulation."""
         program = compilation.program
         if not compilation.can_execute or program is None:
@@ -61,7 +67,11 @@ class ExecutionService:
         catalog = compilation._compiled_programs
         if catalog is None:
             catalog = compilation.imported_programs
-        runtime = self._interpreter_factory().execute(program, dict(catalog))
+        interpreter = (
+            self._interpreter_factory() if input_provider is None
+            else Interpreter(input_provider=input_provider)
+        )
+        runtime = interpreter.execute(program, dict(catalog))
         status = ExecutionStatus.COMPLETED
         if runtime.diagnostics:
             status = ExecutionStatus.FAILED

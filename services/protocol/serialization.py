@@ -3,7 +3,7 @@
 import json
 
 from .errors import ProtocolError
-from .models import MAX_JSON_DEPTH, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES, Response
+from .models import MAX_JSON_DEPTH, MAX_REQUEST_BYTES, MAX_RESPONSE_BYTES, InputRequest, Response
 
 
 class ResponseTooLargeError(ValueError):
@@ -53,7 +53,7 @@ def decode_request(data: bytes) -> object:
     return raw
 
 
-def encode_response(response: Response) -> bytes:
+def encode_response(response: Response | InputRequest) -> bytes:
     data = (json.dumps(response, ensure_ascii=False, allow_nan=False, separators=(",", ":")) + "\n").encode("utf-8")
     if len(data) > MAX_RESPONSE_BYTES:
         raise ResponseTooLargeError("La respuesta excede 4 MiB.")
