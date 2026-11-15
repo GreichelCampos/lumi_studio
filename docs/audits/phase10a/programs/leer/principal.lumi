@@ -1,0 +1,1 @@
+principal { texto nombre = leer("Nombre:")>> mostrar(nombre)>> }

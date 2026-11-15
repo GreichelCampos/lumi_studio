@@ -1,0 +1,1 @@
+principal { habitacion sala(6,5,3) { pared frente { orientacion "norte">> color "#aa2222">> } pared atras { orientacion "sur">> } pared derecha { orientacion "este">> } pared izquierda { orientacion "oeste">> } } }

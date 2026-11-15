@@ -1,0 +1,6475 @@
+[
+  {
+    "id": "types-expressions",
+    "compilationStatus": "completed",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [
+        "5",
+        "3.0",
+        "Lumi",
+        "verdadero"
+      ],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "types-expressions-analyze",
+        "operation": "analyze",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "types-expressions-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [
+            "5",
+            "3.0",
+            "Lumi",
+            "verdadero"
+          ],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "condition-loops",
+    "compilationStatus": "completed",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [
+        "cinco"
+      ],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "condition-loops-analyze",
+        "operation": "analyze",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "condition-loops-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [
+            "cinco"
+          ],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "functions-imports",
+    "compilationStatus": "completed",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [
+        "30"
+      ],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "functions-imports-analyze",
+        "operation": "analyze",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "functions-imports-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [
+            "30"
+          ],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "leer",
+    "compilationStatus": "completed",
+    "stage": "semantic",
+    "runtime": {
+      "exceptionType": "InputUnavailableError",
+      "message": "La ejecución requiere un proveedor de entrada configurado."
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "leer-analyze",
+        "operation": "analyze",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "leer-execute",
+        "operation": "execute",
+        "status": "error",
+        "error": {
+          "kind": "infrastructure",
+          "code": "INPUT_UNAVAILABLE",
+          "message": "La entrada interactiva no está disponible en este protocolo."
+        }
+      }
+    ]
+  },
+  {
+    "id": "lexical-error",
+    "compilationStatus": "failed",
+    "stage": "lexical",
+    "runtime": {
+      "status": "blocked",
+      "output": [],
+      "diagnostics": [],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "lexical-error-analyze",
+        "operation": "analyze",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "lexical",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "lexicalError": "principal.lumi:1:13: carácter inválido '@'"
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "lexical-error-execute",
+        "operation": "execute",
+        "status": "blocked",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "lexical",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "lexicalError": "principal.lumi:1:13: carácter inválido '@'"
+        }
+      }
+    ]
+  },
+  {
+    "id": "syntax-error",
+    "compilationStatus": "failed",
+    "stage": "syntactic",
+    "runtime": {
+      "status": "blocked",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SYNTACTIC",
+          "code": "SYN_UNEXPECTED_TOKEN",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 29,
+          "description": "Se esperaba una expresion. Encontrado: '>>'.",
+          "suggestion": null
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "syntax-error-analyze",
+        "operation": "analyze",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "syntactic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SYNTACTIC",
+              "code": "SYN_UNEXPECTED_TOKEN",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 29,
+              "description": "Se esperaba una expresion. Encontrado: '>>'."
+            }
+          ],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "syntax-error-execute",
+        "operation": "execute",
+        "status": "blocked",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "syntactic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SYNTACTIC",
+              "code": "SYN_UNEXPECTED_TOKEN",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 29,
+              "description": "Se esperaba una expresion. Encontrado: '>>'."
+            }
+          ],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "semantic-error",
+    "compilationStatus": "failed",
+    "stage": "semantic",
+    "runtime": {
+      "status": "blocked",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SEMANTIC",
+          "code": "SEM_TYPE_MISMATCH",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 13,
+          "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+          "suggestion": "Utilice un valor compatible con el tipo declarado."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "semantic-error-analyze",
+        "operation": "analyze",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SEMANTIC",
+              "code": "SEM_TYPE_MISMATCH",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13,
+              "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+              "suggestion": "Utilice un valor compatible con el tipo declarado."
+            }
+          ],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "semantic-error-execute",
+        "operation": "execute",
+        "status": "blocked",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "failed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SEMANTIC",
+              "code": "SEM_TYPE_MISMATCH",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13,
+              "description": "No se puede asignar un valor de tipo 'texto' a una variable de tipo 'entero'.",
+              "suggestion": "Utilice un valor compatible con el tipo declarado."
+            }
+          ],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "runtime-error",
+    "compilationStatus": "completed",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "RUNTIME",
+          "code": "RUN_DIVISION_BY_ZERO",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 42,
+          "description": "No se puede dividir entre cero.",
+          "suggestion": "Cambie el divisor por un valor distinto de cero."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "runtime-error-analyze",
+        "operation": "analyze",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "runtime-error-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "completed",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "RUNTIME",
+              "code": "RUN_DIVISION_BY_ZERO",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 42,
+              "description": "No se puede dividir entre cero.",
+              "suggestion": "Cambie el divisor por un valor distinto de cero."
+            }
+          ],
+          "limitations": [],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "furniture-material-rotation",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 6,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 3,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [
+              {
+                "name": "base",
+                "element_kind": "floor",
+                "object_type": null,
+                "properties": [
+                  {
+                    "name": "color",
+                    "value": "#d6b98c",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 50
+                    }
+                  },
+                  {
+                    "name": "material",
+                    "value": "madera",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 68
+                    }
+                  }
+                ],
+                "position": null,
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 38
+                }
+              },
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [
+                  {
+                    "name": "color",
+                    "value": "#ff2200",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 104
+                    }
+                  },
+                  {
+                    "name": "material",
+                    "value": "acero",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 122
+                    }
+                  }
+                ],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 195
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 197
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 199
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 194
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 218
+                    }
+                  },
+                  "y": {
+                    "value": 45,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 220
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 223
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 217
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 90
+                }
+              },
+              {
+                "name": "lateral",
+                "element_kind": "object",
+                "object_type": "silla",
+                "properties": [
+                  {
+                    "name": "color",
+                    "value": "#2255ff",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 159
+                    }
+                  }
+                ],
+                "position": {
+                  "x": {
+                    "value": -2,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 245
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 248
+                    }
+                  },
+                  "z": {
+                    "value": -1,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 250
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 244
+                  }
+                },
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 143
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "furniture-material-rotation-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "furniture-material-rotation-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  6,
+                  5,
+                  3
+                ],
+                "floor": {
+                  "material": "madera",
+                  "color": "#d6b98c"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:90:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      45,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 90
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "color": "#ff2200",
+                    "material": "acero"
+                  },
+                  {
+                    "id": "element:principal.lumi:1:143:lateral",
+                    "type": "silla",
+                    "name": "lateral",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "dimensions": [
+                      0.55,
+                      0.85,
+                      0.55
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 143
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      -2,
+                      0,
+                      -1
+                    ],
+                    "color": "#2255ff"
+                  }
+                ],
+                "calculatedArea": 30,
+                "calculatedVolume": 90
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "unplaced-furniture",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 3,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [
+              {
+                "name": "declarada",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": null,
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 38
+                }
+              },
+              {
+                "name": "colocada",
+                "element_kind": "object",
+                "object_type": "silla",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 92
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 94
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 96
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 91
+                  }
+                },
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 56
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "unplaced-furniture-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "unplaced-furniture-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  5,
+                  5,
+                  3
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:38:declarada",
+                    "type": "mesa",
+                    "name": "declarada",
+                    "placed": false,
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 38
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala"
+                  },
+                  {
+                    "id": "element:principal.lumi:1:56:colocada",
+                    "type": "silla",
+                    "name": "colocada",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "dimensions": [
+                      0.55,
+                      0.85,
+                      0.55
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 56
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 25,
+                "calculatedVolume": 75
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "multiple-rooms",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "pequena",
+            "width": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 32
+              }
+            },
+            "length": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 36
+              }
+            },
+            "height": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 40
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          },
+          {
+            "name": "sala",
+            "width": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 64
+              }
+            },
+            "length": {
+              "value": 4,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 66
+              }
+            },
+            "height": {
+              "value": 3,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 68
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 104
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 106
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 108
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 103
+                  }
+                },
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 73
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 48
+            }
+          },
+          {
+            "name": "grande",
+            "width": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 133
+              }
+            },
+            "length": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 138
+              }
+            },
+            "height": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 143
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 115
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "multiple-rooms-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "multiple-rooms-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:pequena",
+                "name": "pequena",
+                "dimensions": [
+                  0.1,
+                  0.1,
+                  0.1
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 0.010000000000000002,
+                "calculatedVolume": 0.0010000000000000002
+              },
+              {
+                "id": "room:principal.lumi:1:48:sala",
+                "name": "sala",
+                "dimensions": [
+                  5,
+                  4,
+                  3
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:73:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      0,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 73
+                    },
+                    "roomId": "room:principal.lumi:1:48:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 20,
+                "calculatedVolume": 60
+              },
+              {
+                "id": "room:principal.lumi:1:115:grande",
+                "name": "grande",
+                "dimensions": [
+                  1000,
+                  1000,
+                  1000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1000000,
+                "calculatedVolume": 1000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "four-declared-walls",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 53,
+          "description": "La propiedad 'orientacion' del elemento 'frente' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 109,
+          "description": "La propiedad 'orientacion' del elemento 'atras' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 147,
+          "description": "La propiedad 'orientacion' del elemento 'derecha' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 188,
+          "description": "La propiedad 'orientacion' del elemento 'izquierda' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "four-declared-walls-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "four-declared-walls-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 53,
+              "description": "La propiedad 'orientacion' del elemento 'frente' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 109,
+              "description": "La propiedad 'orientacion' del elemento 'atras' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 147,
+              "description": "La propiedad 'orientacion' del elemento 'derecha' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 188,
+              "description": "La propiedad 'orientacion' del elemento 'izquierda' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            }
+          ],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "declared-door",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 55,
+          "description": "La propiedad 'orientacion' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 77,
+          "description": "La propiedad 'ancho' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 87,
+          "description": "La propiedad 'alto' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 96,
+          "description": "La propiedad 'desplazamiento' del elemento 'entrada' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "declared-door-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "declared-door-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 55,
+              "description": "La propiedad 'orientacion' del elemento 'entrada' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 77,
+              "description": "La propiedad 'ancho' del elemento 'entrada' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 87,
+              "description": "La propiedad 'alto' del elemento 'entrada' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 96,
+              "description": "La propiedad 'desplazamiento' del elemento 'entrada' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            }
+          ],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "declared-window",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 52,
+          "description": "La propiedad 'orientacion' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 73,
+          "description": "La propiedad 'ancho' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 83,
+          "description": "La propiedad 'alto' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 92,
+          "description": "La propiedad 'desplazamiento' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        },
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_PROPERTY",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 111,
+          "description": "La propiedad 'elevacion' del elemento 'luz' no está permitida.",
+          "suggestion": "Utilice la propiedad 'color' o 'material'."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "declared-window-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "declared-window-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 52,
+              "description": "La propiedad 'orientacion' del elemento 'luz' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 73,
+              "description": "La propiedad 'ancho' del elemento 'luz' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 83,
+              "description": "La propiedad 'alto' del elemento 'luz' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 92,
+              "description": "La propiedad 'desplazamiento' del elemento 'luz' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            },
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_PROPERTY",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 111,
+              "description": "La propiedad 'elevacion' del elemento 'luz' no está permitida.",
+              "suggestion": "Utilice la propiedad 'color' o 'material'."
+            }
+          ],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "legacy-declared-wall",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 6,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 3,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [
+              {
+                "name": "frente",
+                "element_kind": "wall",
+                "object_type": null,
+                "properties": [
+                  {
+                    "name": "color",
+                    "value": "#aa2222",
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 53
+                    }
+                  }
+                ],
+                "position": null,
+                "rotation": null,
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 38
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "legacy-declared-wall-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "legacy-declared-wall-execute",
+        "operation": "execute",
+        "status": "error",
+        "error": {
+          "kind": "infrastructure",
+          "code": "SERIALIZATION_ERROR",
+          "message": "El elemento 'frente' de tipo 'wall' no contiene todavía la geometría requerida por el IDE."
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.000000001-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 41
+              }
+            },
+            "height": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 53
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000000001-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000000001-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1e-9,
+                  1e-9,
+                  1e-9
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1e-18,
+                "calculatedVolume": 1.0000000000000002e-27
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.000000001-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 41
+              }
+            },
+            "height": {
+              "value": 1e-9,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 53
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 99
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 101
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 103
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 98
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 122
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 124
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 127
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 121
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 68
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000000001-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000000001-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1e-9,
+                  1e-9,
+                  1e-9
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:68:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 68
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 1e-18,
+                "calculatedVolume": 1.0000000000000002e-27
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.000001-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 38
+              }
+            },
+            "height": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 47
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000001-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000001-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.000001,
+                  0.000001,
+                  0.000001
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1e-12,
+                "calculatedVolume": 9.999999999999999e-19
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.000001-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 38
+              }
+            },
+            "height": {
+              "value": 0.000001,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 47
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 90
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 92
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 94
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 89
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 113
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 115
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 118
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 112
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 59
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000001-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.000001-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.000001,
+                  0.000001,
+                  0.000001
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:59:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 59
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 1e-12,
+                "calculatedVolume": 9.999999999999999e-19
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.01-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 34
+              }
+            },
+            "height": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 39
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.01-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.01-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.01,
+                  0.01,
+                  0.01
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 0.0001,
+                "calculatedVolume": 0.0000010000000000000002
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.01-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 34
+              }
+            },
+            "height": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 39
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 78
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 80
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 82
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 77
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 101
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 103
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 106
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 100
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 47
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.01-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.01-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.01,
+                  0.01,
+                  0.01
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:47:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 47
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 0.0001,
+                "calculatedVolume": 0.0000010000000000000002
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.1-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "height": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.1-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.1-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.1,
+                  0.1,
+                  0.1
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 0.010000000000000002,
+                "calculatedVolume": 0.0010000000000000002
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-0.1-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "height": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 75
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 77
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 79
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 74
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 98
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 100
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 103
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 97
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 44
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.1-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-0.1-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.1,
+                  0.1,
+                  0.1
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:44:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 44
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 0.010000000000000002,
+                "calculatedVolume": 0.0010000000000000002
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1,
+                  1,
+                  1
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1,
+                "calculatedVolume": 1
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 69
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 71
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 73
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 68
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 92
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 94
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 97
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 91
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 38
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1,
+                  1,
+                  1
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:38:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 38
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 1,
+                "calculatedVolume": 1
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-5-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-5-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-5-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  5,
+                  5,
+                  5
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 25,
+                "calculatedVolume": 125
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-5-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 31
+              }
+            },
+            "height": {
+              "value": 5,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 69
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 71
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 73
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 68
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 92
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 94
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 97
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 91
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 38
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-5-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-5-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  5,
+                  5,
+                  5
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:38:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 38
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 25,
+                "calculatedVolume": 125
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-100-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "height": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-100-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-100-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  100,
+                  100,
+                  100
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 10000,
+                "calculatedVolume": 1000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-100-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "height": {
+              "value": 100,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 75
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 77
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 79
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 74
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 98
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 100
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 103
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 97
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 44
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-100-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-100-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  100,
+                  100,
+                  100
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:44:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 44
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 10000,
+                "calculatedVolume": 1000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1000-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 34
+              }
+            },
+            "height": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 39
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1000,
+                  1000,
+                  1000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1000000,
+                "calculatedVolume": 1000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1000-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 34
+              }
+            },
+            "height": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 39
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 78
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 80
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 82
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 77
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 101
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 103
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 106
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 100
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 47
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1000,
+                  1000,
+                  1000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:47:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 47
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 1000000,
+                "calculatedVolume": 1000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-10000-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 35
+              }
+            },
+            "height": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 41
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-10000-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-10000-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  10000,
+                  10000,
+                  10000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 100000000,
+                "calculatedVolume": 1000000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-10000-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 35
+              }
+            },
+            "height": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 41
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 81
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 83
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 85
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 80
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 104
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 106
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 109
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 103
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 50
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-10000-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-10000-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  10000,
+                  10000,
+                  10000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:50:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 50
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 100000000,
+                "calculatedVolume": 1000000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1000000-empty",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "height": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 45
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000000-empty-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000000-empty-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1000000,
+                  1000000,
+                  1000000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 1000000000000,
+                "calculatedVolume": 1000000000000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "size-1000000-object",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 37
+              }
+            },
+            "height": {
+              "value": 1000000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 45
+              }
+            },
+            "elements": [
+              {
+                "name": "centro",
+                "element_kind": "object",
+                "object_type": "mesa",
+                "properties": [],
+                "position": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 87
+                    }
+                  },
+                  "y": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 89
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 91
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 86
+                  }
+                },
+                "rotation": {
+                  "x": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 110
+                    }
+                  },
+                  "y": {
+                    "value": 35,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 112
+                    }
+                  },
+                  "z": {
+                    "value": 0,
+                    "source": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 115
+                    }
+                  },
+                  "source": {
+                    "file": "principal.lumi",
+                    "line": 1,
+                    "column": 109
+                  }
+                },
+                "source": {
+                  "file": "principal.lumi",
+                  "line": 1,
+                  "column": 56
+                }
+              }
+            ],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000000-object-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "size-1000000-object-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  1000000,
+                  1000000,
+                  1000000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [
+                  {
+                    "id": "element:principal.lumi:1:56:centro",
+                    "type": "mesa",
+                    "name": "centro",
+                    "placed": true,
+                    "rotation": [
+                      0,
+                      35,
+                      0
+                    ],
+                    "dimensions": [
+                      1.2,
+                      0.5,
+                      0.8
+                    ],
+                    "sourceRef": {
+                      "file": "principal.lumi",
+                      "line": 1,
+                      "column": 56
+                    },
+                    "roomId": "room:principal.lumi:1:13:sala",
+                    "position": [
+                      0,
+                      0,
+                      0
+                    ]
+                  }
+                ],
+                "calculatedArea": 1000000000000,
+                "calculatedVolume": 1000000000000000000
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "invalid-size-0",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_DIMENSION",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 29,
+          "description": "La dimensión 'ancho' de la habitación 'sala' debe ser mayor que cero.",
+          "suggestion": "Utilice un valor numérico positivo."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "invalid-size-0-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "invalid-size-0-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_DIMENSION",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 29,
+              "description": "La dimensión 'ancho' de la habitación 'sala' debe ser mayor que cero.",
+              "suggestion": "Utilice un valor numérico positivo."
+            }
+          ],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "invalid-size--1",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "failed",
+      "output": [],
+      "diagnostics": [
+        {
+          "category": "SPATIAL",
+          "code": "SPA_INVALID_DIMENSION",
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 29,
+          "description": "La dimensión 'ancho' de la habitación 'sala' debe ser mayor que cero.",
+          "suggestion": "Utilice un valor numérico positivo."
+        }
+      ],
+      "scene": null
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "invalid-size--1-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "invalid-size--1-execute",
+        "operation": "execute",
+        "status": "failed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [
+            {
+              "category": "SPATIAL",
+              "code": "SPA_INVALID_DIMENSION",
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 29,
+              "description": "La dimensión 'ancho' de la habitación 'sala' debe ser mayor que cero.",
+              "suggestion": "Utilice un valor numérico positivo."
+            }
+          ],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "disproportion-flat",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 35
+              }
+            },
+            "height": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 40
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-flat-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-flat-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  10000,
+                  0.01,
+                  0.01
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 100,
+                "calculatedVolume": 1
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "disproportion-tall",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 0.01,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 34
+              }
+            },
+            "height": {
+              "value": 10000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 39
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-tall-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-tall-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.01,
+                  0.01,
+                  10000
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 0.0001,
+                "calculatedVolume": 1
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  {
+    "id": "disproportion-long",
+    "compilationStatus": "incomplete",
+    "stage": "semantic",
+    "runtime": {
+      "status": "completed",
+      "output": [],
+      "diagnostics": [],
+      "scene": {
+        "rooms": [
+          {
+            "name": "sala",
+            "width": {
+              "value": 0.1,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 29
+              }
+            },
+            "length": {
+              "value": 1000,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 33
+              }
+            },
+            "height": {
+              "value": 3,
+              "source": {
+                "file": "principal.lumi",
+                "line": 1,
+                "column": 38
+              }
+            },
+            "elements": [],
+            "source": {
+              "file": "principal.lumi",
+              "line": 1,
+              "column": 13
+            }
+          }
+        ],
+        "source": {
+          "file": "principal.lumi",
+          "line": 1,
+          "column": 1
+        }
+      }
+    },
+    "responses": [
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-long-analyze",
+        "operation": "analyze",
+        "status": "incomplete",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": false,
+          "capabilities": {
+            "scenePlan": false,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          }
+        }
+      },
+      {
+        "protocolVersion": "1.0.0",
+        "requestId": "disproportion-long-execute",
+        "operation": "execute",
+        "status": "completed",
+        "result": {
+          "entryFile": "principal.lumi",
+          "analysisStatus": "incomplete",
+          "stage": "semantic",
+          "output": [],
+          "diagnostics": [],
+          "limitations": [
+            "spatial_semantics_unavailable"
+          ],
+          "executionAttempted": true,
+          "capabilities": {
+            "scenePlan": true,
+            "debugTrace": false,
+            "interactiveInput": false,
+            "cancellation": false
+          },
+          "scenePlan": {
+            "version": "1.0.0",
+            "rooms": [
+              {
+                "id": "room:principal.lumi:1:13:sala",
+                "name": "sala",
+                "dimensions": [
+                  0.1,
+                  1000,
+                  3
+                ],
+                "floor": {
+                  "material": "standard",
+                  "color": "#e2e8f0"
+                },
+                "walls": {
+                  "north": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "south": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "east": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  },
+                  "west": {
+                    "color": "#f1f5f9",
+                    "material": "standard"
+                  }
+                },
+                "doors": [],
+                "windows": [],
+                "objects": [],
+                "calculatedArea": 100,
+                "calculatedVolume": 300
+              }
+            ]
+          }
+        }
+      }
+    ]
+  }
+]

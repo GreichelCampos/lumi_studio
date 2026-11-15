@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-04",
+  "method": "Windows Computer Use; production Electron main/preload and built React renderer; isolated temporary profile and project",
+  "program": "programs/furniture-material-rotation/principal.lumi",
+  "observations": [
+    { "control": "Carga del proyecto temporal", "result": "Proyecto AuditLumi y principal.lumi visibles; análisis espacial incompleto identificado" },
+    { "control": "Ejecutar Python", "result": "Ejecución terminada; ScenePlan recibido de Python; sala 6x5x3 y dos muebles visibles" },
+    { "control": "Selección de mesa centro", "result": "Propiedades 1.20x0.50x0.80 m, posición 0/0/0, rotación Y=45, acero y #ff2200; referencia a principal.lumi:1 y editor resaltado" },
+    { "control": "Modo alámbrico", "result": "Geometría visible en alambre; selección conservada" },
+    { "control": "Ajustar habitación", "result": "Vuelve del enfoque del objeto al encuadre de la habitación" },
+    { "control": "F1 y Entendido", "result": "Abre y cierra Ayuda de Lumi" },
+    { "control": "Ctrl+,", "result": "Abre Configuración del Entorno de Desarrollo" },
+    { "control": "Visor 3D y Gráficos", "result": "Muestra rejilla, ejes, cotas, iluminación y calidad" },
+    { "control": "Rejilla de Suelo: desmarcar y Aceptar y Guardar", "result": "La casilla se desmarca y el modal cierra, pero la cuadrícula sigue visible; showGrid no se consume en el renderer" },
+    { "control": "F5", "result": "Análisis incompleto con spatial_semantics_unavailable y sin ScenePlan; no presenta la escena previa como resultado nuevo" },
+    { "control": "Depurador Espacial", "result": "Indica que no hay pasos y que Python todavía no genera trazas; no se comprobó reproducción importada en esta sesión" },
+    { "control": "Editar > Formatear código Lumi (no disponible)", "result": "Muestra que el formateador todavía no está implementado" },
+    { "control": "Cerrar ventana / Alt+F4", "result": "Cierre de las sesiones temporales de auditoría; ningún proyecto personal utilizado" }
+  ],
+  "notManuallyExercised": [
+    "Todas las variantes de diálogos nativos de abrir, guardar como, renombrar y eliminar",
+    "Importación/exportación lumic mediante sus diálogos en esta sesión",
+    "Todos los temas y combinaciones de preferencias",
+    "Todas las posiciones de selección, órbita y zoom desde la UI nativa",
+    "Reproducción de artefactos importados y todos los estados de cada modal"
+  ],
+  "privacy": "No se almacenan capturas completas del escritorio ni rutas del perfil temporal; las imágenes guardadas son del canvas Three.js sin datos personales"
+}

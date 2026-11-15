@@ -1,0 +1,1 @@
+principal { habitacion sala(6,5,3) { ventana luz { orientacion "este">> ancho 1>> alto 1>> desplazamiento 1>> elevacion 0>> } } }

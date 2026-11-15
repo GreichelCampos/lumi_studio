@@ -1,0 +1,1 @@
+importar "calculos.lumi" usar area>> principal { mostrar(area(6,5))>> }

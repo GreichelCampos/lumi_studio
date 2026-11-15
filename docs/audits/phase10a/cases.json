@@ -1,0 +1,537 @@
+[
+  {
+    "id": "types-expressions",
+    "category": "language",
+    "files": {
+      "principal.lumi": "principal { entero n = 3>> decimal d = 1.5>> texto nombre = \"Lumi\">> booleano activo = verdadero>> mostrar(n + 2)>> mostrar(d * 2)>> mostrar(nombre)>> mostrar(activo)>> }"
+    },
+    "expected": {
+      "output": [
+        "5",
+        "3.0",
+        "Lumi",
+        "verdadero"
+      ]
+    }
+  },
+  {
+    "id": "condition-loops",
+    "category": "language",
+    "files": {
+      "principal.lumi": "principal { entero total = 0>> hacer entero i = 0; i < 3; i = i + 1 { total = total + i>> } mientras total < 5 { total = total + 1>> } si total == 5 { mostrar(\"cinco\")>> } sino { mostrar(\"otro\")>> } }"
+    },
+    "expected": {
+      "output": [
+        "cinco"
+      ]
+    }
+  },
+  {
+    "id": "functions-imports",
+    "category": "language",
+    "files": {
+      "principal.lumi": "importar \"calculos.lumi\" usar area>> principal { mostrar(area(6,5))>> }",
+      "calculos.lumi": "funcion decimal area(decimal ancho, decimal largo) { retornar ancho * largo>> }"
+    },
+    "expected": {
+      "output": [
+        "30"
+      ]
+    }
+  },
+  {
+    "id": "leer",
+    "category": "input",
+    "files": {
+      "principal.lumi": "principal { texto nombre = leer(\"Nombre:\")>> mostrar(nombre)>> }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "lexical-error",
+    "category": "error",
+    "files": {
+      "principal.lumi": "principal { @ }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "syntax-error",
+    "category": "error",
+    "files": {
+      "principal.lumi": "principal { entero numero = >> }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "semantic-error",
+    "category": "error",
+    "files": {
+      "principal.lumi": "principal { entero numero = \"texto\">> }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "runtime-error",
+    "category": "error",
+    "files": {
+      "principal.lumi": "principal { entero divisor = 0>> mostrar(10 / divisor)>> }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "furniture-material-rotation",
+    "category": "scene",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(6,5,3) { piso base { color \"#d6b98c\">> material \"madera\">> } mesa centro { color \"#ff2200\">> material \"acero\">> } silla lateral { color \"#2255ff\">> } colocar centro [0,0,0]>> rotar centro [0,45,0]>> colocar lateral [-2,0,-1]>> } }"
+    },
+    "expected": {
+      "rooms": [
+        {
+          "name": "sala",
+          "dimensions": [
+            6,
+            5,
+            3
+          ],
+          "objects": [
+            {
+              "name": "centro",
+              "position": [
+                0,
+                0,
+                0
+              ],
+              "rotation": [
+                0,
+                45,
+                0
+              ],
+              "color": "#ff2200",
+              "material": "acero"
+            },
+            {
+              "name": "lateral",
+              "position": [
+                -2,
+                0,
+                -1
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "id": "unplaced-furniture",
+    "category": "scene",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(5,5,3) { mesa declarada {} silla colocada {} colocar colocada [0,0,0]>> } }"
+    },
+    "expected": {
+      "placed": 1,
+      "unplaced": 1
+    }
+  },
+  {
+    "id": "multiple-rooms",
+    "category": "scene",
+    "files": {
+      "principal.lumi": "principal { habitacion pequena(0.1,0.1,0.1) {} habitacion sala(5,4,3) { mesa centro {} colocar centro [0,0,0]>> } habitacion grande(1000,1000,1000) {} }"
+    },
+    "expected": {
+      "roomCount": 3
+    }
+  },
+  {
+    "id": "four-declared-walls",
+    "category": "architecture",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(6,5,3) { pared frente { orientacion \"norte\">> color \"#aa2222\">> } pared atras { orientacion \"sur\">> } pared derecha { orientacion \"este\">> } pared izquierda { orientacion \"oeste\">> } } }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "declared-door",
+    "category": "architecture",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(6,5,3) { puerta entrada { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 0>> } } }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "declared-window",
+    "category": "architecture",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(6,5,3) { ventana luz { orientacion \"este\">> ancho 1>> alto 1>> desplazamiento 1>> elevacion 0>> } } }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "legacy-declared-wall",
+    "category": "architecture",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(6,5,3) { pared frente { color \"#aa2222\">> } } }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "size-0.000000001-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.000000001,0.000000001,0.000000001) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        1e-9,
+        1e-9,
+        1e-9
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-0.000000001-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.000000001,0.000000001,0.000000001) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        1e-9,
+        1e-9,
+        1e-9
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-0.000001-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.000001,0.000001,0.000001) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.000001,
+        0.000001,
+        0.000001
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-0.000001-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.000001,0.000001,0.000001) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.000001,
+        0.000001,
+        0.000001
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-0.01-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.01,0.01,0.01) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-0.01-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.01,0.01,0.01) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-0.1-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.1,0.1,0.1) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-0.1-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.1,0.1,0.1) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        0.1,
+        0.1,
+        0.1
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-1-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1,1,1) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        1,
+        1,
+        1
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-1-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1,1,1) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        1,
+        1,
+        1
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-5-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(5,5,5) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        5,
+        5,
+        5
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-5-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(5,5,5) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        5,
+        5,
+        5
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-100-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(100,100,100) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        100,
+        100,
+        100
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-100-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(100,100,100) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        100,
+        100,
+        100
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-1000-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1000,1000,1000) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        1000,
+        1000,
+        1000
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-1000-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1000,1000,1000) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        1000,
+        1000,
+        1000
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-10000-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(10000,10000,10000) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        10000,
+        10000,
+        10000
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-10000-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(10000,10000,10000) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        10000,
+        10000,
+        10000
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "size-1000000-empty",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1000000,1000000,1000000) {  } }"
+    },
+    "expected": {
+      "dimensions": [
+        1000000,
+        1000000,
+        1000000
+      ],
+      "object": false
+    }
+  },
+  {
+    "id": "size-1000000-object",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(1000000,1000000,1000000) { mesa centro {} colocar centro [0,0,0]>> rotar centro [0,35,0]>> } }"
+    },
+    "expected": {
+      "dimensions": [
+        1000000,
+        1000000,
+        1000000
+      ],
+      "object": true
+    }
+  },
+  {
+    "id": "invalid-size-0",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0,5,3) {} }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "invalid-size--1",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(-1,5,3) {} }"
+    },
+    "expected": {}
+  },
+  {
+    "id": "disproportion-flat",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(10000,0.01,0.01) {} }"
+    },
+    "expected": {
+      "dimensions": [
+        10000,
+        0.01,
+        0.01
+      ]
+    }
+  },
+  {
+    "id": "disproportion-tall",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.01,0.01,10000) {} }"
+    },
+    "expected": {
+      "dimensions": [
+        0.01,
+        0.01,
+        10000
+      ]
+    }
+  },
+  {
+    "id": "disproportion-long",
+    "category": "dimensions",
+    "files": {
+      "principal.lumi": "principal { habitacion sala(0.1,1000,3) {} }"
+    },
+    "expected": {
+      "dimensions": [
+        0.1,
+        1000,
+        3
+      ]
+    }
+  }
+]

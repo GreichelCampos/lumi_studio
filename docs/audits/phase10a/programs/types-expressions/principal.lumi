@@ -1,0 +1,1 @@
+principal { entero n = 3>> decimal d = 1.5>> texto nombre = "Lumi">> booleano activo = verdadero>> mostrar(n + 2)>> mostrar(d * 2)>> mostrar(nombre)>> mostrar(activo)>> }
