@@ -118,7 +118,7 @@ export class IdeLogService {
   }
 
   public logExecutionAborted(reason: string): IdeLogEvent {
-    return this.log('error', `Ejecución detenida: ${reason}`, undefined, 'Ejecutor');
+    return this.log('warning', `Ejecución detenida: ${reason}`, undefined, 'Ejecutor');
   }
 
   public logExecutionStale(): IdeLogEvent {

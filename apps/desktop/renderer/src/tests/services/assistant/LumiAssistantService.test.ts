@@ -138,4 +138,19 @@ describe('LumiAssistantService', () => {
 
     unsubscribe();
   });
+
+  it('notifica una ejecución sin archivo activo como advertencia suave y no la duplica', () => {
+    const listener = vi.fn();
+    const unsubscribe = lumiAssistant.subscribe(listener);
+
+    lumiAssistant.onExecutionWithoutActiveFile();
+    lumiAssistant.onExecutionWithoutActiveFile();
+
+    expect(listener).toHaveBeenCalledTimes(2);
+    expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
+      text: '¡Todavía no tienes un archivo abierto! Crea o abre un archivo .lumi para comenzar.',
+      state: 'warning',
+    }));
+    unsubscribe();
+  });
 });

@@ -6,6 +6,7 @@ import type { CompilerService } from '../../services/compiler/CompilerService';
 import { createMockProject } from '../fixtures/testFixtures';
 import { FIXTURE_COMPILATION_SUCCESS } from '../../data/contracts';
 import { ideLogger } from '../../services/logger/IdeLogService';
+import { lumiAssistant } from '../../services/assistant/LumiAssistantService';
 
 function deferred() {
   let resolve!: (result: CompileResult) => void;
@@ -15,6 +16,41 @@ function deferred() {
 }
 
 describe('Python asynchronous state', () => {
+  it('does not invoke the backend or show infrastructure failure for invalid compile requests', async () => {
+    ideLogger.clear();
+    const service: CompilerService = { mode: 'python', compile: vi.fn() };
+    const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
+
+    await act(async () => { await result.current.runCompile(createMockProject({ files: [], entryFileId: undefined })); });
+
+    expect(service.compile).not.toHaveBeenCalled();
+    expect(result.current.logs).toEqual([]);
+    expect(result.current.diagnostics).toEqual([]);
+    expect(result.current.lumiState).toBe('ready');
+    expect(lumiAssistant.getMessage().text).toBe(
+      'No hay archivos para compilar. Primero crea un archivo .lumi en tu proyecto para comenzar.'
+    );
+    expect(ideLogger.getHistory().some(event => event.message.includes('No hay archivos para compilar'))).toBe(true);
+    expect(ideLogger.getHistory().some(event => event.message.includes('[Infraestructura]'))).toBe(false);
+  });
+
+  it.each([
+    ['without main file', createMockProject({ entryFileId: undefined, files: [
+      { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
+    ] }), 'Selecciona un archivo principal desde el explorador para poder compilar.'],
+    ['with deleted main file', createMockProject({ entryFileId: 'deleted', files: [
+      { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
+    ] }), 'Selecciona otro archivo principal'],
+  ])('does not invoke the backend for a project %s', async (_label, selected, notice) => {
+    const service: CompilerService = { mode: 'python', compile: vi.fn() };
+    const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
+
+    await act(async () => { await result.current.runCompile(selected); });
+
+    expect(service.compile).not.toHaveBeenCalled();
+    expect(lumiAssistant.getMessage().text).toContain(notice);
+  });
+
   it('logs the same effective secondary entry passed to the compiler', async () => {
     ideLogger.clear();
     const service: CompilerService = { mode: 'python', compile: vi.fn().mockResolvedValue(FIXTURE_COMPILATION_SUCCESS) };

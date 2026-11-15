@@ -174,6 +174,7 @@ export default function App() {
   const handleCompileCurrent = useCallback(async () => {
     if (!currentProject) {
       ideLogger.log('warning', 'No hay ningún proyecto abierto para compilar.', undefined, 'Compilador');
+      lumiAssistant.setMessage('No hay un proyecto abierto. Abre o crea un proyecto antes de compilar.', 'ready');
       return null;
     }
 
@@ -194,10 +195,12 @@ export default function App() {
   const handleRunExecution = useCallback(async () => {
     if (isCompiling) {
       ideLogger.logExecutionAborted('Ya hay una compilación o ejecución en curso.');
+      lumiAssistant.onExecutionBlocked('Espera a que termine la operación actual antes de ejecutar Lumi.');
       return;
     }
     if (!currentProject) {
       ideLogger.logExecutionAborted('No hay un proyecto abierto.');
+      lumiAssistant.onExecutionBlocked('Abre o crea un proyecto antes de ejecutar Lumi.');
       return;
     }
 
@@ -208,6 +211,7 @@ export default function App() {
         : undefined;
       if (!targetFile) {
         ideLogger.logExecutionAborted('No hay un archivo Lumi activo que se pueda ejecutar.');
+        lumiAssistant.onExecutionWithoutActiveFile();
         return;
       }
 
@@ -248,6 +252,7 @@ export default function App() {
         undefined,
         'Ejecutor'
       );
+      lumiAssistant.onExecutionBlocked('El proyecto cambió. Compílalo nuevamente antes de ejecutar Lumi.');
       return;
     }
 
@@ -258,11 +263,13 @@ export default function App() {
         undefined,
         'Ejecutor'
       );
+      lumiAssistant.onExecutionBlocked('Compila el proyecto antes de ejecutar Lumi.');
       return;
     }
 
     if (hasBlockingErrors || !lastCompileResult.success) {
       ideLogger.logExecutionAborted('Existen errores bloqueantes en los diagnósticos. Corríjalos antes de ejecutar.');
+      lumiAssistant.onExecutionBlocked('Corrige los errores bloqueantes antes de ejecutar Lumi.');
       return;
     }
 
@@ -651,10 +658,6 @@ export default function App() {
       {storageError && <div role="alert" className="bg-rose-950 text-rose-100 px-4 py-2 text-sm z-[60]">
         {storageError} <button onClick={clearStorageError} className="underline ml-3 inline-flex items-center gap-1"><X className="w-3.5 h-3.5" aria-hidden="true" /><span>Cerrar aviso</span></button>
       </div>}
-      {currentProject && !entryFile && <div role="status" className="px-4 py-2 text-xs text-amber-200">
-        Selecciona el archivo principal desde el explorador antes de compilar. Esta selección se guarda en esta computadora.
-      </div>}
-
       <div
         ref={workspaceRef}
         className="relative flex-1 flex flex-col gap-0 p-3 min-h-0 overflow-hidden bg-[var(--ide-bg,#02110c)] transition-colors duration-250"

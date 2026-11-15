@@ -106,6 +106,14 @@ class LumiAssistantService {
     this.setMessage('El código cambió. Presiona Compilar (F5) para actualizar el análisis.', 'warning');
   }
 
+  public onExecutionWithoutActiveFile() {
+    this.setMessage('¡Todavía no tienes un archivo abierto! Crea o abre un archivo .lumi para comenzar.', 'warning');
+  }
+
+  public onExecutionBlocked(message: string) {
+    this.setMessage(message, 'warning');
+  }
+
   public onEntitySelected(nameOrId: string, type?: string) {
     const label = type ? `${type} "${nameOrId}"` : `"${nameOrId}"`;
     this.setMessage(`Seleccionaste ${label}. Revisa sus propiedades o código.`, 'ready');

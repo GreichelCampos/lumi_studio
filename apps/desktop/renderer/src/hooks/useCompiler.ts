@@ -10,6 +10,7 @@ import {
 import { ideLogger } from '../services/logger/IdeLogService';
 import { lumiAssistant } from '../services/assistant/LumiAssistantService';
 import { projectEntry } from '../services/integration/projectInput';
+import { validateCompilePreconditions } from '../services/compiler/compilePreconditions';
 
 export interface UseCompilerOptions {
   customCompilerService?: CompilerService;
@@ -142,7 +143,24 @@ export function useCompiler(options?: UseCompilerOptions) {
   );
 
   const runCompile = useCallback(
-    (project: LumiProject, activeFileId?: string, revision?: number) => runOperation(project, activeFileId, revision),
+    (project: LumiProject, activeFileId?: string, revision?: number) => {
+      const failure = validateCompilePreconditions(project);
+      if (failure) {
+        setLumiState('ready');
+        setDiagnostics([]);
+        setLogs([]);
+        setDebugSteps([]);
+        setLastCompileResult(null);
+        setScenePlan(null);
+        setSceneSource(null);
+        setLegacyPlacement(false);
+        setLastCompiledRevision(null);
+        lumiAssistant.setMessage(failure.notification, 'ready');
+        ideLogger.log('warning', `${failure.title}: ${failure.description}`, undefined, 'Compilador');
+        return Promise.resolve(null);
+      }
+      return runOperation(project, activeFileId, revision);
+    },
     [runOperation]
   );
   const runExecute = useCallback(
