@@ -10,7 +10,7 @@ type MessageListener = (message: AssistantMessage) => void;
 
 class LumiAssistantService {
   private currentMessage: AssistantMessage = {
-    text: 'Proyecto listo para trabajar ✨',
+    text: 'Proyecto abierto.',
     state: 'ready',
     timestamp: Date.now(),
   };
@@ -53,18 +53,18 @@ class LumiAssistantService {
 
 
   public onReady() {
-    this.setMessage('Proyecto listo para trabajar ✨', 'ready');
+    this.setMessage('Proyecto abierto.', 'ready');
   }
 
   public onCompiling() {
-    this.setMessage('Estoy revisando tu proyecto...', 'compiling');
+    this.setMessage('Procesando código…', 'compiling');
   }
 
   public onCompileSuccess(roomsCount: number, objectsCount: number) {
     if (objectsCount > 0) {
-      this.setMessage(`¡Todo salió bien! La escena está lista con ${objectsCount} elemento(s). ✨`, 'success');
+      this.setMessage(`Escena lista. Elementos: ${objectsCount}.`, 'success');
     } else {
-      this.setMessage('¡Todo salió bien! La escena está lista.', 'success');
+      this.setMessage('Escena lista.', 'success');
     }
   }
 
@@ -107,7 +107,7 @@ class LumiAssistantService {
   }
 
   public onExecutionWithoutActiveFile() {
-    this.setMessage('¡Todavía no tienes un archivo abierto! Crea o abre un archivo .lumi para comenzar.', 'warning');
+    this.setMessage('Crea o abre un archivo .lumi para ejecutar.', 'warning');
   }
 
   public onExecutionBlocked(message: string) {
@@ -135,11 +135,11 @@ class LumiAssistantService {
   }
 
   public onFileSaved(fileName: string) {
-    this.setMessage(`"${fileName}" guardado en el disco local. 💾`, 'ready');
+    this.setMessage(`"${fileName}" guardado.`, 'ready');
   }
 
   public onProjectCreated(projectName: string) {
-    this.setMessage(`¡Proyecto "${projectName}" creado! Comienza diseñando tu habitación.`, 'ready');
+    this.setMessage(`Proyecto "${projectName}" creado.`, 'ready');
   }
 
   public onRoomInserted(roomName: string) {

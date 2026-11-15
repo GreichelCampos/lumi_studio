@@ -6,13 +6,14 @@
    resuelve símbolos, tipos y contextos sin ejecutar instrucciones.
 2. **Funciones:** describir predeclaración, parámetros, retorno, llamadas antes de
    la declaración y alcances léxicos.
-3. **Importaciones:** explicar archivo principal explícito, resolver en memoria,
-   símbolo solicitado, catálogo transitivo y detección de ciclos.
+3. **Importaciones:** abrir `principal.lumi` y mostrar cómo se resuelve una función
+   de otro archivo. Probar un nombre de archivo incorrecto y ver el diagnóstico.
 4. **Intérprete:** mostrar entornos independientes, control de flujo y evaluación
    de expresiones.
 5. **Escena:** explicar que `ScenePlanBuilder` conserva estado final, no historial;
    `SpatialValidator` trabaja con valores ya resueltos.
-6. **IDE:** distinguir Compilar de Ejecutar Python y describir la frontera DTO.
+6. **IDE:** usar **Compilar** para analizar y **Ejecutar Lumi** para ejecutar
+   la pestaña activa. El visor recibe la escena resultante del intérprete.
 
 ## Ejercicio 1 — Tipos y diagnóstico
 
@@ -41,7 +42,8 @@ funcion entero doble(entero valor) {
 }
 ```
 
-Resultado esperado: salida `12`, sin diagnósticos.
+Con `calculos.lumi` abierto, volver a la pestaña `principal.lumi` y ejecutar.
+La consola muestra `12`.
 
 ## Ejercicio 3 — Estado espacial final
 
@@ -61,18 +63,22 @@ Resultado esperado: una habitación y una mesa con posición final
 
 - ¿Por qué Compilar no genera una escena?
 - ¿Por qué el análisis espacial aún puede indicar `incomplete`?
-- ¿Cómo se evita ejecutar un archivo diferente al principal?
+- ¿Qué se ejecuta si está seleccionada la pestaña de un módulo?
 - ¿Cómo se conserva la ubicación de un error importado?
 - ¿Qué diferencia existe entre AST, ScenePlan interno y DTO?
-- ¿Por qué no se usan valores por defecto para geometría no acordada?
+- ¿Qué propiedades hacen falta para declarar una puerta o una ventana?
 - ¿Cómo se detecta una dependencia circular?
 - ¿Qué parte corresponde a L-035?
 
 ## Demostración recomendada
 
-1. Abrir `examples/CasaEjemplo` y marcar `principal.lumi`.
-2. Compilar y explicar honestamente la limitación espacial existente.
-3. Ejecutar Python y mostrar `Area de sala:` y `30.0`.
-4. Seleccionar `sala` y `estudio` en Three.js.
-5. Mostrar una prueba automatizada y un diagnóstico con ubicación.
-6. Cerrar indicando los bloqueos geométricos que no se presentan como completos.
+1. Abrir `examples/CasaEjemplo` y seleccionar la pestaña `principal.lumi`.
+2. Pulsar F5 para analizar y F6 para ejecutar. Mostrar la salida de consola y
+   seleccionar las habitaciones `sala` y `estudio` en el visor.
+3. Abrir `examples/OficinaEjemplo` para mostrar paredes, puertas, ventanas y
+   muebles. Seleccionar un elemento y abrir su declaración con **Ir al código**.
+4. Probar `leer` con `examples/03_Input_And_Output/06_read_and_show.lumi`.
+   Responder en el formulario y mostrar la salida en la consola.
+5. Mostrar un diagnóstico con archivo y línea usando uno de los ejemplos de
+   errores. En el depurador, mostrar los pasos disponibles de un archivo
+   `.lumic` o de la demostración. Las trazas de Python quedan pendientes.

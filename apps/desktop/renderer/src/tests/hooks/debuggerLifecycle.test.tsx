@@ -22,7 +22,7 @@ describe('debugger lifecycle and local replay (not Python stepping)', () => {
     expect(result.current.logs).toEqual([]);
     expect(result.current.diagnostics).toEqual([]);
     expect(lumiAssistant.getMessage()).toEqual(expect.objectContaining({
-      state: 'ready', text: 'Proyecto listo para trabajar ✨',
+      state: 'ready', text: 'Proyecto abierto.',
     }));
 
     lumiAssistant.setMessage('Análisis espacial incompleto.', 'warning');
@@ -32,7 +32,7 @@ describe('debugger lifecycle and local replay (not Python stepping)', () => {
     expect(result.current.lastCompileResult).toBeNull();
     expect(result.current.logs).toEqual([]);
     expect(lumiAssistant.getMessage()).toEqual(expect.objectContaining({
-      state: 'ready', text: 'Proyecto listo para trabajar ✨',
+      state: 'ready', text: 'Proyecto abierto.',
     }));
   });
 

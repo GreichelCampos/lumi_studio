@@ -28,7 +28,7 @@ describe('LumiAssistantService', () => {
     lumiAssistant.onCompiling();
     expect(listener).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        text: 'Estoy revisando tu proyecto...',
+        text: 'Procesando código…',
         state: 'compiling',
       })
     );
@@ -36,7 +36,7 @@ describe('LumiAssistantService', () => {
     lumiAssistant.onCompileSuccess(1, 4);
     expect(listener).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        text: expect.stringContaining('4 elemento(s)'),
+        text: 'Escena lista. Elementos: 4.',
         state: 'success',
       })
     );
@@ -148,7 +148,7 @@ describe('LumiAssistantService', () => {
 
     expect(listener).toHaveBeenCalledTimes(2);
     expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
-      text: '¡Todavía no tienes un archivo abierto! Crea o abre un archivo .lumi para comenzar.',
+      text: 'Crea o abre un archivo .lumi para ejecutar.',
       state: 'warning',
     }));
     unsubscribe();

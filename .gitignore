@@ -175,7 +175,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Temporary implementation references
+# Local scripts and generated reports
+/tools/
 /implementation_tools/
 
 # pytype static type analyzer

@@ -21,7 +21,8 @@ npm run dev
 Electron inicia Vite local y el worker Python real. Se prefiere `.venv` de la raíz;
 `LUMI_PYTHON` permite elegir otro ejecutable y `LUMI_PYTHON_TIMEOUT_MS` configura
 el timeout (100–120000 ms, por defecto 10000). Un timeout finaliza el worker;
-una nueva solicitud permite reiniciarlo. No existe cancelación interactiva.
+una nueva solicitud permite reiniciarlo. Si un programa espera una respuesta de
+`leer`, podés enviarla o cancelar la ejecución desde el formulario.
 
 Desde `apps/desktop/`, las verificaciones son:
 
@@ -33,14 +34,21 @@ npm run lint
 npm run build
 ```
 
-La ejecución Python entrega ScenePlan de habitaciones, pisos y muebles colocados;
-Compilar solo analiza. El flujo real hasta Three.js está verificado en Electron de
-desarrollo con `node tests/runtime-scene.integration.mjs` desde `apps/desktop`.
-Las declaraciones de pared/puerta/ventana y objetos sin colocar todavía no son
-publicables por el adaptador; no hay trazas Python reales. `build` compila la aplicación;
-el instalador combinado aún no se ha regenerado ni aceptado y falta Windows limpio.
-`dist:win` genera el instalador con Python
-incluido, según la [guía de empaquetado](docs/windows_packaging.md).
+En Electron, **Compilar** (F5) analiza la pestaña activa. **Ejecutar Lumi**
+(F6) ejecuta esa pestaña y resuelve sus importaciones con los archivos del
+proyecto. Para ejecutar un proyecto desde `principal.lumi`, seleccioná esa
+pestaña, aunque los módulos sigan abiertos.
+
+El visor abre las escenas generadas por el intérprete. Probá
+[`OficinaEjemplo`](examples/OficinaEjemplo/) para ver una habitación con
+paredes, puertas, ventanas y muebles colocados. También podés importar
+archivos `.lumic`; el depurador reproduce pasos disponibles y todavía no
+recibe trazas del intérprete Python.
+
+`npm run dist:win` genera el instalador con Python incluido. La versión con
+`leer` y el diagnóstico de recursión se probó en una instalación temporal.
+Queda pendiente probar el instalador en otro Windows sin entorno de desarrollo.
+Consultá la [guía de empaquetado](docs/windows_packaging.md).
 En PowerShell puede usarse `npm.cmd`.
 
 ## Ejecutar el frontend de Estudio Lumi

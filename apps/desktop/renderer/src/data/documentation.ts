@@ -34,7 +34,7 @@ export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '1. Estructura y Filosofía de Lumi',
     exampleKind: 'executable',
-    description: 'Analizar código revisa el programa. Ejecutar Lumi genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
+    description: 'Compilar revisa el programa. Ejecutar Lumi genera la habitación y el piso de este ejemplo mediante el intérprete real. El visor también acepta archivos .lumic válidos; las trazas Python siguen pendientes.',
     code: `principal {
   habitacion sala(5.0, 4.0, 2.7) {
     piso suelo {
@@ -110,7 +110,7 @@ si seleccion == nulo {
   {
     title: '4. Ciclo "hacer" y Modularidad',
     exampleKind: 'executable',
-    description: 'El punto y coma separa las cláusulas del ciclo hacer. Analizar código revisa este programa; Ejecutar Lumi muestra 0, 1 y 2 en la consola.',
+    description: 'El punto y coma separa las cláusulas del ciclo hacer. Compilar revisa este programa; Ejecutar Lumi muestra 0, 1 y 2 en la consola.',
     code: `funcion vacio mostrar_contadores(entero total) {
   hacer entero i = 0; i < total; i = i + 1 {
     mostrar(i)>>
@@ -121,12 +121,12 @@ principal {
 }`
   },
   {
-    title: '5. Depuración Espacial e Innovación',
+    title: '5. Depuración y validación espacial',
     exampleKind: 'informational',
-    description: 'El IDE reproduce pasos y snapshots de archivos .lumic o de la demostración. Python todavía no genera trazas espaciales. La detección real de colisiones, elementos fuera de límites y pasos bloqueados sigue pendiente.',
+    description: 'El depurador reproduce pasos de archivos .lumic o de la demostración. Python todavía no genera trazas espaciales. Si un programa produce una colisión, un objeto fuera de la sala o un paso bloqueado, revisá Diagnósticos.',
     code: `-- Esta sección es informativa, no un programa de depuración.
--- Los colores muestran los estados recibidos por el IDE.
--- Un estado visual no demuestra detección automática de conflictos.
--- Analizar código revisa; Ejecutar Lumi ejecuta las instrucciones admitidas.`
+-- Los colores muestran el estado del paso reproducido.
+-- Los errores de ejecución aparecen en Diagnósticos.
+-- Compilar revisa; Ejecutar Lumi ejecuta las instrucciones admitidas.`
   }
 ];

@@ -241,10 +241,8 @@ export default function App() {
       return;
     }
 
-    // COMPORTAMIENTO EXIGIDO:
-    // Si el proyecto cambió después de la última compilación, el resultado queda en estado stale.
-    // En ese estado, Ejecutar 3D NO debe recompilar automáticamente.
-    // Debe bloquear la ejecución e indicar claramente el mensaje.
+    // El visor del navegador usa el último resultado del compilador simulado.
+    // Si el código cambió, hay que volver a compilar antes de mostrarlo.
     if (isStale) {
       ideLogger.log(
         'warning',

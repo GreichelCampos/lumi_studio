@@ -81,10 +81,10 @@ describe('ConsolePanel & OutputLogView Integration', () => {
     vi.useFakeTimers();
     lumiAssistant.onReady();
     render(<ConsolePanel {...defaultProps} />);
-    expect(screen.getByText('Proyecto listo para trabajar ✨')).toBeInTheDocument();
+    expect(screen.getByText('Proyecto abierto.')).toBeInTheDocument();
 
     act(() => vi.advanceTimersByTime(6000));
-    expect(screen.queryByText('Proyecto listo para trabajar ✨')).not.toBeInTheDocument();
+    expect(screen.queryByText('Proyecto abierto.')).not.toBeInTheDocument();
 
     act(() => lumiAssistant.setMessage('Advertencia que requiere atención.', 'warning'));
     act(() => vi.advanceTimersByTime(12000));
