@@ -50,7 +50,7 @@ try {
   const editor = page.locator('textarea');
   assert.match(await editor.evaluate(element => getComputedStyle(element).fontFamily), /monospace/);
   await editor.fill('mostrar("PAQUETE_PYTHON_REAL")>>');
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByText('PAQUETE_PYTHON_REAL', { exact: true }).waitFor();
   await editor.press('Control+s');
   await page.getByText('Guardado', { exact: true }).waitFor();
@@ -66,10 +66,59 @@ try {
   }));
   assert.equal(failed.response.result.diagnostics[0].code, 'RUN_DIVISION_BY_ZERO');
   await verifyRuntimeScene(page, evidenceDirectory);
+
+  await editor.fill([
+    'principal {',
+    '  texto nombre = leer("¿Cómo te llamás?")>>',
+    '  texto extra = leer("Deja la respuesta vacía")>>',
+    '  mostrar("Hola, " + nombre + "[" + extra + "]")>>',
+    '  habitacion sala(7, 5, 3) {}',
+    '}',
+  ].join('\n'));
+  await editor.press('F5');
+  await page.getByText('Análisis finalizado', { exact: true }).waitFor();
+  const prompt = page.getByRole('dialog', { name: 'Entrada del programa Lumi' });
+  assert.equal(await prompt.count(), 0);
+  await editor.press('F6');
+  await prompt.getByText('¿Cómo te llamás?', { exact: true }).waitFor();
+  await page.screenshot({ path: join(evidenceDirectory, 'installed-leer-prompt.png') });
+  await prompt.getByLabel('Respuesta').fill('María');
+  await prompt.getByRole('button', { name: 'Enviar entrada' }).click();
+  await prompt.getByText('Deja la respuesta vacía', { exact: true }).waitFor();
+  assert.equal(await prompt.getByLabel('Respuesta').inputValue(), '');
+  await prompt.getByRole('button', { name: 'Enviar entrada' }).click();
+  await page.getByText('Hola, María[]', { exact: true }).waitFor();
+  await page.locator('#room-selector-single').filter({ hasText: 'sala' }).waitFor();
+  await page.screenshot({ path: join(evidenceDirectory, 'installed-leer-result.png') });
+  console.log('Packaged leer: two prompts, Unicode and empty text, output and room verified.');
+
+  await editor.fill('funcion vacio ciclo() {\n  ciclo()>>\n}\nprincipal { ciclo()>> }');
+  await editor.press('F6');
+  await page.locator('#tab-diagnosticos-btn').click();
+  await page.getByText('RUN_CALL_DEPTH_EXCEEDED', { exact: true }).waitFor();
+  await page.getByText(/caso base/).first().waitFor();
+  assert.equal(await page.getByText(/INTERNAL_ERROR/).count(), 0);
+  assert.equal(await page.locator('#room-selector-single').count(), 0);
+  await page.getByRole('button', { name: 'Ir al código (principal.lumi:2)', exact: true }).click();
+  await page.screenshot({ path: join(evidenceDirectory, 'installed-recursion-error.png') });
+
+  await editor.fill([
+    'funcion entero factorial(entero n) {',
+    '  si n == 0 { retornar 1>> }',
+    '  retornar n * factorial(n - 1)>>',
+    '}',
+    'principal { mostrar(factorial(5))>> habitacion sala(7, 5, 3) {} }',
+  ].join('\n'));
+  await page.locator('#tab-salida-btn').click();
+  await editor.press('F6');
+  await page.getByText('120', { exact: true }).waitFor();
+  await page.locator('#room-selector-single').filter({ hasText: 'sala' }).waitFor();
+  await page.screenshot({ path: join(evidenceDirectory, 'installed-recursion-recovery.png') });
+  console.log('Packaged recursion: diagnostic, source navigation, scene cleanup and factorial recovery verified.');
+
   const input = page.locator('input[type=file][accept=".lumic,.json"]');
   await input.setInputFiles(resolve('../../docs/contracts/lumic/v1.0.0/examples/valid-basic.lumic'));
   await page.getByText(/Archivo .lumic importado/).waitFor();
-  assert.equal(await page.getByText('ScenePlan recibido de Python', { exact: true }).count(), 0);
   assert.ok(await page.locator('canvas').count() > 0);
   assert.equal(await page.getByText('Error al inicializar WebGL').count(), 0);
   await page.screenshot({ path: join(evidenceDirectory, 'imported-lumic.png'), fullPage: true });
@@ -91,7 +140,7 @@ try {
   const missing = await desktop.firstWindow();
   await waitForStudioReady(missing, { expectedBackendAvailable: false });
   await missing.locator('textarea').fill('mostrar("NO_SIMULAR")>>');
-  await missing.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await missing.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await missing.getByText(/Reinstala Estudio Lumi/).first().waitFor();
   assert.equal(await missing.getByLabel('Modo de demostración').count(), 0);
   console.log('Packaged Windows x64: bundled Python, runtime ScenePlan/WebGL, absolute transforms, scene cleanup, diagnostics, save/reopen, independent lumic import, icon and missing-runtime error verified.');

@@ -100,7 +100,7 @@ try {
     return Math.abs(width - 1200) <= 1 && Math.abs(height - 800) <= 1;
   }, 'Resize failed (including one DIP of Windows scaling tolerance)');
 
-  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Compilar', 'Ejecutar', 'Ayuda']) {
+  for (const menu of ['Archivo', 'Editar', 'Insertar', 'Proyecto', 'Ejecutar', 'Ayuda']) {
     const button = page.getByRole('button', { name: menu, exact: true }).first();
     await button.click();
     await button.click();

@@ -15,10 +15,10 @@ async function executeWire(page, source) {
 
 async function executeEditor(page, source) {
   await page.locator('textarea').fill(source);
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
 }
 
-async function inspectRenderedCanvas(canvas) {
+export async function inspectRenderedCanvas(canvas) {
   return canvas.evaluate(async element => {
     const gl = element.getContext('webgl2') ?? element.getContext('webgl');
     if (!gl || gl.isContextLost()) throw new Error('WebGL no está disponible.');
@@ -74,7 +74,6 @@ async function inspectRenderedCanvas(canvas) {
 
 async function assertSceneCleared(viewport) {
   assert.equal(await viewport.locator('#room-selector-single, #room-selector-multi').count(), 0);
-  assert.equal(await viewport.getByText('ScenePlan recibido de Python', { exact: true }).count(), 0);
   assert.equal(await viewport.locator('#object-properties-card').count(), 0);
   const canvas = viewport.locator('canvas');
   await canvas.evaluate(() => new Promise(resolve => {
@@ -94,7 +93,6 @@ export async function verifyRuntimeScene(page, evidenceDirectory) {
 
   await executeEditor(page, RUNTIME_SCENE_SOURCE);
   const viewport = page.locator('#viewport-3d-main');
-  await viewport.getByText('ScenePlan recibido de Python', { exact: true }).waitFor();
   await viewport.locator('#room-selector-single, #room-selector-multi').filter({ hasText: 'sala' }).waitFor();
   assert.equal(await viewport.getByText(/simulado|Archivo .lumic importado/).count(), 0);
   const canvas = viewport.locator('canvas');
@@ -123,7 +121,7 @@ export async function verifyRuntimeScene(page, evidenceDirectory) {
   await page.screenshot({ path: join(evidenceDirectory, 'spatial-diagnostic.png') });
 
   await executeEditor(page, RUNTIME_SCENE_SOURCE);
-  await viewport.getByText('ScenePlan recibido de Python', { exact: true }).waitFor();
+  await viewport.locator('#room-selector-single, #room-selector-multi').waitFor();
   const noSceneSource = 'principal { mostrar("PAQUETE_SIN_ESCENA")>> }';
   const noScene = await executeWire(page, noSceneSource);
   assert.equal(noScene.status, 'completed');

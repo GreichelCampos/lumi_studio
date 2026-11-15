@@ -50,9 +50,8 @@ try {
   async function execute(source, roomName) {
     await page.evaluate(() => { window.__placementRoom = null; });
     await page.locator('textarea').fill(source);
-    await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+    await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
     await page.waitForFunction(name => window.__placementRoom?.name === name, roomName, { timeout: 20_000 });
-    await page.getByText('ScenePlan recibido de Python', { exact: true }).waitFor();
     return page.evaluate(async () => {
       await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const room = window.__placementRoom;
@@ -141,7 +140,7 @@ try {
   assert.equal(invalid.result.capabilities.scenePlan, false);
   assert.equal(Object.hasOwn(invalid.result, 'scenePlan'), false);
   await page.locator('textarea').fill(invalidSource);
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.locator('#tab-diagnosticos-btn').click();
   await page.getByText('SPA_MULTIPLE_FLOORS', { exact: true }).waitFor();
   assert.equal(await page.locator('#room-selector-single, #room-selector-multi').count(), 0);

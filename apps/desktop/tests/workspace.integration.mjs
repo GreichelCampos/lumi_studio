@@ -67,7 +67,7 @@ try {
   });
   assert.equal(backendCheck.ok, true, JSON.stringify(backendCheck));
   assert.ok(backendCheck.response.result.diagnostics.some(d => d.code === 'RUN_DIVISION_BY_ZERO'), JSON.stringify(backendCheck));
-  await page.getByRole('button', { name: 'Ejecutar Python', exact: true }).click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByRole('button', { name: /Diagnósticos/ }).click();
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).waitFor();
   const location = page.getByText(/^modulo\.lumi:2:\d+$/, { exact: true });
