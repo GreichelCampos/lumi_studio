@@ -1,0 +1,11 @@
+funcion entero factorial(entero valor) {
+    si valor <= 1 {
+        retornar 1>>
+    }
+    retornar valor * factorial(valor - 1)>>
+}
+
+principal {
+    mostrar("Factorial de 5:")>>
+    mostrar(factorial(5))>>
+}

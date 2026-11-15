@@ -1,0 +1,4 @@
+principal {
+    entero edad = leer("Edad:")>>
+    mostrar(edad)>>
+}

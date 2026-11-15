@@ -1,0 +1,6 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        sofa sofa_fuera { }
+        colocar sofa_fuera [2.5, 0, 0]>>
+    }
+}

@@ -1,0 +1,8 @@
+funcion entero identidad(entero valor_local) {
+    retornar valor_local>>
+}
+
+principal {
+    mostrar(identidad(9))>>
+    mostrar(valor_local)>>
+}

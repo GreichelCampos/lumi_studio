@@ -1,0 +1,8 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        mesa mesa_uno { }
+        mesa mesa_dos { }
+        colocar mesa_uno [0, 0, 0]>>
+        colocar mesa_dos [1.2, 0, 0]>>
+    }
+}

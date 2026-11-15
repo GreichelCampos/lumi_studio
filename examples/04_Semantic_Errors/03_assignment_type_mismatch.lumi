@@ -1,0 +1,4 @@
+principal {
+    entero cantidad = 4>>
+    cantidad = "cuatro">>
+}

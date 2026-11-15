@@ -1,0 +1,9 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        pared pared_norte {
+            orientacion "norte">>
+            color "azul">>
+            material "concreto">>
+        }
+    }
+}

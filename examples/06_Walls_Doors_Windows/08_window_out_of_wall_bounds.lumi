@@ -1,0 +1,11 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        ventana ventana_alta {
+            orientacion "este">>
+            ancho 1>>
+            alto 1.5>>
+            desplazamiento 1>>
+            elevacion 2>>
+        }
+    }
+}

@@ -1,0 +1,26 @@
+funcion vacio configurar_arquitectura() {
+    pared pared_sur {
+        orientacion "sur">>
+        color "blanco">>
+        material "yeso">>
+    }
+    puerta entrada {
+        orientacion "norte">>
+        ancho 0.9>>
+        alto 2.1>>
+        desplazamiento 0.5>>
+    }
+    ventana ventana_este {
+        orientacion "este">>
+        ancho 1>>
+        alto 1>>
+        desplazamiento 1>>
+        elevacion 1>>
+    }
+}
+
+principal {
+    habitacion sala(6, 5, 3) {
+        configurar_arquitectura()>>
+    }
+}

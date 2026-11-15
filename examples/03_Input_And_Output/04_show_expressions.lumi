@@ -1,0 +1,6 @@
+principal {
+    mostrar(2 + 3 * 4)>>
+    mostrar(10 / 4)>>
+    mostrar(5 > 3)>>
+    mostrar(verdadero y falso)>>
+}

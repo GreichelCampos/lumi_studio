@@ -1,0 +1,9 @@
+funcion vacio describir(texto nombre, entero cantidad, booleano disponible) {
+    mostrar(nombre)>>
+    mostrar(cantidad)>>
+    mostrar(disponible)>>
+}
+
+principal {
+    describir("sillas", 4, verdadero)>>
+}

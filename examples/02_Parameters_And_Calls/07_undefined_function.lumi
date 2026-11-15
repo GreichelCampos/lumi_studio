@@ -1,0 +1,3 @@
+principal {
+    mostrar(calcular_total(4))>>
+}

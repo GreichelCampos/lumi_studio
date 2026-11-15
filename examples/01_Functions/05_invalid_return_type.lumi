@@ -1,0 +1,7 @@
+funcion entero cantidad_muebles() {
+    retornar "cuatro">>
+}
+
+principal {
+    mostrar(cantidad_muebles())>>
+}

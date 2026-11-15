@@ -1,0 +1,3 @@
+principal {
+    texto nombre = leer("Nombre para la defensa:")>>
+}

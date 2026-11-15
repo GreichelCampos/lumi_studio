@@ -1,0 +1,17 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        puerta entrada {
+            orientacion "norte">>
+            ancho 1>>
+            alto 2>>
+            desplazamiento 1>>
+        }
+        ventana ventana_norte {
+            orientacion "norte">>
+            ancho 1>>
+            alto 1>>
+            desplazamiento 2>>
+            elevacion 1>>
+        }
+    }
+}

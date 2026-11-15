@@ -1,0 +1,10 @@
+principal {
+    habitacion sala(8, 6, 3) {
+        mesa mesa_rotada { }
+        silla silla_rotada { }
+        colocar mesa_rotada [-1.5, 0, 0]>>
+        rotar mesa_rotada [0, 45, 0]>>
+        colocar silla_rotada [1.5, 0, 0]>>
+        rotar silla_rotada [0, -30, 0]>>
+    }
+}

@@ -1,0 +1,10 @@
+principal {
+    habitacion sala(6, 5, 3) {
+        puerta entrada_invalida {
+            orientacion "norte">>
+            ancho 0>>
+            alto 2>>
+            desplazamiento 1>>
+        }
+    }
+}
