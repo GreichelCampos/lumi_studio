@@ -13,11 +13,11 @@ describe('DocumentationModal', () => {
     expect(screen.getByText(/Python todavía no genera trazas espaciales/)).toBeInTheDocument();
     expect(screen.getByText(/La detección real de colisiones.*sigue pendiente/)).toBeInTheDocument();
     expect(screen.getByText(/este ejemplo permite comprobar su análisis, no una ejecución completa/)).toBeInTheDocument();
-    expect(screen.getAllByText('Ejemplo ejecutable con Python')).toHaveLength(2);
-    expect(screen.getAllByText('Ejemplo sintáctico · ejecución no soportada')).toHaveLength(2);
+    expect(screen.getAllByText('Ejemplo ejecutable con Python')).toHaveLength(3);
+    expect(screen.getAllByText('Ejemplo sintáctico · ejecución no soportada')).toHaveLength(1);
     expect(screen.getByText('Información · no es un programa ejecutable')).toBeInTheDocument();
-    expect(screen.getByText(/Los muebles colocados sí se generan mediante un catálogo visual provisional/)).toBeInTheDocument();
-    expect(screen.getByText(/la ejecución devuelve SERIALIZATION_ERROR, sin escena/)).toBeInTheDocument();
+    expect(screen.getByText(/Ejecutar Lumi dibuja el piso, la pared, la puerta, la ventana y los muebles/)).toBeInTheDocument();
+    expect(screen.getByText(/La pared requiere orientacion/)).toBeInTheDocument();
     expect(screen.getByText(/Los vectores de colocar, mover y rotar sí se evalúan/)).toBeInTheDocument();
   });
 });

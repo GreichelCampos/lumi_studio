@@ -355,23 +355,7 @@ class SemanticAnalyzer:
             return
 
         properties = {item["name"]: item for item in node.get("properties", [])}
-        required_by_kind = {
-            "wall": ("orientacion",),
-            "door": ("orientacion", "ancho", "alto", "desplazamiento"),
-            "window": (
-                "orientacion", "ancho", "alto", "desplazamiento", "elevacion",
-            ),
-        }
-        for property_name in required_by_kind[element_kind]:
-            if property_name not in properties:
-                self._add_diagnostic(
-                    node,
-                    "SEM_MISSING_SPATIAL_PROPERTY",
-                    f"El elemento '{node['name']}' requiere la propiedad "
-                    f"'{property_name}'.",
-                    "Agregue la propiedad obligatoria a la declaración espacial.",
-                    cause=(element_kind, node["name"], property_name),
-                )
+        self._validate_required_spatial_properties(node, element_kind, properties)
 
         orientation_property = properties.get("orientacion")
         if orientation_property is None:
@@ -852,7 +836,11 @@ class SemanticAnalyzer:
                     f"El elemento '{node['name']}' requiere la propiedad "
                     f"'{property_name}'."
                 ),
-                "Agregue la propiedad obligatoria a la declaración espacial.",
+                (
+                    'Agregue, por ejemplo, orientacion "norte">> dentro del bloque.'
+                    if property_name == "orientacion"
+                    else f"Agregue {property_name} con su valor en metros, seguido de >>."
+                ),
                 cause=(element_kind, node["name"], property_name),
             )
 

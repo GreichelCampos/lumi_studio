@@ -15,9 +15,9 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
   { word: 'principal', category: 'Estructura', desc: 'Define el bloque principal del programa' },
   { word: 'habitacion', category: 'Espacio', desc: 'Declara una habitación 3D con dimensiones [ancho, largo, alto]' },
   { word: 'piso', category: 'Espacio', desc: 'Declara un piso con nombre y propiedades color o material' },
-  { word: 'pared', category: 'Espacio', desc: 'Declara una pared; su orientación todavía requiere especificación' },
-  { word: 'puerta', category: 'Aperturas', desc: 'Sintaxis admitida; su geometría declarada todavía no puede publicarse' },
-  { word: 'ventana', category: 'Aperturas', desc: 'Sintaxis admitida; su geometría declarada todavía no puede publicarse' },
+  { word: 'pared', category: 'Espacio', desc: 'Declara una pared con orientación norte, sur, este u oeste' },
+  { word: 'puerta', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas' },
+  { word: 'ventana', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas' },
   { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]' },
   { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad' },
   { word: 'mover', category: 'Transformación', desc: 'Reemplaza la posición absoluta de un objeto previamente colocado' },
@@ -26,7 +26,7 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
   { word: 'mientras', category: 'Control', desc: 'Ciclo condicional iterativo' },
   { word: 'nulo', category: 'Valor', desc: 'Representa ausencia de valor; comparable solo con == y !=' },
   { word: 'mostrar', category: 'E/S', desc: 'Emite texto o datos a la consola del IDE' },
-  { word: 'leer', category: 'E/S', desc: 'Sintaxis de entrada; la entrada interactiva todavía no está disponible en Electron' },
+  { word: 'leer', category: 'E/S', desc: 'Pide un dato en Electron y continúa cuando la persona responde' },
   { word: 'visualizar3D', category: 'Render', desc: 'Palabra reservada sin instrucción implementada en el parser actual' },
 ];
 
@@ -65,25 +65,46 @@ si seleccion == nulo {
   },
   {
     title: '3. Elementos Arquitectónicos y Muebles',
-    exampleKind: 'syntax-only',
-    description: 'Los muebles colocados sí se generan mediante un catálogo visual provisional. Este ejemplo también declara pared, puerta y ventana: su geometría todavía no puede publicarse y la ejecución devuelve SERIALIZATION_ERROR, sin escena. Se puede comprobar su sintaxis con Compilar. Las propiedades color y material se escriben sin dos puntos ni signo igual; las medidas físicas del catálogo y la geometría de las aberturas siguen pendientes.',
-    code: `habitacion dormitorio(4.5, 4.0, 2.6) {
-  piso suelo {
-    material "madera">>
-  }
-  pared muro {
-    color "azul">>
-  }
-  puerta acceso {}
-  ventana abertura {}
-  cama cama_principal {
-    color "blanco">>
-  }
-  lampara luz {}
-  escritorio mesa_trabajo {}
-  colocar cama_principal [0.0, 0.0, -0.8]>>
-  colocar luz [-1.2, 0.0, -0.8]>>
-  colocar mesa_trabajo [1.2, 0.0, 1.1]>>
+    exampleKind: 'executable',
+    description: 'Ejecutar Lumi dibuja el piso, la pared, la puerta, la ventana y los muebles. La pared requiere orientacion. La puerta y la ventana también requieren ancho, alto y desplazamiento. La ventana requiere elevacion.',
+    code: `principal {
+    habitacion sala(8, 6, 3) {
+        piso piso_sala {
+            color "gris">>
+            material "ceramica">>
+        }
+        pared pared_norte {
+            orientacion "norte">>
+            color "blanco">>
+            material "concreto">>
+        }
+        puerta entrada {
+            orientacion "norte">>
+            ancho 1>>
+            alto 2.1>>
+            desplazamiento 0.5>>
+            material "madera">>
+        }
+        ventana ventana_sur {
+            orientacion "sur">>
+            ancho 1.5>>
+            alto 1>>
+            desplazamiento 3>>
+            elevacion 1>>
+            material "vidrio">>
+        }
+        mesa mesa_central {
+            color "cafe">>
+            material "madera">>
+        }
+        silla silla_visita {
+            color "azul">>
+        }
+
+        colocar mesa_central [0, 0, 0]>>
+        colocar silla_visita [2, 0, 1]>>
+        rotar mesa_central [0, 45, 0]>>
+    }
 }`
   },
   {

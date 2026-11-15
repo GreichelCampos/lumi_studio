@@ -45,15 +45,19 @@ def test_complete_spatial_help_reports_completed_without_generated_scene(help_se
     assert result.diagnostics == ()
 
 
-def test_incomplete_architectural_help_is_rejected_semantically(help_sections):
-    result = CompilerService().compile(help_sections[2]["code"], "ayuda.lumi")
+def test_architectural_help_executes_with_a_scene(help_sections):
+    result = ExecutionService().execute_source(help_sections[2]["code"], "ayuda.lumi")
+    assert result.status is ExecutionStatus.COMPLETED
+    assert result.diagnostics == ()
+    assert result.scene_plan is not None
 
-    assert result.status is CompilationStatus.FAILED
-    assert result.diagnostics
-    assert all(
-        diagnostic.code == "SEM_MISSING_SPATIAL_PROPERTY"
-        for diagnostic in result.diagnostics
-    )
+
+def test_missing_wall_orientation_suggests_valid_lumi():
+    source = 'habitacion sala(5, 4, 3) { pared muro { color "azul">> } }'
+    result = ExecutionService().execute_source(source, "ayuda.lumi")
+    assert result.status is ExecutionStatus.BLOCKED
+    assert result.diagnostics[0].code == "SEM_MISSING_SPATIAL_PROPERTY"
+    assert 'orientacion "norte">>' in result.diagnostics[0].suggestion
 
 
 def test_type_example_can_be_analyzed_without_claiming_collection_execution(help_sections):
