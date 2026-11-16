@@ -36,6 +36,7 @@ export interface ProtocolResult {
   limitations: 'spatial_semantics_unavailable'[];
   lexicalError?: string;
   scenePlan?: ScenePlan;
+  preferredRoomId?: string;
   debugSteps?: DebugStep[];
   debugTraceUnavailableReason?: string;
   executionAttempted: boolean;

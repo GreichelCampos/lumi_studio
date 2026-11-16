@@ -326,6 +326,11 @@ class SemanticAnalyzer:
             self._analyze_return(node)
         elif node_type == "ImportNode":
             self._analyze_import(node)
+        elif node_type == "Visualize3DNode":
+            # The parser restricts the target to a room-shaped identifier. Its
+            # existence is a runtime property because rooms may be conditional,
+            # repeated or built by an executed function.
+            return
         elif self.spatial_analyzer.handles(node_type):
             self.spatial_analyzer.analyze(node)
             if node_type != "RoomNode":

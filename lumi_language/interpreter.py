@@ -31,6 +31,7 @@ class InterpreterResult:
     output: list[str] = field(default_factory=list)
     diagnostics: list[Diagnostic] = field(default_factory=list)
     scene_plan: ScenePlan | None = None
+    visualization_room: str | None = None
     spatial_trace: SpatialDebugTrace = field(default_factory=SpatialDebugTrace)
 
     @property
@@ -145,6 +146,7 @@ class Interpreter:
         self._scene_builder: ScenePlanBuilder | None = None
         self._spatial_trace_recorder: SpatialTraceRecorder | None = None
         self._active_trace_room: str | None = None
+        self._visualization_node: dict[str, Any] | None = None
 
     def execute(
         self,
@@ -186,10 +188,26 @@ class Interpreter:
                 self._execute_program(normalized_program)
             else:
                 self._execute_node(normalized_program)
-            self.result.scene_plan = self._scene_builder.build()
+            scene_plan = self._scene_builder.build()
+            if self.result.visualization_room is not None and not any(
+                room.name == self.result.visualization_room
+                for room in scene_plan.rooms
+            ):
+                assert self._visualization_node is not None
+                self._fail(
+                    self._visualization_node,
+                    "RUN_VISUALIZE_ROOM_NOT_FOUND",
+                    (
+                        f"La habitación '{self.result.visualization_room}' solicitada "
+                        "por 'visualizar3D' no existe en la escena construida."
+                    ),
+                    "Construí la habitación antes de solicitar su visualización.",
+                )
+            self.result.scene_plan = scene_plan
             validation = SpatialValidator().validate(self.result.scene_plan)
             self.result.diagnostics.extend(validation.diagnostics)
             if self.result.diagnostics:
+                self.result.visualization_room = None
                 self.result.spatial_trace = SpatialDebugTrace.unavailable(
                     "execution_failed"
                 )
@@ -202,12 +220,14 @@ class Interpreter:
                 self.result.spatial_trace = self._spatial_trace_recorder.finish()
         except ScenePlanBuilderError as error:
             self.result.diagnostics.append(self._scene_builder_diagnostic(error))
+            self.result.visualization_room = None
             self.result.spatial_trace = SpatialDebugTrace.unavailable(
                 "execution_failed"
             )
             self._scene_builder = None
         except InterpreterRuntimeError as error:
             self.result.diagnostics.append(error.diagnostic)
+            self.result.visualization_room = None
             self.result.spatial_trace = SpatialDebugTrace.unavailable(
                 "execution_failed"
             )
@@ -246,6 +266,10 @@ class Interpreter:
             return self._move_spatial_element(node)
         if node_type == "RotateObjectNode":
             return self._rotate_spatial_element(node)
+        if node_type == "Visualize3DNode":
+            self.result.visualization_room = node["room_name"]
+            self._visualization_node = node
+            return None
         if node_type == "VariableDeclarationNode":
             self.environment.define(node["name"], self._evaluate(node["value"]))
             return None

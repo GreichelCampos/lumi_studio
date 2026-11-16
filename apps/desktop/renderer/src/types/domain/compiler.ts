@@ -18,6 +18,7 @@ export interface CompileResult {
   success: boolean;
   diagnostics: DiagnosticItem[];
   scenePlan: ScenePlan | null;
+  preferredRoomId?: string;
   entryFileInfo: EntryFileInfo | null;
   durationMs: number;
   logs: string[];

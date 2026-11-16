@@ -85,10 +85,14 @@ class ExecutionService:
         if runtime.diagnostics:
             status = ExecutionStatus.FAILED
         return ExecutionResult(
-            compilation,
-            status,
-            tuple(runtime.output),
-            tuple(runtime.diagnostics),
-            runtime.scene_plan if status is ExecutionStatus.COMPLETED else None,
-            runtime.spatial_trace,
+            compilation=compilation,
+            status=status,
+            output=tuple(runtime.output),
+            diagnostics=tuple(runtime.diagnostics),
+            scene_plan=runtime.scene_plan if status is ExecutionStatus.COMPLETED else None,
+            visualization_room=(
+                runtime.visualization_room
+                if status is ExecutionStatus.COMPLETED else None
+            ),
+            spatial_trace=runtime.spatial_trace,
         )

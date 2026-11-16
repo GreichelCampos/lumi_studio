@@ -45,6 +45,7 @@ El AST de Lumi utilizará nodos específicos para representar las principales co
 | `ReadNode`                | Expresión de entrada `leer` que devuelve el valor leído.                            |
 | `ImportNode`              | Importación de un símbolo específico desde otro archivo `.lumi`.                    |
 | `RoomNode`                | Declaración de una `habitacion`.                                                    |
+| `Visualize3DNode`         | Solicitud runtime de habitación inicial para el visor 3D.                          |
 | `SpatialObjectDeclarationNode` | Declaración de un objeto espacial de tipo arbitrario.                          |
 | `FloorNode`               | Declaración de un piso con nombre y propiedades.                                    |
 | `WallNode`                | Declaración de una pared con nombre y propiedades.                                  |

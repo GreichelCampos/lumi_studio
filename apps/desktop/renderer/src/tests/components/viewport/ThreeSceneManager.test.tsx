@@ -95,6 +95,25 @@ describe('ThreeSceneManager lifecycle', () => {
     view.rerender(<Viewport3D scenePlan={null} sceneSource="artifact" debugRoomId={null} />);
     expect(screen.queryByText(/Objeto seleccionado/)).not.toBeInTheDocument();
   });
+  it('uses the requested initial room once, allows manual changes and keeps debugger priority', () => {
+    const rooms = [
+      createMockRoom({ id: 'sala', name: 'sala' }),
+      createMockRoom({ id: 'cocina', name: 'cocina', objects: [] }),
+    ];
+    const plan = createMockScenePlan({ rooms });
+    const draw = vi.spyOn(ThreeSceneManager.prototype, 'renderRoom');
+    const view = render(<Viewport3D scenePlan={plan} initialRoomId="cocina" />);
+    expect(draw).toHaveBeenLastCalledWith(rooms[1], null, null);
+
+    fireEvent.click(document.querySelector('#room-tab-sala')!);
+    expect(draw).toHaveBeenLastCalledWith(rooms[0], null, null);
+
+    view.rerender(<Viewport3D scenePlan={plan} initialRoomId="cocina" />);
+    expect(draw).toHaveBeenLastCalledWith(rooms[0], null, null);
+
+    view.rerender(<Viewport3D scenePlan={plan} initialRoomId="cocina" debugRoomId="cocina" />);
+    expect(draw).toHaveBeenLastCalledWith(rooms[1], null, null);
+  });
   it('releases partially initialized resources when observing the canvas fails', () => {
     vi.stubGlobal('ResizeObserver', class { observe() { throw new Error('Resize observer unavailable'); } disconnect = vi.fn(); });
     const container = document.createElement('div');

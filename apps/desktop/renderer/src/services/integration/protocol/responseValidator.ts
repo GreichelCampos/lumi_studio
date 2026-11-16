@@ -160,7 +160,7 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
     'entryFile', 'analysisStatus', 'stage', 'output', 'diagnostics',
     'limitations', 'executionAttempted', 'capabilities',
   ], [
-    'lexicalError', 'scenePlan', 'debugSteps', 'debugTraceUnavailableReason',
+    'lexicalError', 'scenePlan', 'preferredRoomId', 'debugSteps', 'debugTraceUnavailableReason',
   ])) return false;
   const caps = raw.capabilities;
   return isText(raw.entryFile)
@@ -174,6 +174,7 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
     && new Set(raw.limitations).size === raw.limitations.length
     && typeof raw.executionAttempted === 'boolean'
     && (!Object.hasOwn(raw, 'lexicalError') || isText(raw.lexicalError))
+    && (!Object.hasOwn(raw, 'preferredRoomId') || isText(raw.preferredRoomId))
     && isRecord(caps) && hasKeys(caps, ['scenePlan', 'debugTrace', 'interactiveInput', 'cancellation'])
     && typeof caps.scenePlan === 'boolean'
     && typeof caps.debugTrace === 'boolean'
@@ -185,6 +186,14 @@ function coherentResult(envelope: Record<string, unknown>, result: Record<string
   const output = result.output;
   const limitations = result.limitations;
   if (!Array.isArray(diagnostics) || !Array.isArray(output) || !Array.isArray(limitations)) return false;
+  if (Object.hasOwn(result, 'preferredRoomId')) {
+    if (envelope.operation !== 'execute' || envelope.status !== 'completed'
+      || !Object.hasOwn(result, 'scenePlan') || !isRecord(result.scenePlan)
+      || !Array.isArray(result.scenePlan.rooms)
+      || !result.scenePlan.rooms.some((room: unknown) => isRecord(room) && room.id === result.preferredRoomId)) {
+      return false;
+    }
+  }
   if (result.analysisStatus === 'failed') {
     if (diagnostics.length === 0 && !Object.hasOwn(result, 'lexicalError')) return false;
   } else {

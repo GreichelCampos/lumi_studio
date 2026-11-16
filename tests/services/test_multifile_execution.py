@@ -11,7 +11,7 @@ from services.results import CompilationStatus, ExecutionStatus
 from services.serialization import serialize_compilation, serialize_compilation_json
 
 
-ENTRY = 'importar "B" usar f>> mostrar(f())>>'
+ENTRY = 'importar "B" usar f>> principal { mostrar(f())>> }'
 SOURCES = {
     "B": 'funcion entero f() { importar "C" usar h>> retornar h()>> }',
     "C": 'funcion entero h() { retornar 7>> } funcion entero hidden() { retornar 9>> }',
@@ -29,7 +29,10 @@ def test_explicit_transitive_import_repeated_calls_preserve_ast_and_direct_impor
 
 
 def test_shared_dependency_is_available_in_each_explicit_importing_scope():
-    source = 'importar "B" usar f>> importar "D" usar g>> mostrar(f())>> mostrar(g())>>'
+    source = (
+        'importar "B" usar f>> importar "D" usar g>> '
+        'principal { mostrar(f())>> mostrar(g())>> }'
+    )
     sources = {**SOURCES, "D": 'funcion entero g() { importar "C" usar h>> retornar h()>> }'}
     result = ExecutionService().execute_source(source, "A", sources=sources)
     assert result.succeeded and result.output == ("7", "7")
@@ -38,7 +41,8 @@ def test_shared_dependency_is_available_in_each_explicit_importing_scope():
 
 def test_two_different_functions_from_same_direct_module_still_execute():
     result = ExecutionService().execute_source(
-        'importar "B" usar f>> importar "B" usar g>> mostrar(f() + g())>>', "A",
+        'importar "B" usar f>> importar "B" usar g>> '
+        'principal { mostrar(f() + g())>> }', "A",
         sources={"B": 'funcion entero f() { retornar 1>> } funcion entero g() { retornar 2>> }'},
     )
     assert result.succeeded and result.output == ("3",)
@@ -54,7 +58,8 @@ def test_duplicate_import_still_blocks_execution_with_original_location():
 
 
 def test_unrequested_transitive_function_remains_invisible():
-    result = ExecutionService().execute_source(ENTRY + " mostrar(hidden())>>", "A", sources=SOURCES)
+    source = 'importar "B" usar f>> principal { mostrar(f())>> mostrar(hidden())>> }'
+    result = ExecutionService().execute_source(source, "A", sources=SOURCES)
     assert result.status is ExecutionStatus.BLOCKED
     assert [d.code for d in result.diagnostics] == ["SEM_UNDECLARED_FUNCTION"]
     assert "C" in result.compilation._compiled_programs

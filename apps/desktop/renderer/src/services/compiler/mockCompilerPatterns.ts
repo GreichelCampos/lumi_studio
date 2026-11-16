@@ -13,6 +13,6 @@ export const LUMI_PATTERNS = {
   windowBlock: /^ventana\s+en\s+(norte|sur|este|oeste)/,
   placeObj: /^colocar\s+([a-zA-Z0-9_]+)\s+\[\s*([^,\]]+)\s*,\s*([^,\]]+)\s*,\s*([^\]]+)\s*\]/,
   printStmt: /^mostrar\s*\(\s*(.+?)\s*\)/,
-  visualize3D: /^visualizar3D/,
+  visualize3D: /^visualizar3D\s*\(\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\)\s*>>\s*$/,
   divByZero: /\/(\s*)0(?:\.0+)?(?:\b|>>)/,
 };

@@ -171,7 +171,7 @@ def test_project_uses_explicit_entry_even_if_another_file_is_first():
     result = CompilerService().compile_project(
         {
             "activo.lumi": "@",
-            "principal.lumi": 'mostrar("principal")>>',
+            "principal.lumi": 'principal { mostrar("principal")>> }',
         },
         entry_file="principal.lumi",
     )
@@ -183,7 +183,9 @@ def test_project_uses_explicit_entry_even_if_another_file_is_first():
 
 def test_import_context_is_collected_without_altering_source_mapping():
     sources = {
-        "principal.lumi": 'importar "utilidades.lumi" usar respuesta>>',
+        "principal.lumi": (
+            'importar "utilidades.lumi" usar respuesta>> principal { }'
+        ),
         "utilidades.lumi": "funcion entero respuesta() { retornar 42>> }",
     }
     original = dict(sources)

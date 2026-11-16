@@ -18,10 +18,14 @@ from services.worker import run_worker
 ROOT = Path(__file__).resolve().parents[2]
 
 
+def program(source: str) -> str:
+    return f"principal {{ {source} }}"
+
+
 def frame(request_id="worker-1", source='mostrar("¡Lumi, habitación 🏠!")>>', operation="execute"):
     return (json.dumps({
         "protocolVersion": "1.0.0", "requestId": request_id, "operation": operation,
-        "entryFile": "principal.lumi", "files": {"principal.lumi": source},
+        "entryFile": "principal.lumi", "files": {"principal.lumi": program(source)},
     }, ensure_ascii=False) + "\n").encode("utf-8")
 
 

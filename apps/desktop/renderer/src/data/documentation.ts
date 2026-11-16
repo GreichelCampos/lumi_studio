@@ -36,7 +36,7 @@ export const LUMI_KEYWORDS: KeywordDoc[] = [
   { word: 'importar / usar', category: 'Proyectos', desc: 'Incorpora una función de otro archivo .lumi del proyecto' },
   { word: 'segun / caso / defecto', category: 'Control', desc: 'Elige un bloque según el valor de una expresión' },
   { word: 'y / o / no', category: 'Operaciones', desc: 'Combinan o invierten valores booleanos' },
-  { word: 'visualizar3D', category: 'Render', desc: 'Palabra reservada sin instrucción implementada en el parser actual' },
+  { word: 'visualizar3D', category: 'Render', desc: 'Selecciona la habitación inicial del visor después de ejecutar, por ejemplo visualizar3D(sala)>>' },
 ];
 
 export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
@@ -68,13 +68,11 @@ lista colores_disponibles = ["blanco", "gris", "azul"]>>
 -- Variable de tipo nulo
 nulo seleccion = nulo>>
 
-si seleccion == nulo {
-  mostrar("No se seleccionó ningún elemento inicial")>>
-}
-
-mostrar(colores_disponibles)>>
-
 principal {
+  si seleccion == nulo {
+    mostrar("No se seleccionó ningún elemento inicial")>>
+  }
+  mostrar(colores_disponibles)>>
   habitacion muestra(5, 4, 3) {
     mesa mesa_muestra {}
     colocar mesa_muestra origen_sala>>
@@ -260,12 +258,12 @@ export const LUMI_COMMON_ERRORS = [
   {
     title: 'Falta un valor o el cierre de una instrucción',
     advice: 'Después de = escribí un valor del tipo declarado. Cerrá el texto con comillas, las llamadas con ) y las instrucciones simples con >>.',
-    code: 'entero cantidad = 4>>\nmostrar("Cantidad")>>',
+    code: 'principal {\n  entero cantidad = 4>>\n  mostrar("Cantidad")>>\n}',
   },
   {
     title: 'Paréntesis, corchetes y comas',
     advice: 'Las dimensiones de una habitación van entre paréntesis. Un vector va entre corchetes y lleva tres componentes separados por comas. Las listas también usan corchetes y comas.',
-    code: 'habitacion sala(5, 4, 3) {}\nvector punto = [1, 0, -2]>>\nlista colores = ["azul", "rojo"]>>',
+    code: 'principal {\n  habitacion sala(5, 4, 3) {}\n  vector punto = [1, 0, -2]>>\n  lista colores = ["azul", "rojo"]>>\n}',
   },
   {
     title: 'Parámetros y argumentos de funciones',
@@ -273,19 +271,21 @@ export const LUMI_COMMON_ERRORS = [
     code: `funcion entero suma(entero a, entero b) {
   retornar a + b>>
 }
-mostrar(suma(1, 2))>>`,
+principal { mostrar(suma(1, 2))>> }`,
   },
   {
     title: 'Ciclos y bloques',
     advice: 'En hacer, separá la inicialización, la condición y la actualización con punto y coma. Usá llaves para indicar qué se repite.',
-    code: `hacer entero i = 0; i < 3; i = i + 1 {
-  mostrar(i)>>
+    code: `principal {
+  hacer entero i = 0; i < 3; i = i + 1 {
+    mostrar(i)>>
+  }
 }`,
   },
   {
     title: 'Tipos incompatibles y dimensiones inválidas',
     advice: 'Si una variable es entero, su valor no puede ser texto. Las tres dimensiones de una habitación deben ser mayores que cero.',
-    code: 'entero cantidad = 4>>\ntexto nombre = "Sala">>\nhabitacion sala(5, 4, 3) {}',
+    code: 'principal {\n  entero cantidad = 4>>\n  texto nombre = "Sala">>\n  habitacion sala(5, 4, 3) {}\n}',
   },
 ];
 

@@ -17,6 +17,7 @@ export default function ViewportWindowApp() {
           activeObjectId={state.activeObjectId}
           debugActiveObjectId={state.debugActiveObjectId}
           debugRoomId={state.debugRoomId}
+          initialRoomId={state.preferredRoomId}
           onSelectObject={objectId => window.lumiViewport?.selectObject({ sessionId: state.sessionId, objectId })}
           isCompiled
         /> : <div className="glass-panel h-full grid place-items-center text-sm text-[var(--ide-text-muted)]">Preparando escena 3D…</div>}

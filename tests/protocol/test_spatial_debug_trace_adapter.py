@@ -8,23 +8,31 @@ from services.protocol.dispatcher import RequestDispatcher
 from services.protocol.serialization import response_size_bytes
 
 
+def entry_program(source: str) -> str:
+    if "principal" in source:
+        return source
+    return f"principal {{ {source} }}"
+
+
 def request(files, *, operation="execute", entry="principal.lumi"):
+    normalized = dict(files)
+    normalized[entry] = entry_program(normalized[entry])
     return {
         "protocolVersion": "1.0.0",
         "requestId": f"trace-{operation}",
         "operation": operation,
         "entryFile": entry,
-        "files": files,
+        "files": normalized,
     }
 
 
 def test_converts_complete_trace_to_frontend_debug_step_contract():
-    source = """habitacion sala(10, 10, 3) {
+    source = """principal { habitacion sala(10, 10, 3) {
     silla silla1 { }
     colocar silla1 [1, 0, 1]>>
     mover silla1 [2, 0, 2]>>
     rotar silla1 [0, 90, 0]>>
-}"""
+} }"""
     execution = ExecutionService().execute_source(source, "principal.lumi")
     original_snapshot = execution.spatial_trace.steps[3].scene_snapshot
 
@@ -76,10 +84,10 @@ def test_uses_imported_source_for_code_line_and_location():
     files = {
         "principal.lumi": (
             'importar "operaciones.lumi" usar ubicar>>\n'
-            "habitacion sala(8, 8, 3) {\n"
+            "principal { habitacion sala(8, 8, 3) {\n"
             "    silla silla1 { }\n"
             "    ubicar()>>\n"
-            "}"
+            "} }"
         ),
         "operaciones.lumi": (
             "funcion vacio ubicar() {\n"
@@ -104,7 +112,7 @@ def test_uses_imported_source_for_code_line_and_location():
 
 
 def test_preserves_unicode_in_code_lines_and_serialized_size():
-    source = 'habitacion sala(8, 8, 3) { silla silla1 { color "café ☕">> } }'
+    source = 'principal { habitacion sala(8, 8, 3) { silla silla1 { color "café ☕">> } } }'
     execution = ExecutionService().execute_source(source, "unicode.lumi")
 
     adapted = adapt_spatial_debug_trace(
@@ -126,7 +134,7 @@ def test_preserves_unicode_in_code_lines_and_serialized_size():
 
 def test_incomplete_runtime_trace_keeps_its_unavailability_reason():
     execution = ExecutionService().execute_source(
-        "mostrar(1 / 0)>>", "principal.lumi"
+        entry_program("mostrar(1 / 0)>>"), "principal.lumi"
     )
 
     adapted = adapt_spatial_debug_trace(
@@ -139,7 +147,7 @@ def test_incomplete_runtime_trace_keeps_its_unavailability_reason():
 
 
 def test_step_limit_trace_is_not_converted_as_complete():
-    source = (
+    source = entry_program(
         "habitacion sala(8, 8, 3) { silla silla1 { } "
         "colocar silla1 [1, 0, 1]>> }"
     )
@@ -159,7 +167,7 @@ def test_step_limit_trace_is_not_converted_as_complete():
 
 
 def test_missing_source_returns_explicit_unavailability():
-    source = "habitacion sala(8, 8, 3) { }"
+    source = entry_program("habitacion sala(8, 8, 3) { }")
     execution = ExecutionService().execute_source(source, "principal.lumi")
 
     adapted = adapt_spatial_debug_trace(execution.spatial_trace, {})
@@ -169,7 +177,7 @@ def test_missing_source_returns_explicit_unavailability():
 
 
 def test_response_size_budget_rejects_whole_trace_without_truncation():
-    source = "habitacion sala(8, 8, 3) { silla silla1 { } }"
+    source = entry_program("habitacion sala(8, 8, 3) { silla silla1 { } }")
     execution = ExecutionService().execute_source(source, "principal.lumi")
     sources = {"principal.lumi": source}
     complete = adapt_spatial_debug_trace(execution.spatial_trace, sources)
@@ -192,7 +200,7 @@ def test_response_size_budget_rejects_whole_trace_without_truncation():
 
 
 def test_public_f5_remains_without_trace_and_f6_publishes_real_steps():
-    files = {"principal.lumi": "habitacion sala(8, 8, 3) { }"}
+    files = {"principal.lumi": entry_program("habitacion sala(8, 8, 3) { }")}
     dispatcher = RequestDispatcher()
 
     analysis = dispatcher.dispatch(request(files, operation="analyze"))
@@ -213,7 +221,7 @@ def test_public_f5_remains_without_trace_and_f6_publishes_real_steps():
 
 def test_public_failed_and_step_limited_runs_publish_no_partial_steps():
     failed = RequestDispatcher().dispatch(
-        request({"principal.lumi": "mostrar(1 / 0)>>"})
+        request({"principal.lumi": entry_program("mostrar(1 / 0)>>")})
     )
     limited_dispatcher = RequestDispatcher(
         executor=ExecutionService(
@@ -221,7 +229,7 @@ def test_public_failed_and_step_limited_runs_publish_no_partial_steps():
         )
     )
     limited_request = request(
-        {"principal.lumi": "habitacion sala(8, 8, 3) { }"}
+        {"principal.lumi": entry_program("habitacion sala(8, 8, 3) { }")}
     )
     limited_request["requestId"] = "trace-limited"
     limited = limited_dispatcher.dispatch(limited_request)
@@ -243,7 +251,7 @@ def test_public_import_trace_keeps_module_source_and_unicode():
     files = {
         "principal.lumi": (
             'importar "acciones.lumi" usar ubicar>>\n'
-            "habitacion sala(8, 8, 3) { silla silla1 { } ubicar()>> }"
+            "principal { habitacion sala(8, 8, 3) { silla silla1 { } ubicar()>> } }"
         ),
         "acciones.lumi": (
             "funcion vacio ubicar() {\n"
@@ -268,8 +276,8 @@ def test_full_response_budget_disables_trace_but_preserves_execution(
 ):
     files = {
         "principal.lumi": (
-            "habitacion sala(8, 8, 3) { silla silla1 { } "
-            "colocar silla1 [1, 0, 1]>> }"
+            "principal { habitacion sala(8, 8, 3) { silla silla1 { } "
+            "colocar silla1 [1, 0, 1]>> } }"
         )
     }
     full = RequestDispatcher().dispatch(request(files))

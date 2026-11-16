@@ -89,6 +89,7 @@ class ExecutionResult:
     output: tuple[str, ...] = ()
     diagnostics: tuple[Diagnostic, ...] = ()
     scene_plan: ScenePlan | None = None
+    visualization_room: str | None = None
     spatial_trace: SpatialDebugTrace = field(default_factory=SpatialDebugTrace)
 
     @property

@@ -81,6 +81,7 @@ class ResultPayload(TypedDict):
     limitations: list[Limitation]
     lexicalError: NotRequired[str]
     scenePlan: NotRequired[ScenePlanDTO]
+    preferredRoomId: NotRequired[str]
     debugSteps: NotRequired[list[DebugStepDTO]]
     debugTraceUnavailableReason: NotRequired[str]
     executionAttempted: bool

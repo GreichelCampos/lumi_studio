@@ -67,6 +67,11 @@ lo representa como `null`. Un análisis espacial determinado usa
 se reserva para efectos desconocidos o resultados abstractos parciales. Este estado
 es independiente de que una ejecución posterior produzca una escena.
 
+`visualizar3D(nombre)>>` no modifica ni filtra el `ScenePlan`: la última solicitud
+realmente ejecutada se transporta como `preferredRoomId`. El IDE la aplica sólo al
+inicializar la sesión del visor; el selector manual y la prioridad temporal del
+depurador permanecen disponibles.
+
 `debugTrace` y `cancellation` permanecen en `false`. Los resultados de Python
 contienen `debugSteps: []` en el IDE. Se correlacionan las solicitudes y se descartan
 los resultados reemplazados para evitar que actualicen el proyecto.

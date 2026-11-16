@@ -10,10 +10,16 @@ from services.protocol.dispatcher import RequestDispatcher
 from services.protocol.models import MAX_FILES, MAX_SESSION_REQUESTS, MAX_SOURCE_BYTES
 
 
+def program(source: str) -> str:
+    if "principal" in source:
+        return source
+    return f"principal {{ {source} }}"
+
+
 def request(source='mostrar("¡Hola, Lumi! 🏠")>>', operation="execute", request_id="test-1"):
     return {
         "protocolVersion": "1.0.0", "requestId": request_id, "operation": operation,
-        "entryFile": "principal.lumi", "files": {"principal.lumi": source},
+        "entryFile": "principal.lumi", "files": {"principal.lumi": program(source)},
     }
 
 
@@ -74,11 +80,13 @@ def test_core_diagnostics_are_preserved_exactly(source, category, stage, status)
     assert "targetObjectId" not in diagnostic
     if category == "RUNTIME":
         assert diagnostic["code"] == "RUN_DIVISION_BY_ZERO"
-        assert diagnostic["column"] == 9
+        assert diagnostic["column"] == 21
 
 
 def test_imports_and_explicit_entry_use_real_services():
-    message = request('importar "util.lumi" usar sumar>> mostrar(sumar(4, 5))>>')
+    message = request(
+        'importar "util.lumi" usar sumar>> principal { mostrar(sumar(4, 5))>> }'
+    )
     message["files"]["util.lumi"] = "funcion entero sumar(entero a, entero b) { retornar a + b>> }"
     message["files"]["activo.lumi"] = "@"
     original = deepcopy(message)

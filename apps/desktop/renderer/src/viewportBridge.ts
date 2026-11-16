@@ -8,6 +8,7 @@ export interface ViewportWindowState {
   activeObjectId: string | null;
   debugActiveObjectId: string | null;
   debugRoomId: string | null;
+  preferredRoomId?: string | null;
 }
 
 export interface ViewportSelection {

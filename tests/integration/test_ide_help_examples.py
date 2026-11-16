@@ -91,7 +91,7 @@ def test_architectural_help_executes_with_a_scene(help_sections):
 
 
 def test_missing_wall_orientation_suggests_valid_lumi():
-    source = 'habitacion sala(5, 4, 3) { pared muro { color "azul">> } }'
+    source = 'principal { habitacion sala(5, 4, 3) { pared muro { color "azul">> } } }'
     result = ExecutionService().execute_source(source, "ayuda.lumi")
     assert result.status is ExecutionStatus.BLOCKED
     assert result.diagnostics[0].code == "SEM_MISSING_SPATIAL_PROPERTY"
@@ -130,6 +130,8 @@ def test_loop_and_function_help_executes_through_the_real_interpreter(help_secti
     ('mostrar(4 / 0)>>', "RUN_DIVISION_BY_ZERO", "cero"),
 ])
 def test_malformed_program_explains_what_to_correct(source, code, repair):
+    if code in {"SEM_TYPE_MISMATCH", "SPA_INVALID_DIMENSION", "RUN_DIVISION_BY_ZERO"}:
+        source = f"principal {{ {source} }}"
     result = ExecutionService().execute_source("\n" + source, "principal.lumi")
     assert result.status in (ExecutionStatus.BLOCKED, ExecutionStatus.FAILED)
     assert result.scene_plan is None

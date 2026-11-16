@@ -36,6 +36,7 @@ from .ast_nodes import (
     UnaryExpressionNode,
     VariableDeclarationNode,
     VectorNode,
+    Visualize3DNode,
     WallNode,
     WhileNode,
     WindowNode,
@@ -174,6 +175,7 @@ class Parser:
             TokenType.PLACE,
             TokenType.MOVE,
             TokenType.ROTATE,
+            TokenType.VISUALIZE_3D,
         )
 
         if not self.is_at_end() and self.peek().type in statement_starters:
@@ -1152,6 +1154,33 @@ class Parser:
             column=rotate_token.column,
         )
 
+    def parse_visualize_3d(self):
+        visualize_token = self.consume(
+            TokenType.VISUALIZE_3D, "Se esperaba 'visualizar3D'."
+        )
+        self.consume(
+            TokenType.LEFT_PAREN,
+            "Se esperaba '(' después de 'visualizar3D'.",
+        )
+        room_token = self.consume(
+            TokenType.IDENTIFIER,
+            "Se esperaba el nombre de una habitación en 'visualizar3D'.",
+        )
+        self.consume(
+            TokenType.RIGHT_PAREN,
+            "Se esperaba ')' después del nombre de la habitación.",
+        )
+        self.consume(
+            TokenType.TERMINATOR,
+            "Se esperaba '>>' al final de 'visualizar3D'.",
+        )
+        return Visualize3DNode(
+            room_name=room_token.lexeme,
+            file=visualize_token.file,
+            line=visualize_token.line,
+            column=visualize_token.column,
+        )
+
     def parse_statement(self):
         if self.is_at_end():
             raise self.error("Se esperaba una instruccion valida.")
@@ -1195,6 +1224,7 @@ class Parser:
             TokenType.PLACE: self.parse_place_object,
             TokenType.MOVE: self.parse_move_object,
             TokenType.ROTATE: self.parse_rotate_object,
+            TokenType.VISUALIZE_3D: self.parse_visualize_3d,
         }
         parser = statement_parsers.get(self.peek().type)
 

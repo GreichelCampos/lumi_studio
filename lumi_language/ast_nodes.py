@@ -149,6 +149,14 @@ class RoomNode:
 
 
 @dataclass
+class Visualize3DNode:
+    room_name: str
+    file: str
+    line: int
+    column: int
+
+
+@dataclass
 class SpatialObjectDeclarationNode:
     object_type: str
     name: str

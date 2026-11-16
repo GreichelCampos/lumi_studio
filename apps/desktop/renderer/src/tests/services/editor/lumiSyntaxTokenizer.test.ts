@@ -130,7 +130,7 @@ describe('lumiSyntaxTokenizer (tokenizador visual puro)', () => {
     });
 
     it('no presenta como palabras reservadas instrucciones fuera del contrato vigente', () => {
-      for (const word of ['en', 'visualizar3D']) {
+      for (const word of ['en']) {
         const token = tokenizeLumiLine(word).find((item) => item.text === word);
         expect(token?.type).toBe('identifier');
         expect(LUMI_SYNTAX_KEYWORDS).not.toContain(word);

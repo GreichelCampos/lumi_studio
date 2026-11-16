@@ -10,6 +10,10 @@ from services.execution_service import ExecutionService, InputUnavailableError
 from services.results import CompilationStatus, ExecutionStatus
 
 
+def main(source: str) -> str:
+    return f"principal {{ {source} }}"
+
+
 def test_valid_program_runs_and_keeps_output_order():
     result = ExecutionService().execute_source(
         'principal { mostrar("primero")>> mostrar(2)>> mostrar("tercero")>> }',
@@ -211,7 +215,8 @@ def test_project_import_runs_the_explicit_entry():
         {
             "activo.lumi": "@",
             "principal.lumi": (
-                'importar "utilidades.lumi" usar sumar>> mostrar(sumar(4, 5))>>'
+                'importar "utilidades.lumi" usar sumar>> '
+                'principal { mostrar(sumar(4, 5))>> }'
             ),
             "utilidades.lumi": (
                 "funcion entero sumar(entero a, entero b) { retornar a + b>> }"
@@ -227,7 +232,7 @@ def test_project_import_runs_the_explicit_entry():
 
 def test_imported_runtime_error_keeps_imported_file_location():
     result = ExecutionService().execute_source(
-        'importar "roto.lumi" usar dividir>> mostrar(dividir())>>',
+        'importar "roto.lumi" usar dividir>> principal { mostrar(dividir())>> }',
         "principal.lumi",
         sources={"roto.lumi": "funcion decimal dividir() { retornar 4 / 0>> }"},
     )
@@ -239,7 +244,7 @@ def test_imported_runtime_error_keeps_imported_file_location():
 
 def test_room_execution_publishes_runtime_scene_after_complete_analysis():
     result = ExecutionService().execute_source(
-        "habitacion sala(5, 4, 2.7) {}", "principal.lumi"
+        main("habitacion sala(5, 4, 2.7) {}"), "principal.lumi"
     )
 
     assert result.compilation.status == CompilationStatus.COMPLETED
@@ -253,13 +258,13 @@ def test_room_execution_publishes_runtime_scene_after_complete_analysis():
 
 def test_optional_spatial_failure_is_decided_by_the_executed_route():
     skipped = ExecutionService().execute_source(
-        "habitacion sala(5, 4, 3) { si falso { "
-        "mover fantasma [0, 0, 0]>> } }",
+        main("habitacion sala(5, 4, 3) { si falso { "
+        "mover fantasma [0, 0, 0]>> } }"),
         "principal.lumi",
     )
     executed = ExecutionService().execute_source(
-        "habitacion sala(5, 4, 3) { si verdadero { "
-        "mover fantasma [0, 0, 0]>> } }",
+        main("habitacion sala(5, 4, 3) { si verdadero { "
+        "mover fantasma [0, 0, 0]>> } }"),
         "principal.lumi",
     )
 
@@ -275,12 +280,12 @@ def test_optional_spatial_failure_is_decided_by_the_executed_route():
 
 def test_execution_result_preserves_reserved_spatial_elements():
     result = ExecutionService().execute_source(
-        'habitacion sala(5, 4, 3) { piso suelo { material "madera">> } '
+        main('habitacion sala(5, 4, 3) { piso suelo { material "madera">> } '
         'pared norte { orientacion "norte">> color "blanco">> } '
         'puerta entrada { orientacion "norte">> ancho 0.9>> alto 2.1>> '
         'desplazamiento 0.5>> material "metal">> } '
         'ventana ventanal { orientacion "sur">> ancho 1.2>> alto 1>> '
-        'desplazamiento 1.5>> elevacion 0.9>> color "azul">> } }',
+        'desplazamiento 1.5>> elevacion 0.9>> color "azul">> } }'),
         "principal.lumi",
     )
 
@@ -299,7 +304,7 @@ def test_execution_result_preserves_reserved_spatial_elements():
 
 def test_execution_is_blocked_by_statically_invalid_spatial_scene():
     result = ExecutionService().execute_source(
-        "habitacion invalida(0, 4, 3) { }",
+        main("habitacion invalida(0, 4, 3) { }"),
         "principal.lumi",
     )
 
@@ -312,7 +317,7 @@ def test_execution_is_blocked_by_statically_invalid_spatial_scene():
 
 def test_dynamic_invalid_dimension_remains_a_runtime_validation():
     result = ExecutionService().execute_source(
-        "entero ancho = 0>> habitacion invalida(ancho, 4, 3) { }",
+        main("entero ancho = 0>> habitacion invalida(ancho, 4, 3) { }"),
         "principal.lumi",
     )
 
@@ -327,7 +332,8 @@ def test_dynamic_invalid_dimension_remains_a_runtime_validation():
 
 def test_uncalled_spatial_function_does_not_create_analysis_limitation():
     result = ExecutionService().execute_source(
-        "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} } mostrar(1)>>",
+        "funcion vacio crear() { habitacion sala(5, 4, 2.7) {} } "
+        "principal { mostrar(1)>> }",
         "principal.lumi",
     )
 
@@ -365,7 +371,7 @@ def test_injected_input_provider_is_only_used_during_execution():
 def test_missing_host_input_does_not_block_on_stdin_or_invent_a_diagnostic():
     with pytest.raises(InputUnavailableError):
         ExecutionService().execute_source(
-            'texto nombre = leer("Nombre:")>>', "principal.lumi"
+            main('texto nombre = leer("Nombre:")>>'), "principal.lumi"
         )
 
 
@@ -379,7 +385,7 @@ def test_input_infrastructure_error_propagates_unchanged():
         interpreter_factory=lambda: Interpreter(input_provider=disconnected_input)
     )
     with pytest.raises(OSError) as raised:
-        service.execute_source('texto nombre = leer("Nombre:")>>', "principal.lumi")
+        service.execute_source(main('texto nombre = leer("Nombre:")>>'), "principal.lumi")
     assert raised.value is failure
 
 
@@ -391,7 +397,7 @@ def test_runtime_factory_failure_is_not_a_student_error():
 
     with pytest.raises(RuntimeError) as raised:
         ExecutionService(interpreter_factory=unavailable_runtime).execute_source(
-            "mostrar(1)>>", "principal.lumi"
+            main("mostrar(1)>>"), "principal.lumi"
         )
     assert raised.value is failure
 
@@ -412,7 +418,7 @@ def test_core_loop_limit_can_be_configured_without_alternative_execution_logic()
     service = ExecutionService(
         interpreter_factory=lambda: Interpreter(max_loop_iterations=2)
     )
-    result = service.execute_source("mientras verdadero { mostrar(1)>> }", "principal.lumi")
+    result = service.execute_source(main("mientras verdadero { mostrar(1)>> }"), "principal.lumi")
 
     assert result.status == ExecutionStatus.FAILED
     assert result.output == ("1", "1")
@@ -421,9 +427,9 @@ def test_core_loop_limit_can_be_configured_without_alternative_execution_logic()
 
 def test_successful_spatial_execution_preserves_complete_trace_and_scene():
     result = ExecutionService().execute_source(
-        "habitacion sala(10, 10, 3) { silla silla1 { } "
+        main("habitacion sala(10, 10, 3) { silla silla1 { } "
         "colocar silla1 [1, 0, 1]>> mover silla1 [2, 0, 2]>> "
-        "rotar silla1 [0, 90, 0]>> }",
+        "rotar silla1 [0, 90, 0]>> }"),
         "principal.lumi",
     )
 
@@ -448,7 +454,7 @@ def test_successful_spatial_execution_preserves_complete_trace_and_scene():
 
 def test_non_spatial_execution_preserves_boundary_trace():
     result = ExecutionService().execute_source(
-        'mostrar("listo")>>', "principal.lumi"
+        main('mostrar("listo")>>'), "principal.lumi"
     )
 
     assert result.succeeded
@@ -475,7 +481,7 @@ def test_semantic_failure_blocks_execution_and_has_no_trace():
 
 def test_runtime_error_preserves_unavailable_trace_reason():
     result = ExecutionService().execute_source(
-        "mostrar(1 / 0)>>", "principal.lumi"
+        main("mostrar(1 / 0)>>"), "principal.lumi"
     )
 
     assert result.status == ExecutionStatus.FAILED
@@ -487,8 +493,8 @@ def test_runtime_error_preserves_unavailable_trace_reason():
 
 def test_spatial_builder_error_does_not_expose_partial_trace():
     result = ExecutionService().execute_source(
-        "habitacion sala(8, 8, 3) { "
-        "si verdadero { mover fantasma [2, 0, 2]>> } }",
+        main("habitacion sala(8, 8, 3) { "
+        "si verdadero { mover fantasma [2, 0, 2]>> } }"),
         "principal.lumi",
     )
 
@@ -501,7 +507,7 @@ def test_spatial_builder_error_does_not_expose_partial_trace():
 
 def test_runtime_spatial_validation_error_has_no_published_trace():
     result = ExecutionService().execute_source(
-        "entero ancho = 0>> habitacion sala(ancho, 4, 3) { }",
+        main("entero ancho = 0>> habitacion sala(ancho, 4, 3) { }"),
         "principal.lumi",
     )
 
@@ -518,8 +524,8 @@ def test_trace_step_limit_is_propagated_without_failing_execution():
     )
 
     result = service.execute_source(
-        "habitacion sala(8, 8, 3) { silla silla1 { } "
-        "colocar silla1 [1, 0, 1]>> }",
+        main("habitacion sala(8, 8, 3) { silla silla1 { } "
+        "colocar silla1 [1, 0, 1]>> }"),
         "principal.lumi",
     )
 
@@ -533,11 +539,11 @@ def test_trace_step_limit_is_propagated_without_failing_execution():
 def test_service_executions_have_independent_traces():
     service = ExecutionService()
     first = service.execute_source(
-        "habitacion sala(8, 8, 3) { silla silla1 { } }",
+        main("habitacion sala(8, 8, 3) { silla silla1 { } }"),
         "primero.lumi",
     )
     second = service.execute_source(
-        "habitacion estudio(6, 6, 3) { mesa mesa1 { } }",
+        main("habitacion estudio(6, 6, 3) { mesa mesa1 { } }"),
         "segundo.lumi",
     )
 

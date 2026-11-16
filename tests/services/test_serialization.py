@@ -63,7 +63,9 @@ def test_ast_roundtrip_preserves_every_nested_node(source):
 
 def test_compilation_serializes_imported_origins():
     sources = {
-        "main.lumi": 'importar "a.lumi" usar a>> importar "b.lumi" usar b>>',
+        "main.lumi": (
+            'importar "a.lumi" usar a>> importar "b.lumi" usar b>> principal { }'
+        ),
         "a.lumi": "funcion entero a() { retornar 1>> }",
         "b.lumi": "\nfuncion entero b() { retornar 2>> }",
     }
@@ -158,7 +160,9 @@ def test_decimal_overflow_is_only_a_serialization_failure():
 def test_independent_serializations_are_deterministic():
     from services.serialization import serialize_compilation_json
     sources = {
-        "main.lumi": 'importar "z.lumi" usar z>> importar "a.lumi" usar a>>',
+        "main.lumi": (
+            'importar "z.lumi" usar z>> importar "a.lumi" usar a>> principal { }'
+        ),
         "z.lumi": 'funcion texto z() { retornar "á">> }',
         "a.lumi": 'funcion entero a() { retornar 1>> }',
     }

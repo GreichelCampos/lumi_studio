@@ -43,8 +43,15 @@ def adapt_result(
         and execution.scene_plan is not None
         and execution.scene_plan.rooms
     ):
-        payload["scenePlan"] = scene_plan_dto(execution.scene_plan)
+        scene_dto = scene_plan_dto(execution.scene_plan)
+        payload["scenePlan"] = scene_dto
         payload["capabilities"]["scenePlan"] = True
+        if execution.visualization_room is not None:
+            preferred_room = next(
+                room for room in scene_dto["rooms"]
+                if room["name"] == execution.visualization_room
+            )
+            payload["preferredRoomId"] = preferred_room["id"]
     response: ResultResponse = {
         "protocolVersion": PROTOCOL_VERSION,
         "requestId": request.request_id,

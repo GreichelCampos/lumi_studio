@@ -135,14 +135,16 @@ describe('Real compiler adapter', () => {
     raw.response.result.limitations = ['spatial_semantics_unavailable'];
     raw.response.result.capabilities.scenePlan = true;
     raw.response.result.scenePlan = createMockScenePlan({ rooms: [
-      createMockRoom({ name: 'sala' }),
+      createMockRoom({ id: 'room-sala', name: 'sala' }),
     ] });
+    raw.response.result.preferredRoomId = 'room-sala';
     const before = structuredClone(raw);
 
     const result = await new PythonCompilerService(bridge(raw)).execute(project());
 
     expect(result.success).toBe(true);
     expect(result.scenePlan?.rooms[0].name).toBe('sala');
+    expect(result.preferredRoomId).toBe('room-sala');
     expect(result.logs).toContain('[Python · Análisis] incomplete');
     expect(result.logs).toContain('Capacidad pendiente: análisis semántico espacial.');
     expect(result.logs).toContain('Limitación del backend: spatial_semantics_unavailable');

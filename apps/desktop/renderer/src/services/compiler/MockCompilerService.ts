@@ -91,6 +91,7 @@ export class MockCompilerService implements CompilerService {
     const variables: Record<string, number | string | boolean | null> = {};
 
     let currentRoom: RoomModel | null = null;
+    let visualizationRequest: { roomName: string; line: number } | null = null;
     let openBraces = 0;
 
     let inDoorBlock: {
@@ -477,8 +478,10 @@ export class MockCompilerService implements CompilerService {
       }
 
       // 12. Visualizar3D call: visualizar3D(sala)>>
-      if (LUMI_PATTERNS.visualize3D.test(trimmed)) {
-        const targetRoomName = trimmed.replace(/^visualizar3D\s*\(\s*|\s*\).*/g, '');
+      const visualizeMatch = trimmed.match(LUMI_PATTERNS.visualize3D);
+      if (visualizeMatch) {
+        const targetRoomName = visualizeMatch[1];
+        visualizationRequest = { roomName: targetRoomName, line: lineNum };
         logs.push(`visualizar3D(${targetRoomName}) -> ScenePlan v1.0 generado exitosamente.`);
         continue;
       }
@@ -498,6 +501,15 @@ export class MockCompilerService implements CompilerService {
     }
 
     const finalScenePlan: ScenePlan | null = createSnapshot();
+    const preferredRoom = visualizationRequest
+      ? rooms.find(room => room.name === visualizationRequest.roomName)
+      : undefined;
+    if (visualizationRequest && !preferredRoom) {
+      diagnostics.push(MockDiagnosticFactory.visualizationRoomNotFound(
+        compilationId, targetFile.name, visualizationRequest.line,
+        visualizationRequest.roomName
+      ));
+    }
     const hasBlockingErrors = diagnostics.some((d) => d.blocking === true);
     const spatialDiagnostics = diagnostics.filter((d) => d.category === 'espacial');
 
@@ -524,6 +536,7 @@ export class MockCompilerService implements CompilerService {
     return {
       status,
       scenePlan: hasBlockingErrors ? null : finalScenePlan,
+      ...(preferredRoom ? { preferredRoomId: preferredRoom.id } : {}),
       diagnostics,
       logs,
       debugSteps: hasBlockingErrors ? [] : debugSteps,

@@ -34,6 +34,7 @@ interface Viewport3DProps {
   activeObjectId?: string | null;
   debugActiveObjectId?: string | null;
   debugRoomId?: string | null;
+  initialRoomId?: string | null;
   onSelectObject?: (objectId: string | null) => void;
   onNavigateToSource?: (sourceRef: SourceReference) => void;
   onCompile?: () => void;
@@ -52,6 +53,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   activeObjectId = null,
   debugActiveObjectId = null,
   debugRoomId = null,
+  initialRoomId = null,
   onSelectObject,
   onNavigateToSource,
   onCompile,
@@ -78,7 +80,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   const currentTheme = ideContext?.currentTheme;
   const spatialBackground = ideContext?.settings?.spatialBackground;
 
-  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
+  const [selectedRoomId, setSelectedRoomId] = useState<string | null>(initialRoomId);
 
 
   const [showDimensions, setShowDimensions] = useState(true);
@@ -107,11 +109,13 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
     if (scenePlan?.rooms && scenePlan.rooms.length > 0) {
       setSelectedRoomId(previous =>
         debugRoomId && scenePlan.rooms.some(room => room.id === debugRoomId) ? debugRoomId
-          : previous && scenePlan.rooms.some(room => room.id === previous) ? previous : scenePlan.rooms[0].id);
+          : previous && scenePlan.rooms.some(room => room.id === previous) ? previous
+          : initialRoomId && scenePlan.rooms.some(room => room.id === initialRoomId) ? initialRoomId
+          : scenePlan.rooms[0].id);
     } else {
       setSelectedRoomId(null);
     }
-  }, [scenePlan, debugRoomId]);
+  }, [scenePlan, debugRoomId, initialRoomId]);
 
   // Si se selecciona un objeto externamente (ej: desde panel de diagnósticos o editor o depurador), asegurar que la habitación correspondiente esté activa
   useEffect(() => {

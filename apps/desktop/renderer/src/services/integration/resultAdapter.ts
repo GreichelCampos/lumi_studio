@@ -33,6 +33,9 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
   return {
     compilationId: response.requestId, status: response.status, success: response.status === 'completed',
     diagnostics, scenePlan: payload.scenePlan ?? null,
+    ...(payload.preferredRoomId !== undefined
+      ? { preferredRoomId: payload.preferredRoomId }
+      : {}),
     debugSteps: response.operation === 'execute' && payload.capabilities.debugTrace
       ? payload.debugSteps ?? [] : [],
     ...(payload.debugTraceUnavailableReason !== undefined

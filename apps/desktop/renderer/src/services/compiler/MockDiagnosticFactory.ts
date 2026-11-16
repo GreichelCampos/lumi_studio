@@ -253,4 +253,22 @@ export class MockDiagnosticFactory {
       solution: 'Verifique que cada bloque abierto con "{" concluya con su respectivo "}".',
     };
   }
+
+  public static visualizationRoomNotFound(
+    compilationId: string, file: string, line: number, roomName: string
+  ): DiagnosticItem {
+    return {
+      id: `runtime-visualize-${compilationId}-${line}`,
+      code: 'RUN_VISUALIZE_ROOM_NOT_FOUND',
+      severity: 'error',
+      category: 'ejecucion',
+      blocking: true,
+      file,
+      line,
+      column: 1,
+      sourceRef: { file, line, column: 1 },
+      description: `La habitación '${roomName}' solicitada por 'visualizar3D' no existe en la escena construida.`,
+      solution: 'Construí la habitación antes de solicitar su visualización.',
+    };
+  }
 }

@@ -5,24 +5,30 @@ import pytest
 from services.protocol.dispatcher import RequestDispatcher
 
 
+def program(source: str) -> str:
+    if "principal" in source:
+        return source
+    return f"principal {{ {source} }}"
+
+
 def request(source: str, request_id: str = "scene") -> dict[str, object]:
     return {
         "protocolVersion": "1.0.0",
         "requestId": request_id,
         "operation": "execute",
         "entryFile": "principal.lumi",
-        "files": {"principal.lumi": source},
+        "files": {"principal.lumi": program(source)},
     }
 
 
 def test_runtime_scene_reaches_protocol_with_final_object_state():
     source = (
         'decimal destino = 1>> funcion decimal siguiente(decimal valor) { '
-        'retornar valor + 1>> } habitacion sala(6, 5, 3) { '
+        'retornar valor + 1>> } principal { habitacion sala(6, 5, 3) { '
         'piso suelo { material "madera">> color "beige">> } '
         'mesa mesa1 { color "rojo">> } colocar mesa1 [0, 0, 0]>> '
         'si verdadero { mover mesa1 [siguiente(destino), 0, -1]>> } '
-        'rotar mesa1 [0, 90, 0]>> }'
+        'rotar mesa1 [0, 90, 0]>> } }'
     )
 
     response = RequestDispatcher().dispatch(request(source))
@@ -64,7 +70,7 @@ def test_unplaced_object_is_published_without_artificial_position():
     assert item["material"] == "madera"
     assert item["sourceRef"]["file"] == "principal.lumi"
     assert item["sourceRef"]["line"] == 1
-    assert item["sourceRef"]["column"] == 28
+    assert item["sourceRef"]["column"] == 40
     encoded_item = loads(dumps(item))
     assert encoded_item["placed"] is False
     assert "position" not in encoded_item
@@ -101,7 +107,7 @@ def test_second_floor_blocks_execution_with_semantic_diagnostic():
     assert diagnostic["code"] == "SPA_MULTIPLE_FLOORS"
     assert diagnostic["file"] == "principal.lumi"
     assert diagnostic["line"] == 1
-    assert diagnostic["column"] == 44
+    assert diagnostic["column"] == 56
     assert "piso" in diagnostic["description"]
     assert response["result"]["capabilities"]["scenePlan"] is False
     assert response["result"]["executionAttempted"] is False

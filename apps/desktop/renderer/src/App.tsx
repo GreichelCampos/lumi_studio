@@ -82,6 +82,7 @@ export default function App() {
   const [helpView, setHelpView] = useState<'syntax' | 'about' | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [hasExecutedScene, setHasExecutedScene] = useState(false);
+  const preferredRoomIdRef = useRef<string | null>(null);
   const [startupReady, setStartupReady] = useState(() => !window.lumiStartup);
   const [splashPresented, setSplashPresented] = useState(() => !window.lumiStartup);
   const [minimumSplashElapsed, setMinimumSplashElapsed] = useState(() => !window.lumiStartup);
@@ -207,6 +208,7 @@ export default function App() {
     if (isRealBackend) {
       // Una ejecución nueva nunca debe mostrar ni conservar la escena o selección anterior.
       viewportSessionRef.current = null;
+      preferredRoomIdRef.current = null;
       setActiveObjectId(null);
       setHasExecutedScene(false);
       window.lumiViewport?.clear();
@@ -220,12 +222,14 @@ export default function App() {
       if (result?.success && result.scenePlan) {
         const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
         viewportSessionRef.current = sessionId;
+        preferredRoomIdRef.current = result.preferredRoomId ?? null;
         setActiveObjectId(null);
         setHasExecutedScene(true);
         await window.lumiViewport?.show({
           sessionId,
           scenePlan: result.scenePlan, sceneSource: 'python', legacyPlacement: false,
           activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
+          preferredRoomId: preferredRoomIdRef.current,
         });
       } else {
         window.lumiViewport?.clear();
@@ -266,6 +270,7 @@ export default function App() {
     if (lastCompileResult.scenePlan) {
       const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
       viewportSessionRef.current = sessionId;
+      preferredRoomIdRef.current = lastCompileResult.preferredRoomId ?? null;
       setActiveObjectId(null);
       setScenePlan(lastCompileResult.scenePlan);
       setHasExecutedScene(true);
@@ -273,6 +278,7 @@ export default function App() {
         sessionId,
         scenePlan: lastCompileResult.scenePlan, sceneSource: sceneSource ?? 'simulation', legacyPlacement,
         activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
+        preferredRoomId: preferredRoomIdRef.current,
       });
       const totalObjs = lastCompileResult.scenePlan.rooms.reduce((acc, r) => acc + r.objects.length, 0);
       ideLogger.logExecutionStarted(currentProject.name, lastCompileResult.scenePlan.rooms.length, totalObjs);
@@ -426,12 +432,14 @@ export default function App() {
       sessionId, scenePlan, sceneSource, legacyPlacement, activeObjectId,
       debugActiveObjectId: debugSelection.activeObjectId,
       debugRoomId: currentStep?.roomId ?? null,
+      preferredRoomId: preferredRoomIdRef.current,
     };
     window.lumiViewport?.update(state);
   }, [scenePlan, sceneSource, legacyPlacement, activeObjectId, debugSelection.activeObjectId, currentStep?.roomId, hasExecutedScene]);
 
   useEffect(() => {
     viewportSessionRef.current = null;
+    preferredRoomIdRef.current = null;
     setHasExecutedScene(false);
   }, [currentProjectId]);
 
