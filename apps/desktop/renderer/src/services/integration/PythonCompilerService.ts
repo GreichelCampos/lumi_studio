@@ -25,17 +25,16 @@ export class PythonCompilerService implements CompilerService {
   constructor(private readonly bridge: DesktopBridge | undefined) {}
 
   compile(project: LumiProject, options?: CompileOptions | string): Promise<CompileResult> {
-    const activeFileId = typeof options === 'object' ? options.activeFileId : undefined;
-    return this.run('analyze', project, activeFileId);
+    return this.run('analyze', project);
   }
   execute(project: LumiProject, options?: ExecuteOptions): Promise<CompileResult> {
-    return this.run('execute', project, options?.activeFileId);
+    return this.run('execute', project);
   }
 
-  private async run(operation: Operation, project: LumiProject, preferredFileId?: string): Promise<CompileResult> {
+  private async run(operation: Operation, project: LumiProject): Promise<CompileResult> {
     if (!this.bridge) throw new Error('El puente seguro de Electron no está disponible. No se utilizará el mock.');
     const started = performance.now();
-    const input = projectInput(project, preferredFileId);
+    const input = projectInput(project);
     const reply: unknown = operation === 'execute' && this.bridge.onInputPrompt && this.bridge.replyInput
       ? await this.bridge.execute(input, true)
       : await this.bridge[operation](input);

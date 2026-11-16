@@ -11,19 +11,19 @@ export function relativePath(path: string, projectName: string): string {
   return relative;
 }
 
-/** Resolve a valid preferred compile entry, falling back to the explicit project entry. */
-export function projectEntry(project: LumiProject, preferredFileId?: string): LumiProject['files'][number] {
+/** Resolve the project's explicitly configured compile and execution entry. */
+export function projectEntry(project: LumiProject): LumiProject['files'][number] {
   const marked = project.files.filter((file) => file.isEntry);
   const mainEntry = project.entryFileId
     ? project.files.find((file) => file.id === project.entryFileId)
     : marked.length === 1 ? marked[0] : undefined;
-  if (!mainEntry) throw new Error('Seleccione un archivo principal explícito para el proyecto.');
-  return project.files.find((file) => file.id === preferredFileId) ?? mainEntry;
+  if (!mainEntry) throw new Error('Seleccione un archivo principal desde el menú de opciones del archivo en el explorador.');
+  return mainEntry;
 }
 
-/** Uses supplied contents, including drafts, and an optional compile entry override. */
-export function projectInput(project: LumiProject, preferredFileId?: string): BackendInput {
-  const entry = projectEntry(project, preferredFileId);
+/** Uses supplied contents, including drafts, with the configured project entry. */
+export function projectInput(project: LumiProject): BackendInput {
+  const entry = projectEntry(project);
   const files: Record<string, string> = Object.create(null);
   const fileIds = new Set<string>();
   let entryFile = '';

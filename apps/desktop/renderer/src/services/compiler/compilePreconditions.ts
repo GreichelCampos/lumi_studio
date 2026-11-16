@@ -17,8 +17,8 @@ const EMPTY_PROJECT: CompilePreconditionFailure = {
 const MISSING_ENTRY: CompilePreconditionFailure = {
   kind: 'missing-entry',
   title: 'Selecciona un archivo principal',
-  description: 'Selecciona un archivo principal desde el explorador para poder compilar.',
-  notification: 'Selecciona un archivo principal desde el explorador para poder compilar.',
+  description: 'Abre el menú de opciones del archivo .lumi en el explorador y elige "Establecer como principal".',
+  notification: 'Selecciona un archivo principal desde el explorador: abre las opciones del archivo .lumi y elige "Establecer como principal".',
 };
 
 const INVALID_ENTRY: CompilePreconditionFailure = {

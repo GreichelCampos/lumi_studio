@@ -88,7 +88,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#4d6932]/25 border border-[#4d6932]/50 text-[#f3ebd6] text-xs backdrop-blur-sm">
               <Star className="w-4 h-4 text-[#f3ebd6] flex-shrink-0 mt-0.5 fill-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
               <div>
-                <strong className="text-[#f3ebd6]">Archivo Principal del Proyecto:</strong> Este archivo está configurado como el punto de entrada para compilación. Al eliminarlo, se designará automáticamente otro archivo disponible como principal.
+                <strong className="text-[#f3ebd6]">Archivo Principal del Proyecto:</strong> Este archivo está configurado como el punto de entrada. Después de eliminarlo, selecciona otro archivo principal desde el explorador antes de compilar o ejecutar.
               </div>
             </div>
           )}

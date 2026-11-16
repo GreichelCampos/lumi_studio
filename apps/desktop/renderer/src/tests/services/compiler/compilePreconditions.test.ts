@@ -21,7 +21,7 @@ describe('compile preconditions', () => {
       files: [{ id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' }],
     }));
     expect(failure?.kind).toBe('missing-entry');
-    expect(failure?.notification).toBe('Selecciona un archivo principal desde el explorador para poder compilar.');
+    expect(failure?.notification).toBe('Selecciona un archivo principal desde el explorador: abre las opciones del archivo .lumi y elige "Establecer como principal".');
   });
 
   it('accepts a valid main file', () => {

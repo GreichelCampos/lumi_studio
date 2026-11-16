@@ -42,6 +42,18 @@ describe('ProjectExplorer Component', () => {
     expect(handleSelectFile).toHaveBeenCalledWith('f-2');
   });
 
+  it('permite establecer manualmente cualquier archivo .lumi como principal', () => {
+    const handleSetEntry = vi.fn();
+    render(<ProjectExplorer {...defaultProps} onSetEntryFile={handleSetEntry} />);
+
+    const secondary = screen.getByTestId('explorer-file-f-2');
+    fireEvent.click(secondary.querySelector('button')!);
+    fireEvent.click(screen.getByText('Establecer como principal'));
+
+    expect(handleSetEntry).toHaveBeenCalledWith('f-2');
+    expect(screen.getByText('Principal')).toBeInTheDocument();
+  });
+
   it('debe disparar onNewFile al presionar el botón de nuevo archivo', () => {
     const handleNewFile = vi.fn();
     render(<ProjectExplorer {...defaultProps} onNewFile={handleNewFile} />);

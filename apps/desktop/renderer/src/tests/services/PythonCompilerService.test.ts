@@ -48,23 +48,23 @@ describe('Real compiler adapter', () => {
     expect(validateCompileResult(result).isValid).toBe(true);
   });
 
-  it('uses the active secondary file for analysis and keeps every project source', async () => {
+  it('uses the configured main file for analysis while a secondary file is active', async () => {
     const raw = reply();
     if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
     Object.assign(raw.response, { operation: 'analyze', status: 'failed' });
-    Object.assign(raw.response.result, { entryFile: 'otro.lumi', analysisStatus: 'failed',
-      diagnostics: [{ category: 'SPATIAL', code: 'SPA_INVALID_DIMENSION', file: 'otro.lumi',
+    Object.assign(raw.response.result, { entryFile: 'principal.lumi', analysisStatus: 'failed',
+      diagnostics: [{ category: 'SPATIAL', code: 'SPA_INVALID_DIMENSION', file: 'principal.lumi',
         line: 2, column: 21, description: 'La dimensión debe ser positiva.' }],
       limitations: ['spatial_semantics_unavailable'], executionAttempted: false, output: [] });
     const api = bridge(raw);
 
     const result = await new PythonCompilerService(api).compile(project(), { activeFileId: 'active' });
 
-    expect(api.analyze).toHaveBeenCalledWith({ entryFile: 'otro.lumi', files: {
+    expect(api.analyze).toHaveBeenCalledWith({ entryFile: 'principal.lumi', files: {
       'otro.lumi': '@', 'principal.lumi': 'mostrar("BORRADOR")>>',
     } });
-    expect(result).toMatchObject({ status: 'failed', entryFileInfo: { id: 'active', name: 'otro.lumi' } });
-    expect(result.diagnostics[0]).toMatchObject({ code: 'SPA_INVALID_DIMENSION', file: 'otro.lumi',
+    expect(result).toMatchObject({ status: 'failed', entryFileInfo: { id: 'main', name: 'principal.lumi' } });
+    expect(result.diagnostics[0]).toMatchObject({ code: 'SPA_INVALID_DIMENSION', file: 'principal.lumi',
       line: 2, column: 21, blocking: true });
   });
 
@@ -88,16 +88,15 @@ describe('Real compiler adapter', () => {
     expect(api.execute).toHaveBeenCalledWith(expect.objectContaining({ entryFile: 'principal.lumi' }));
   });
 
-  it('executes the requested current file temporarily and keeps every project source', async () => {
+  it('does not let the requested current file override the configured main file', async () => {
     const raw = reply();
     if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
-    raw.response.result.entryFile = 'otro.lumi';
     const value = project();
     const api = bridge(raw);
 
     await new PythonCompilerService(api).execute(value, { activeFileId: 'active' });
 
-    expect(api.execute).toHaveBeenCalledWith({ entryFile: 'otro.lumi', files: {
+    expect(api.execute).toHaveBeenCalledWith({ entryFile: 'principal.lumi', files: {
       'otro.lumi': '@', 'principal.lumi': 'mostrar("BORRADOR")>>',
     } });
     expect(value.entryFileId).toBe('main');

@@ -110,10 +110,10 @@ export function deleteLumiFile(
   const remainingFiles = project.files.filter((f) => f.id !== fileId);
   const remainingTabs = openTabIds.filter((id) => id !== fileId);
 
-  let newEntryId = project.entryFileId;
-  if (newEntryId === fileId || !remainingFiles.some((f) => f.id === newEntryId)) {
-    newEntryId = remainingFiles[0]?.id;
-  }
+  const newEntryId = project.entryFileId === fileId
+    || !remainingFiles.some((f) => f.id === project.entryFileId)
+    ? undefined
+    : project.entryFileId;
 
   const adjustedFiles = remainingFiles.map((f) => ({
     ...f,
@@ -138,6 +138,11 @@ export function deleteLumiFile(
 }
 
 export function setProjectEntryFile(project: LumiProject, fileId: string): LumiProject {
+  const entry = project.files.find((file) => file.id === fileId);
+  if (!entry) throw new Error('Archivo no encontrado.');
+  if (!entry.name.toLocaleLowerCase().endsWith('.lumi') || !entry.path.toLocaleLowerCase().endsWith('.lumi')) {
+    throw new Error('El archivo principal debe pertenecer al proyecto y tener extensión .lumi.');
+  }
   const updatedFiles = project.files.map((f) => ({
     ...f,
     isEntry: f.id === fileId,

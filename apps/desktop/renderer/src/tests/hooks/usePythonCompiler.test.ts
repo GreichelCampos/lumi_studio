@@ -37,7 +37,7 @@ describe('Python asynchronous state', () => {
   it.each([
     ['without main file', createMockProject({ entryFileId: undefined, files: [
       { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
-    ] }), 'Selecciona un archivo principal desde el explorador para poder compilar.'],
+    ] }), 'Selecciona un archivo principal desde el explorador'],
     ['with deleted main file', createMockProject({ entryFileId: 'deleted', files: [
       { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
     ] }), 'Selecciona otro archivo principal'],
@@ -51,7 +51,7 @@ describe('Python asynchronous state', () => {
     expect(lumiAssistant.getMessage().text).toContain(notice);
   });
 
-  it('logs the same effective secondary entry passed to the compiler', async () => {
+  it('logs the configured main entry while a secondary file is active', async () => {
     ideLogger.clear();
     const service: CompilerService = { mode: 'python', compile: vi.fn().mockResolvedValue(FIXTURE_COMPILATION_SUCCESS) };
     const selected = createMockProject({ entryFileId: 'main', activeFileId: 'secondary', files: [
@@ -63,7 +63,20 @@ describe('Python asynchronous state', () => {
     await act(async () => { await result.current.runCompile(selected, 'secondary'); });
 
     expect(service.compile).toHaveBeenCalledWith(selected, { activeFileId: 'secondary' });
-    expect(ideLogger.getHistory().some(event => event.message.includes('Archivo de entrada: pruebas.lumi'))).toBe(true);
+    expect(ideLogger.getHistory().some(event => event.message.includes('Archivo de entrada: principal.lumi'))).toBe(true);
+  });
+
+  it('does not invoke execution without an explicitly selected main file', async () => {
+    const service: CompilerService = { mode: 'python', compile: vi.fn(), execute: vi.fn() };
+    const selected = createMockProject({ entryFileId: undefined, files: [
+      { id: 'active', name: 'principal.lumi', path: 'principal.lumi', content: 'principal {}' },
+    ] });
+    const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
+
+    await act(async () => { await result.current.runExecute(selected); });
+
+    expect(service.execute).not.toHaveBeenCalled();
+    expect(lumiAssistant.getMessage().text).toContain('Selecciona un archivo principal desde el explorador');
   });
 
   it('logs the main entry when the requested active file no longer exists', async () => {

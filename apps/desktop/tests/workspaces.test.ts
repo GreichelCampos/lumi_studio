@@ -47,6 +47,8 @@ describe('real workspace persistence', () => {
 
   it('creates physical sources, saves metadata separately and restores IDs, entry and tabs', async () => {
     const initial = await create();
+    expect(initial.entryFileId).toBe(initial.files[0].id);
+    expect(initial.files[0]).toMatchObject({ name: 'principal.lumi', isEntry: true });
     let project = add(initial);
     await service.save(project);
     project = { ...project, entryFileId: 'secondary', activeFileId: initial.activeFileId };
@@ -83,8 +85,15 @@ describe('real workspace persistence', () => {
   });
   it('renames file and project without changing IDs, entry, tabs or other sources', async () => {
     let project = add(await create()); await service.save(project);
+    project = { ...project, entryFileId: 'secondary' };
+    await service.save(project);
     project = { ...project, files: project.files.map(f => f.id === 'secondary' ? { ...f, name: 'nuevo.lumi', path: 'nuevo.lumi' } : f) };
     await service.save(project);
+    const reopenedBeforeProjectRename = new WorkspaceService(join(root, 'metadata'), dialogs);
+    expect((await reopenedBeforeProjectRename.list())[0]).toMatchObject({ entryFileId: 'secondary' });
+    expect((await reopenedBeforeProjectRename.list())[0].files.find(f => f.id === 'secondary')).toMatchObject({
+      path: 'nuevo.lumi', isEntry: true,
+    });
     const renamed = await service.rename(project.id, 'CasaNueva');
     expect(renamed.id).toBe(project.id);
     expect(renamed.openTabIds).toEqual(project.openTabIds);

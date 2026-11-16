@@ -272,7 +272,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                               className="text-[8px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 px-1 rounded tracking-tight flex-shrink-0"
                               title="Archivo principal de compilación (Punto de entrada)"
                             >
-                              PRINCIPAL
+                              Principal
                             </span>
                           )}
                         </div>

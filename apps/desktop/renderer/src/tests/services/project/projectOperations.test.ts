@@ -53,7 +53,7 @@ describe('projectOperations', () => {
     expect(updated.files.find((f) => f.id === 'f-2')?.name).toBe('modulo2.lumi');
   });
 
-  it('deleteLumiFile debe eliminar el archivo y transferir el entryPoint si se borra el archivo principal', () => {
+  it('deleteLumiFile debe dejar pendiente una selección explícita si se borra el archivo principal', () => {
     const fEntry = createMockFile({ id: 'f-entry', name: 'principal.lumi', isEntry: true });
     const fSecondary = createMockFile({ id: 'f-sec', name: 'secundario.lumi', isEntry: false });
     const project = createMockProject({
@@ -72,8 +72,8 @@ describe('projectOperations', () => {
 
     expect(updatedProject.files.length).toBe(1);
     expect(updatedProject.files[0].id).toBe('f-sec');
-    expect(updatedProject.files[0].isEntry).toBe(true);
-    expect(updatedProject.entryFileId).toBe('f-sec');
+    expect(updatedProject.files[0].isEntry).toBe(false);
+    expect(updatedProject.entryFileId).toBeUndefined();
     expect(remainingTabs).toEqual(['f-sec']);
     expect(newActiveId).toBe('f-sec');
   });
@@ -88,6 +88,15 @@ describe('projectOperations', () => {
     expect(updated.entryFileId).toBe('f-2');
     expect(updated.files.find((f) => f.id === 'f-2')?.isEntry).toBe(true);
     expect(updated.files.find((f) => f.id === 'f-1')?.isEntry).toBe(false);
+  });
+
+  it('setProjectEntryFile acepta nombres personalizados .lumi y rechaza otros tipos', () => {
+    const lumi = createMockFile({ id: 'custom', name: 'inicio.lumi', path: 'P/inicio.lumi', isEntry: false });
+    const text = createMockFile({ id: 'text', name: 'notas.txt', path: 'P/notas.txt', isEntry: false });
+    const project = createMockProject({ files: [lumi, text], entryFileId: undefined });
+
+    expect(setProjectEntryFile(project, 'custom').entryFileId).toBe('custom');
+    expect(() => setProjectEntryFile(project, 'text')).toThrow('extensión .lumi');
   });
 
   it('saveFileContentInProject y saveAllDirtyFilesInProject deben actualizar contenidos adecuadamente', () => {

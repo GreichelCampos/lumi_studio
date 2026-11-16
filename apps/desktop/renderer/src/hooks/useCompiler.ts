@@ -70,7 +70,7 @@ export function useCompiler(options?: UseCompilerOptions) {
 
       try {
         const targetEntry = compilerService.mode === 'python'
-          ? projectEntry(project, activeFileId).name
+          ? projectEntry(project).name
           : project.files.find((f) => f.id === activeFileId)?.name ||
             project.files.find((f) => f.isEntry)?.name ||
             project.files[0]?.name ||
@@ -164,7 +164,16 @@ export function useCompiler(options?: UseCompilerOptions) {
     [runOperation]
   );
   const runExecute = useCallback(
-    (project: LumiProject, revision?: number, activeFileId?: string) => runOperation(project, activeFileId, revision, 'execute'),
+    (project: LumiProject, revision?: number) => {
+      const failure = validateCompilePreconditions(project);
+      if (failure) {
+        setLumiState('ready');
+        lumiAssistant.setMessage(failure.notification, 'ready');
+        ideLogger.log('warning', `${failure.title}: ${failure.description}`, undefined, 'Ejecutor');
+        return Promise.resolve(null);
+      }
+      return runOperation(project, undefined, revision, 'execute');
+    },
     [runOperation]
   );
 

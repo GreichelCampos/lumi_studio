@@ -113,15 +113,15 @@ describe('App explicit compiler operations', () => {
     expect(state.runExecute).toHaveBeenCalledTimes(2);
   });
 
-  it('uses the active editor file for both the button and F6', () => {
+  it('does not override the project main file when the active editor changes', () => {
     render(<App />);
     fireEvent.click(screen.getByText('Activar archivo secundario'));
 
     fireEvent.click(screen.getByText('Ejecutar prueba'));
-    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1, 'other');
+    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1);
 
     fireEvent.keyDown(window, { key: 'F6' });
-    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1, 'other');
+    expect(state.runExecute).toHaveBeenLastCalledWith(expect.anything(), 1);
     expect(state.runExecute).toHaveBeenCalledTimes(2);
   });
 

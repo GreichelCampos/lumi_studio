@@ -205,26 +205,18 @@ export default function App() {
     }
 
     if (isRealBackend) {
-      const temporaryEntryId = activeFileId || undefined;
-      const targetFile = temporaryEntryId
-        ? currentProject.files.find(file => file.id === temporaryEntryId)
-        : undefined;
-      if (!targetFile) {
-        ideLogger.logExecutionAborted('No hay un archivo Lumi activo que se pueda ejecutar.');
-        lumiAssistant.onExecutionWithoutActiveFile();
-        return;
-      }
-
       // Una ejecución nueva nunca debe mostrar ni conservar la escena o selección anterior.
       viewportSessionRef.current = null;
       setActiveObjectId(null);
       setHasExecutedScene(false);
       window.lumiViewport?.clear();
-      ideLogger.log('info', `Ejecutando archivo activo: ${targetFile.name}`, undefined, 'Ejecutor');
+      const targetFile = currentProject.files.find(file => file.id === currentProject.entryFileId)
+        ?? currentProject.files.find(file => file.isEntry);
+      if (targetFile) ideLogger.log('info', `Ejecutando archivo principal: ${targetFile.name}`, undefined, 'Ejecutor');
       const result = await runExecute({
         ...currentProject,
         files: currentProject.files.map((file) => ({ ...file, content: getFileContent(file) })),
-      }, projectRevision, temporaryEntryId);
+      }, projectRevision);
       if (result?.success && result.scenePlan) {
         const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
         viewportSessionRef.current = sessionId;
