@@ -90,11 +90,12 @@ describe('real workspace persistence', () => {
     project = { ...project, files: project.files.map(f => f.id === 'secondary' ? { ...f, name: 'nuevo.lumi', path: 'nuevo.lumi' } : f) };
     await service.save(project);
     const reopenedBeforeProjectRename = new WorkspaceService(join(root, 'metadata'), dialogs);
-    expect((await reopenedBeforeProjectRename.list())[0]).toMatchObject({ entryFileId: 'secondary' });
-    expect((await reopenedBeforeProjectRename.list())[0].files.find(f => f.id === 'secondary')).toMatchObject({
+    const reopenedProjects = await reopenedBeforeProjectRename.list();
+    expect(reopenedProjects[0]).toMatchObject({ entryFileId: 'secondary' });
+    expect(reopenedProjects[0].files.find(f => f.id === 'secondary')).toMatchObject({
       path: 'nuevo.lumi', isEntry: true,
     });
-    const renamed = await service.rename(project.id, 'CasaNueva');
+    const renamed = await reopenedBeforeProjectRename.rename(project.id, 'CasaNueva');
     expect(renamed.id).toBe(project.id);
     expect(renamed.openTabIds).toEqual(project.openTabIds);
     expect(renamed.entryFileId).toBe(project.entryFileId);
