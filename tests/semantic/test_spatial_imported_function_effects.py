@@ -218,7 +218,10 @@ def test_imported_module_top_level_spatial_code_is_not_applied():
 def test_compiler_reports_complete_imported_spatial_effects():
     result = CompilerService().compile_project(
         {
-            "A": 'importar "B" usar preparar>> habitacion sala(5, 4, 3) { preparar()>> }',
+            "A": (
+                'importar "B" usar preparar>> principal { '
+                "habitacion sala(5, 4, 3) { preparar()>> } }"
+            ),
             "B": "funcion vacio preparar() { mesa item {} }",
         },
         entry_file="A",

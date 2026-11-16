@@ -53,6 +53,9 @@ class CompilationResult:
     _compiled_programs: Mapping[str, ProgramNode] | None = field(
         default=None, repr=False, compare=False, kw_only=True,
     )
+    _entry_point_validated: bool = field(
+        default=False, repr=False, compare=False, kw_only=True,
+    )
 
     @property
     def succeeded(self) -> bool:

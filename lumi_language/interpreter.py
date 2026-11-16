@@ -150,6 +150,8 @@ class Interpreter:
         self,
         program: Any,
         imported_programs: dict[str, Any] | None = None,
+        *,
+        entry_point_only: bool = False,
     ) -> InterpreterResult:
         """Execute a parsed ProgramNode or a compatible AST fixture."""
 
@@ -180,7 +182,10 @@ class Interpreter:
             source=self._source_location(normalized_program),
         )
         try:
-            self._execute_node(normalized_program)
+            if entry_point_only and normalized_program.get("node") == "ProgramNode":
+                self._execute_program(normalized_program)
+            else:
+                self._execute_node(normalized_program)
             self.result.scene_plan = self._scene_builder.build()
             validation = SpatialValidator().validate(self.result.scene_plan)
             self.result.diagnostics.extend(validation.diagnostics)
@@ -298,6 +303,46 @@ class Interpreter:
             f"El nodo '{node_type}' no se puede ejecutar todavía.",
             "Utilizá una construcción incluida en el intérprete básico.",
         )
+
+    def _execute_program(self, node: dict[str, Any]) -> None:
+        """Initialize top-level declarations, then enter the sole main block."""
+        statements = node.get("statements", [])
+        mains = [
+            statement for statement in statements
+            if statement.get("node") == "MainNode"
+        ]
+        if len(mains) != 1:
+            # Compiled programs cannot reach this guard. Keep direct AST callers
+            # from accidentally restoring the former execute-everything behavior.
+            self._fail(
+                node,
+                "RUN_INVALID_ENTRY_POINT",
+                "El programa ejecutable debe tener exactamente un bloque 'principal'.",
+                "Compilá el proyecto y corregí los diagnósticos del punto de entrada.",
+            )
+
+        self._register_functions(statements)
+        for statement in statements:
+            if statement.get("node") in {"VariableDeclarationNode", "ImportNode"}:
+                self._execute_node(statement)
+        self._execute_node(mains[0])
+
+    def _register_functions(self, statements: list[dict[str, Any]]) -> None:
+        for statement in statements:
+            if statement["node"] != "FunctionDeclarationNode":
+                continue
+            function = RuntimeFunction(
+                declaration=statement,
+                closure_environment=self.environment,
+                closure_scope=self.function_scope,
+            )
+            if not self.function_scope.define(statement["name"], function):
+                self._fail(
+                    statement,
+                    "RUN_DUPLICATE_FUNCTION",
+                    f"La función '{statement['name']}' ya está declarada en este alcance.",
+                    "Utilizá un nombre diferente para cada función.",
+                )
 
     def _execute_room(self, node: dict[str, Any]) -> None:
         """Execute a room body and append its resolved dimensions to the scene."""
@@ -488,23 +533,7 @@ class Interpreter:
         )
 
     def _execute_statements(self, statements: list[dict[str, Any]]) -> None:
-        for statement in statements:
-            if statement["node"] == "FunctionDeclarationNode":
-                function = RuntimeFunction(
-                    declaration=statement,
-                    closure_environment=self.environment,
-                    closure_scope=self.function_scope,
-                )
-                if not self.function_scope.define(statement["name"], function):
-                    self._fail(
-                        statement,
-                        "RUN_DUPLICATE_FUNCTION",
-                        (
-                            f"La función '{statement['name']}' ya está "
-                            "declarada en este alcance."
-                        ),
-                        "Utilizá un nombre diferente para cada función.",
-                    )
+        self._register_functions(statements)
 
         for statement in statements:
             self._execute_node(statement)

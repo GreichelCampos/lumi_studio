@@ -51,7 +51,9 @@ class ExecutionService:
     def execute_source(
         self, source: str, file: str, *, sources: Mapping[str, str] | None = None
     ) -> ExecutionResult:
-        compilation = self._compiler.compile(source, file, sources=sources)
+        project_sources = dict(sources or {})
+        project_sources[file] = source
+        compilation = self._compiler.compile_project(project_sources, entry_file=file)
         return self.execute(compilation)
 
     def execute(
@@ -75,7 +77,10 @@ class ExecutionService:
             self._interpreter_factory() if input_provider is None
             else Interpreter(input_provider=input_provider)
         )
-        runtime = interpreter.execute(program, dict(catalog))
+        runtime = interpreter.execute(
+            program, dict(catalog),
+            entry_point_only=compilation._entry_point_validated,
+        )
         status = ExecutionStatus.COMPLETED
         if runtime.diagnostics:
             status = ExecutionStatus.FAILED
