@@ -17,6 +17,7 @@ describe('TopBar Component', () => {
     onNewProject: vi.fn(),
     onOpenProjectModal: vi.fn(),
     onOpenDocs: vi.fn(),
+    onOpenAbout: vi.fn(),
     onNewFile: vi.fn(),
     onSaveFile: vi.fn(),
     onSaveAll: vi.fn(),

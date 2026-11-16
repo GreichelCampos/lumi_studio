@@ -60,6 +60,13 @@ try {
   await help.getByText(/Un vector va entre corchetes/).waitFor();
   await page.keyboard.press('Escape');
   await help.waitFor({ state: 'hidden' });
+  await page.getByRole('button', { name: 'Ayuda', exact: true }).click();
+  await page.getByRole('button', { name: 'Acerca de Estudio Lumi', exact: true }).click();
+  const about = page.getByRole('dialog', { name: 'Acerca de Estudio Lumi' });
+  await about.getByText(/Lenguaje Unificado de Modelado de Interiores/).waitFor();
+  assert.equal(await about.getByText('Errores frecuentes').count(), 0);
+  await page.keyboard.press('Escape');
+  await about.waitFor({ state: 'hidden' });
 
   await editor.fill('funcion entero suma(ent a) { retornar a>> }');
   await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();

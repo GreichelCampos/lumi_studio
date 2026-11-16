@@ -55,6 +55,7 @@ interface TopBarProps {
   onNewProject: () => void;
   onOpenProjectModal: () => void;
   onOpenDocs: () => void;
+  onOpenAbout: () => void;
   onOpenSettings?: () => void;
   onNewFile: () => void;
   onSaveFile: () => void;
@@ -81,6 +82,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   onNewProject,
   onOpenProjectModal,
   onOpenDocs,
+  onOpenAbout,
   onOpenSettings,
   onNewFile,
   onSaveFile,
@@ -251,7 +253,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         { label: 'Ayuda de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1', icon: CircleHelp },
         { label: 'Configuración del IDE', action: () => onOpenSettings && onOpenSettings(), shortcut: 'Ctrl+,', icon: Settings },
         { divider: true },
-        { label: 'Acerca de Estudio Lumi', action: onOpenDocs, shortcut: '', icon: Info },
+        { label: 'Acerca de Estudio Lumi', action: onOpenAbout, shortcut: '', icon: Info },
       ]
     }
   ];

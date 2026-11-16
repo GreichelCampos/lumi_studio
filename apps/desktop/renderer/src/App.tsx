@@ -79,7 +79,7 @@ export default function App() {
   const [renameTargetFile, setRenameTargetFile] = useState<LumiFile | null>(null);
   const [deleteTargetFile, setDeleteTargetFile] = useState<LumiFile | null>(null);
   const [unsavedTargetFile, setUnsavedTargetFile] = useState<LumiFile | null>(null);
-  const [showDocsModal, setShowDocsModal] = useState(false);
+  const [helpView, setHelpView] = useState<'syntax' | 'about' | null>(null);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [hasExecutedScene, setHasExecutedScene] = useState(false);
   const [startupReady, setStartupReady] = useState(() => !window.lumiStartup);
@@ -334,7 +334,7 @@ export default function App() {
       }
       if (e.key === 'F1') {
         e.preventDefault();
-        setShowDocsModal(true);
+        setHelpView('syntax');
       }
       if (e.altKey && (e.key === 'h' || e.key === 'H')) {
         e.preventDefault();
@@ -632,7 +632,8 @@ export default function App() {
         onSelectProject={handleSelectProject}
         onNewProject={() => setShowNewProjectModal(true)}
         onOpenProjectModal={() => setShowOpenProjectModal(true)}
-        onOpenDocs={() => setShowDocsModal(true)}
+        onOpenDocs={() => setHelpView('syntax')}
+        onOpenAbout={() => setHelpView('about')}
         onOpenSettings={() => setShowSettingsModal(true)}
         onNewFile={() => setShowNewFileModal(true)}
         onSaveFile={() => handleSaveCurrentFile()}
@@ -679,7 +680,7 @@ export default function App() {
                   onRenameFile={(file) => setRenameTargetFile(file)}
                   onDeleteFile={(file) => setDeleteTargetFile(file)}
                   onSetEntryFile={handleSetEntryFile}
-                  onOpenDocs={() => setShowDocsModal(true)}
+                  onOpenDocs={() => setHelpView('syntax')}
                   isDirty={isDirty}
                 />
           </aside>
@@ -762,7 +763,7 @@ export default function App() {
               onFocusObject={handleFocusObject}
               scenePlan={scenePlan}
               legacyPlacement={legacyPlacement}
-              onLumiClick={() => setShowDocsModal(true)}
+              onLumiClick={() => setHelpView('syntax')}
               isStale={isStale}
               lastCompileResult={lastCompileResult}
               onCollapse={() => setIsConsoleVisible(false)}
@@ -859,8 +860,9 @@ export default function App() {
       />
 
       <DocumentationModal
-        isOpen={showDocsModal}
-        onClose={() => setShowDocsModal(false)}
+        isOpen={helpView !== null}
+        view={helpView ?? 'syntax'}
+        onClose={() => setHelpView(null)}
       />
 
       <SettingsModal

@@ -20,4 +20,11 @@ describe('DocumentationModal', () => {
     expect(screen.getByText(/La pared requiere orientacion/)).toBeInTheDocument();
     expect(screen.getByText(/Las variables vectoriales pueden reutilizarse como operandos de colocar, mover y rotar/)).toBeInTheDocument();
   });
+
+  it('shows project information without the syntax guide in About', () => {
+    render(<DocumentationModal isOpen view="about" onClose={vi.fn()} />);
+    expect(screen.getByRole('dialog', { name: 'Acerca de Estudio Lumi' })).toBeInTheDocument();
+    expect(screen.getByText(/Lenguaje Unificado de Modelado de Interiores/)).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Errores frecuentes' })).not.toBeInTheDocument();
+  });
 });
