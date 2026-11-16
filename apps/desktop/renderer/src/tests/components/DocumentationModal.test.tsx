@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { DocumentationModal } from '../../components/DocumentationModal';
 
@@ -8,8 +8,14 @@ describe('DocumentationModal', () => {
     expect(screen.getByRole('heading', { name: 'Ayuda de Lumi' })).toBeInTheDocument();
     expect(screen.queryByText('Manual y Especificación Oficial de Lumi')).not.toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Errores frecuentes' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Ejemplos de Lumi' })).toBeInTheDocument();
     expect(screen.getByText('Paréntesis, corchetes y comas')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Palabras reservadas' }));
+    expect(screen.getByRole('heading', { name: 'Palabras Reservadas y Estructuras Principales' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Guía del IDE' }));
+    expect(screen.getByText('Estados Visuales del Asistente Lumi')).toBeInTheDocument();
+    expect(screen.getByText(/Compilar analiza el archivo principal/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Ejemplos' }));
+    expect(screen.getByRole('heading', { name: 'Ejemplos de Lumi' })).toBeInTheDocument();
     expect(screen.getByText(/El IDE reproduce los pasos y snapshots generados por Python/)).toBeInTheDocument();
     expect(screen.getByText(/comprueba colisiones, elementos fuera de límites y puertas bloqueadas/)).toBeInTheDocument();
     expect(screen.getByText(/Las listas pueden mostrarse en la consola/)).toBeInTheDocument();
