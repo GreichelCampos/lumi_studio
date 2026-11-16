@@ -36,7 +36,7 @@ export class WorkspaceService {
     if (this.installationPaths.some(directory => {
       const child = relative(resolve(directory).toLowerCase(), resolve(root).toLowerCase());
       return !child || (!child.startsWith(`..${sep}`) && child !== '..' && !isAbsolute(child));
-    })) throw new Error('Guarda los proyectos fuera de la carpeta de instalación para conservarlos al desinstalar.');
+    })) throw new Error('Guardá los proyectos fuera de la carpeta de instalación para conservarlos al desinstalar.');
   }
 
   serial<T>(operation: () => Promise<T>): Promise<T> {

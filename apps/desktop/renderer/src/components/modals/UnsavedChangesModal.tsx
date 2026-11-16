@@ -56,7 +56,7 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesModalProps> = ({
               <AlertCircle className="w-5 h-5 drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Cambios sin Guardar</h2>
+              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Cambios sin guardar</h2>
               <p className="text-xs text-amber-300/90 font-mono tracking-wide">{file.name}</p>
             </div>
           </div>

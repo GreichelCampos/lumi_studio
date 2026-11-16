@@ -130,7 +130,7 @@ export function useCompiler(options?: UseCompilerOptions) {
         setDiagnostics([]);
         const message = `[Infraestructura] ${err instanceof Error ? err.message : String(err)}`;
         setLogs([message]);
-        lumiAssistant.setMessage('El backend no pudo completar la operación. Revisa la consola.', 'error');
+        lumiAssistant.setMessage('El backend no pudo completar la operación. Revisá la consola.', 'error');
         ideLogger.log('error', message, undefined, 'Backend');
         return null;
       } finally {
@@ -212,7 +212,7 @@ export function useCompiler(options?: UseCompilerOptions) {
       durationMs: 0,
       logs: [
         `[Artefacto .lumic] Cargado: "${artifact.project?.name || 'Escena'}" (esquema v${artifact.schemaVersion})`,
-        `Compilador: ${artifact.compiler?.name} v${artifact.compiler?.version} (Target: ${artifact.compiler?.target})`,
+        `Compilador: ${artifact.compiler?.name} v${artifact.compiler?.version} (Destino: ${artifact.compiler?.target})`,
         `Fecha de compilación: ${artifact.compiledAt}`,
         `Estructura: ${artifact.scenePlan.rooms.length} habitación(es), ${totalObjs} objeto(s) 3D`,
         artifact.debugSteps && artifact.debugSteps.length > 0

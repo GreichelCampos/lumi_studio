@@ -179,7 +179,7 @@ describe('DiagnosticsListView', () => {
 
     expect(handleNavigate).toHaveBeenCalledWith(mockDiagnostics[0]);
 
-    const diagCards = screen.getAllByTitle('Haz doble clic para abrir el archivo y resaltar la línea');
+    const diagCards = screen.getAllByTitle('Hacé doble clic para abrir el archivo y resaltar la línea');
     fireEvent.doubleClick(diagCards[1]);
 
     expect(handleNavigate).toHaveBeenCalledWith(mockDiagnostics[1]);

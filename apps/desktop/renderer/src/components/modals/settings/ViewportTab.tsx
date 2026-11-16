@@ -11,7 +11,7 @@ export const ViewportTab: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1 flex items-center gap-2">
           <Boxes className="w-4 h-4 text-[var(--ide-accent)]" />
-          <span>Visualización Espacial 3D</span>
+          <span>Visualización espacial 3D</span>
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-4">
           Configuración de rejilla, guías métricas, iluminación y fidelidad gráfica de la escena.
@@ -20,7 +20,7 @@ export const ViewportTab: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Rejilla de Suelo (Grid)</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Cuadrícula del suelo</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Cuadrícula métrica de referencia</div>
             </div>
             <input
@@ -33,7 +33,7 @@ export const ViewportTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Ejes Cartesianos (X, Y, Z)</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Ejes cartesianos (X, Y, Z)</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Guías de color espacial tridimensional</div>
             </div>
             <input
@@ -46,7 +46,7 @@ export const ViewportTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Cotas y Medidas Métricas</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Cotas y medidas métricas</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Etiquetas flotantes con metros y espesores</div>
             </div>
             <input
@@ -59,7 +59,7 @@ export const ViewportTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Iluminación Ambiental</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Iluminación ambiental</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Tono del sol y atmósfera de la escena</div>
             </div>
             <select
@@ -69,24 +69,24 @@ export const ViewportTab: React.FC = () => {
             >
               <option value="day">Día (Soleado)</option>
               <option value="night">Noche (Estrellado)</option>
-              <option value="studio">Estudio Neutral</option>
+              <option value="studio">Estudio neutral</option>
             </select>
           </div>
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)] md:col-span-2">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Color y Entorno del Espacio 3D</div>
-              <div className="text-[10px] text-[var(--ide-text-muted)]">Fondo del vacío tridimensional y rejilla métrica</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Color y entorno del espacio 3D</div>
+              <div className="text-[10px] text-[var(--ide-text-muted)]">Fondo del visor tridimensional y cuadrícula métrica</div>
             </div>
             <select
               value={settings.spatialBackground || 'theme'}
               onChange={(e) => updateSettings({ spatialBackground: e.target.value as SpatialBackgroundMode })}
               className="px-2.5 py-1 rounded bg-[var(--ide-dropdown-bg)] border border-[var(--ide-panel-border)] text-xs text-[var(--ide-text)] outline-none cursor-pointer"
             >
-              <option value="theme">Sincronizado con Tema del IDE (Recomendado)</option>
-              <option value="deep-dark">Oscuro Profundo (#030712)</option>
-              <option value="studio-light">Estudio Claro (#f8fafc)</option>
-              <option value="cyber">Cyberpunk Neón (#050510)</option>
+              <option value="theme">Sincronizado con el tema del IDE (recomendado)</option>
+              <option value="deep-dark">Oscuro profundo (#030712)</option>
+              <option value="studio-light">Estudio claro (#f8fafc)</option>
+              <option value="cyber">Ciberpunk neón (#050510)</option>
             </select>
           </div>
         </div>

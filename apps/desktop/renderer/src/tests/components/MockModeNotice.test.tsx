@@ -7,8 +7,8 @@ describe('MockModeNotice', () => {
     render(<MockModeNotice />);
 
     const notice = screen.getByRole('complementary', { name: 'Modo de demostración' });
-    expect(notice).toHaveTextContent('compilador mock');
+    expect(notice).toHaveTextContent('compilador simulado');
     expect(notice).toHaveTextContent('depuración simulada');
-    expect(notice).toHaveTextContent('Abre Electron para utilizar Python real');
+    expect(notice).toHaveTextContent('Abrí Electron para utilizar Python real');
   });
 });

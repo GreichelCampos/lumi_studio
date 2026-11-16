@@ -22,15 +22,15 @@ describe('App Root Mounting and Visibility Regression Test', () => {
     const startedAt = performance.now();
 
     render(<IdeSettingsProvider><App /></IdeSettingsProvider>);
-    expect(screen.getByRole('heading', { name: 'ESTUDIO LUMI' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'LUMI STUDIO' })).toBeInTheDocument();
     await waitFor(() => expect(presentSplash).toHaveBeenCalledTimes(1));
-    expect(screen.queryByText('Studio LUMI')).not.toBeInTheDocument();
+    expect(screen.queryByText('Lumi Studio')).not.toBeInTheDocument();
 
     await act(async () => { finishStartup(); });
-    expect(screen.getByRole('heading', { name: 'ESTUDIO LUMI' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'LUMI STUDIO' })).toBeInTheDocument();
     await act(async () => { await new Promise(resolve => setTimeout(resolve, 500)); });
-    expect(screen.queryByText('Studio LUMI')).not.toBeInTheDocument();
-    expect(await screen.findByText('Studio LUMI', {}, { timeout: MIN_SPLASH_DURATION_MS + 500 })).toBeInTheDocument();
+    expect(screen.queryByText('Lumi Studio')).not.toBeInTheDocument();
+    expect(await screen.findByText('Lumi Studio', {}, { timeout: MIN_SPLASH_DURATION_MS + 500 })).toBeInTheDocument();
     expect(performance.now() - startedAt).toBeGreaterThanOrEqual(MIN_SPLASH_DURATION_MS - 25);
   });
 
@@ -41,15 +41,15 @@ describe('App Root Mounting and Visibility Regression Test', () => {
       </IdeSettingsProvider>
     );
 
-    expect(screen.getByRole('heading', { name: 'ESTUDIO LUMI' })).toBeInTheDocument();
-    expect(await screen.findByText('Studio LUMI')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'LUMI STUDIO' })).toBeInTheDocument();
+    expect(await screen.findByText('Lumi Studio')).toBeInTheDocument();
 
     const compileButtons = screen.getAllByText(/Compilar/i);
     expect(compileButtons.length).toBeGreaterThanOrEqual(1);
 
     expect(screen.getByText('Salida')).toBeInTheDocument();
     expect(screen.getByText('Diagnósticos')).toBeInTheDocument();
-    expect(screen.getByText('Depurador Espacial')).toBeInTheDocument();
+    expect(screen.getByText('Depurador espacial')).toBeInTheDocument();
 
     const projectExplorer = container.querySelector('#project-explorer') || screen.getAllByText(/PROYECTO/i)[0];
     expect(projectExplorer).toBeInTheDocument();

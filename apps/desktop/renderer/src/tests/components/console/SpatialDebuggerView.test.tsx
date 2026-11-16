@@ -61,7 +61,7 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('No hay pasos de depuración disponibles')).toBeInTheDocument();
-    expect(screen.getByText(/Ejecuta un programa Lumi con F6/)).toBeInTheDocument();
+    expect(screen.getByText(/Ejecutá un programa Lumi con F6/)).toBeInTheDocument();
     expect(screen.getByText('Paso 0 de 0')).toBeInTheDocument();
     expect(screen.getByText('Inactivo')).toBeInTheDocument();
   });

@@ -13,8 +13,8 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
   // The worker provides no severity. Classify a failed operation's diagnostics for the IDE.
   const blocking = response.status === 'failed' || response.status === 'blocked';
   const importSolutions: Record<string, string> = {
-    IMPORT_FILE_NOT_FOUND: 'Revisa la ruta en importar y confirma que el archivo exista en el proyecto.',
-    IMPORT_SYMBOL_NOT_FOUND: 'Abre el archivo importado y usa el nombre exacto de la función después de usar.',
+    IMPORT_FILE_NOT_FOUND: 'Revisá la ruta en importar y confirmá que el archivo exista en el proyecto.',
+    IMPORT_SYMBOL_NOT_FOUND: 'Abrí el archivo importado y usá el nombre exacto de la función después de usar.',
     IMPORT_CIRCULAR_DEPENDENCY: 'Quita una importación del ciclo. Si ambos archivos necesitan la misma función, muévela a un tercer archivo.',
   };
   const diagnostics: DiagnosticItem[] = payload.diagnostics.map((diagnostic, index) => ({

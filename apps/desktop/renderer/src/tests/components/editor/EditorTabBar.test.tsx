@@ -142,7 +142,7 @@ describe('EditorTabBar (componente modular de pestañas)', () => {
       />
     );
 
-    const starIcon = screen.getByTitle('Archivo Principal');
+    const starIcon = screen.getByTitle('Archivo principal');
     expect(starIcon).toBeInTheDocument();
   });
 

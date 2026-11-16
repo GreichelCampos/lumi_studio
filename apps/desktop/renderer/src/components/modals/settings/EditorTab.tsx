@@ -11,10 +11,10 @@ export const EditorTab: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1 flex items-center gap-2">
           <Type className="w-4 h-4 text-[var(--ide-accent)]" />
-          <span>Tipografía y Tamaño de Fuente</span>
+          <span>Tipografía y tamaño de fuente</span>
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-3">
-          Ajusta la fuente tipográfica monoespaciada y la escala de lectura en el editor.
+          Ajustá la fuente tipográfica monoespaciada y la escala de lectura en el editor.
         </p>
 
         <div className="flex items-center gap-2 mb-4">
@@ -70,7 +70,7 @@ export const EditorTab: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Números de Línea</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Números de línea</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Mostrar barra lateral numerada</div>
             </div>
             <input
@@ -83,7 +83,7 @@ export const EditorTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Ajuste de Línea (Word Wrap)</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Ajuste de línea</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Ajustar líneas largas al ancho</div>
             </div>
             <input
@@ -96,7 +96,7 @@ export const EditorTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Tamaño de Tabulación</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Tamaño de tabulación</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Espacios por nivel de sangría</div>
             </div>
             <div className="flex items-center gap-1.5">
@@ -125,7 +125,7 @@ export const EditorTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Guardado Automático</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Guardado automático</div>
               <div className="text-[10px] text-[var(--ide-text-muted)]">Persistir cambios periódicamente</div>
             </div>
             <select

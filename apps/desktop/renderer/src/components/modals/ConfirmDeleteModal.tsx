@@ -53,7 +53,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
               <Trash2 className="w-5 h-5 drop-shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Eliminar Archivo</h2>
+              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Eliminar archivo</h2>
               <p className="text-xs text-rose-300/90 font-mono tracking-wide">{file.name}</p>
             </div>
           </div>
@@ -88,7 +88,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-[#4d6932]/25 border border-[#4d6932]/50 text-[#f3ebd6] text-xs backdrop-blur-sm">
               <Star className="w-4 h-4 text-[#f3ebd6] flex-shrink-0 mt-0.5 fill-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
               <div>
-                <strong className="text-[#f3ebd6]">Archivo Principal del Proyecto:</strong> Este archivo está configurado como el punto de entrada. Después de eliminarlo, selecciona otro archivo principal desde el explorador antes de compilar o ejecutar.
+                <strong className="text-[#f3ebd6]">Archivo principal del proyecto:</strong> Este archivo está configurado como el punto de entrada. Después de eliminarlo, seleccioná otro archivo principal desde el explorador antes de compilar o ejecutar.
               </div>
             </div>
           )}
@@ -121,7 +121,7 @@ export const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
             className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white font-bold text-xs shadow-lg shadow-rose-600/30 border border-rose-400/40 transition-all flex items-center gap-1.5 active:scale-95"
           >
             <Trash2 className="w-4 h-4" />
-            <span>{recoverable ? 'Mover a la papelera' : 'Eliminar Definitivamente'}</span>
+            <span>{recoverable ? 'Mover a la papelera' : 'Eliminar definitivamente'}</span>
           </button>
         </div>
       </div>

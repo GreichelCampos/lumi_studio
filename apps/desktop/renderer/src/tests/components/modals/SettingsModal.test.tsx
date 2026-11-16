@@ -86,7 +86,7 @@ describe('SettingsModal', () => {
     fireEvent.click(size18Btn);
     expect(size18Btn).toHaveClass('bg-[var(--ide-accent)]');
 
-    const resetBtn = screen.getByRole('button', { name: /Restaurar Predeterminados/i });
+    const resetBtn = screen.getByRole('button', { name: /Restaurar valores predeterminados/i });
     fireEvent.click(resetBtn);
 
     const size13Btn = screen.getByRole('button', { name: '13px' });

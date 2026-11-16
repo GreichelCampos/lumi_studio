@@ -9,15 +9,15 @@ export function notifyCompileResult(result: CompileResult, setLumiState: (state:
     setLumiState(state);
     const message = result.status === 'completed'
       ? result.operation === 'analyze'
-        ? 'Análisis sin errores. Usa Ejecutar Lumi (F6) para ejecutar el programa y ver la escena.'
+        ? 'Análisis sin errores. Usá Ejecutar Lumi (F6) para ejecutar el programa y ver la escena.'
         : result.scenePlan
           ? 'Ejecución completada. La escena está lista para el visor 3D.'
           : 'Ejecución completada. Este programa no generó una escena 3D.'
       : result.status === 'incomplete'
-        ? 'Análisis sin errores detectados. Usa Ejecutar Lumi (F6) para comprobar el espacio y dibujar la escena.'
+        ? 'Análisis sin errores detectados. Usá Ejecutar Lumi (F6) para comprobar el espacio y dibujar la escena.'
         : result.operation === 'analyze'
-          ? 'El análisis encontró un problema. Revisa la consola y los diagnósticos.'
-          : 'La ejecución de Lumi se detuvo. Revisa los diagnósticos o la salida para conocer el motivo.';
+          ? 'El análisis encontró un problema. Revisá la consola y los diagnósticos.'
+          : 'La ejecución de Lumi se detuvo. Revisá los diagnósticos o la salida para conocer el motivo.';
     const importError = result.diagnostics.find(diagnostic => diagnostic.blocking && diagnostic.category === 'importacion');
     if (importError) lumiAssistant.onDiagnosticFocused(importError);
     else lumiAssistant.setMessage(message, state);

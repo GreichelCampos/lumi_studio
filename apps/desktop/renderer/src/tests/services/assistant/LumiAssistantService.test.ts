@@ -123,7 +123,7 @@ describe('LumiAssistantService', () => {
     lumiAssistant.onEntitySelected('Mesa Comedor', 'Mueble');
     expect(listener).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        text: 'Seleccionaste Mueble "Mesa Comedor". Revisa sus propiedades o código.',
+        text: 'Seleccionaste Mueble "Mesa Comedor". Revisá sus propiedades o su código.',
         state: 'ready',
       })
     );
@@ -131,7 +131,7 @@ describe('LumiAssistantService', () => {
     lumiAssistant.onEntityDeselected();
     expect(listener).toHaveBeenLastCalledWith(
       expect.objectContaining({
-        text: 'Selección limpiada. Puedes seguir editando o inspeccionar otro objeto.',
+        text: 'Selección limpiada. Podés seguir editando o inspeccionar otro objeto.',
         state: 'ready',
       })
     );
@@ -148,7 +148,7 @@ describe('LumiAssistantService', () => {
 
     expect(listener).toHaveBeenCalledTimes(2);
     expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
-      text: 'Crea o abre un archivo .lumi para ejecutar.',
+      text: 'Creá o abrí un archivo .lumi para ejecutar.',
       state: 'warning',
     }));
     unsubscribe();

@@ -35,7 +35,7 @@ describe('ConfirmDeleteModal Component', () => {
       />
     );
 
-    expect(screen.getByText('Eliminar Archivo')).toBeInTheDocument();
+    expect(screen.getByText('Eliminar archivo')).toBeInTheDocument();
     expect(screen.getByText('dormitorio.lumi', { selector: 'p' })).toBeInTheDocument();
     expect(screen.getByText(/cambios sin guardar/i)).toBeInTheDocument();
   });
@@ -54,7 +54,7 @@ describe('ConfirmDeleteModal Component', () => {
     );
 
     expect(screen.getByText(/archivo principal del proyecto/i)).toBeInTheDocument();
-    expect(screen.getByText(/selecciona otro archivo principal desde el explorador/i)).toBeInTheDocument();
+    expect(screen.getByText(/seleccioná otro archivo principal desde el explorador/i)).toBeInTheDocument();
   });
 
   it('debe llamar a onConfirmDelete con el fileId y cerrar el modal al confirmar', async () => {

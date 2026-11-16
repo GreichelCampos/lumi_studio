@@ -120,7 +120,7 @@ export const OutputLogView: React.FC<OutputLogViewProps> = ({
                 className="glass-btn text-[var(--ide-text)] bg-[var(--ide-dropdown-bg)] text-[11px] rounded-lg px-2 py-0.5 outline-none border border-[var(--ide-panel-border)] focus:border-[var(--ide-accent)] cursor-pointer"
               >
                 <option value="all" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Todos</option>
-                <option value="info" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Info</option>
+                <option value="info" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Información</option>
                 <option value="compile" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Compilar</option>
                 <option value="run" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Ejecutar</option>
                 <option value="success" className="bg-[var(--ide-dropdown-bg)] text-[var(--ide-text)]">Éxito</option>

@@ -253,7 +253,7 @@ export const TopBar: React.FC<TopBarProps> = ({
         { label: 'Ayuda de sintaxis Lumi', action: onOpenDocs, shortcut: 'F1', icon: CircleHelp },
         { label: 'Configuración del IDE', action: () => onOpenSettings && onOpenSettings(), shortcut: 'Ctrl+,', icon: Settings },
         { divider: true },
-        { label: 'Acerca de Estudio Lumi', action: onOpenAbout, shortcut: '', icon: Info },
+        { label: 'Acerca de Lumi Studio', action: onOpenAbout, shortcut: '', icon: Info },
       ]
     }
   ];
@@ -282,7 +282,7 @@ export const TopBar: React.FC<TopBarProps> = ({
       <div data-testid="window-titlebar" className={`${windowControls.available ? 'lumi-window-drag ' : ''}flex items-center justify-between px-3 py-1 bg-white/[0.02] border-b border-[var(--ide-panel-border)] text-[11px] text-[var(--ide-text-muted)]`}>
         <div className="flex items-center gap-2">
           <LumiMascot state={lumiState} size={16} isAnimated={false} />
-          <span className="font-semibold text-[var(--ide-text)] tracking-wide">Studio LUMI</span>
+          <span className="font-semibold text-[var(--ide-text)] tracking-wide">Lumi Studio</span>
           <span className="opacity-30">|</span>
           <span className="text-[var(--ide-text-muted)] font-mono text-[10px]">
             {currentProject ? `${currentProject.name} — ${currentProject.location || 'Espacio local'}` : 'Sin proyecto'}

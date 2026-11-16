@@ -12,7 +12,7 @@ export const AssistantTab: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[var(--ide-accent)]" />
-          <span>Asistente Lumi y Sistema de Compilación</span>
+          <span>Asistente Lumi y sistema de compilación</span>
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-4">
           Controla la presencia de la mascota interactiva Lumi y la validación en tiempo real.
@@ -21,7 +21,7 @@ export const AssistantTab: React.FC = () => {
         <div className="space-y-3">
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Mascota Compañera Lumi</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Mascota compañera Lumi</div>
               <div className="text-[11px] text-[var(--ide-text-muted)]">
                 Mostrar la mascota flotante con expresiones reactivas en la esquina inferior
               </div>
@@ -36,7 +36,7 @@ export const AssistantTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Auto-compilación al Escribir</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Compilación automática al escribir</div>
               <div className="text-[11px] text-[var(--ide-text-muted)]">
                 Validar sintaxis y generar AST automáticamente tras 1.5s sin pulsar teclas
               </div>
@@ -51,7 +51,7 @@ export const AssistantTab: React.FC = () => {
 
           <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
             <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Efectos de Audio de la Interfaz</div>
+              <div className="text-xs font-semibold text-[var(--ide-text)]">Efectos de audio de la interfaz</div>
               <div className="text-[11px] text-[var(--ide-text-muted)]">
                 Sonidos sutiles de confirmación al compilar o renderizar exitosamente
               </div>
@@ -69,7 +69,7 @@ export const AssistantTab: React.FC = () => {
           <div className="flex items-center justify-between mb-3">
             <div>
               <h4 className="text-xs font-bold text-[var(--ide-text)] uppercase tracking-wider">
-                Color y Aura de la Mascota Lumi
+                Color y aura de la mascota Lumi
               </h4>
               <p className="text-[11px] text-[var(--ide-text-muted)] mt-0.5">
                 Personaliza el resplandor reactivo y tonalidad de Lumi o mantenlo sincronizado con el tema.

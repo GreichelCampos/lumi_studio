@@ -97,8 +97,8 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
           <button
             onClick={onOpenDocs}
             className="p-1.5 rounded-lg text-[var(--ide-text-muted)] hover:text-[var(--ide-text)] hover:bg-[var(--ide-btn-bg)] transition-all"
-            title="Manual y Sintaxis Lumi"
-            aria-label="Manual y Sintaxis Lumi"
+            title="Manual y sintaxis de Lumi"
+            aria-label="Manual y sintaxis de Lumi"
           >
             <BookOpen className="w-3.5 h-3.5" />
           </button>
@@ -124,14 +124,14 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
               className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-[var(--ide-accent)] text-[var(--ide-accent-text,#02110c)] font-semibold transition-all shadow-sm"
             >
               <FolderOpen className="w-4 h-4" />
-              <span>Abrir Proyecto...</span>
+              <span>Abrir proyecto...</span>
             </button>
           )}
 
           {showProjectPicker && (
             <div className="absolute top-full left-0 right-0 mt-1.5 z-30 glass-dropdown border border-[var(--ide-panel-border)] rounded-2xl shadow-2xl overflow-hidden py-1.5 animate-fade-in text-[var(--ide-text)]">
               <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-[var(--ide-text-muted)] tracking-wider flex items-center justify-between border-b border-[var(--ide-panel-border)]">
-                <span>Espacios de Trabajo</span>
+                <span>Espacios de trabajo</span>
                 <span className="text-[var(--ide-text)] font-mono">{projects.length}</span>
               </div>
               <div className="max-h-48 overflow-y-auto">
@@ -188,7 +188,7 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
             </div>
             <div>
               <p className="text-xs font-semibold text-[var(--ide-text)]">Sin proyecto abierto</p>
-              <p className="text-[11px] text-[var(--ide-text-muted)] mt-0.5">Crea o abre un proyecto para ver sus archivos</p>
+              <p className="text-[11px] text-[var(--ide-text-muted)] mt-0.5">Creá o abrí un proyecto para ver sus archivos</p>
             </div>
             <div className="flex flex-col w-full gap-1.5 pt-2">
               <button
@@ -196,14 +196,14 @@ export const ProjectExplorer: React.FC<ProjectExplorerProps> = ({
                 className="w-full py-1.5 px-3 rounded-xl bg-[var(--ide-accent)] text-[var(--ide-accent-text,#02110c)] font-bold text-xs hover:brightness-110 transition-all flex items-center justify-center gap-1.5 shadow-md"
               >
                 <FolderPlus className="w-3.5 h-3.5" />
-                <span>Nuevo Proyecto</span>
+                <span>Nuevo proyecto</span>
               </button>
               <button
                 onClick={onOpenProjectModal}
                 className="w-full py-1.5 px-3 rounded-xl glass-btn text-[var(--ide-text-muted)] font-semibold text-xs hover:text-[var(--ide-text)] transition-all flex items-center justify-center gap-1.5"
               >
                 <FolderOpen className="w-3.5 h-3.5" />
-                <span>Abrir Existente</span>
+                <span>Abrir existente</span>
               </button>
             </div>
           </div>

@@ -11,10 +11,10 @@ export const AppearanceTab: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1 flex items-center gap-2">
           <Palette className="w-4 h-4 text-[var(--ide-accent)]" />
-          <span>Temas de Color del IDE</span>
+          <span>Temas de color del IDE</span>
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-4">
-          Selecciona una paleta equilibrada para personalizar fondos, paneles, contraste de texto y resaltado de sintaxis.
+          Seleccioná una paleta equilibrada para personalizar fondos, paneles, contraste de texto y resaltado de sintaxis.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -93,7 +93,7 @@ export const AppearanceTab: React.FC = () => {
           Acabado de Superficie de los Paneles
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-3">
-          Ajusta el nivel de transparencia y desenfoque de los paneles del entorno.
+          Ajustá el nivel de transparencia y desenfoque de los paneles del entorno.
         </p>
 
         <div className="grid grid-cols-3 gap-3">
@@ -131,7 +131,7 @@ export const AppearanceTab: React.FC = () => {
                 : 'border-[var(--ide-panel-border)] bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] text-[var(--ide-text-muted)]'
             }`}
           >
-            <div className="text-xs text-[var(--ide-text)] font-semibold">Bordes Redondeados (20px)</div>
+            <div className="text-xs text-[var(--ide-text)] font-semibold">Bordes redondeados (20 px)</div>
             <div className="text-[10px] text-[var(--ide-text-muted)]">Radio curvo suave y moderno</div>
           </button>
 
@@ -143,7 +143,7 @@ export const AppearanceTab: React.FC = () => {
                 : 'border-[var(--ide-panel-border)] bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] text-[var(--ide-text-muted)]'
             }`}
           >
-            <div className="text-xs text-[var(--ide-text)] font-semibold">Esquinas Clásicas (6px)</div>
+            <div className="text-xs text-[var(--ide-text)] font-semibold">Esquinas clásicas (6 px)</div>
             <div className="text-[10px] text-[var(--ide-text-muted)]">Radio compacto estilo tradicional de escritorio</div>
           </button>
         </div>

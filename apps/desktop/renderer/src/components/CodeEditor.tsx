@@ -207,7 +207,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
           <div className="max-w-md space-y-1.5">
             <h3 className="text-sm font-bold text-[var(--ide-text)]">No hay ningún archivo abierto</h3>
             <p className="text-xs text-[var(--ide-text-muted)] leading-relaxed">
-              Selecciona un archivo <code className="text-[var(--ide-accent)] font-mono">.lumi</code> en el explorador lateral o crea un nuevo módulo para comenzar a editar.
+              Seleccioná un archivo <code className="text-[var(--ide-accent)] font-mono">.lumi</code> en el explorador lateral o creá un nuevo módulo para comenzar a editar.
             </p>
           </div>
           <button
@@ -215,7 +215,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
             className="px-4 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#02110c)] font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
           >
             <FilePlus className="w-4 h-4" />
-            <span>Crear Archivo</span>
+            <span>Crear archivo</span>
           </button>
         </div>
       ) : (

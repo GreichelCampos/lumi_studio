@@ -40,7 +40,7 @@ describe('Python result notifications', () => {
       const before = structuredClone(result);
       notifyCompileResult(result, vi.fn());
       expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({
-        text: expect.stringContaining('Usa Ejecutar Lumi (F6) para comprobar el espacio'), state: 'warning',
+        text: expect.stringContaining('Usá Ejecutar Lumi (F6) para comprobar el espacio'), state: 'warning',
       }));
       expect(result).toEqual(before);
     } finally {
@@ -49,7 +49,7 @@ describe('Python result notifications', () => {
   });
 
   it.each([
-    ['analyze', 'completed', 'success', 'Usa Ejecutar Lumi (F6)'],
+    ['analyze', 'completed', 'success', 'Usá Ejecutar Lumi (F6)'],
     ['analyze', 'failed', 'error', 'El análisis encontró un problema'],
     ['execute', 'failed', 'error', 'La ejecución de Lumi se detuvo'],
     ['execute', 'blocked', 'error', 'La ejecución de Lumi se detuvo'],

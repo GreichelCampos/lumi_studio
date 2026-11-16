@@ -204,7 +204,7 @@ class Parser:
                     code="SYN_INTEGER_LITERAL_TOO_LONG",
                     file=token.file, line=token.line, column=token.column,
                     description="El entero escrito tiene demasiados dígitos.",
-                    suggestion="Usa un entero más corto.",
+                    suggestion="Usá un entero más corto.",
                 )
                 self._own_diagnostics.append(diagnostic)
                 self.diagnostics.append(diagnostic)
@@ -289,7 +289,7 @@ class Parser:
             expression = self.parse_expression()
             self.consume(
                 TokenType.RIGHT_PAREN,
-                "Se esperaba ')' despues de la expresion.",
+                "Se esperaba ')' después de la expresión.",
             )
             return expression
 
@@ -316,7 +316,7 @@ class Parser:
                 break
 
             if self.check(TokenType.RIGHT_PAREN) or self.is_at_end():
-                raise self.error("Se esperaba un argumento despues de ','.")
+                raise self.error("Se esperaba un argumento después de ','.")
 
         return arguments
 
@@ -467,7 +467,7 @@ class Parser:
         )
         self.consume(
             TokenType.ASSIGN,
-            "Se esperaba '=' despues del nombre de la variable.",
+            "Se esperaba '=' después del nombre de la variable.",
         )
 
         if type_token.type == TokenType.VECTOR_TYPE:
@@ -510,7 +510,7 @@ class Parser:
         )
         self.consume(
             TokenType.ASSIGN,
-            "Se esperaba '=' despues del nombre de la variable.",
+            "Se esperaba '=' después del nombre de la variable.",
         )
         value = self.parse_expression()
 
@@ -524,11 +524,11 @@ class Parser:
 
     def parse_read(self):
         read_token = self.consume(TokenType.READ, "Se esperaba 'leer'.")
-        self.consume(TokenType.LEFT_PAREN, "Se esperaba '(' despues de 'leer'.")
+        self.consume(TokenType.LEFT_PAREN, "Se esperaba '(' después de 'leer'.")
         message = self.parse_expression()
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' despues del mensaje de leer.",
+            "Se esperaba ')' después del mensaje de leer.",
         )
 
         return ReadNode(
@@ -542,13 +542,13 @@ class Parser:
         show_token = self.consume(TokenType.SHOW, "Se esperaba 'mostrar'.")
         self.consume(
             TokenType.LEFT_PAREN,
-            "Se esperaba '(' despues de 'mostrar'.",
+            "Se esperaba '(' después de 'mostrar'.",
         )
         expression = self.parse_expression()
         self.consume(
             TokenType.RIGHT_PAREN,
             "Falta cerrar la llamada a mostrar con ')'.",
-            suggestion='Escriba, por ejemplo: mostrar("Hola")>>.',
+            suggestion='Escribí, por ejemplo: mostrar("Hola")>>.',
         )
         self.consume(
             TokenType.TERMINATOR,
@@ -568,14 +568,14 @@ class Parser:
             TokenType.STRING_LITERAL,
             "Se esperaba el nombre del archivo a importar.",
         )
-        self.consume(TokenType.USE, "Se esperaba 'usar' despues del archivo importado.")
+        self.consume(TokenType.USE, "Se esperaba 'usar' después del archivo importado.")
         symbol_token = self.consume(
             TokenType.IDENTIFIER,
-            "Se esperaba el simbolo importado despues de 'usar'.",
+            "Se esperaba el símbolo importado después de 'usar'.",
         )
         self.consume(
             TokenType.TERMINATOR,
-            "Se esperaba '>>' al final de la importacion.",
+            "Se esperaba '>>' al final de la importación.",
         )
 
         file_name = file_token.lexeme[1:-1]
@@ -605,7 +605,7 @@ class Parser:
                 line=node.line,
                 column=node.column,
                 description=f"Se detectó una importación circular: {cycle}.",
-                suggestion="Elimine una de las importaciones que forman el ciclo.",
+                suggestion="Eliminá una de las importaciones que forman el ciclo.",
             )
             self._own_diagnostics.append(diagnostic)
             self.diagnostics.append(diagnostic)
@@ -629,7 +629,7 @@ class Parser:
                 line=node.line,
                 column=node.column,
                 description=f"No se encontro el archivo importado '{node.file_name}'.",
-                suggestion="Verifique el nombre del archivo importado.",
+                suggestion="Verificá el nombre del archivo importado.",
             )
             self._own_diagnostics.append(diagnostic)
             self.diagnostics.append(diagnostic)
@@ -709,7 +709,7 @@ class Parser:
                 continue
 
             if self.match(TokenType.DEFAULT):
-                self.consume(TokenType.COLON, "Se esperaba ':' despues de 'defecto'.")
+                self.consume(TokenType.COLON, "Se esperaba ':' después de 'defecto'.")
                 default_body = self.parse_switch_section_body()
                 continue
 
@@ -729,7 +729,7 @@ class Parser:
     def parse_case(self):
         case_token = self.consume(TokenType.CASE, "Se esperaba 'caso'.")
         value = self.parse_expression()
-        self.consume(TokenType.COLON, "Se esperaba ':' despues de 'caso'.")
+        self.consume(TokenType.COLON, "Se esperaba ':' después de 'caso'.")
         body = self.parse_switch_section_body()
 
         return CaseNode(
@@ -765,7 +765,7 @@ class Parser:
         condition = self.parse_expression()
         self.consume(
             TokenType.SEMICOLON,
-            "Se esperaba ';' despues de la condicion.",
+            "Se esperaba ';' después de la condición.",
         )
         update = self.parse_assignment_without_terminator()
         body = self.parse_block()
@@ -811,11 +811,11 @@ class Parser:
         return_type_token = self.consume_return_type()
         name_token = self.consume(
             TokenType.IDENTIFIER,
-            "Se esperaba el nombre de la funcion.",
+            "Se esperaba el nombre de la función.",
         )
         self.consume(
             TokenType.LEFT_PAREN,
-            "Se esperaba '(' despues del nombre de la funcion.",
+            "Se esperaba '(' después del nombre de la función.",
         )
         parameters = self.parse_parameters()
         self.consume(
@@ -896,27 +896,27 @@ class Parser:
 
         raise self.error(
             "Se esperaba el tipo del parámetro.",
-            suggestion="Escriba el tipo y el nombre, por ejemplo: entero cantidad. Consulte la ayuda de Lumi (F1).",
+            suggestion="Escribí el tipo y el nombre, por ejemplo: entero cantidad. Consultá la ayuda de Lumi (F1).",
         )
 
     def consume_return_type(self):
         if self.is_at_end():
-            raise self.error("Se esperaba el tipo de retorno de la funcion.")
+            raise self.error("Se esperaba el tipo de retorno de la función.")
 
         if self.peek().type in (*self.variable_type_tokens(), TokenType.VOID):
             return self.advance()
 
-        raise self.error("Se esperaba el tipo de retorno de la funcion.")
+        raise self.error("Se esperaba el tipo de retorno de la función.")
 
     def parse_room_declaration(self):
         room_token = self.consume(TokenType.ROOM, "Se esperaba 'habitacion'.")
         name_token = self.consume(
             TokenType.IDENTIFIER,
-            "Se esperaba el nombre de la habitacion.",
+            "Se esperaba el nombre de la habitación.",
         )
         self.consume(
             TokenType.LEFT_PAREN,
-            "Se esperaba '(' despues del nombre de la habitacion.",
+            "Se esperaba '(' después del nombre de la habitación.",
         )
         width = self.parse_expression()
         self.consume(TokenType.COMMA, "Falta una coma después del ancho: habitacion sala(5, 4, 3).")
@@ -925,7 +925,7 @@ class Parser:
         height = self.parse_expression()
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' despues de las dimensiones de la habitacion.",
+            "Se esperaba ')' después de las dimensiones de la habitación.",
         )
         body = self.parse_block()
 
@@ -1079,7 +1079,7 @@ class Parser:
         if not self.check(TokenType.LEFT_BRACKET):
             vector_token = self.consume(
                 TokenType.IDENTIFIER,
-                "Use un vector [x, y, z] entre corchetes o una variable de tipo vector.",
+                "Usá un vector [x, y, z] entre corchetes o una variable de tipo vector.",
             )
             return None, IdentifierNode(
                 name=vector_token.lexeme,
@@ -1093,7 +1093,7 @@ class Parser:
             if not self.check(TokenType.LEFT_BRACKET):
                 raise self.error(
                     "El vector necesita tres componentes separados por comas.",
-                    suggestion="Use [x, y, z]. Para un objeto indexado, use silla[i] [x, y, z].",
+                    suggestion="Usá [x, y, z]. Para un objeto indexado, usá silla[i] [x, y, z].",
                 )
             return first, self.parse_vector()
         return None, self.parse_vector_components(bracket, first)
@@ -1313,7 +1313,7 @@ class Parser:
     def parse_vector(self):
         left_bracket = self.consume(
             TokenType.LEFT_BRACKET,
-            "Use corchetes para el vector: [x, y, z].",
+            "Usá corchetes para el vector: [x, y, z].",
         )
         return self.parse_vector_components(left_bracket, self.parse_expression())
 
@@ -1321,7 +1321,7 @@ class Parser:
         self.consume(TokenType.COMMA, "Falta una coma después del componente x del vector [x, y, z].")
         y = self.parse_expression()
         if self.check(TokenType.RIGHT_BRACKET):
-            raise self.error("Falta el componente z del vector. Use [x, y, z].")
+            raise self.error("Falta el componente z del vector. Usá [x, y, z].")
         self.consume(TokenType.COMMA, "Falta una coma después del componente y del vector [x, y, z].")
         z = self.parse_expression()
         self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' al final del vector.")

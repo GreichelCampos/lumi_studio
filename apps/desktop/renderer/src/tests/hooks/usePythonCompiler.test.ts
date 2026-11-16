@@ -28,7 +28,7 @@ describe('Python asynchronous state', () => {
     expect(result.current.diagnostics).toEqual([]);
     expect(result.current.lumiState).toBe('ready');
     expect(lumiAssistant.getMessage().text).toBe(
-      'No hay archivos para compilar. Primero crea un archivo .lumi en tu proyecto para comenzar.'
+      'No hay archivos para compilar. Primero creá un archivo .lumi en tu proyecto para comenzar.'
     );
     expect(ideLogger.getHistory().some(event => event.message.includes('No hay archivos para compilar'))).toBe(true);
     expect(ideLogger.getHistory().some(event => event.message.includes('[Infraestructura]'))).toBe(false);
@@ -37,10 +37,10 @@ describe('Python asynchronous state', () => {
   it.each([
     ['without main file', createMockProject({ entryFileId: undefined, files: [
       { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
-    ] }), 'Selecciona un archivo principal desde el explorador'],
+    ] }), 'Seleccioná un archivo principal desde el explorador'],
     ['with deleted main file', createMockProject({ entryFileId: 'deleted', files: [
       { id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' },
-    ] }), 'Selecciona otro archivo principal'],
+    ] }), 'Seleccioná otro archivo principal'],
   ])('does not invoke the backend for a project %s', async (_label, selected, notice) => {
     const service: CompilerService = { mode: 'python', compile: vi.fn() };
     const { result } = renderHook(() => useCompiler({ customCompilerService: service }));
@@ -76,7 +76,7 @@ describe('Python asynchronous state', () => {
     await act(async () => { await result.current.runExecute(selected); });
 
     expect(service.execute).not.toHaveBeenCalled();
-    expect(lumiAssistant.getMessage().text).toContain('Selecciona un archivo principal desde el explorador');
+    expect(lumiAssistant.getMessage().text).toContain('Seleccioná un archivo principal desde el explorador');
   });
 
   it('logs the main entry when the requested active file no longer exists', async () => {

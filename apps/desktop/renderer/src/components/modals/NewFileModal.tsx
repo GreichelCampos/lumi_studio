@@ -69,7 +69,7 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
               <FilePlus className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[var(--ide-text)] tracking-tight">Nuevo Archivo Lumi</h2>
+              <h2 className="text-base font-bold text-[var(--ide-text)] tracking-tight">Nuevo archivo Lumi</h2>
               <p className="text-xs text-[var(--ide-text-muted)]">Extensión .lumi requerida</p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export const NewFileModal: React.FC<NewFileModalProps> = ({
               className="px-5 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#000000)] font-bold text-xs shadow-lg border border-[var(--ide-accent)] transition-all flex items-center gap-1.5 active:scale-95"
             >
               <FilePlus className="w-4 h-4" />
-              <span>Crear y Abrir</span>
+              <span>Crear y abrir</span>
             </button>
           </div>
         </form>

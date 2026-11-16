@@ -84,7 +84,7 @@ export const VisualLegendOverlay: React.FC<VisualLegendOverlayProps> = ({
         <div className="flex items-center gap-2.5">
           <span className="w-3 h-3 rounded-sm bg-purple-500 border border-purple-300 shadow-sm flex-shrink-0" />
           <div className="flex flex-col">
-            <span className="text-purple-300 font-medium leading-none">Objeto activo (Depurador)</span>
+            <span className="text-purple-300 font-medium leading-none">Objeto activo (depurador)</span>
             <span className="text-[10px] text-[var(--ide-text-muted)]">Objeto asociado al paso seleccionado</span>
           </div>
         </div>

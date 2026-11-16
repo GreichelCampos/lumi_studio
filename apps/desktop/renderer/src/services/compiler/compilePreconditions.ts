@@ -10,22 +10,22 @@ export interface CompilePreconditionFailure {
 const EMPTY_PROJECT: CompilePreconditionFailure = {
   kind: 'empty-project',
   title: 'No hay archivos para compilar',
-  description: 'Primero crea un archivo .lumi en tu proyecto para comenzar.',
-  notification: 'No hay archivos para compilar. Primero crea un archivo .lumi en tu proyecto para comenzar.',
+  description: 'Primero creá un archivo .lumi en tu proyecto para comenzar.',
+  notification: 'No hay archivos para compilar. Primero creá un archivo .lumi en tu proyecto para comenzar.',
 };
 
 const MISSING_ENTRY: CompilePreconditionFailure = {
   kind: 'missing-entry',
-  title: 'Selecciona un archivo principal',
-  description: 'Abre el menú de opciones del archivo .lumi en el explorador y elige "Establecer como principal".',
-  notification: 'Selecciona un archivo principal desde el explorador: abre las opciones del archivo .lumi y elige "Establecer como principal".',
+  title: 'Seleccioná un archivo principal',
+  description: 'Abrí el menú de opciones del archivo .lumi en el explorador y elegí "Establecer como principal".',
+  notification: 'Seleccioná un archivo principal desde el explorador: abrí las opciones del archivo .lumi y elegí "Establecer como principal".',
 };
 
 const INVALID_ENTRY: CompilePreconditionFailure = {
   kind: 'invalid-entry',
-  title: 'Selecciona otro archivo principal',
+  title: 'Seleccioná otro archivo principal',
   description: 'El archivo principal seleccionado ya no existe o no pertenece al proyecto.',
-  notification: 'Selecciona otro archivo principal. El archivo seleccionado ya no existe o no pertenece al proyecto.',
+  notification: 'Seleccioná otro archivo principal. El archivo seleccionado ya no existe o no pertenece al proyecto.',
 };
 
 const isLumiFile = (file: LumiProject['files'][number]) =>

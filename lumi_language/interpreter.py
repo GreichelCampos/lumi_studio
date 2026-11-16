@@ -253,7 +253,7 @@ class Interpreter:
                     node,
                     "RUN_UNDEFINED_VARIABLE",
                     f"La variable '{node['name']}' no está definida.",
-                    "Declare la variable antes de asignarle un valor.",
+                    "Declará la variable antes de asignarle un valor.",
                 )
             return None
         if node_type == "ShowNode":
@@ -285,7 +285,7 @@ class Interpreter:
                     node,
                     "RUN_RETURN_OUTSIDE_FUNCTION",
                     "La instrucción 'retornar' se ejecutó fuera de una función.",
-                    "Utilice 'retornar' solamente dentro de una función.",
+                    "Utilizá 'retornar' solamente dentro de una función.",
                 )
             value = self._evaluate(node["value"])
             raise _FunctionReturn(value)
@@ -296,7 +296,7 @@ class Interpreter:
             node,
             "RUN_UNSUPPORTED_NODE",
             f"El nodo '{node_type}' no se puede ejecutar todavía.",
-            "Utilice una construcción incluida en el intérprete básico.",
+            "Utilizá una construcción incluida en el intérprete básico.",
         )
 
     def _execute_room(self, node: dict[str, Any]) -> None:
@@ -430,7 +430,7 @@ class Interpreter:
                 index_node,
                 "RUN_INVALID_SPATIAL_INDEX",
                 f"El índice de '{name}' debe ser un entero mayor o igual que cero.",
-                "Usa un índice como 0 o un contador entero del ciclo.",
+                "Usá un índice como 0 o un contador entero del ciclo.",
             )
         return f"{name}[{index}]"
 
@@ -443,7 +443,7 @@ class Interpreter:
                 node,
                 "RUN_SPATIAL_OPERAND_NOT_VECTOR",
                 "La operación espacial requiere un valor de tipo vector.",
-                "Utilice una variable vectorial o un vector literal [x, y, z].",
+                "Utilizá una variable vectorial o un vector literal [x, y, z].",
             )
         components = []
         for component_name in ("x", "y", "z"):
@@ -503,7 +503,7 @@ class Interpreter:
                             f"La función '{statement['name']}' ya está "
                             "declarada en este alcance."
                         ),
-                        "Utilice un nombre diferente para cada función.",
+                        "Utilizá un nombre diferente para cada función.",
                     )
 
         for statement in statements:
@@ -565,7 +565,7 @@ class Interpreter:
                 node,
                 "RUN_LOOP_LIMIT_EXCEEDED",
                 "El ciclo superó el límite permitido de iteraciones.",
-                "Revise la condición o la actualización del ciclo.",
+                "Revisá la condición o la actualización del ciclo.",
             )
 
     def _evaluate(self, node: dict[str, Any]) -> Any:
@@ -580,7 +580,7 @@ class Interpreter:
                     node,
                     "RUN_UNDEFINED_VARIABLE",
                     f"La variable '{node['name']}' no está definida.",
-                    "Declare la variable antes de utilizarla.",
+                    "Declará la variable antes de utilizarla.",
                 )
         if node_type == "BinaryExpressionNode":
             return self._evaluate_binary(node)
@@ -605,7 +605,7 @@ class Interpreter:
             node,
             "RUN_UNSUPPORTED_EXPRESSION",
             f"La expresión '{node_type}' no se puede evaluar todavía.",
-            "Utilice una expresión incluida en el intérprete básico.",
+            "Utilizá una expresión incluida en el intérprete básico.",
         )
 
     def _evaluate_function_call(self, node: dict[str, Any]) -> Any:
@@ -615,7 +615,7 @@ class Interpreter:
                 node,
                 "RUN_UNDEFINED_FUNCTION",
                 f"La función '{node['name']}' no está definida.",
-                "Declare la función antes de ejecutarla.",
+                "Declará la función antes de ejecutarla.",
             )
 
         arguments = [
@@ -669,7 +669,7 @@ class Interpreter:
             node,
             "RUN_CALL_DEPTH_EXCEEDED",
             f"Lumi alcanzó el límite de profundidad de llamadas al intentar llamar a '{node['name']}' (máximo {MAX_CALL_DEPTH}).",
-            "Si la función es recursiva, agrega un caso base y comprueba que cada llamada se acerque a él. Para llamadas muy profundas, usa un ciclo.",
+            "Si la función es recursiva, agregá un caso base y comprobá que cada llamada se acerque a él. Para llamadas muy profundas, usá un ciclo.",
         )
 
     def _execute_import(self, node: dict[str, Any]) -> None:
@@ -715,7 +715,7 @@ class Interpreter:
                     f"El símbolo '{symbol_name}' no existe en "
                     f"'{file_name}'."
                 ),
-                "Verifique el nombre solicitado en la instrucción importar.",
+                "Verificá el nombre solicitado en la instrucción importar.",
             )
 
         function = next(
@@ -850,7 +850,7 @@ class Interpreter:
             node,
             "RUN_UNSUPPORTED_OPERATOR",
             f"El operador '{operator}' no se puede ejecutar.",
-            "Utilice un operador reconocido por Lumi.",
+            "Utilizá un operador reconocido por Lumi.",
         )
 
     @staticmethod
@@ -910,7 +910,7 @@ class Interpreter:
             column=error.source.column,
             description=str(error),
             suggestion=(
-                "Revise la estructura de las habitaciones antes de ejecutar "
+                "Revisá la estructura de las habitaciones antes de ejecutar "
                 "el programa."
             ),
         )

@@ -79,8 +79,8 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
               <FolderOpen className="w-5 h-5 drop-shadow-[0_0_8px_rgba(243,235,214,0.4)]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Abrir Proyecto Existente</h2>
-              <p className="text-xs text-[#d5cbb2]">Selecciona un proyecto de tu espacio de trabajo</p>
+              <h2 className="text-base font-bold text-[#f3ebd6] tracking-tight">Abrir proyecto existente</h2>
+              <p className="text-xs text-[#d5cbb2]">Seleccioná un proyecto de tu espacio de trabajo</p>
             </div>
           </div>
           <button
@@ -109,7 +109,7 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2.5">
           {onImportLocalProject && legacyProjects.length > 0 && <div className="text-xs space-y-2 border p-3 rounded">
-            <p>Proyectos anteriores del almacenamiento local. Guarda una copia en disco para trabajar con ellos:</p>
+            <p>Proyectos anteriores del almacenamiento local. Guardá una copia en disco para trabajar con ellos:</p>
             {legacyProjects.map(project => <button key={project.id} className="flex items-center gap-1.5 underline" onClick={async () => {
               if (await onImportLocalProject(project.id)) onClose();
             }}><Save className="w-3.5 h-3.5" aria-hidden="true" /><span>Guardar copia de {project.name}...</span></button>)}
@@ -236,7 +236,7 @@ export const OpenProjectModal: React.FC<OpenProjectModalProps> = ({
                 className="px-4 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs shadow-lg shadow-[#02110c]/40 border border-[#f3ebd6] transition-all active:scale-95 flex items-center gap-1.5"
               >
                 <FolderPlus className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>Nuevo Proyecto...</span>
+                <span>Nuevo proyecto...</span>
               </button>
             )}
             <button

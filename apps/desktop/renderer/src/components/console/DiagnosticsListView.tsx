@@ -160,7 +160,7 @@ export const DiagnosticsListView: React.FC<DiagnosticsListViewProps> = ({
                     ? 'glass-card bg-amber-950/20 border-amber-500/40 hover:border-amber-400/80 !w-auto !h-auto'
                     : 'glass-card bg-[var(--ide-control-bg)] border-[var(--ide-panel-border)] hover:border-[var(--ide-accent)] !w-auto !h-auto'
                 }`}
-                title="Haz doble clic para abrir el archivo y resaltar la línea"
+                title="Hacé doble clic para abrir el archivo y resaltar la línea"
               >
                 <div className="flex items-center justify-between text-xs pb-2 border-b border-[var(--ide-panel-border)]">
                   <div className="flex items-center gap-2">

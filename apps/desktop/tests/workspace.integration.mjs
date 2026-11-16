@@ -61,8 +61,8 @@ try {
   await page.keyboard.press('Escape');
   await help.waitFor({ state: 'hidden' });
   await page.getByRole('button', { name: 'Ayuda', exact: true }).click();
-  await page.getByRole('button', { name: 'Acerca de Estudio Lumi', exact: true }).click();
-  const about = page.getByRole('dialog', { name: 'Acerca de Estudio Lumi' });
+  await page.getByRole('button', { name: 'Acerca de Lumi Studio', exact: true }).click();
+  const about = page.getByRole('dialog', { name: 'Acerca de Lumi Studio' });
   await about.getByText(/Lenguaje Unificado de Modelado de Interiores/).waitFor();
   assert.equal(await about.getByText('Errores frecuentes').count(), 0);
   await page.keyboard.press('Escape');
@@ -116,7 +116,7 @@ try {
   await page.locator('textarea').fill(`${module}-- borrador`);
   await page.getByTestId(`tab-${moduleId}`).hover();
   await page.getByLabel('Cerrar pestaña modulo.lumi', { exact: true }).click();
-  await page.getByText('Cambios sin Guardar', { exact: true }).waitFor();
+  await page.getByText('Cambios sin guardar', { exact: true }).waitFor();
   await page.locator('#modal-unsaved-changes').getByRole('button', { name: 'Cancelar', exact: true }).click();
   assert.equal(await page.locator('textarea').inputValue(), `${module}-- borrador`);
   await page.getByTestId(`tab-${moduleId}`).hover();
@@ -129,7 +129,7 @@ try {
   await row.hover(); await row.getByTitle('Opciones de archivo', { exact: true }).click();
   await page.getByRole('button', { name: 'Renombrar...', exact: true }).click();
   await page.locator('#modal-rename-file input').fill('renombrado');
-  await page.getByRole('button', { name: 'Guardar Nombre', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar nombre', exact: true }).click();
   await page.locator('#modal-rename-file').waitFor({ state: 'hidden' });
   assert.equal(await readFile(join(root, 'renombrado.lumi'), 'utf8'), `${module}-- borrador`);
   assert.equal(await readFile(join(root, 'principal.lumi'), 'utf8'), principal);

@@ -768,8 +768,8 @@ class SpatialSemanticAnalyzer:
                 self._add_diagnostic(
                     dimension,
                     "SEM_SPATIAL_DIMENSION_NOT_NUMERIC",
-                    "Las dimensiones de una habitacion deben ser numericas.",
-                    "Utilice una expresion de tipo entero o decimal.",
+                    "Las dimensiones de una habitación deben ser numéricas.",
+                    "Utilizá una expresión de tipo entero o decimal.",
                     cause=(dimension_type, "spatial-dimension"),
                 )
                 continue
@@ -995,24 +995,24 @@ class SpatialSemanticAnalyzer:
             SpatialTransitionViolation.DUPLICATE_ROOM: (
                 "SPA_DUPLICATE_ROOM",
                 f"La habitación '{room_name}' ya fue declarada.",
-                "Utilice un nombre diferente para cada habitación.",
+                "Utilizá un nombre diferente para cada habitación.",
             ),
             SpatialTransitionViolation.DUPLICATE_ELEMENT: (
                 "SPA_DUPLICATE_ELEMENT",
                 f"El elemento '{element_name}' ya está declarado en la "
                 f"habitación '{room_name}'.",
-                "Utilice un nombre diferente dentro de la habitación.",
+                "Utilizá un nombre diferente dentro de la habitación.",
             ),
             SpatialTransitionViolation.ELEMENT_NOT_FOUND: (
                 "SPA_ELEMENT_NOT_FOUND",
                 f"El elemento '{element_name}' no está declarado en la "
                 f"habitación '{room_name}'.",
-                "Declare el elemento antes de utilizarlo.",
+                "Declará el elemento antes de utilizarlo.",
             ),
             SpatialTransitionViolation.ELEMENT_ALREADY_PLACED: (
                 "SPA_ELEMENT_ALREADY_PLACED",
                 f"El elemento '{element_name}' ya tiene una posición inicial.",
-                "Utilice 'mover' para reemplazar su posición.",
+                "Utilizá 'mover' para reemplazar su posición.",
             ),
             SpatialTransitionViolation.ELEMENT_NOT_PLACED: (
                 "SPA_ELEMENT_NOT_PLACED",
@@ -1050,7 +1050,7 @@ class SpatialSemanticAnalyzer:
                     vector,
                     "SEM_SPATIAL_OPERAND_NOT_VECTOR",
                     f"La {vector_name} de '{element_name}' debe ser un vector.",
-                    "Utilice una variable de tipo vector o un vector literal [x, y, z].",
+                    "Utilizá una variable de tipo vector o un vector literal [x, y, z].",
                     cause=(element_name, vector_name, vector_type),
                 )
             return
@@ -1065,7 +1065,7 @@ class SpatialSemanticAnalyzer:
                         component,
                         "SEM_VECTOR_COMPONENT_NOT_NUMERIC",
                         "Los componentes de un vector deben ser numéricos.",
-                        "Utilice valores de tipo entero o decimal.",
+                        "Utilizá valores de tipo entero o decimal.",
                         cause=(component_type,),
                     )
                 continue
@@ -1144,7 +1144,7 @@ class SpatialSemanticAnalyzer:
                         f"La propiedad espacial '{name}' requiere un valor "
                         f"de tipo {expected}."
                     ),
-                    "Utilice una expresion compatible con la propiedad.",
+                    "Utilizá una expresión compatible con la propiedad.",
                     cause=(name, value_type, "spatial-property"),
                 )
 

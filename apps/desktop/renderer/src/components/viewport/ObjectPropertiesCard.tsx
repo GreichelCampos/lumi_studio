@@ -189,7 +189,7 @@ export const ObjectPropertiesCard: React.FC<ObjectPropertiesCardProps> = ({
           </span>
         ) : (
           <span className="text-[10px] text-[var(--ide-text-muted)] font-sans">
-            Presiona Esc para deseleccionar
+            Presioná Esc para deseleccionar
           </span>
         )}
 

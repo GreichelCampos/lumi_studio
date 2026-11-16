@@ -97,7 +97,7 @@ export const EditorTabBar: React.FC<EditorTabBarProps> = ({
                 <span className="truncate max-w-[120px] sm:max-w-[140px]">{file.name}</span>
 
                 {file.isEntry && (
-                  <span title="Archivo Principal" className="inline-flex">
+                  <span title="Archivo principal" className="inline-flex">
                     <Star className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0" />
                   </span>
                 )}

@@ -92,7 +92,7 @@ describe('LumicFileService (.lumic Export and Import)', () => {
       }, mockProject);
       expect(res.canExport).toBe(false);
       expect(res.error).toContain('Compilar solo analiza');
-      expect(res.error).toContain('ejecuta un programa');
+      expect(res.error).toContain('ejecutá un programa');
     });
   });
 

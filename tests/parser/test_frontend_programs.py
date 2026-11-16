@@ -202,16 +202,16 @@ def test_spatial_declarations():
     [
         pytest.param("missing_parenthesis.lumi", 2, 14,
                      "Falta cerrar la llamada a mostrar con ')'. Encontrado: '>>'.",
-                     'Escriba, por ejemplo: mostrar("Hola")>>.', id="missing_parenthesis"),
+                         'Escribí, por ejemplo: mostrar("Hola")>>.', id="missing_parenthesis"),
         pytest.param("unclosed_block.lumi", 3, 1,
                      "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", None, id="unclosed_block"),
         pytest.param("incomplete_expression.lumi", 2, 24,
                      "Falta un valor o una expresión. Encontrado: '>>'.", None, id="incomplete_expression"),
         # Positions count the current fixture text, including the renamed import.
         pytest.param("invalid_vector.lumi", 3, 24,
-                     "Falta el componente z del vector. Use [x, y, z]. Encontrado: ']'.", None, id="invalid_vector"),
+                     "Falta el componente z del vector. Usá [x, y, z]. Encontrado: ']'.", None, id="invalid_vector"),
         pytest.param("invalid_import.lumi", 1, 27,
-                     "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", None, id="invalid_import"),
+                     "Se esperaba 'usar' después del archivo importado. Encontrado: 'sumar'.", None, id="invalid_import"),
     ],
 )
 def test_invalid_program(name, line, column, description, suggestion):

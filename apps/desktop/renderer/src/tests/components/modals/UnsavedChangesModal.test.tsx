@@ -47,7 +47,7 @@ describe('UnsavedChangesModal Component', () => {
       />
     );
 
-    expect(screen.getByText('Cambios sin Guardar')).toBeInTheDocument();
+    expect(screen.getByText('Cambios sin guardar')).toBeInTheDocument();
 
     const saveBtn = screen.getByRole('button', { name: /guardar/i });
     fireEvent.click(saveBtn);

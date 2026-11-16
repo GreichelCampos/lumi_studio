@@ -11,8 +11,8 @@ describe('compile preconditions', () => {
     expect(validateCompilePreconditions(project())).toMatchObject({
       kind: 'empty-project',
       title: 'No hay archivos para compilar',
-      description: 'Primero crea un archivo .lumi en tu proyecto para comenzar.',
-      notification: 'No hay archivos para compilar. Primero crea un archivo .lumi en tu proyecto para comenzar.',
+      description: 'Primero creá un archivo .lumi en tu proyecto para comenzar.',
+      notification: 'No hay archivos para compilar. Primero creá un archivo .lumi en tu proyecto para comenzar.',
     });
   });
 
@@ -21,7 +21,7 @@ describe('compile preconditions', () => {
       files: [{ id: 'file', name: 'uno.lumi', path: 'uno.lumi', content: '' }],
     }));
     expect(failure?.kind).toBe('missing-entry');
-    expect(failure?.notification).toBe('Selecciona un archivo principal desde el explorador: abre las opciones del archivo .lumi y elige "Establecer como principal".');
+    expect(failure?.notification).toBe('Seleccioná un archivo principal desde el explorador: abrí las opciones del archivo .lumi y elegí "Establecer como principal".');
   });
 
   it('accepts a valid main file', () => {

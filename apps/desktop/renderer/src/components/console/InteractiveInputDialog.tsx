@@ -36,7 +36,7 @@ function PromptDialog({ prompt }: { prompt: InputPrompt }) {
       onKeyDown={event => { if (event.key !== 'Escape') event.stopPropagation(); }}>
       <InteractiveInputForm scopeKey={prompt.requestId} requestKey={prompt.inputId}
         prompt={prompt.prompt || 'El programa está esperando una respuesta.'}
-        validate={value => value.length > 16_384 ? 'Usa hasta 16.384 caracteres.' : null}
+        validate={value => value.length > 16_384 ? 'Usá hasta 16.384 caracteres.' : null}
         onSubmit={reply} />
       <button type="button" className="mt-3 text-xs underline inline-flex items-center gap-1.5" onClick={() => void cancel()}>
         <X className="w-3.5 h-3.5" aria-hidden="true" />

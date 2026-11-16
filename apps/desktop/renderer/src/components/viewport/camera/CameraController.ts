@@ -45,7 +45,7 @@ export class CameraController {
     this.controls.screenSpacePanning = false;
     this.controls.zoomToCursor = true;
     options.rendererDomElement.tabIndex = 0;
-    options.rendererDomElement.setAttribute('aria-label', 'Visor 3D. Usa las flechas para desplazarte y la rueda para acercarte al cursor.');
+    options.rendererDomElement.setAttribute('aria-label', 'Visor 3D. Usá las flechas para desplazarte y la rueda para acercarte al cursor.');
     this.controls.listenToKeyEvents(options.rendererDomElement);
     this.controls.panSpeed = 0.9;
     this.controls.rotateSpeed = 0.75;

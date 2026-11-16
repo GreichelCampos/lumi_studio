@@ -1144,7 +1144,7 @@ def test_l025_list_assignment_remains_list_not_vector():
         ("habitacion sala(5, 4) { }", "Falta una coma después del largo"),
         (
             "habitacion sala(5, 4, 2.7 { }",
-            "Se esperaba ')' despues de las dimensiones",
+            "Se esperaba ')' después de las dimensiones",
         ),
         ("habitacion sala(5, 4, 2.7)", "Se esperaba '{'"),
         ("silla { }", "una asignacion, una llamada o una declaracion espacial"),

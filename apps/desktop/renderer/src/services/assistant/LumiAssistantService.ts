@@ -98,16 +98,16 @@ class LumiAssistantService {
     if (firstDiag) {
       this.setMessage(`Encontré un problema en ${firstDiag.file}:${firstDiag.line}.`, 'error');
     } else {
-      this.setMessage('Encontré errores en el código. Revisa diagnósticos.', 'error');
+      this.setMessage('Encontré errores en el código. Revisá los diagnósticos.', 'error');
     }
   }
 
   public onStaleDetected() {
-    this.setMessage('El código cambió. Presiona Compilar (F5) para actualizar el análisis.', 'warning');
+    this.setMessage('El código cambió. Presioná Compilar (F5) para actualizar el análisis.', 'warning');
   }
 
   public onExecutionWithoutActiveFile() {
-    this.setMessage('Crea o abre un archivo .lumi para ejecutar.', 'warning');
+    this.setMessage('Creá o abrí un archivo .lumi para ejecutar.', 'warning');
   }
 
   public onExecutionBlocked(message: string) {
@@ -116,11 +116,11 @@ class LumiAssistantService {
 
   public onEntitySelected(nameOrId: string, type?: string) {
     const label = type ? `${type} "${nameOrId}"` : `"${nameOrId}"`;
-    this.setMessage(`Seleccionaste ${label}. Revisa sus propiedades o código.`, 'ready');
+    this.setMessage(`Seleccionaste ${label}. Revisá sus propiedades o su código.`, 'ready');
   }
 
   public onEntityDeselected() {
-    this.setMessage('Selección limpiada. Puedes seguir editando o inspeccionar otro objeto.', 'ready');
+    this.setMessage('Selección limpiada. Podés seguir editando o inspeccionar otro objeto.', 'ready');
   }
 
   public onDiagnosticFocused(diag: DiagnosticItem) {

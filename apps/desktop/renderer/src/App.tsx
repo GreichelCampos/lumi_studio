@@ -174,7 +174,7 @@ export default function App() {
   const handleCompileCurrent = useCallback(async () => {
     if (!currentProject) {
       ideLogger.log('warning', 'No hay ningún proyecto abierto para compilar.', undefined, 'Compilador');
-      lumiAssistant.setMessage('No hay un proyecto abierto. Abre o crea un proyecto antes de compilar.', 'ready');
+      lumiAssistant.setMessage('No hay un proyecto abierto. Abrí o creá un proyecto antes de compilar.', 'ready');
       return null;
     }
 
@@ -200,7 +200,7 @@ export default function App() {
     }
     if (!currentProject) {
       ideLogger.logExecutionAborted('No hay un proyecto abierto.');
-      lumiAssistant.onExecutionBlocked('Abre o crea un proyecto antes de ejecutar Lumi.');
+      lumiAssistant.onExecutionBlocked('Abrí o creá un proyecto antes de ejecutar Lumi.');
       return;
     }
 

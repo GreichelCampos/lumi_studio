@@ -373,7 +373,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
                 ? 'glass-btn text-[var(--ide-accent)] border-[var(--ide-accent)]/50 cursor-pointer bg-[var(--ide-accent-bg)]'
                 : 'bg-white/5 text-[var(--ide-text-muted)]/50 border border-white/5 cursor-not-allowed'
             }`}
-            title={canFocusEntity ? 'Enfocar objeto seleccionado' : 'Selecciona un objeto colocado para enfocarlo'}
+            title={canFocusEntity ? 'Enfocar objeto seleccionado' : 'Seleccioná un objeto colocado para enfocarlo'}
           >
             <Crosshair className="w-3.5 h-3.5" />
           </button>
@@ -427,7 +427,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
                 ? 'glass-btn bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border-[var(--ide-accent)]/40 font-bold'
                 : 'glass-btn text-[var(--ide-text-muted)]'
             }`}
-            title="Mostrar / Ocultar ejes coordenados X y Z"
+            title="Mostrar u ocultar ejes coordenados X y Z"
             aria-label="Mostrar u ocultar ejes coordenados"
           >
             <Grid className="w-3.5 h-3.5" />
@@ -441,7 +441,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
                 ? 'glass-btn bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border-[var(--ide-accent)]/40 font-bold'
                 : 'glass-btn text-[var(--ide-text-muted)]'
             }`}
-            title="Mostrar / Ocultar cotas métricas"
+            title="Mostrar u ocultar cotas métricas"
             aria-label="Mostrar u ocultar cotas métricas"
           >
             <Ruler className="w-3.5 h-3.5" />
@@ -455,7 +455,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
                 ? 'glass-btn bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border-[var(--ide-accent)]/40 font-bold'
                 : 'glass-btn text-[var(--ide-text-muted)]'
             }`}
-            title="Modo Alámbrico (Wireframe)"
+            title="Modo alámbrico"
             aria-label="Modo alámbrico"
           >
             <Box className="w-3.5 h-3.5" />
@@ -492,7 +492,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
               className={`p-1 rounded-lg transition-all ${
                 lightingMode === 'cyber' ? 'bg-[var(--ide-accent-bg)] text-[var(--ide-accent)] border border-[var(--ide-accent)]/40' : 'text-[var(--ide-text-muted)] hover:text-[var(--ide-text)]'
               }`}
-              title="Iluminación Nocturna / Cyber"
+              title="Iluminación nocturna/ciber"
               aria-label="Iluminación nocturna"
             >
               <Sparkles className="w-3 h-3" />

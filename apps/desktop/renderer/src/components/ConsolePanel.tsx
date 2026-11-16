@@ -183,7 +183,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
             }`}
           >
             <Bug className="w-3.5 h-3.5 text-[var(--ide-accent)]" />
-            <span>Depurador Espacial</span>
+            <span>Depurador espacial</span>
             {debugSteps.length > 0 && (
               <span className="text-[10px] text-[var(--ide-text-muted)] font-mono">
                 ({debugSteps.length})
@@ -194,7 +194,7 @@ export const ConsolePanel: React.FC<ConsolePanelProps> = ({
 
         <div className="flex items-center gap-2">
           {isStale && (
-            <span className="flex items-center gap-1 text-xs text-amber-300 glass-btn border-amber-400/40 px-2.5 py-1 rounded-full font-medium" title="El código ha cambiado. Presiona Compilar (F5)">
+            <span className="flex items-center gap-1 text-xs text-amber-300 glass-btn border-amber-400/40 px-2.5 py-1 rounded-full font-medium" title="El código ha cambiado. Presioná Compilar (F5)">
               <RefreshCw className="w-3 h-3 text-amber-400 animate-spin-slow" />
               <span>Compilación obsoleta</span>
             </span>

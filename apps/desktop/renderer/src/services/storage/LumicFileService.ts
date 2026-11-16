@@ -43,21 +43,21 @@ export class LumicFileService {
     if (!compileResult) {
       return {
         canExport: false,
-        error: 'No hay ningún resultado disponible. Ejecuta un programa con habitaciones para obtener una escena exportable. Compilar solo analiza el código.',
+        error: 'No hay ningún resultado disponible. Ejecutá un programa con habitaciones para obtener una escena exportable. Compilar solo analiza el código.',
       };
     }
 
     if (!compileResult.success || compileResult.status === 'blocked') {
       return {
         canExport: false,
-        error: 'No se puede exportar un resultado fallido o incompleto. Revisa la consola y los diagnósticos; después ejecuta el programa para obtener una escena válida.',
+        error: 'No se puede exportar un resultado fallido o incompleto. Revisá la consola y los diagnósticos; después ejecutá el programa para obtener una escena válida.',
       };
     }
 
     if (!compileResult.scenePlan || !compileResult.scenePlan.rooms || compileResult.scenePlan.rooms.length === 0) {
       return {
         canExport: false,
-        error: 'El resultado actual no contiene habitaciones ni elementos espaciales exportables. Compilar solo analiza el código; ejecuta un programa con habitaciones para generar una escena.',
+        error: 'El resultado actual no contiene habitaciones ni elementos espaciales exportables. Compilar solo analiza el código; ejecutá un programa con habitaciones para generar una escena.',
       };
     }
 

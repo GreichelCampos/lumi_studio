@@ -188,7 +188,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             No hay pasos de depuración disponibles
           </div>
           <p className="text-xs text-[var(--ide-text-muted)] max-w-sm">
-            Ejecuta un programa Lumi con F6 o importa un archivo .lumic que incluya pasos espaciales.
+            Ejecutá un programa Lumi con F6 o importá un archivo .lumic que incluya pasos espaciales.
           </p>
         </div>
       )}

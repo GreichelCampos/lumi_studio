@@ -107,7 +107,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             {!isAbout && <LumiMascot state="ready" size={34} />}
             <div>
               <h2 id="lumi-help-title" className="text-base font-bold text-[#f3ebd6] drop-shadow-[0_0_8px_rgba(243,235,214,0.4)]">
-                {isAbout ? 'Acerca de Estudio Lumi' : 'Ayuda de Lumi'}
+                {isAbout ? 'Acerca de Lumi Studio' : 'Ayuda de Lumi'}
               </h2>
               {!isAbout && <p className="text-xs text-[#d5cbb2]">Lenguaje Unificado de Modelado de Interiores</p>}
             </div>
@@ -134,7 +134,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 <li key={github}>{name} · <a className="underline" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">@{github}</a></li>
               ))}
             </ul>
-            <a className="underline" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">Repositorio de Estudio Lumi en GitHub</a>
+            <a className="underline" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">Repositorio de Lumi Studio en GitHub</a>
           </section>
         ) : (
           <>
@@ -207,7 +207,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)] mb-3 flex items-center gap-2">
                     <Code2 className="w-4 h-4" />
-                    <span>Palabras Reservadas y Estructuras Principales</span>
+                    <span>Palabras reservadas y estructuras principales</span>
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
                     {LUMI_KEYWORDS.map((item) => (
@@ -256,7 +256,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 <section className="space-y-4">
                 <div className="p-4 rounded-2xl glass-card border border-[#f3ebd6]/25 flex items-center justify-between !w-auto !h-auto">
                   <div>
-                    <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Estudio LUMI</span>
+                    <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Lumi Studio</span>
                     <h3 className="text-lg font-extrabold text-[#f3ebd6] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
                     <p className="text-xs text-[#d5cbb2] mt-1 max-w-xl leading-relaxed">
                       Compilar analiza el archivo principal del proyecto. Ejecutar Lumi corre ese archivo y abre el visor cuando el programa genera una escena. El visor muestra habitaciones, pisos, paredes, puertas, ventanas y muebles colocados. Si el programa usa leer, aparece un formulario. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
@@ -269,7 +269,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 <div className="glass-card p-4.5 !w-auto !h-auto">
                   <h4 className="text-sm font-bold text-[#f3ebd6] mb-3 flex items-center gap-2 drop-shadow-sm">
                     <Sparkles className="w-4 h-4 text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
-                    <span>Estados Visuales del Asistente Lumi</span>
+                    <span>Estados visuales del asistente Lumi</span>
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[#f3ebd6]/30">
@@ -285,7 +285,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-emerald-400/30">
                       <LumiMascot state="success" size={40} isAnimated={false} />
                       <span className="font-bold text-emerald-300 mt-1">Verde</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Compilación Exitosa</span>
+                      <span className="text-[10px] text-[#d5cbb2]">Compilación exitosa</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-amber-400/30">
                       <LumiMascot state="warning" size={40} isAnimated={false} />

@@ -63,7 +63,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             </div>
             <div>
               <h2 className="text-base font-bold text-[var(--ide-text)] flex items-center gap-2">
-                <span>Configuración del Entorno de Desarrollo</span>
+                <span>Configuración del entorno de desarrollo</span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10 text-[var(--ide-text-muted)] border border-[var(--ide-panel-border)]">
                   Ctrl+,
                 </span>
@@ -95,7 +95,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               }`}
             >
               <Palette className="w-4 h-4 text-[var(--ide-accent)]" />
-              <span>Temas y Colores</span>
+              <span>Temas y colores</span>
             </button>
 
             <button
@@ -107,7 +107,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               }`}
             >
               <Type className="w-4 h-4 text-[var(--ide-accent)]" />
-              <span>Editor de Código</span>
+              <span>Editor de código</span>
             </button>
 
             <button
@@ -119,7 +119,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               }`}
             >
               <Boxes className="w-4 h-4 text-[var(--ide-accent)]" />
-              <span>Visor 3D y Gráficos</span>
+              <span>Visor 3D y gráficos</span>
             </button>
 
             <button
@@ -131,7 +131,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
               }`}
             >
               <Sparkles className="w-4 h-4 text-[var(--ide-accent)]" />
-              <span>Asistente y Compilación</span>
+              <span>Asistente y compilación</span>
             </button>
 
             <div className="mt-auto pt-3 border-t border-[var(--ide-panel-border)]/40 text-[11px] space-y-1.5">
@@ -182,7 +182,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             title="Restablecer todas las configuraciones a valores de fábrica"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Restaurar Predeterminados</span>
+            <span>Restaurar valores predeterminados</span>
           </button>
 
           <button
@@ -191,7 +191,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
             className="px-5 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text,#000000)] font-bold text-xs shadow-lg transition-all flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5" aria-hidden="true" />
-            <span>Aceptar y Guardar</span>
+            <span>Aceptar y guardar</span>
           </button>
         </div>
       </div>

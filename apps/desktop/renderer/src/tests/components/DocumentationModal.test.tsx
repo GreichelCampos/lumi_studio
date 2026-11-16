@@ -10,9 +10,9 @@ describe('DocumentationModal', () => {
     expect(screen.getByRole('heading', { name: 'Errores frecuentes' })).toBeInTheDocument();
     expect(screen.getByText('Paréntesis, corchetes y comas')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Palabras reservadas' }));
-    expect(screen.getByRole('heading', { name: 'Palabras Reservadas y Estructuras Principales' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Palabras reservadas y estructuras principales' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Guía del IDE' }));
-    expect(screen.getByText('Estados Visuales del Asistente Lumi')).toBeInTheDocument();
+    expect(screen.getByText('Estados visuales del asistente Lumi')).toBeInTheDocument();
     expect(screen.getByText(/Compilar analiza el archivo principal/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ejemplos' }));
     expect(screen.getByRole('heading', { name: 'Ejemplos de Lumi' })).toBeInTheDocument();
@@ -29,7 +29,7 @@ describe('DocumentationModal', () => {
 
   it('shows project information without the syntax guide in About', () => {
     render(<DocumentationModal isOpen view="about" onClose={vi.fn()} />);
-    expect(screen.getByRole('dialog', { name: 'Acerca de Estudio Lumi' })).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Acerca de Lumi Studio' })).toBeInTheDocument();
     expect(screen.getByText(/Lenguaje Unificado de Modelado de Interiores/)).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'Errores frecuentes' })).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: '@GreichelCampos' })).toHaveAttribute('href', 'https://github.com/GreichelCampos');

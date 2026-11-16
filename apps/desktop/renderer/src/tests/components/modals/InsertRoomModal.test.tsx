@@ -23,7 +23,7 @@ describe('InsertRoomModal', () => {
       />
     );
 
-    expect(screen.getByText('Insertar Habitación Lumi')).toBeInTheDocument();
+    expect(screen.getByText('Insertar habitación Lumi')).toBeInTheDocument();
 
     const nameInput = screen.getByPlaceholderText(/sala, cocina/i);
     fireEvent.change(nameInput, { target: { value: 'dormitorio_suite' } });
@@ -31,7 +31,7 @@ describe('InsertRoomModal', () => {
     const widthInput = screen.getByPlaceholderText('5.0');
     fireEvent.change(widthInput, { target: { value: '4.5' } });
 
-    const submitBtn = screen.getByRole('button', { name: /insertar en editor/i });
+    const submitBtn = screen.getByRole('button', { name: /insertar en el editor/i });
     fireEvent.click(submitBtn);
 
     expect(handleInsert).toHaveBeenCalledTimes(1);
@@ -55,7 +55,7 @@ describe('InsertRoomModal', () => {
     const nameInput = screen.getByPlaceholderText(/sala, cocina/i);
     fireEvent.change(nameInput, { target: { value: '123_invalido' } });
 
-    const submitBtn = screen.getByRole('button', { name: /insertar en editor/i });
+    const submitBtn = screen.getByRole('button', { name: /insertar en el editor/i });
     fireEvent.click(submitBtn);
 
     expect(screen.getByText(/identificador válido/i)).toBeInTheDocument();
