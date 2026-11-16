@@ -1,0 +1,12 @@
+principal {
+    habitacion sala(8, 6, 3) {
+        silla sillas[0] { color "gris">> }
+        silla sillas[1] { color "gris">> }
+        silla sillas[2] { color "gris">> }
+        silla sillas[3] { color "gris">> }
+
+        hacer entero i = 0; i < 4; i = i + 1 {
+            colocar sillas[i] [i * 1.5 - 2.25, 0, 1]>>
+        }
+    }
+}

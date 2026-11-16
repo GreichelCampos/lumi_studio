@@ -31,7 +31,7 @@ function service(index: number) {
   return new PythonCompilerService(bridge);
 }
 
-describe('real Python capability captures, not execution traces', () => {
+describe('legacy real Python capability captures without execution traces', () => {
   it('validates the worker responses and preserves the unsupported debug operations', () => {
     for (const item of capture.cases) for (const raw of item.responses) {
       expect(validateProtocolResponse(raw).valid).toBe(true);
@@ -54,7 +54,7 @@ describe('real Python capability captures, not execution traces', () => {
     render(<SpatialDebuggerView debugSteps={result.debugSteps} currentStepIndex={0} lastCompileResult={result}
       onStepChange={step} onFocusObject={vi.fn()} onChangeSpeed={vi.fn()} onNavigateToDiagnostic={navigate} />);
     expect(result.debugSteps).toEqual([]);
-    expect(screen.getByText(/Python todavía no publica pasos, variables ni pila/)).toBeInTheDocument();
+    expect(screen.getByText(/Esta ejecución no contiene pasos espaciales/)).toBeInTheDocument();
     for (const button of screen.getAllByRole('button').filter(button => !button.textContent?.includes('Ver diagnóstico'))) {
       expect(button).toBeDisabled(); fireEvent.click(button);
     }

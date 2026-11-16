@@ -1,0 +1,7 @@
+principal {
+    decimal ancho = 6.0>>
+
+    si ancho >= 5 {
+        mostrar("La habitacion es amplia")>>
+    }
+}

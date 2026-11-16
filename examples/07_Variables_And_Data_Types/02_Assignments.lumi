@@ -1,0 +1,12 @@
+principal {
+    entero cantidad = 2>>
+    cantidad = cantidad + 3>>
+
+    texto estado = "pendiente">>
+    estado = "completado">>
+
+    mostrar("Cantidad final:")>>
+    mostrar(cantidad)>>
+    mostrar("Estado final:")>>
+    mostrar(estado)>>
+}

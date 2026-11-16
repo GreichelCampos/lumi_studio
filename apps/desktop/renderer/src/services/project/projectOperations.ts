@@ -27,28 +27,18 @@ principal {
 
   -- Origen [0.0, 0.0, 0.0] centrado en el piso
   habitacion sala_principal(ancho, largo, alto) {
-    piso material material_piso>>
-    pared norte color "blanco">>
-    pared sur color "gris">>
-    
-    puerta en norte {
-      ancho = 0.90>>
-      alto = 2.10>>
-      posicion = 1.0>>
+    piso suelo {
+      material material_piso>>
     }
 
-    ventana en sur {
-      ancho = 1.60>>
-      alto = 1.30>>
-      posicion = -0.5>>
-    }
+    sofa sofa_principal {}
+    mesa mesa_centro {}
+    planta planta_ventana {}
 
-    colocar sofa en [0.0, 0.0, -0.8]>>
-    colocar mesa en [0.0, 0.0, 0.6]>>
-    colocar planta en [1.7, 0.0, 1.2]>>
+    colocar sofa_principal [0.0, 0.0, -0.8]>>
+    colocar mesa_centro [0.0, 0.0, 0.6]>>
+    colocar planta_ventana [1.7, 0.0, 1.2]>>
   }
-
-  visualizar3D(sala_principal)>>
 }
 `,
   };
@@ -78,8 +68,10 @@ export function createLumiFile(projectName: string, cleanFileName: string): Lumi
     isEntry: false,
     content: `-- Módulo: ${cleanFileName}
 funcion vacio espacio_${cleanFileName.replace(/\.lumi$/i, '').replace(/[^a-zA-Z0-9_]/g, '_')}() {
-  colocar mesa en [0.0, 0.0, 0.0]>>
-  colocar silla en [0.0, 0.0, -0.6]>>
+  mesa mesa_centro {}
+  silla silla_visita {}
+  colocar mesa_centro [0.0, 0.0, 0.0]>>
+  colocar silla_visita [0.0, 0.0, -0.6]>>
 }
 `,
   };
@@ -110,10 +102,10 @@ export function deleteLumiFile(
   const remainingFiles = project.files.filter((f) => f.id !== fileId);
   const remainingTabs = openTabIds.filter((id) => id !== fileId);
 
-  let newEntryId = project.entryFileId;
-  if (newEntryId === fileId || !remainingFiles.some((f) => f.id === newEntryId)) {
-    newEntryId = remainingFiles[0]?.id;
-  }
+  const newEntryId = project.entryFileId === fileId
+    || !remainingFiles.some((f) => f.id === project.entryFileId)
+    ? undefined
+    : project.entryFileId;
 
   const adjustedFiles = remainingFiles.map((f) => ({
     ...f,
@@ -138,6 +130,11 @@ export function deleteLumiFile(
 }
 
 export function setProjectEntryFile(project: LumiProject, fileId: string): LumiProject {
+  const entry = project.files.find((file) => file.id === fileId);
+  if (!entry) throw new Error('Archivo no encontrado.');
+  if (!entry.name.toLocaleLowerCase().endsWith('.lumi') || !entry.path.toLocaleLowerCase().endsWith('.lumi')) {
+    throw new Error('El archivo principal debe pertenecer al proyecto y tener extensión .lumi.');
+  }
   const updatedFiles = project.files.map((f) => ({
     ...f,
     isEntry: f.id === fileId,

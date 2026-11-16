@@ -71,3 +71,32 @@ def test_loop_and_function_help_executes_through_the_real_interpreter(help_secti
     assert result.status is ExecutionStatus.COMPLETED
     assert result.diagnostics == ()
     assert result.output == ("0", "1", "2")
+
+
+@pytest.mark.parametrize(("source", "code", "repair"), [
+    ('principal { mostrar("Hola" }', "SYN_UNEXPECTED_TOKEN", 'mostrar("Hola")>>'),
+    ('entero cantidad =', "SYN_UNEXPECTED_TOKEN", "Falta un valor"),
+    ('entero cantidad = 4', "SYN_UNEXPECTED_TOKEN", "'>>'"),
+    ('habitacion sala(5 4, 3) {}', "SYN_UNEXPECTED_TOKEN", "coma después del ancho"),
+    ('vector punto = (1, 0, 2)>>', "SYN_UNEXPECTED_TOKEN", "[x, y, z]"),
+    ('vector punto = [1 0, 2]>>', "SYN_UNEXPECTED_TOKEN", "coma después del componente x"),
+    ('habitacion sala(5, 4, 3) { silla s {} colocar s [0]>> }', "SYN_UNEXPECTED_TOKEN", "tres componentes"),
+    ('funcion entero suma(ent a) { retornar a>> }', "SYN_UNEXPECTED_TOKEN", "entero cantidad"),
+    ('funcion entero suma(entero a entero b) { retornar a + b>> }', "SYN_UNEXPECTED_TOKEN", "parámetros con comas"),
+    ('mostrar(suma(1 2))>>', "SYN_UNEXPECTED_TOKEN", "suma(1, 2)"),
+    ('lista colores = ["azul" "rojo"]>>', "SYN_UNEXPECTED_TOKEN", '["azul", "rojo"]'),
+    ('hacer entero i = 0 i < 3; i = i + 1 { mostrar(i)>> }', "SYN_UNEXPECTED_TOKEN", "';'"),
+    ('principal { mostrar(1)>>', "SYN_UNEXPECTED_TOKEN", "cerrar el bloque"),
+    ('entero cantidad = "uno">>', "SEM_TYPE_MISMATCH", "variable de tipo 'entero'"),
+    ('habitacion sala(0, 4, 3) {}', "SPA_INVALID_DIMENSION", "mayor que cero"),
+    ('mostrar(4 / 0)>>', "RUN_DIVISION_BY_ZERO", "cero"),
+])
+def test_malformed_program_explains_what_to_correct(source, code, repair):
+    result = ExecutionService().execute_source("\n" + source, "principal.lumi")
+    assert result.status in (ExecutionStatus.BLOCKED, ExecutionStatus.FAILED)
+    assert result.scene_plan is None
+    diagnostic = result.diagnostics[0]
+    assert diagnostic.code == code
+    assert (diagnostic.file, diagnostic.line) == ("principal.lumi", 2)
+    assert 1 <= diagnostic.column <= len(source) + 1
+    assert repair in f"{diagnostic.description} {diagnostic.suggestion or ''}"

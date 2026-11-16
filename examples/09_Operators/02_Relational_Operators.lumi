@@ -1,0 +1,11 @@
+principal {
+    decimal ancho = 5.0>>
+    decimal largo = 4.0>>
+
+    mostrar(ancho == largo)>>
+    mostrar(ancho != largo)>>
+    mostrar(ancho > largo)>>
+    mostrar(ancho < largo)>>
+    mostrar(ancho >= largo)>>
+    mostrar(ancho <= largo)>>
+}

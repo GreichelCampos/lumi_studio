@@ -114,7 +114,7 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `type`: tipo declarado de una variable.
 * `name`: nombre de un identificador.
 * `value`: valor o expresión asociada al nodo.
-* `literal_kind`: clase del literal, por ejemplo `entero`, `decimal`, `texto`, `booleano` o `nulo`. El valor `nulo` es un valor especial de Lumi y no constituye un tipo de dato independiente.
+* `literal_kind`: clase del literal, por ejemplo `entero`, `decimal`, `texto`, `booleano` o `nulo`. `nulo` también es un tipo simple y solo es asignable a variables de ese mismo tipo.
 * `elements`: lista de nodos de expresión que componen un `ListNode`.
 * `x`, `y` y `z`: componentes numéricos de un `VectorNode`; cada componente puede ser un nodo de expresión.
 * `left` y `right`: operandos de una expresión binaria.
@@ -125,8 +125,10 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `return_type`: tipo de retorno declarado por una función.
 * `cases`: lista de nodos `CaseNode` pertenecientes a una estructura `segun`.
 * `width`, `length` y `height`: nodos de expresión que representan las dimensiones de una habitación.
-* `position`: nodo `VectorNode` que representa una posición `[x, y, z]`.
-* `rotation`: nodo `VectorNode` que representa una rotación `[x, y, z]`.
+* `position`: nodo `VectorNode` que representa una posición `[x, y, z]`, o
+  `IdentifierNode` que referencia una variable de tipo `vector`.
+* `rotation`: nodo `VectorNode` que representa una rotación `[x, y, z]`, o
+  `IdentifierNode` que referencia una variable de tipo `vector`.
 * `properties`: lista de nodos `SpatialPropertyNode`. Puede estar vacía porque `color` y `material` son opcionales.
 * `file_name`: nombre del archivo `.lumi` que se desea importar.
 * `symbol_name`: único símbolo solicitado mediante `usar`; su importación no hace visibles automáticamente los demás símbolos del archivo.

@@ -267,6 +267,19 @@ class ScenePlanBuilder:
         )
         element.rotation = rotation
 
+    def snapshot(self) -> ScenePlan:
+        """Return an immutable view of the current state without finalizing it.
+
+        Finalized rooms are already immutable.  When a room is active, freezing
+        its current drafts creates independent immutable elements while leaving
+        the builder's room and element state untouched.
+        """
+
+        rooms = tuple(self._rooms)
+        if self._active_room is not None:
+            rooms += (self._active_room.freeze(),)
+        return ScenePlan(rooms=rooms, source=self._source)
+
     def build(self) -> ScenePlan:
         """Return an immutable snapshot after every room has been finalized."""
 

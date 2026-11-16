@@ -52,7 +52,7 @@ def test_last_consumed_token_is_described_as_token(source, line, column, lexeme)
     assert (diagnostic.file, diagnostic.line, diagnostic.column) == ("ultimo.lumi", line, column)
     assert diagnostic.category == DiagnosticCategory.SYNTACTIC
     assert diagnostic.code == "SYN_UNEXPECTED_TOKEN"
-    assert diagnostic.description == f"Se esperaba una expresion. Encontrado: '{lexeme}'."
+    assert diagnostic.description == f"Falta un valor o una expresión. Encontrado: '{lexeme}'."
 
 
 def test_token_list_and_ast_locations_remain_compatible():

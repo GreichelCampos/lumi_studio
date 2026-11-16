@@ -35,6 +35,13 @@ export function useSpatialDebugger({
     });
   }, [debugSteps]);
   const [playbackSpeed, setPlaybackSpeed] = useState<PlaybackSpeed>(1);
+  const [activated, setActivated] = useState<{ steps: DebugStep[] | null; revision: number }>({
+    steps: null,
+    revision: 0,
+  });
+  const activateCurrentTrace = useCallback(() => {
+    setActivated(previous => ({ steps: debugSteps, revision: previous.revision + 1 }));
+  }, [debugSteps]);
 
   const onStepChangeRef = useRef(onStepChange);
   onStepChangeRef.current = onStepChange;
@@ -55,6 +62,13 @@ export function useSpatialDebugger({
   }, [debugSteps]);
 
   useEffect(() => {
+    if (debugSteps.length > 0 && activated.steps !== debugSteps) {
+      // Loading a new trace must not replace the final ScenePlan published by F6.
+      // A snapshot becomes active only after an explicit debugger control is used.
+      if (previousStepRef.current) onStepChangeRef.current?.(null);
+      previousStepRef.current = null;
+      return;
+    }
     if (debugSteps.length > 0 && debugSteps[currentStepIndex] !== undefined) {
       if (previousStepRef.current !== debugSteps[currentStepIndex]) {
         const activeStep = debugSteps[currentStepIndex];
@@ -88,7 +102,7 @@ export function useSpatialDebugger({
       previousStepRef.current = null;
       onStepChangeRef.current?.(null);
     }
-  }, [currentStepIndex, debugSteps]);
+  }, [currentStepIndex, debugSteps, activated]);
 
   useEffect(() => {
     if (status !== 'running' || debugSteps.length === 0) return;
@@ -128,18 +142,20 @@ export function useSpatialDebugger({
 
   const startDebugging = useCallback(() => {
     if (debugSteps.length === 0) return;
+    activateCurrentTrace();
     setCurrentStepIndex(0);
     setStatus('running');
     lumiAssistant.onDebugStart();
-  }, [debugSteps.length, setCurrentStepIndex]);
+  }, [debugSteps.length, setCurrentStepIndex, activateCurrentTrace]);
 
   const play = useCallback(() => {
     if (debugSteps.length === 0) return;
+    activateCurrentTrace();
     if (currentStepIndex >= debugSteps.length - 1 || status === 'finished') {
       setCurrentStepIndex(0);
     }
     setStatus('running');
-  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
+  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex, activateCurrentTrace]);
 
   const pause = useCallback(() => {
     if (debugSteps.length === 0) return;
@@ -156,48 +172,54 @@ export function useSpatialDebugger({
   }, [status, pause, play]);
 
   const nextStep = useCallback(() => {
+    if (debugSteps.length > 0) activateCurrentTrace();
     if (currentStepIndex < debugSteps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
       setStatus('paused');
     } else if (debugSteps.length > 0 && currentStepIndex === debugSteps.length - 1) {
       setStatus('finished');
     }
-  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex]);
+  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex, activateCurrentTrace]);
 
   const prevStep = useCallback(() => {
+    if (debugSteps.length > 0) activateCurrentTrace();
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prev) => prev - 1);
       setStatus('paused');
     }
-  }, [currentStepIndex, status, setCurrentStepIndex]);
+  }, [currentStepIndex, debugSteps.length, status, setCurrentStepIndex, activateCurrentTrace]);
 
   const jumpToStart = useCallback(() => {
+    if (debugSteps.length > 0) activateCurrentTrace();
     setCurrentStepIndex(0);
     setStatus(debugSteps.length > 0 ? 'ready' : 'idle');
-  }, [debugSteps.length, setCurrentStepIndex]);
+  }, [debugSteps.length, setCurrentStepIndex, activateCurrentTrace]);
 
   const jumpToEnd = useCallback(() => {
     if (debugSteps.length > 0) {
+      activateCurrentTrace();
       setCurrentStepIndex(debugSteps.length - 1);
       setStatus('finished');
     }
-  }, [debugSteps.length, setCurrentStepIndex]);
+  }, [debugSteps.length, setCurrentStepIndex, activateCurrentTrace]);
 
   const resetDebugger = useCallback(() => {
+    if (debugSteps.length > 0) activateCurrentTrace();
     setCurrentStepIndex(0);
     setStatus(debugSteps.length > 0 ? 'ready' : 'idle');
-  }, [debugSteps.length, setCurrentStepIndex]);
+  }, [debugSteps.length, setCurrentStepIndex, activateCurrentTrace]);
 
   const jumpToStep = useCallback(
     (index: number) => {
       if (Number.isInteger(index) && index >= 0 && index < debugSteps.length) {
+        activateCurrentTrace();
         setCurrentStepIndex(index);
         if (status === 'running') {
           setStatus('paused');
         }
       }
     },
-    [debugSteps.length, status, setCurrentStepIndex]
+    [debugSteps.length, status, setCurrentStepIndex, activateCurrentTrace]
   );
 
   const changeSpeed = useCallback((speed: PlaybackSpeed) => {

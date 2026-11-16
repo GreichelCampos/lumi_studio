@@ -377,6 +377,52 @@ def test_all_spatial_vector_operations_analyze_each_component(operation):
     ]
 
 
+@pytest.mark.parametrize("operation", ["colocar", "mover", "rotar"])
+def test_spatial_operation_accepts_declared_vector_variable(operation):
+    result = analyze_source(
+        "vector destino = [1, 0, 2]>> "
+        f"habitacion sala(5, 4, 3) {{ silla silla1 {{}} "
+        f"{'colocar silla1 [0, 0, 0]>> ' if operation == 'mover' else ''}"
+        f"{operation} silla1 destino>> }}"
+    )
+
+    assert result.succeeded
+
+
+@pytest.mark.parametrize("operand", ["ausente", "cantidad"])
+def test_spatial_vector_variable_reports_missing_or_incompatible_operand(operand):
+    prefix = "entero otra = 3>> " if operand == "ausente" else "entero cantidad = 3>> "
+    result = analyze_source(
+        prefix + "habitacion sala(5, 4, 3) { silla silla1 {} "
+        f"colocar silla1 {operand}>> }}"
+    )
+
+    assert codes(result) == [
+        "SEM_UNDECLARED_VARIABLE"
+        if operand == "ausente"
+        else "SEM_SPATIAL_OPERAND_NOT_VECTOR"
+    ]
+
+
+def test_incompatible_vector_operand_diagnostic_uses_identifier_location():
+    result = analyze_source(
+        """principal {
+    entero cantidad = 3>>
+    habitacion sala(5, 4, 3) {
+        silla silla1 {}
+        colocar silla1 cantidad>>
+    }
+}""",
+        file="operando_vector.lumi",
+    )
+
+    diagnostic, = result.diagnostics
+    assert diagnostic.code == "SEM_SPATIAL_OPERAND_NOT_VECTOR"
+    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
+        "operando_vector.lumi", 5, 24,
+    )
+
+
 def test_function_parameters_and_locals_are_visible_in_spatial_expressions():
     result = analyze_source(
         "funcion vacio crear(decimal ancho) { "

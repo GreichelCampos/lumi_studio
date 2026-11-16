@@ -34,16 +34,16 @@ npm run lint
 npm run build
 ```
 
-En Electron, **Compilar** (F5) analiza la pestaña activa. **Ejecutar Lumi**
-(F6) ejecuta esa pestaña y resuelve sus importaciones con los archivos del
-proyecto. Para ejecutar un proyecto desde `principal.lumi`, seleccioná esa
-pestaña, aunque los módulos sigan abiertos.
+En Electron, **Compilar** (F5) analiza el archivo principal del proyecto.
+**Ejecutar Lumi** (F6) ejecuta ese archivo y resuelve sus importaciones, aunque
+tengás abierta una pestaña auxiliar. Podés cambiar el principal desde las
+opciones de archivo del explorador.
 
 El visor abre las escenas generadas por el intérprete. Probá
 [`OficinaEjemplo`](examples/OficinaEjemplo/) para ver una habitación con
 paredes, puertas, ventanas y muebles colocados. También podés importar
-archivos `.lumic`; el depurador reproduce pasos disponibles y todavía no
-recibe trazas del intérprete Python.
+archivos `.lumic`. El depurador reproduce los pasos espaciales que
+genera el intérprete Python y los de archivos `.lumic` compatibles.
 
 `npm run dist:win` genera el instalador con Python incluido. La versión con
 `leer` y el diagnóstico de recursión se probó en una instalación temporal.
@@ -112,7 +112,7 @@ van a stderr. Para sus pruebas, con pytest instalado en el entorno virtual:
 
 The following sections describe the language proposal and target workflow, not a
 feature-completion report. In the current desktop IDE, Python analysis and execution
-are available, while spatial scene generation and Python debug traces are pending.
+are available, including spatial scene generation and spatial debug steps from Python.
 The viewer loads validated `.lumic` artifacts independently of source compilation.
 See the [current architecture](docs/architecture.md) for implemented boundaries.
 
@@ -211,7 +211,7 @@ Example:
 ```lumi
 habitacion sala(5.0, 4.0, 2.7) {
 
-    // Lumi code
+    -- Código Lumi
 
 }
 ```
@@ -459,7 +459,7 @@ Lumi includes `nulo` to represent the absence of a value.
 For example:
 
 ```lumi
-texto nombre = nulo>>
+nulo nombre = nulo>>
 ```
 
 The value can be checked explicitly:
@@ -482,11 +482,11 @@ It is primarily intended to represent the controlled absence of a value.
 
 #  Lists
 
-Lists allow developers to group multiple values or objects.
+Lists allow developers to group multiple values. The following is a conceptual
+sketch that assumes the three room identifiers were declared previously; it is
+not a standalone executable program:
 
-For example:
-
-```lumi
+```text
 lista habitaciones = [
     sala,
     cocina,
@@ -508,22 +508,21 @@ A simple output example is:
 mostrar("Welcome to Lumi")>>
 ```
 
-Input can also affect the 3D experience.
+Input can also guide program decisions using the implemented `leer` instruction.
 
-For example, a program could allow the user to select a room:
+The following executable example asks for a room name and reports the selected
+value using separate `mostrar` instructions:
 
 ```lumi
-texto habitacion = seleccionar(
-    "Seleccione una habitación:",
-    ["Sala", "Cocina", "Dormitorio"]
-)>>
-
-cambiarHabitacion(habitacion)>>
-
-mostrar("Habitación actual: " + habitacion)>>
+principal {
+    texto habitacion = leer("Seleccione una habitación:")>>
+    mostrar("Habitación seleccionada:")>>
+    mostrar(habitacion)>>
+}
 ```
 
-This allows user input to produce a visible change in the 3D environment.
+Changing the room displayed by the viewport remains an IDE action; Lumi does not
+currently provide `seleccionar` or `cambiarHabitacion` instructions.
 
 ---
 

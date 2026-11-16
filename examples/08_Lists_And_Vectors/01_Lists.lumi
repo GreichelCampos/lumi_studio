@@ -1,0 +1,10 @@
+principal {
+    lista colores = ["blanco", "gris", "azul"]>>
+    lista materiales = ["madera", "ceramica", "marmol"]>>
+
+    mostrar("Colores disponibles:")>>
+    mostrar(colores)>>
+
+    mostrar("Materiales disponibles:")>>
+    mostrar(materiales)>>
+}

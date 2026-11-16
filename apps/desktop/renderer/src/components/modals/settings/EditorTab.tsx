@@ -36,10 +36,10 @@ export const EditorTab: React.FC = () => {
 
         <div className="grid grid-cols-2 gap-2.5">
           {[
-            { id: 'Fira Code', label: 'Fira Code', sample: '>> habitacion "Suite" [6, 4, 3]' },
-            { id: 'JetBrains Mono', label: 'JetBrains Mono', sample: '>> habitacion "Suite" [6, 4, 3]' },
-            { id: 'Source Code Pro', label: 'Source Code Pro', sample: '>> habitacion "Suite" [6, 4, 3]' },
-            { id: 'Consolas', label: 'Consolas (Windows)', sample: '>> habitacion "Suite" [6, 4, 3]' },
+            { id: 'Fira Code', label: 'Fira Code', sample: 'habitacion suite(6, 4, 3) { }' },
+            { id: 'JetBrains Mono', label: 'JetBrains Mono', sample: 'habitacion suite(6, 4, 3) { }' },
+            { id: 'Source Code Pro', label: 'Source Code Pro', sample: 'habitacion suite(6, 4, 3) { }' },
+            { id: 'Consolas', label: 'Consolas (Windows)', sample: 'habitacion suite(6, 4, 3) { }' },
           ].map((font) => (
             <button
               key={font.id}

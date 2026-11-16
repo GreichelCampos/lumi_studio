@@ -14,7 +14,8 @@ describe('MockCompilerService', () => {
       alto = 2.10>>
       posicion = 1.0>>
     }
-    colocar mesa en [0.0, 0.0, 0.0]>>
+    mesa mesa {}
+    colocar mesa [0.0, 0.0, 0.0]>>
   }
   visualizar3D(sala)>>
 }`;
@@ -36,7 +37,8 @@ describe('MockCompilerService', () => {
   it('debe bloquear la compilación ante error sintáctico (ej: falta de ">>")', async () => {
     const syntaxErrorContent = `principal {
   habitacion sala(5.0, 4.0, 2.7) {
-    colocar mesa en [0.0, 0.0, 0.0]
+    mesa mesa {}
+    colocar mesa [0.0, 0.0, 0.0]
   }
   visualizar3D(sala)>>
 }`;
@@ -60,7 +62,8 @@ describe('MockCompilerService', () => {
   it('debe bloquear la compilación ante llaves desbalanceadas', async () => {
     const unclosedBraceContent = `principal {
   habitacion sala(5.0, 4.0, 2.7) {
-    colocar mesa en [0.0, 0.0, 0.0]>>
+    mesa mesa {}
+    colocar mesa [0.0, 0.0, 0.0]>>
   visualizar3D(sala)>>
 `;
 
@@ -82,7 +85,8 @@ describe('MockCompilerService', () => {
     // Habitación de 4.0 de ancho (límites X entre -2.0 y +2.0), mueble colocado en X = 3.5
     const outOfBoundsContent = `principal {
   habitacion sala(4.0, 4.0, 2.7) {
-    colocar mesa en [3.5, 0.0, 0.0]>>
+    mesa mesa {}
+    colocar mesa [3.5, 0.0, 0.0]>>
   }
   visualizar3D(sala)>>
 }`;
@@ -114,8 +118,10 @@ describe('MockCompilerService', () => {
     // Dos objetos colocados exactamente en la misma posición [0.0, 0.0, 0.0]
     const collisionContent = `principal {
   habitacion sala(6.0, 6.0, 2.7) {
-    colocar mesa en [0.0, 0.0, 0.0]>>
-    colocar sofa en [0.0, 0.0, 0.0]>>
+    mesa mesa {}
+    sofa sofa {}
+    colocar mesa [0.0, 0.0, 0.0]>>
+    colocar sofa [0.0, 0.0, 0.0]>>
   }
   visualizar3D(sala)>>
 }`;
@@ -149,7 +155,8 @@ describe('MockCompilerService', () => {
       alto = 2.10>>
       posicion = 0.5>>
     }
-    colocar armario en [0.5, 0.0, -2.3]>>
+    armario armario {}
+    colocar armario [0.5, 0.0, -2.3]>>
   }
   visualizar3D(sala)>>
 }`;
@@ -172,7 +179,8 @@ describe('MockCompilerService', () => {
   it('debe bloquear la compilación ante dimensiones de habitación inválidas (<= 0m)', async () => {
     const invalidDimContent = `principal {
   habitacion sala(-5.0, 4.0, 2.7) {
-    colocar mesa en [0.0, 0.0, 0.0]>>
+    mesa mesa {}
+    colocar mesa [0.0, 0.0, 0.0]>>
   }
   visualizar3D(sala)>>
 }`;

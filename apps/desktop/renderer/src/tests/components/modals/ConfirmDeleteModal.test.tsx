@@ -54,6 +54,7 @@ describe('ConfirmDeleteModal Component', () => {
     );
 
     expect(screen.getByText(/archivo principal del proyecto/i)).toBeInTheDocument();
+    expect(screen.getByText(/selecciona otro archivo principal desde el explorador/i)).toBeInTheDocument();
   });
 
   it('debe llamar a onConfirmDelete con el fileId y cerrar el modal al confirmar', async () => {

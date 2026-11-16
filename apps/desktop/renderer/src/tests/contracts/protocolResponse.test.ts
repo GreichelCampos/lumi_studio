@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { parseProtocolResponse, validateProtocolResponse } from '../../services/integration/protocol/responseValidator';
 import { MAX_RESPONSE_BYTES } from '../../services/integration/protocol/types';
 import type { CoreDiagnostic, ResultResponse } from '../../services/integration/protocol/types';
-import { createMockRoom, createMockScenePlan } from '../fixtures/testFixtures';
+import { createMockDebugSteps, createMockRoom, createMockScenePlan } from '../fixtures/testFixtures';
 
 function response(): ResultResponse {
   return {
@@ -76,6 +76,50 @@ describe('Python integration protocol responses', () => {
     raw.result.capabilities.scenePlan = true;
     raw.result.scenePlan = createMockScenePlan({ rooms: [createMockRoom()] });
     expect(validateProtocolResponse(raw).valid).toBe(true);
+  });
+
+  it('accepts a complete F6 trace with consecutive validated snapshots', () => {
+    const raw = response();
+    raw.result.capabilities.debugTrace = true;
+    raw.result.debugSteps = createMockDebugSteps();
+
+    expect(validateProtocolResponse(raw).valid).toBe(true);
+  });
+
+  it('rejects contradictory, malformed, or non-consecutive traces', () => {
+    const withoutSteps = response();
+    withoutSteps.result.capabilities.debugTrace = true;
+    expect(validateProtocolResponse(withoutSteps).valid).toBe(false);
+
+    const disabledWithSteps = response();
+    disabledWithSteps.result.debugSteps = createMockDebugSteps();
+    expect(validateProtocolResponse(disabledWithSteps).valid).toBe(false);
+
+    const wrongIndex = response();
+    wrongIndex.result.capabilities.debugTrace = true;
+    wrongIndex.result.debugSteps = createMockDebugSteps();
+    wrongIndex.result.debugSteps[1].stepIndex = 7;
+    expect(validateProtocolResponse(wrongIndex).valid).toBe(false);
+
+    const unknownObject = response();
+    unknownObject.result.capabilities.debugTrace = true;
+    unknownObject.result.debugSteps = createMockDebugSteps();
+    unknownObject.result.debugSteps[1].activeObjectId = 'missing-object';
+    expect(validateProtocolResponse(unknownObject).valid).toBe(false);
+
+    const invalidSnapshot = response();
+    invalidSnapshot.result.capabilities.debugTrace = true;
+    invalidSnapshot.result.debugSteps = createMockDebugSteps();
+    invalidSnapshot.result.debugSteps[0].sceneSnapshot.rooms[0].dimensions[0] = 0;
+    expect(validateProtocolResponse(invalidSnapshot).valid).toBe(false);
+  });
+
+  it('accepts an explicit unavailable reason only when tracing is disabled', () => {
+    const raw = response();
+    raw.result.debugTraceUnavailableReason = 'step_limit_exceeded';
+    expect(validateProtocolResponse(raw).valid).toBe(true);
+    raw.result.debugTraceUnavailableReason = 'invented_reason';
+    expect(validateProtocolResponse(raw).valid).toBe(false);
   });
 
   it('rejects malformed scenes and scenes attached to failed operations', () => {

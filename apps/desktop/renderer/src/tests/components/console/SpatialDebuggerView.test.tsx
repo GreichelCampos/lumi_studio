@@ -48,7 +48,7 @@ describe('SpatialDebuggerView', () => {
     expect(screen.getByText('Sin referencia de código disponible')).toBeInTheDocument();
     expect(screen.getByText('Sin columna disponible')).toBeInTheDocument();
     expect(screen.queryByText('Objeto activo: sofa-1')).not.toBeInTheDocument();
-    expect(screen.getByText(/No son trazas de Python/)).toBeInTheDocument();
+    expect(screen.getByText(/snapshots espaciales de Python/)).toBeInTheDocument();
   });
   it('renderiza el estado vacío cuando no hay pasos disponibles', () => {
     render(
@@ -61,10 +61,29 @@ describe('SpatialDebuggerView', () => {
     );
 
     expect(screen.getByText('No hay pasos de depuración disponibles')).toBeInTheDocument();
-    expect(screen.getByText(/Importa un archivo .lumic que incluya pasos/)).toBeInTheDocument();
-    expect(screen.getByText(/Python todavía no genera trazas espaciales/)).toBeInTheDocument();
+    expect(screen.getByText(/Ejecuta un programa Lumi con F6/)).toBeInTheDocument();
     expect(screen.getByText('Paso 0 de 0')).toBeInTheDocument();
     expect(screen.getByText('Inactivo')).toBeInTheDocument();
+  });
+
+  it('explica una traza Python no disponible sin marcar la escena final como fallida', () => {
+    render(
+      <SpatialDebuggerView
+        debugSteps={[]}
+        currentStepIndex={0}
+        lastCompileResult={{
+          compilationId: 'python-limit', status: 'completed', success: true,
+          diagnostics: [], scenePlan: null, entryFileInfo: null, durationMs: 1,
+          logs: [], debugSteps: [], debugTraceUnavailableReason: 'step_limit_exceeded',
+          timestamp: new Date(0).toISOString(), origin: 'python', operation: 'execute',
+        }}
+        onStepChange={vi.fn()}
+        onFocusObject={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/superó el límite de pasos/)).toBeInTheDocument();
+    expect(screen.getByText('No hay pasos de depuración disponibles')).toBeInTheDocument();
   });
 
   it('renderiza los detalles del paso activo y sus metadatos (línea, archivo, evento, código y descripción)', () => {
@@ -107,6 +126,9 @@ describe('SpatialDebuggerView', () => {
 
     const objBtn = screen.getByText('Objeto activo: sofa-1');
     expect(objBtn).toBeInTheDocument();
+    expect(screen.getByText('Colocado')).toBeInTheDocument();
+    expect(screen.getAllByText('mesa').length).toBeGreaterThan(0);
+    expect(screen.getByText('0, 0, 0')).toBeInTheDocument();
 
     fireEvent.click(objBtn);
     expect(handleFocusObject).toHaveBeenCalledWith('sofa-1');

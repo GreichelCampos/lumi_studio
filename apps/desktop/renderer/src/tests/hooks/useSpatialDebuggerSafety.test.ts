@@ -24,7 +24,7 @@ describe('debugger dataset changes', () => {
     expect(result.current.debugSteps).toEqual([]);
     expect(result.current.scenePlan).toBeNull();
   });
-  it('notifies only the first new step when replacing a list at a later index', () => {
+  it('keeps the final scene untouched when replacing a trace until the user interacts', () => {
     const onStepChange = vi.fn();
     const oldSteps = createMockDebugSteps();
     const { result, rerender } = renderHook(({ steps }) => useSpatialDebugger({ debugSteps: steps, onStepChange }), {
@@ -34,9 +34,11 @@ describe('debugger dataset changes', () => {
     onStepChange.mockClear();
     const nextSteps = createMockDebugSteps().map(step => ({ ...step, id: `new-${step.id}` }));
     rerender({ steps: nextSteps });
-    expect(onStepChange.mock.calls).toEqual([[nextSteps[0]]]);
+    expect(onStepChange.mock.calls).toEqual([[null]]);
     expect(result.current.currentStep).toBe(nextSteps[0]);
     expect(result.current.status).toBe('ready');
+    act(() => result.current.nextStep());
+    expect(onStepChange).toHaveBeenLastCalledWith(nextSteps[1]);
   });
 
   it('stops old playback and clears the selected step when events disappear', () => {

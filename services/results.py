@@ -8,6 +8,7 @@ from typing import Mapping
 from lumi_language.ast_nodes import ProgramNode
 from lumi_language.diagnostics import Diagnostic
 from lumi_language.lexer_error import LexicalErrorLocation
+from lumi_language.spatial_debug_trace import SpatialDebugTrace
 from spatial.scene_plan import ScenePlan
 
 
@@ -85,6 +86,7 @@ class ExecutionResult:
     output: tuple[str, ...] = ()
     diagnostics: tuple[Diagnostic, ...] = ()
     scene_plan: ScenePlan | None = None
+    spatial_trace: SpatialDebugTrace = field(default_factory=SpatialDebugTrace)
 
     @property
     def succeeded(self) -> bool:

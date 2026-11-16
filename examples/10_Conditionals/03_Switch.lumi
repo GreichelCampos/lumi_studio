@@ -1,0 +1,14 @@
+principal {
+    texto material_elegido = "madera">>
+
+    segun material_elegido {
+        caso "madera":
+            mostrar("Material de madera")>>
+        caso "ceramica":
+            mostrar("Material de ceramica")>>
+        caso "marmol":
+            mostrar("Material de marmol")>>
+        defecto:
+            mostrar("Material desconocido")>>
+    }
+}

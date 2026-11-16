@@ -121,7 +121,7 @@ def test_public_serialization_ignores_private_catalog_without_generic_dataclass_
     assert list(serialize_compilation(compilation)["imported_programs"]) == ["B"]
 
 
-def test_protocol_executes_transitive_import_without_new_response_fields():
+def test_protocol_executes_transitive_import_with_real_debug_trace():
     wire = RequestDispatcher().dispatch({
         "protocolVersion": "1.0.0", "requestId": "multifile", "operation": "execute",
         "entryFile": "A", "files": {"A": ENTRY, **SOURCES},
@@ -130,9 +130,13 @@ def test_protocol_executes_transitive_import_without_new_response_fields():
     assert wire["result"]["output"] == ["7"]
     assert set(wire["result"]) == {
         "entryFile", "analysisStatus", "stage", "output", "diagnostics", "limitations",
-        "executionAttempted", "capabilities",
+        "executionAttempted", "capabilities", "debugSteps",
     }
     assert wire["result"]["diagnostics"] == []
+    assert wire["result"]["capabilities"]["debugTrace"] is True
+    assert [step["eventType"] for step in wire["result"]["debugSteps"]] == [
+        "start", "end",
+    ]
 
 
 def test_completed_spatial_compilation_keeps_existing_execution_policy():

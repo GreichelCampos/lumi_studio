@@ -96,7 +96,7 @@ def test_failed_transitive_module_never_reaches_semantic_analysis(monkeypatch, b
     assert "C" not in context.successful_programs
 
 
-def test_supported_direct_execution_serialization_and_wire_contract_are_unchanged():
+def test_supported_direct_execution_serialization_includes_debug_trace():
     source = 'importar "B" usar f>> mostrar(f())>>'
     sources = {"B": 'funcion entero f() { retornar 7>> }'}
     compilation = CompilerService().compile(source, "A", sources=sources)
@@ -108,8 +108,12 @@ def test_supported_direct_execution_serialization_and_wire_contract_are_unchange
     assert wire["result"]["output"] == ["7"]
     assert set(wire["result"]) == {
         "entryFile", "analysisStatus", "stage", "output", "diagnostics", "limitations",
-        "executionAttempted", "capabilities",
+        "executionAttempted", "capabilities", "debugSteps",
     }
+    assert wire["result"]["capabilities"]["debugTrace"] is True
+    assert [step["eventType"] for step in wire["result"]["debugSteps"]] == [
+        "start", "end",
+    ]
     assert list(serialize_compilation(compilation)["imported_programs"]) == ["B"]
 
 

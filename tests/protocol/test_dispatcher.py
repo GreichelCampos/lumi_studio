@@ -23,7 +23,15 @@ def test_execute_preserves_unicode_and_output_order():
     assert result["requestId"] == "test-1"
     assert result["result"]["output"] == ["¡Hola, Lumi! 🏠", "2"]
     assert result["result"]["executionAttempted"] is True
-    assert all(value is False for value in result["result"]["capabilities"].values())
+    assert result["result"]["capabilities"] == {
+        "scenePlan": False,
+        "debugTrace": True,
+        "interactiveInput": False,
+        "cancellation": False,
+    }
+    assert [
+        step["eventType"] for step in result["result"]["debugSteps"]
+    ] == ["start", "end"]
     assert "scenePlan" not in result["result"]
 
 

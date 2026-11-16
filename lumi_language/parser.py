@@ -113,11 +113,13 @@ class Parser:
 
         return False
 
-    def consume(self, token_type: TokenType, message: str) -> Token:
+    def consume(
+        self, token_type: TokenType, message: str, *, suggestion: str | None = None,
+    ) -> Token:
         if self.check(token_type):
             return self.advance()
 
-        raise self.error(message)
+        raise self.error(message, suggestion=suggestion)
 
     def error(
         self,
@@ -125,6 +127,7 @@ class Parser:
         token: Token | None = None,
         *,
         code: str = "SYN_UNEXPECTED_TOKEN",
+        suggestion: str | None = None,
     ) -> ParserError:
         at_eof = token is None and self.is_at_end()
         if token is None:
@@ -143,6 +146,7 @@ class Parser:
             line=token.line,
             column=token.column,
             description=f"{message} Encontrado: {found}.",
+            suggestion=suggestion,
         )
         self._own_diagnostics.append(diagnostic)
         self.diagnostics.append(diagnostic)
@@ -187,7 +191,7 @@ class Parser:
 
     def parse_primary(self):
         if self.is_at_end():
-            raise self.error("Se esperaba una expresion.")
+            raise self.error("Falta un valor o una expresión.")
 
         token = self.advance()
 
@@ -263,7 +267,8 @@ class Parser:
                 arguments = self.parse_arguments()
                 self.consume(
                     TokenType.RIGHT_PAREN,
-                    "Se esperaba ')' despues de los argumentos.",
+                    "Se esperaba ')' después de los argumentos.",
+                    suggestion="Si hay otro argumento, sepárelo con una coma: suma(1, 2).",
                 )
                 return FunctionCallNode(
                     name=token.lexeme,
@@ -296,7 +301,7 @@ class Parser:
             self.current -= 1
             return self.parse_list()
 
-        raise self.error("Se esperaba una expresion.", token)
+        raise self.error("Falta un valor o una expresión.", token)
 
     def parse_arguments(self):
         arguments = []
@@ -446,6 +451,7 @@ class Parser:
             TokenType.DECIMAL_TYPE,
             TokenType.STRING_TYPE,
             TokenType.BOOLEAN_TYPE,
+            TokenType.NULL,
             TokenType.LIST_TYPE,
             TokenType.VECTOR_TYPE,
         )
@@ -469,9 +475,10 @@ class Parser:
         else:
             value = self.parse_expression()
 
+        separator = ">>" if terminator_type == TokenType.TERMINATOR else ";"
         self.consume(
             terminator_type,
-            "Se esperaba el separador al final de la declaracion.",
+            f"Falta '{separator}' al final de la declaración de '{name_token.lexeme}'.",
         )
 
         return VariableDeclarationNode(
@@ -488,9 +495,10 @@ class Parser:
 
     def parse_assignment_until(self, terminator_type: TokenType):
         assignment = self.parse_assignment_without_terminator()
+        separator = ">>" if terminator_type == TokenType.TERMINATOR else ";"
         self.consume(
             terminator_type,
-            "Se esperaba el separador al final de la asignacion.",
+            f"Falta '{separator}' al final de la asignación.",
         )
 
         return assignment
@@ -539,7 +547,8 @@ class Parser:
         expression = self.parse_expression()
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' despues de la expresion.",
+            "Falta cerrar la llamada a mostrar con ')'.",
+            suggestion='Escriba, por ejemplo: mostrar("Hola")>>.',
         )
         self.consume(
             TokenType.TERMINATOR,
@@ -811,7 +820,8 @@ class Parser:
         parameters = self.parse_parameters()
         self.consume(
             TokenType.RIGHT_PAREN,
-            "Se esperaba ')' despues de los parametros.",
+            "Se esperaba ')' después de los parámetros.",
+            suggestion="Separe los parámetros con comas: (entero a, entero b).",
         )
         body = self.parse_block()
 
@@ -881,13 +891,13 @@ class Parser:
         )
 
     def consume_parameter_type(self):
-        if self.is_at_end():
-            raise self.error("Se esperaba el tipo del parametro.")
-
-        if self.peek().type in self.variable_type_tokens():
+        if not self.is_at_end() and self.peek().type in self.variable_type_tokens():
             return self.advance()
 
-        raise self.error("Se esperaba el tipo del parametro.")
+        raise self.error(
+            "Se esperaba el tipo del parámetro.",
+            suggestion="Escriba el tipo y el nombre, por ejemplo: entero cantidad. Consulte la ayuda de Lumi (F1).",
+        )
 
     def consume_return_type(self):
         if self.is_at_end():
@@ -909,9 +919,9 @@ class Parser:
             "Se esperaba '(' despues del nombre de la habitacion.",
         )
         width = self.parse_expression()
-        self.consume(TokenType.COMMA, "Se esperaba ',' despues del ancho.")
+        self.consume(TokenType.COMMA, "Falta una coma después del ancho: habitacion sala(5, 4, 3).")
         length = self.parse_expression()
-        self.consume(TokenType.COMMA, "Se esperaba ',' despues del largo.")
+        self.consume(TokenType.COMMA, "Falta una coma después del largo: habitacion sala(5, 4, 3).")
         height = self.parse_expression()
         self.consume(
             TokenType.RIGHT_PAREN,
@@ -1064,10 +1074,27 @@ class Parser:
         return properties
 
     def parse_spatial_transform_target(self):
-        # After the name, [expr] is an index and [x, y, z] is the legacy vector.
+        # An identifier is a vector variable. After the object name, [expr]
+        # remains either an index followed by a vector or a literal vector.
+        if not self.check(TokenType.LEFT_BRACKET):
+            vector_token = self.consume(
+                TokenType.IDENTIFIER,
+                "Use un vector [x, y, z] entre corchetes o una variable de tipo vector.",
+            )
+            return None, IdentifierNode(
+                name=vector_token.lexeme,
+                file=vector_token.file,
+                line=vector_token.line,
+                column=vector_token.column,
+            )
         bracket = self.consume(TokenType.LEFT_BRACKET, "Se esperaba '[' para iniciar el vector.")
         first = self.parse_expression()
         if self.match(TokenType.RIGHT_BRACKET):
+            if not self.check(TokenType.LEFT_BRACKET):
+                raise self.error(
+                    "El vector necesita tres componentes separados por comas.",
+                    suggestion="Use [x, y, z]. Para un objeto indexado, use silla[i] [x, y, z].",
+                )
             return first, self.parse_vector()
         return None, self.parse_vector_components(bracket, first)
 
@@ -1270,7 +1297,11 @@ class Parser:
                 if not self.match(TokenType.COMMA):
                     break
 
-        self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' al final de la lista.")
+        self.consume(
+            TokenType.RIGHT_BRACKET,
+            "Se esperaba ']' al final de la lista.",
+            suggestion='Si hay otro elemento, sepárelo con una coma: ["azul", "rojo"].',
+        )
 
         return ListNode(
             elements=elements,
@@ -1282,14 +1313,16 @@ class Parser:
     def parse_vector(self):
         left_bracket = self.consume(
             TokenType.LEFT_BRACKET,
-            "Se esperaba '[' para iniciar el vector.",
+            "Use corchetes para el vector: [x, y, z].",
         )
         return self.parse_vector_components(left_bracket, self.parse_expression())
 
     def parse_vector_components(self, left_bracket, x):
-        self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente x.")
+        self.consume(TokenType.COMMA, "Falta una coma después del componente x del vector [x, y, z].")
         y = self.parse_expression()
-        self.consume(TokenType.COMMA, "Se esperaba ',' despues del componente y.")
+        if self.check(TokenType.RIGHT_BRACKET):
+            raise self.error("Falta el componente z del vector. Use [x, y, z].")
+        self.consume(TokenType.COMMA, "Falta una coma después del componente y del vector [x, y, z].")
         z = self.parse_expression()
         self.consume(TokenType.RIGHT_BRACKET, "Se esperaba ']' al final del vector.")
 

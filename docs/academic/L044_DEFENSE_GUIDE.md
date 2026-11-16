@@ -13,7 +13,7 @@
 5. **Escena:** explicar que `ScenePlanBuilder` conserva estado final, no historial;
    `SpatialValidator` trabaja con valores ya resueltos.
 6. **IDE:** usar **Compilar** para analizar y **Ejecutar Lumi** para ejecutar
-   la pestaña activa. El visor recibe la escena resultante del intérprete.
+   el archivo principal del proyecto. El visor recibe la escena resultante.
 
 ## Ejercicio 1 — Tipos y diagnóstico
 
@@ -42,8 +42,8 @@ funcion entero doble(entero valor) {
 }
 ```
 
-Con `calculos.lumi` abierto, volver a la pestaña `principal.lumi` y ejecutar.
-La consola muestra `12`.
+Marcar `principal.lumi` como principal, abrir `calculos.lumi` y ejecutar.
+La consola muestra `12` aunque la pestaña activa sea la del módulo.
 
 ## Ejercicio 3 — Estado espacial final
 
@@ -63,7 +63,7 @@ Resultado esperado: una habitación y una mesa con posición final
 
 - ¿Por qué Compilar no genera una escena?
 - ¿Por qué el análisis espacial aún puede indicar `incomplete`?
-- ¿Qué se ejecuta si está seleccionada la pestaña de un módulo?
+- ¿Cómo se elige qué archivo ejecuta el IDE si hay varios abiertos?
 - ¿Cómo se conserva la ubicación de un error importado?
 - ¿Qué diferencia existe entre AST, ScenePlan interno y DTO?
 - ¿Qué propiedades hacen falta para declarar una puerta o una ventana?
@@ -80,5 +80,5 @@ Resultado esperado: una habitación y una mesa con posición final
 4. Probar `leer` con `examples/03_Input_And_Output/06_read_and_show.lumi`.
    Responder en el formulario y mostrar la salida en la consola.
 5. Mostrar un diagnóstico con archivo y línea usando uno de los ejemplos de
-   errores. En el depurador, mostrar los pasos disponibles de un archivo
-   `.lumic` o de la demostración. Las trazas de Python quedan pendientes.
+   errores. Ejecutar una escena y avanzar por los pasos espaciales de Python
+   en el depurador.

@@ -32,7 +32,13 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
   for (const limitation of payload.limitations) logs.push(`Limitación del backend: ${limitation}`);
   return {
     compilationId: response.requestId, status: response.status, success: response.status === 'completed',
-    diagnostics, scenePlan: payload.scenePlan ?? null, debugSteps: [], durationMs, logs,
+    diagnostics, scenePlan: payload.scenePlan ?? null,
+    debugSteps: response.operation === 'execute' && payload.capabilities.debugTrace
+      ? payload.debugSteps ?? [] : [],
+    ...(payload.debugTraceUnavailableReason !== undefined
+      ? { debugTraceUnavailableReason: payload.debugTraceUnavailableReason }
+      : {}),
+    durationMs, logs,
     entryFileInfo: {
       id: entry?.id ?? '',
       name: payload.entryFile.split('/').at(-1) ?? payload.entryFile, path: payload.entryFile,

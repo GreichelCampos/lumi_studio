@@ -55,11 +55,32 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
   const statusInfo = getDebuggerStatusInfo(debuggerStatus);
   const source = validDebugSource(currentStep?.sourceRef) ? currentStep.sourceRef : null;
   const objectId = resolveDebugStep(null, currentStep ?? null).activeObjectId;
+  const inspectedEntity = (() => {
+    if (!currentStep?.activeObjectId || !currentStep.sceneSnapshot) return null;
+    const rooms = currentStep.roomId
+      ? currentStep.sceneSnapshot.rooms.filter(room => room.id === currentStep.roomId)
+      : currentStep.sceneSnapshot.rooms;
+    for (const room of rooms) {
+      const object = room.objects.find(item => item.id === currentStep.activeObjectId);
+      if (object) return { room: room.name, kind: object.type, name: object.name,
+        placed: object.position !== undefined, position: object.position, rotation: object.rotation,
+        dimensions: object.dimensions };
+      const door = room.doors.find(item => item.id === currentStep.activeObjectId);
+      if (door) return { room: room.name, kind: 'puerta', name: door.name ?? door.id,
+        dimensions: [door.width, door.height] };
+      const window = room.windows.find(item => item.id === currentStep.activeObjectId);
+      if (window) return { room: room.name, kind: 'ventana', name: window.name ?? window.id,
+        dimensions: [window.width, window.height] };
+      const wall = Object.values(room.walls).find(item => item.id === currentStep.activeObjectId);
+      if (wall) return { room: room.name, kind: 'pared', name: wall.name ?? wall.id };
+    }
+    return null;
+  })();
 
   return (
     <div className="space-y-3 font-sans">
       <p className="text-xs text-[var(--ide-text-muted)]">
-        Reproducción de pasos importados o de demostración. No son trazas de Python.
+        Reproducción de snapshots espaciales de Python, archivos .lumic o demostraciones compatibles.
       </p>
       {lastCompileResult?.origin === 'python' && (
         <PythonDebuggerStatus result={lastCompileResult} onNavigateToDiagnostic={onNavigateToDiagnostic} />
@@ -125,6 +146,17 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
           <p className="text-xs text-[var(--ide-text)] leading-relaxed">
             {currentStep.description || currentStep.actionDescription}
           </p>
+          {inspectedEntity && (
+            <dl aria-label="Inspección espacial del paso" className="grid grid-cols-2 gap-x-3 gap-y-1 rounded-xl border border-[var(--ide-panel-border)] bg-[var(--ide-control-bg)] p-2.5 text-[11px]">
+              <dt className="text-[var(--ide-text-muted)]">Habitación</dt><dd>{inspectedEntity.room}</dd>
+              <dt className="text-[var(--ide-text-muted)]">Elemento</dt><dd>{inspectedEntity.name}</dd>
+              <dt className="text-[var(--ide-text-muted)]">Tipo</dt><dd>{inspectedEntity.kind}</dd>
+              {'placed' in inspectedEntity && <><dt className="text-[var(--ide-text-muted)]">Estado</dt><dd>{inspectedEntity.placed ? 'Colocado' : 'Declarado, sin colocar'}</dd></>}
+              {'position' in inspectedEntity && inspectedEntity.position && <><dt className="text-[var(--ide-text-muted)]">Posición</dt><dd>{inspectedEntity.position.join(', ')}</dd></>}
+              {'rotation' in inspectedEntity && inspectedEntity.rotation && <><dt className="text-[var(--ide-text-muted)]">Rotación</dt><dd>{inspectedEntity.rotation.join(', ')}°</dd></>}
+              {'dimensions' in inspectedEntity && inspectedEntity.dimensions && <><dt className="text-[var(--ide-text-muted)]">Dimensiones</dt><dd>{inspectedEntity.dimensions.join(' × ')} m</dd></>}
+            </dl>
+          )}
           {currentStep.spatialState && (
             <details className="text-xs">
               <summary>Estado registrado del paso</summary>
@@ -156,7 +188,7 @@ export const SpatialDebuggerView: React.FC<SpatialDebuggerViewProps> = ({
             No hay pasos de depuración disponibles
           </div>
           <p className="text-xs text-[var(--ide-text-muted)] max-w-sm">
-            Importa un archivo .lumic que incluya pasos para reproducirlos. En el modo de demostración los pasos son simulados; Python todavía no genera trazas espaciales.
+            Ejecuta un programa Lumi con F6 o importa un archivo .lumic que incluya pasos espaciales.
           </p>
         </div>
       )}

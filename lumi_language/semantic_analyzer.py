@@ -440,8 +440,6 @@ class SemanticAnalyzer:
     def _infer_expression(self, node: dict[str, Any]) -> DataType | None:
         node_type = node["node"]
         if node_type == "LiteralNode":
-            if node["literal_kind"] == "nulo":
-                return None
             return self._data_type(node["literal_kind"], node)
         if node_type == "IdentifierNode":
             symbol = self.current_scope.resolve(node["name"])

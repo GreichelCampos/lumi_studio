@@ -38,6 +38,8 @@ def assert_locations(original, serialized):
     "  entero numero = 42>>",
     "habitacion sala(5, 4, 3) { silla fila[1 + 2] {} colocar fila[3] [0, 0, 0]>> }",
     "principal { si verdadero { mostrar([1, 2 + 3])>> } }",
+    "principal { vector destino = [1, 0, 2]>> habitacion sala(5, 4, 3) { "
+    "mesa mesa1 {} colocar mesa1 destino>> } }",
     '''habitacion sala(5, 4, 3) {
  piso base { material "madera">> }
  pared norte { color "blanco">> }

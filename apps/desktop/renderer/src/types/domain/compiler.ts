@@ -22,6 +22,7 @@ export interface CompileResult {
   durationMs: number;
   logs: string[];
   debugSteps: DebugStep[];
+  debugTraceUnavailableReason?: string;
   timestamp: string;
 }
 

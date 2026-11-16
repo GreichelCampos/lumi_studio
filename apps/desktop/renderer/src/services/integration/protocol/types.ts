@@ -1,5 +1,6 @@
 /** Independent wire contract; intentionally different from the mock compiler DTO. */
 import type { ScenePlan } from '../../../types/domain/spatial';
+import type { DebugStep } from '../../../types/domain/debug';
 export const PROTOCOL_VERSION = '1.0.0' as const;
 export const MAX_RESPONSE_BYTES = 4_194_304;
 export type Operation = 'analyze' | 'execute';
@@ -35,10 +36,12 @@ export interface ProtocolResult {
   limitations: 'spatial_semantics_unavailable'[];
   lexicalError?: string;
   scenePlan?: ScenePlan;
+  debugSteps?: DebugStep[];
+  debugTraceUnavailableReason?: string;
   executionAttempted: boolean;
   capabilities: {
     scenePlan: boolean;
-    debugTrace: false;
+    debugTrace: boolean;
     interactiveInput: boolean;
     cancellation: false;
   };

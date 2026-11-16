@@ -1043,6 +1043,17 @@ class SpatialSemanticAnalyzer:
     def _analyze_vector(
         self, vector: dict[str, Any], element_name: str, vector_name: str,
     ) -> None:
+        if vector["node"] != "VectorNode":
+            vector_type, inference_failed = self._infer_once(vector)
+            if not inference_failed and vector_type is not DataType.VECTOR:
+                self._add_diagnostic(
+                    vector,
+                    "SEM_SPATIAL_OPERAND_NOT_VECTOR",
+                    f"La {vector_name} de '{element_name}' debe ser un vector.",
+                    "Utilice una variable de tipo vector o un vector literal [x, y, z].",
+                    cause=(element_name, vector_name, vector_type),
+                )
+            return
         for component_name in ("x", "y", "z"):
             component = vector[component_name]
             component_type, inference_failed = self._infer_once(component)

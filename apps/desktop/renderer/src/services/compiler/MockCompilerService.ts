@@ -380,7 +380,7 @@ export class MockCompilerService implements CompilerService {
         continue;
       }
 
-      // 10. Furniture Placement: colocar sofa en [0.0, 0.0, -1.0]>>
+      // 10. Furniture Placement: colocar sofa [0.0, 0.0, -1.0]>>
       const placeMatch = trimmed.match(LUMI_PATTERNS.placeObj);
       if (placeMatch && currentRoom) {
         if (!trimmed.endsWith('>>') && !trimmed.endsWith(';')) {

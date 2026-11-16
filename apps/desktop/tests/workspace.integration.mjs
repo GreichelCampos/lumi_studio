@@ -47,6 +47,28 @@ try {
   await page.locator('#modal-new-project').waitFor({ state: 'hidden' });
   const root = join(workspace.root, 'CasaReal');
   await eventually(async () => (await metadata()).projects.some(p => p.root === root), 'Project root was not persisted');
+  const editor = page.locator('textarea');
+  await editor.fill('principal {\n  habitacion sala(5 4, 3) {}\n}');
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
+  await page.getByRole('button', { name: /Diagnósticos/ }).click();
+  await page.getByText(/Falta una coma después del ancho/).first().waitFor();
+  await page.getByRole('button', { name: 'Ir al código (principal.lumi:2)', exact: true }).click();
+  await editor.press('F1');
+  const help = page.locator('#modal-documentation');
+  await help.getByRole('heading', { name: 'Errores frecuentes' }).waitFor();
+  await help.getByText('Paréntesis, corchetes y comas', { exact: true }).click();
+  await help.getByText(/Un vector va entre corchetes/).waitFor();
+  await page.keyboard.press('Escape');
+  await help.waitFor({ state: 'hidden' });
+
+  await editor.fill('funcion entero suma(ent a) { retornar a>> }');
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
+  await page.getByText(/Escriba el tipo y el nombre, por ejemplo: entero cantidad/).waitFor();
+  await editor.fill('principal { mostrar("CORREGIDO")>> }');
+  await page.locator('#tab-salida-btn').click();
+  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
+  await page.getByText('CORREGIDO', { exact: true }).waitFor();
+  console.log('Malformed Lumi shows source location and a repair hint; F1 help and recovery verified.');
   const principal = 'importar "modulo.lumi" usar dividir>>\nmostrar(dividir())>>';
   await page.locator('textarea').fill(principal);
   await save(page, join(root, 'principal.lumi'), principal);
@@ -67,15 +89,6 @@ try {
   });
   assert.equal(backendCheck.ok, true, JSON.stringify(backendCheck));
   assert.ok(backendCheck.response.result.diagnostics.some(d => d.code === 'RUN_DIVISION_BY_ZERO'), JSON.stringify(backendCheck));
-  const editor = page.locator('textarea');
-  const auxiliaryProgram = 'mostrar("PESTANA_AUXILIAR")>>';
-  await editor.fill(auxiliaryProgram);
-  await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
-  await page.getByText('PESTANA_AUXILIAR', { exact: true }).waitFor();
-  assert.equal((await metadata()).projects.find(p => p.root === root).entryPath, 'principal.lumi');
-  await editor.fill(module);
-  await page.getByTestId(`tab-${mainId}`).click();
-  await eventually(async () => await page.getByTestId(`tab-${mainId}`).getAttribute('data-active-tab') === 'true', 'Main tab did not activate');
   await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByRole('button', { name: /Diagnósticos/ }).click();
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).waitFor();
@@ -87,7 +100,7 @@ try {
   await location.dblclick();
   await eventually(async () => await page.getByTestId(`tab-${moduleId}`).getAttribute('data-active-tab') === 'true', 'Diagnostic did not open its source file');
   assert.equal(await page.locator('textarea').evaluate(el => el.selectionStart), module.indexOf('\n') + 1 + column - 1);
-  console.log('Real Python runs the active tab without changing the saved entry file; running the principal tab verifies cross-file diagnostic line and column.');
+  console.log('Real Python runs the project entry with the auxiliary tab active; cross-file diagnostic line and column verified.');
 
   const row = page.getByTestId(`explorer-file-${moduleId}`);
   await row.hover(); await row.getByTitle('Opciones de archivo', { exact: true }).click();

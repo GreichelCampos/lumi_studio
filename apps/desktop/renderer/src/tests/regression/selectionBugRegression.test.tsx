@@ -20,7 +20,7 @@ const DebuggerSelectionOrchestrator: React.FC<{
     }
   }, []);
 
-  const { nextStep } = useSpatialDebugger({
+  const { nextStep, resetDebugger } = useSpatialDebugger({
     debugSteps: steps,
     onStepChange: handleStepChange,
   });
@@ -37,6 +37,9 @@ const DebuggerSelectionOrchestrator: React.FC<{
   return (
     <div>
       <div data-testid="selected-id">{activeObjectId || 'none'}</div>
+      <button data-testid="btn-activate-step" onClick={resetDebugger}>
+        Activar Paso
+      </button>
       <button data-testid="btn-next-step" onClick={nextStep}>
         Siguiente Paso
       </button>
@@ -86,6 +89,8 @@ describe('Regresión: Bug de persistencia indebida de selección activa', () => 
 
     render(<DebuggerSelectionOrchestrator steps={steps} />);
 
+    expect(screen.getByTestId('selected-id')).toHaveTextContent('none');
+    fireEvent.click(screen.getByTestId('btn-activate-step'));
     expect(screen.getByTestId('selected-id')).toHaveTextContent('mesa-3');
     expect(screen.getByRole('button', { name: /cerrar detalles del objeto/i })).toBeInTheDocument();
 

@@ -198,22 +198,23 @@ def test_spatial_declarations():
 
 
 @pytest.mark.parametrize(
-    "name,line,column,description",
+    "name,line,column,description,suggestion",
     [
         pytest.param("missing_parenthesis.lumi", 2, 14,
-                     "Se esperaba ')' despues de la expresion. Encontrado: '>>'.", id="missing_parenthesis"),
+                     "Falta cerrar la llamada a mostrar con ')'. Encontrado: '>>'.",
+                     'Escriba, por ejemplo: mostrar("Hola")>>.', id="missing_parenthesis"),
         pytest.param("unclosed_block.lumi", 3, 1,
-                     "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", id="unclosed_block"),
+                     "Se esperaba '}' para cerrar el bloque. Encontrado: fin de archivo.", None, id="unclosed_block"),
         pytest.param("incomplete_expression.lumi", 2, 24,
-                     "Se esperaba una expresion. Encontrado: '>>'.", id="incomplete_expression"),
+                     "Falta un valor o una expresión. Encontrado: '>>'.", None, id="incomplete_expression"),
         # Positions count the current fixture text, including the renamed import.
         pytest.param("invalid_vector.lumi", 3, 24,
-                     "Se esperaba ',' despues del componente y. Encontrado: ']'.", id="invalid_vector"),
+                     "Falta el componente z del vector. Use [x, y, z]. Encontrado: ']'.", None, id="invalid_vector"),
         pytest.param("invalid_import.lumi", 1, 27,
-                     "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", id="invalid_import"),
+                     "Se esperaba 'usar' despues del archivo importado. Encontrado: 'sumar'.", None, id="invalid_import"),
     ],
 )
-def test_invalid_program(name, line, column, description):
+def test_invalid_program(name, line, column, description, suggestion):
     source = read_fixture("invalid", name)
     parser = Parser(Lexer(source, name).tokenize(), file=name)
     with pytest.raises(ParserError) as raised:
@@ -236,5 +237,5 @@ def test_invalid_program(name, line, column, description):
         "line": line,
         "column": column,
         "description": description,
-        "suggestion": None,
+        "suggestion": suggestion,
     }
