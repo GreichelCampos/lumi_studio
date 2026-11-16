@@ -1,0 +1,5 @@
+importar "base.lumi" usar interna>>
+
+funcion entero publica() {
+    retornar interna()>>
+}

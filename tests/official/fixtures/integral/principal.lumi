@@ -1,0 +1,46 @@
+importar "calculos.lumi" usar calcular_area>>
+importar "muebles.lumi" usar reorganizar>>
+
+principal {
+    decimal ancho = 8>>
+    decimal largo = 6>>
+    mostrar("Area integral:")>>
+    mostrar(calcular_area(ancho, largo))>>
+
+    habitacion sala(ancho, largo, 3.2) {
+        piso suelo {
+            material "madera">>
+            color "#d6b98c">>
+        }
+        pared muro_oeste {
+            orientacion "oeste">>
+            material "concreto">>
+        }
+        puerta entrada {
+            orientacion "norte">>
+            ancho 1.1>>
+            alto 2.2>>
+            desplazamiento 0.5>>
+            material "madera">>
+        }
+        ventana ventanal {
+            orientacion "sur">>
+            ancho 2.4>>
+            alto 1.2>>
+            desplazamiento 2>>
+            elevacion 1>>
+            material "vidrio">>
+        }
+        mesa mesa_centro {
+            material "madera">>
+        }
+        silla silla_lectura {
+            color "#2563eb">>
+        }
+        colocar mesa_centro [0, 0, 0]>>
+        colocar silla_lectura [-2, 0, -1]>>
+        reorganizar()>>
+    }
+
+    visualizar3D(sala)>>
+}

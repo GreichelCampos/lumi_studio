@@ -1,0 +1,5 @@
+importar "base.lumi" usar valor_base>>
+
+funcion entero resultado() {
+    retornar valor_base() + 1>>
+}

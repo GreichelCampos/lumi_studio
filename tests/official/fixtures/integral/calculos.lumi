@@ -1,0 +1,3 @@
+funcion decimal calcular_area(decimal ancho, decimal largo) {
+    retornar ancho * largo>>
+}

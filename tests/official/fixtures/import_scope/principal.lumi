@@ -1,0 +1,6 @@
+importar "fachada.lumi" usar publica>>
+
+principal {
+    mostrar(publica())>>
+    mostrar(interna())>>
+}

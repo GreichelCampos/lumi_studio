@@ -1,0 +1,4 @@
+funcion vacio reorganizar() {
+    mover mesa_centro [1.5, 0, 0.5]>>
+    rotar mesa_centro [0, 90, 0]>>
+}

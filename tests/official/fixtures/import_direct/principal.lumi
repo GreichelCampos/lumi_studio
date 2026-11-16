@@ -1,0 +1,5 @@
+importar "matematica.lumi" usar area>>
+
+principal {
+    mostrar(area(4, 5))>>
+}

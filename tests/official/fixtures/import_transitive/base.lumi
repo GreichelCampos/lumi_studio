@@ -1,0 +1,3 @@
+funcion entero valor_base() {
+    retornar 41>>
+}
