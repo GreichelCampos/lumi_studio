@@ -1,4 +1,5 @@
-import { app, BrowserWindow, Menu, session, protocol, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, Menu, session, protocol, dialog, ipcMain, shell } from 'electron';
+import { LUMI_REPOSITORY, LUMI_TEAM } from '../projectCredits';
 import { appendFileSync, mkdirSync } from 'node:fs';
 import { isAbsolute, join, resolve } from 'node:path';
 import { PythonWorker } from './pythonWorker';
@@ -66,7 +67,13 @@ app.whenReady().then(async () => {
     },
   });
   if (process.platform === 'win32') configureWindowsTaskbar(window, icon);
-  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  const projectLinks = new Set([LUMI_REPOSITORY, ...LUMI_TEAM.map(({ github }) => `https://github.com/${github}`)]);
+  window.webContents.setWindowOpenHandler(({ url }) => {
+    if (projectLinks.has(url)) {
+      void shell.openExternal(url).catch(error => console.error('No se pudo abrir el enlace del proyecto:', error));
+    }
+    return { action: 'deny' };
+  });
   window.webContents.on('will-navigate', (event, target) => {
     if (target !== renderer.href) event.preventDefault();
   });

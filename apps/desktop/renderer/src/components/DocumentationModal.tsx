@@ -1,5 +1,6 @@
 import React from 'react';
-import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS, LUMI_COMMON_ERRORS } from '../data/documentation';
+import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE } from '../data/documentation';
+import { LUMI_REPOSITORY, LUMI_TEAM } from '../../../projectCredits';
 import { LumiMascot } from './LumiMascot';
 import { X, Code2, Check, Sparkles } from 'lucide-react';
 
@@ -13,14 +14,49 @@ const helpTopics = [
   { id: 'errors', label: 'Errores frecuentes' },
   { id: 'examples', label: 'Ejemplos' },
   { id: 'keywords', label: 'Palabras reservadas' },
+  { id: 'projects', label: 'Proyectos e importaciones' },
+  { id: 'debugger', label: 'Depurador espacial' },
   { id: 'ide', label: 'Guía del IDE' },
 ] as const;
 
 const exampleKindLabels = {
-  executable: 'Ejemplo ejecutable con Python',
+  executable: 'Ejemplo para ejecutar',
   'syntax-only': 'Ejemplo sintáctico · ejecución no soportada',
   informational: 'Información · no es un programa ejecutable',
 };
+
+function CodeExample({ code }: { code: string }) {
+  const [status, setStatus] = React.useState('');
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(code);
+      setStatus('Código copiado');
+    } catch {
+      setStatus('Seleccioná el código para copiarlo.');
+    }
+  }
+
+  return (
+    <div className="space-y-2">
+      <pre className="overflow-x-auto rounded-xl bg-[#02110c]/60 p-3 text-xs text-[#f3ebd6]"><code>{code}</code></pre>
+      <button type="button" onClick={() => void copy()} className="glass-btn rounded-lg px-3 py-1 text-xs">Copiar código</button>
+      <span role="status" className="ml-2 text-xs">{status}</span>
+    </div>
+  );
+}
+
+const searchEntries = [
+  ...LUMI_DOCUMENTATION_SECTIONS.map(({ title, description, code }) => ({ title, description, code })),
+  ...LUMI_COMMON_ERRORS.map(({ title, advice, code }) => ({ title, description: advice, code })),
+  ...LUMI_PROJECT_EXAMPLES,
+  ...LUMI_DEBUG_GUIDE.map(({ title, advice, code }) => ({ title, description: advice, code })),
+  ...LUMI_KEYWORDS.map(({ word, category, desc }) => ({ title: word, description: category + ' · ' + desc, code: '' })),
+];
+
+function normalize(text: string) {
+  return text.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+}
 
 export const DocumentationModal: React.FC<DocumentationModalProps> = ({
   isOpen,
@@ -28,6 +64,14 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
   onClose,
 }) => {
   const [topic, setTopic] = React.useState<(typeof helpTopics)[number]['id']>('errors');
+  const [query, setQuery] = React.useState('');
+  const [debugIndex, setDebugIndex] = React.useState(0);
+  const terms = normalize(query).split(/\s+/).filter(Boolean);
+  const searchResults = terms.length ? searchEntries.filter(entry => {
+    const text = normalize([entry.title, entry.description, entry.code].join(' '));
+    return terms.every(term => text.includes(term));
+  }) : [];
+  const debugStep = LUMI_DEBUG_GUIDE[debugIndex];
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -80,19 +124,38 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         </div>
 
         {isAbout ? (
-          <section className="p-6 space-y-2 text-sm">
-            <p>Lumi es el Lenguaje Unificado de Modelado de Interiores.</p>
-            <p>Estudio Lumi es el entorno para editar y ejecutar programas Lumi y visualizar sus escenas en 3D.</p>
+          <section className="overflow-y-auto p-6 space-y-4 text-sm">
+            <p className="text-lg font-semibold"><strong>LUMI</strong> · Lenguaje Unificado de Modelado de Interiores</p>
+            <p>Lumi nació como proyecto del curso Paradigmas de Programación de la Universidad Nacional, Campus Pérez Zeledón.</p>
+            <p>La idea es aprender programación en español al diseñar habitaciones. Podés cambiar una medida, mover un mueble y ver qué efecto tiene esa instrucción en 3D. Lumi también señala problemas como una colisión o una puerta bloqueada.</p>
+            <h3 className="font-semibold">Equipo</h3>
+            <ul className="space-y-2">
+              {LUMI_TEAM.map(({ name, github }) => (
+                <li key={github}>{name} · <a className="underline" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">@{github}</a></li>
+              ))}
+            </ul>
+            <a className="underline" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">Repositorio de Estudio Lumi en GitHub</a>
           </section>
         ) : (
           <>
+            <div className="flex flex-wrap items-center gap-2 px-6 pt-4">
+              <label htmlFor="lumi-help-search" className="text-xs font-semibold">Buscar en la ayuda</label>
+              <input
+                id="lumi-help-search"
+                type="search"
+                value={query}
+                onChange={event => setQuery(event.target.value)}
+                placeholder="Ej. vectores, importar, ciclo"
+                className="min-w-0 flex-1 rounded-lg border border-[#f3ebd6]/25 bg-[#02110c]/60 px-3 py-2 text-sm"
+              />
+            </div>
             <nav aria-label="Temas de ayuda" className="flex flex-wrap gap-2 px-6 pt-4">
               {helpTopics.map(({ id, label }) => (
                 <button
                   key={id}
                   type="button"
                   aria-pressed={topic === id}
-                  onClick={() => setTopic(id)}
+                  onClick={() => { setTopic(id); setQuery(''); }}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-semibold focus-visible:outline focus-visible:outline-offset-2 ${
                     topic === id ? 'bg-[#f3ebd6] text-[#082016]' : 'glass-btn border-[#f3ebd6]/25 text-[#f3ebd6]'
                   }`}
@@ -101,6 +164,18 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 </button>
               ))}
             </nav>
+            {terms.length > 0 ? (
+              <section className="flex-1 overflow-y-auto p-6 space-y-3" aria-label="Resultados de búsqueda">
+                <p role="status" className="text-xs">{searchResults.length ? `Resultados: ${searchResults.length}` : 'Sin resultados. Probá con otra palabra.'}</p>
+                {searchResults.map(({ title, description, code }) => (
+                  <details key={title} className="glass-card p-3 !w-auto !h-auto text-sm">
+                    <summary className="cursor-pointer font-semibold">{title}</summary>
+                    <p className="my-2 text-xs">{description}</p>
+                    {code && <CodeExample code={code} />}
+                  </details>
+                ))}
+              </section>
+            ) : (
             <div key={topic} className="flex-1 overflow-y-auto p-6 space-y-6">
               {topic === 'errors' && (
                 <section className="space-y-3">
@@ -110,7 +185,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <details key={title} className="glass-card p-3 !w-auto !h-auto text-sm">
                       <summary className="cursor-pointer font-semibold">{title}</summary>
                       <p className="mt-2 text-xs">{advice}</p>
-                      <pre className="mt-2 overflow-x-auto text-xs"><code>{code}</code></pre>
+                      <CodeExample code={code} />
                     </details>
                   ))}
                 </section>
@@ -123,9 +198,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                       <h4 className="text-sm font-bold text-[#f3ebd6] drop-shadow-sm">{sec.title}</h4>
                       <p className="text-xs font-semibold text-[#f3ebd6]">{exampleKindLabels[sec.exampleKind]}</p>
                       <p className="text-xs text-[#d5cbb2] leading-relaxed">{sec.description}</p>
-                      <pre className="bg-[#02110c]/60 p-3 rounded-xl text-xs font-mono text-[#f3ebd6] overflow-x-auto border border-[#f3ebd6]/15 shadow-inner">
-                        {sec.code}
-                      </pre>
+                      <CodeExample code={sec.code} />
                     </div>
                   ))}
                 </section>
@@ -149,6 +222,36 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                   </div>
                 </div>
               )}
+              {topic === 'projects' && (
+                <section className="space-y-4">
+                  <h3 className="text-sm font-bold">Proyectos e importaciones</h3>
+                  <p className="text-xs">Creá un proyecto y guardá los dos archivos en la misma carpeta. Compilar y Ejecutar Lumi usan el archivo marcado como principal, aunque tengás otro abierto.</p>
+                  {LUMI_PROJECT_EXAMPLES.map(({ title, description, code }) => (
+                    <article key={title} className="space-y-2">
+                      <h4 className="font-mono text-sm font-semibold">{title}</h4>
+                      <p className="text-xs">{description}</p>
+                      <CodeExample code={code} />
+                    </article>
+                  ))}
+                  <p className="text-xs">Si falla la importación, revisá el nombre y la ruta del archivo, el nombre de la función y los argumentos. Si dos módulos se importan entre sí, reorganizá las funciones para romper el ciclo.</p>
+                </section>
+              )}
+              {topic === 'debugger' && (
+                <section className="space-y-4">
+                  <h3 className="text-sm font-bold">Depurador espacial</h3>
+                  <p className="text-xs">Seguí este recorrido en tu proyecto para ver cómo una silla cambia de posición y qué ocurre si sale de la sala.</p>
+                  <article aria-live="polite" className="glass-card p-4 space-y-2 !w-auto !h-auto">
+                    <p className="text-xs">Paso {debugIndex + 1} de {LUMI_DEBUG_GUIDE.length}</p>
+                    <h4 className="text-sm font-semibold">{debugStep.title}</h4>
+                    <p className="text-xs">{debugStep.advice}</p>
+                    <CodeExample key={debugStep.title} code={debugStep.code} />
+                  </article>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" className="glass-btn rounded-lg px-3 py-2 text-xs disabled:opacity-50" disabled={debugIndex === 0} onClick={() => setDebugIndex(debugIndex - 1)}>Anterior</button>
+                    <button type="button" className="glass-btn rounded-lg px-3 py-2 text-xs disabled:opacity-50" disabled={debugIndex === LUMI_DEBUG_GUIDE.length - 1} onClick={() => setDebugIndex(debugIndex + 1)}>Siguiente</button>
+                  </div>
+                </section>
+              )}
               {topic === 'ide' && (
                 <section className="space-y-4">
                 <div className="p-4 rounded-2xl glass-card border border-[#f3ebd6]/25 flex items-center justify-between !w-auto !h-auto">
@@ -156,7 +259,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Estudio LUMI</span>
                     <h3 className="text-lg font-extrabold text-[#f3ebd6] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
                     <p className="text-xs text-[#d5cbb2] mt-1 max-w-xl leading-relaxed">
-                      En Electron, Compilar analiza el archivo principal del proyecto. Ejecutar Lumi corre ese archivo y abre el visor cuando el programa genera una escena. El visor muestra habitaciones, pisos, paredes, puertas, ventanas y muebles colocados. Si el programa usa leer, aparece un formulario. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
+                      Compilar analiza el archivo principal del proyecto. Ejecutar Lumi corre ese archivo y abre el visor cuando el programa genera una escena. El visor muestra habitaciones, pisos, paredes, puertas, ventanas y muebles colocados. Si el programa usa leer, aparece un formulario. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
                     </p>
                   </div>
                   <div className="hidden sm:block">
@@ -199,6 +302,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 </section>
               )}
             </div>
+            )}
           </>
         )}
 

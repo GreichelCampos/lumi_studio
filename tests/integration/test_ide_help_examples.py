@@ -5,6 +5,7 @@ import subprocess
 
 import pytest
 
+from lumi_language.interpreter import Interpreter
 from lumi_language.lexer import Lexer
 from lumi_language.parser import Parser
 from services.compiler_service import CompilerService
@@ -13,20 +14,57 @@ from services.results import CompilationStatus, ExecutionStatus
 
 
 @pytest.fixture(scope="module")
-def help_sections():
+def help_content():
     root = Path(__file__).resolve().parents[2]
     module = root / "apps/desktop/renderer/src/data/documentation.ts"
     node = shutil.which("node")
     assert node is not None, "Validar la ayuda del IDE requiere Node.js 24."
     script = (
-        f"import {{ LUMI_DOCUMENTATION_SECTIONS }} from {json.dumps(module.as_uri())};"
-        "console.log(JSON.stringify(LUMI_DOCUMENTATION_SECTIONS));"
+        f"import {{ LUMI_DOCUMENTATION_SECTIONS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE }} from {json.dumps(module.as_uri())};"
+        "console.log(JSON.stringify({sections: LUMI_DOCUMENTATION_SECTIONS, errors: LUMI_COMMON_ERRORS, projects: LUMI_PROJECT_EXAMPLES, debugger: LUMI_DEBUG_GUIDE}));"
     )
     result = subprocess.run(
         [node, "--experimental-strip-types", "--input-type=module", "-e", script],
         cwd=root, capture_output=True, check=True, timeout=10,
     )
     return json.loads(result.stdout.decode("utf-8"))
+
+
+@pytest.fixture
+def help_sections(help_content):
+    return help_content["sections"]
+
+
+def test_executable_help_examples_run(help_content):
+    service = ExecutionService(interpreter_factory=lambda: Interpreter(input_provider=lambda _: "Ana"))
+    examples = [
+        section for section in help_content["sections"] if section["exampleKind"] == "executable"
+    ] + help_content["errors"]
+    for example in examples:
+        result = service.execute_source(example["code"], "ayuda.lumi")
+        assert result.status is ExecutionStatus.COMPLETED, (example["title"], result.diagnostics)
+
+
+def test_help_project_import_runs(help_content):
+    sources = {example["title"]: example["code"] for example in help_content["projects"]}
+    result = ExecutionService().execute_source(sources["principal.lumi"], "principal.lumi", sources=sources)
+    assert result.status is ExecutionStatus.COMPLETED
+    assert result.output == ("12",)
+
+
+def test_help_debugger_guide_runs_and_reports_bad_coordinates(help_content):
+    guide = help_content["debugger"]
+    source = guide[0]["code"]
+    service = ExecutionService()
+    result = service.execute_source(source, "principal.lumi")
+    assert result.status is ExecutionStatus.COMPLETED
+    assert result.spatial_trace is not None
+    assert result.spatial_trace.steps
+    broken = source.replace(guide[2]["code"], guide[3]["code"])
+    assert broken != source
+    failed = service.execute_source(broken, "principal.lumi")
+    assert failed.status is ExecutionStatus.FAILED
+    assert failed.diagnostics[0].code == "SPA_OBJECT_OUT_OF_BOUNDS"
 
 
 @pytest.mark.parametrize("index", range(5))
