@@ -22,7 +22,7 @@ export class MockDiagnosticFactory {
   public static illegalSymbol(compilationId: string, file: string, line: number, column: number): DiagnosticItem {
     return {
       id: `diag-lex-${compilationId}-${line}`,
-      code: 'LUMI-L001',
+      code: 'LEX_INVALID_CHARACTER',
       severity: 'error',
       category: 'lexico',
       blocking: true,
@@ -30,7 +30,7 @@ export class MockDiagnosticFactory {
       line,
       column,
       sourceRef: { file, line, column },
-      description: 'Símbolo no reconocido en el léxico de Lumi.',
+      description: 'carácter inválido',
       solution: 'Elimine caracteres no soportados como "@", "$" o símbolos especiales.',
     };
   }
@@ -38,7 +38,7 @@ export class MockDiagnosticFactory {
   public static unclosedString(compilationId: string, file: string, line: number, column: number): DiagnosticItem {
     return {
       id: `diag-str-${compilationId}-${line}`,
-      code: 'LUMI-L002',
+      code: 'LEX_UNTERMINATED_STRING',
       severity: 'error',
       category: 'lexico',
       blocking: true,
@@ -46,7 +46,7 @@ export class MockDiagnosticFactory {
       line,
       column,
       sourceRef: { file, line, column },
-      description: 'Literal de texto (cadena) sin comillas de cierre.',
+      description: 'texto sin cerrar',
       solution: 'Asegúrese de cerrar la cadena con comillas dobles (").',
     };
   }

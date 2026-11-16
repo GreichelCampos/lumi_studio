@@ -34,6 +34,20 @@ describe('MockCompilerService', () => {
     expect(result.diagnostics.some((d) => d.blocking)).toBe(false);
   });
 
+  it('debe alinear los códigos léxicos con el backend real', async () => {
+    const project = createMockProject({ files: [createMockFile({
+      content: 'principal {\n  @\n  mostrar("sin cerrar)\n}', isEntry: true,
+    })] });
+
+    const result = await compiler.compile(project);
+
+    expect(result.status).toBe('blocked');
+    expect(result.diagnostics).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: 'LEX_INVALID_CHARACTER', category: 'lexico', line: 2, column: 3 }),
+      expect.objectContaining({ code: 'LEX_UNTERMINATED_STRING', category: 'lexico', line: 3 }),
+    ]));
+  });
+
   it('debe bloquear la compilación ante error sintáctico (ej: falta de ">>")', async () => {
     const syntaxErrorContent = `principal {
   habitacion sala(5.0, 4.0, 2.7) {

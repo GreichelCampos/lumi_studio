@@ -44,8 +44,13 @@ def test_unterminated_string_raises_error():
         "principal.lumi",
     )
 
-    with pytest.raises(LexerError):
+    with pytest.raises(LexerError) as raised:
         lexer.tokenize()
+    assert raised.value.diagnostic.code == "LEX_UNTERMINATED_STRING"
+    assert raised.value.diagnostic.category.value == "LEXICAL"
+    assert (raised.value.file, raised.value.line, raised.value.column) == (
+        "principal.lumi", 1, 1,
+    )
 
 
 def test_invalid_character_raises_error():
@@ -54,8 +59,12 @@ def test_invalid_character_raises_error():
         "principal.lumi",
     )
 
-    with pytest.raises(LexerError):
+    with pytest.raises(LexerError) as raised:
         lexer.tokenize()
+    assert raised.value.diagnostic.code == "LEX_INVALID_CHARACTER"
+    assert (raised.value.file, raised.value.line, raised.value.column) == (
+        "principal.lumi", 1, 1,
+    )
 
 
 def test_operators():
@@ -259,8 +268,12 @@ def test_unterminated_multiline_comment_raises_error():
         "principal.lumi",
     )
 
-    with pytest.raises(LexerError):
+    with pytest.raises(LexerError) as raised:
         lexer.tokenize()
+    assert raised.value.diagnostic.code == "LEX_UNTERMINATED_COMMENT"
+    assert (raised.value.file, raised.value.line, raised.value.column) == (
+        "principal.lumi", 1, 1,
+    )
 
 
 @pytest.mark.parametrize(

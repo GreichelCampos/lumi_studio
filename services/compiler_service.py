@@ -222,6 +222,7 @@ class CompilerService:
             )
             return CompilationResult(
                 file, CompilationStatus.FAILED, AnalysisStage.LEXICAL,
+                diagnostics=(error.diagnostic,) if error.diagnostic is not None else (),
                 lexical_error=str(error),
                 lexical_error_location=error.location,
             )
@@ -234,9 +235,12 @@ class CompilerService:
             program = parser.parse()
         except LexerError as error:
             # Imported sources are tokenized by the parser, not by this facade.
+            diagnostics = list(parser.diagnostics)
+            if error.diagnostic is not None and error.diagnostic not in diagnostics:
+                diagnostics.append(error.diagnostic)
             return CompilationResult(
                 file, CompilationStatus.FAILED, AnalysisStage.LEXICAL,
-                diagnostics=tuple(parser.diagnostics), lexical_error=str(error),
+                diagnostics=tuple(diagnostics), lexical_error=str(error),
                 lexical_error_location=error.location,
             )
         except RecursionError:

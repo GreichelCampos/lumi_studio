@@ -50,12 +50,17 @@ def test_analysis_does_not_execute_input_or_output():
 
 @pytest.mark.parametrize("operation, expected", [("analyze", "failed"), ("execute", "blocked")])
 @pytest.mark.parametrize("source", ["@", "\0"], ids=["invalid-symbol", "nul-in-source"])
-def test_lexical_error_is_unstructured_without_invented_location(operation, expected, source):
+def test_lexical_error_uses_structured_diagnostic_and_keeps_legacy_text(operation, expected, source):
     result = RequestDispatcher().dispatch(request(source, operation))
     assert result["status"] == expected
     assert result["result"]["stage"] == "lexical"
     assert "carácter inválido" in result["result"]["lexicalError"]
-    assert result["result"]["diagnostics"] == []
+    diagnostic, = result["result"]["diagnostics"]
+    assert diagnostic["category"] == "LEXICAL"
+    assert diagnostic["code"] == "LEX_INVALID_CHARACTER"
+    assert (diagnostic["file"], diagnostic["line"], diagnostic["column"]) == (
+        "principal.lumi", 1, 13,
+    )
 
 
 @pytest.mark.parametrize(

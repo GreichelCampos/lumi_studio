@@ -165,7 +165,24 @@ describe('Real compiler adapter', () => {
     expect(validateCompileResult(result).isValid).toBe(true);
   });
 
-  it('shows lexical text without fabricating a navigable diagnostic', async () => {
+  it('maps a real lexical diagnostic and does not duplicate its legacy text in logs', async () => {
+    const raw = reply();
+    if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
+    raw.response.status = 'blocked';
+    Object.assign(raw.response.result, { analysisStatus: 'failed', stage: 'lexical',
+      lexicalError: 'otro.lumi:4:3: carácter inválido', executionAttempted: false, output: [],
+      diagnostics: [{ category: 'LEXICAL', code: 'LEX_INVALID_CHARACTER', file: 'otro.lumi',
+        line: 4, column: 3, description: "carácter inválido '@'" }] });
+    const result = await new PythonCompilerService(bridge(raw)).execute(project());
+    expect(result.diagnostics).toHaveLength(1);
+    expect(result.diagnostics[0]).toMatchObject({ category: 'lexico', severity: 'error',
+      blocking: true, code: 'LEX_INVALID_CHARACTER', file: 'otro.lumi', line: 4, column: 3 });
+    expect(result.logs.join('\n')).not.toContain('sin ubicación estructurada');
+    expect(result.logs.join('\n')).not.toContain('carácter inválido');
+    expect(result.success).toBe(false);
+  });
+
+  it('keeps the legacy lexical log for an older backend without a structured diagnostic', async () => {
     const raw = reply();
     if (!raw.ok || raw.response.status === 'error') throw new Error('fixture');
     raw.response.status = 'blocked';
@@ -174,7 +191,6 @@ describe('Real compiler adapter', () => {
     const result = await new PythonCompilerService(bridge(raw)).execute(project());
     expect(result.diagnostics).toEqual([]);
     expect(result.logs.join('\n')).toContain('sin ubicación estructurada');
-    expect(result.success).toBe(false);
   });
 
   it('keeps incomplete analysis incomplete', async () => {

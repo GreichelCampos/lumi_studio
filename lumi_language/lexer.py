@@ -9,6 +9,7 @@ from .lexer_config import (
     KEYWORDS,
 )
 from .lexer_error import LexerError
+from .diagnostics import Diagnostic, DiagnosticCategory
 
 
 class TokenStream(list[Token]):
@@ -74,6 +75,20 @@ class Lexer:
             column=self.start_column,
         )
 
+    def error(self, code: str, description: str) -> LexerError:
+        diagnostic = Diagnostic(
+            category=DiagnosticCategory.LEXICAL,
+            code=code,
+            file=self.file,
+            line=self.start_line,
+            column=self.start_column,
+            description=description,
+        )
+        return LexerError(
+            f"{self.file}:{self.start_line}:{self.start_column}: {description}",
+            diagnostic=diagnostic,
+        )
+
     def scan_symbol(self, char: str) -> Token | None:
         if char in MULTI_CHAR_TOKENS:
             possible_tokens = MULTI_CHAR_TOKENS[char]
@@ -122,10 +137,7 @@ class Lexer:
             lexeme += self.advance()
 
         if self.is_at_end():
-            raise LexerError(
-                f"{self.file}:{self.start_line}:{self.start_column}: texto sin cerrar",
-                file=self.file, line=self.start_line, column=self.start_column,
-            )
+            raise self.error("LEX_UNTERMINATED_STRING", "texto sin cerrar")
 
         lexeme += self.advance()
 
@@ -148,10 +160,8 @@ class Lexer:
 
             self.advance()
 
-        raise LexerError(
-            f"{self.file}:{self.start_line}:{self.start_column}: "
-            "comentario multilínea sin cerrar",
-            file=self.file, line=self.start_line, column=self.start_column,
+        raise self.error(
+            "LEX_UNTERMINATED_COMMENT", "comentario multilínea sin cerrar",
         )
 
     def scan_identifier(self, first_char: str) -> Token:
@@ -202,10 +212,8 @@ class Lexer:
             elif char.isalpha() or char == "_":
                 tokens.append(self.scan_identifier(char))
             else:
-                raise LexerError(
-                    f"{self.file}:{self.start_line}:{self.start_column}: "
-                    f"carácter inválido '{char}'",
-                    file=self.file, line=self.start_line, column=self.start_column,
+                raise self.error(
+                    "LEX_INVALID_CHARACTER", f"carácter inválido '{char}'",
                 )
 
         return TokenStream(tokens, file=self.file, line=self.line, column=self.column)

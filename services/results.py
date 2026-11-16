@@ -32,9 +32,10 @@ class AnalysisLimitation(str, Enum):
 class CompilationResult:
     """An analysis snapshot, not a scene or a transport DTO.
 
-    ``lexical_error`` preserves the exception text. ``lexical_error_location``
-    carries the lexer origin internally without introducing a Diagnostic.
-    Never infer a code or location from the message.
+    ``lexical_error`` preserves the legacy exception text and
+    ``lexical_error_location`` preserves its legacy structured location.
+    New lexical failures also travel through ``diagnostics``; consumers must
+    never infer a code or location by parsing the compatibility message.
     AST nodes remain mutable core objects: callers must treat this snapshot as
     read-only and recompile changed source instead of editing the returned AST.
     """

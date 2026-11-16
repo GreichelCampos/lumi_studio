@@ -185,6 +185,22 @@ describe('DiagnosticsListView', () => {
     expect(handleNavigate).toHaveBeenCalledWith(mockDiagnostics[1]);
   });
 
+  it('muestra y permite navegar un error léxico de un archivo importado', () => {
+    const lexical: DiagnosticItem = {
+      id: 'python:lexical', code: 'LEX_INVALID_CHARACTER', severity: 'error',
+      category: 'lexico', blocking: true, file: 'lib/util.lumi', line: 4, column: 3,
+      description: "carácter inválido '@'",
+    };
+    const navigate = vi.fn();
+    render(<DiagnosticsListView diagnostics={[lexical]} onNavigateToDiagnostic={navigate} />);
+
+    expect(screen.getByText('LEX_INVALID_CHARACTER')).toBeInTheDocument();
+    expect(screen.getByText('lib/util.lumi:4:3')).toBeInTheDocument();
+    expect(screen.getByText('Errores (1)')).toBeInTheDocument();
+    fireEvent.click(screen.getByText(/Ir al código/));
+    expect(navigate).toHaveBeenCalledWith(lexical);
+  });
+
   it('invoca onFocusObject al hacer clic en "Enfocar en 3D" cuando el diagnóstico tiene targetObjectId', () => {
     const handleFocus = vi.fn();
     render(

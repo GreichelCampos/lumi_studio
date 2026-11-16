@@ -113,7 +113,7 @@ def test_imported_function_effects_can_reach_a_complete_spatial_result():
     assert result.limitations == ()
 
 
-def test_lexical_failure_preserves_raw_message_without_inventing_diagnostic():
+def test_lexical_failure_preserves_legacy_message_and_structured_diagnostic():
     source = "mostrar(@)>>"
     with pytest.raises(LexerError) as original:
         from lumi_language.lexer import Lexer
@@ -124,7 +124,13 @@ def test_lexical_failure_preserves_raw_message_without_inventing_diagnostic():
     assert result.status == CompilationStatus.FAILED
     assert result.stage == AnalysisStage.LEXICAL
     assert result.lexical_error == str(original.value)
-    assert result.diagnostics == ()
+    assert result.diagnostics == (original.value.diagnostic,)
+    diagnostic = result.diagnostics[0]
+    assert diagnostic.category == DiagnosticCategory.LEXICAL
+    assert diagnostic.code == "LEX_INVALID_CHARACTER"
+    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (
+        "principal.lumi", 1, 9,
+    )
     assert result.program is None
     assert not result.can_execute
 
@@ -228,7 +234,9 @@ def test_errors_inside_imports_retain_the_available_origin(imported_source, expe
     assert result.stage == expected_stage
     if expected_stage == AnalysisStage.LEXICAL:
         assert result.lexical_error.startswith("roto.lumi:")
-        assert result.diagnostics == ()
+        assert len(result.diagnostics) == 1
+        assert result.diagnostics[0].code == "LEX_INVALID_CHARACTER"
+        assert result.diagnostics[0].file == "roto.lumi"
     else:
         assert result.diagnostics[0].file == "roto.lumi"
 

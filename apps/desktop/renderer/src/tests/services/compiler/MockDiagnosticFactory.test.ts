@@ -10,14 +10,20 @@ describe('MockDiagnosticFactory', () => {
     expect(diag.category).toBe('importacion');
   });
 
-  it('debe construir diagnóstico de símbolo ilegal LUMI-L001', () => {
+  it('debe construir diagnóstico de símbolo ilegal con el código real', () => {
     const diag = MockDiagnosticFactory.illegalSymbol('comp-2', 'principal.lumi', 4, 10);
-    expect(diag.code).toBe('LUMI-L001');
+    expect(diag.code).toBe('LEX_INVALID_CHARACTER');
     expect(diag.line).toBe(4);
     expect(diag.column).toBe(10);
     expect(diag.file).toBe('principal.lumi');
     expect(diag.category).toBe('lexico');
     expect(diag.blocking).toBe(true);
+  });
+
+  it('debe usar el código real para una cadena sin cerrar', () => {
+    const diag = MockDiagnosticFactory.unclosedString('comp-3', 'modulo.lumi', 7, 5);
+    expect(diag).toMatchObject({ code: 'LEX_UNTERMINATED_STRING', category: 'lexico',
+      severity: 'error', blocking: true, file: 'modulo.lumi', line: 7, column: 5 });
   });
 
   it('debe construir diagnóstico de advertencia de comentario obsoleto LUMI-S101', () => {

@@ -45,12 +45,14 @@ describe('Python integration protocol responses', () => {
     expect(validateProtocolResponse(raw).valid).toBe(true);
   });
 
-  it('accepts lexical failure without synthetic diagnostic locations', () => {
+  it('accepts lexical failure with a structured diagnostic and legacy text', () => {
     const raw = response();
     raw.status = 'blocked';
     raw.result.analysisStatus = 'failed';
     raw.result.stage = 'lexical';
     raw.result.lexicalError = "principal.lumi:1:1: carácter inválido '@'";
+    raw.result.diagnostics = [{ category: 'LEXICAL', code: 'LEX_INVALID_CHARACTER',
+      file: 'principal.lumi', line: 1, column: 1, description: "carácter inválido '@'" }];
     raw.result.output = [];
     raw.result.executionAttempted = false;
     expect(validateProtocolResponse(raw).valid).toBe(true);

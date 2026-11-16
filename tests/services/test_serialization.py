@@ -125,12 +125,19 @@ def test_real_diagnostics_are_serialized(source):
     ]
 
 
-def test_lexical_error_keeps_original_text_without_synthetic_diagnostic():
+def test_lexical_error_keeps_legacy_text_and_serializes_authentic_diagnostic():
     result = CompilerService().compile(
         'importar "roto.lumi" usar x>>', "main.lumi", sources={"roto.lumi": "\n @"},
     )
     serialized = serialize_compilation(result)
-    assert serialized["diagnostics"] == []
+    assert serialized["diagnostics"] == [
+        serialize_diagnostic(result.diagnostics[0])
+    ]
+    assert serialized["diagnostics"][0] == {
+        "category": "LEXICAL", "code": "LEX_INVALID_CHARACTER",
+        "file": "roto.lumi", "line": 2, "column": 2,
+        "description": "carácter inválido '@'",
+    }
     assert serialized["lexical_error"] == result.lexical_error
     assert serialized["lexical_error"].startswith("roto.lumi:2:2:")
     assert serialized["program"] is None
@@ -178,13 +185,13 @@ def test_independent_serializations_are_deterministic():
                                  ensure_ascii=True, sort_keys=True, separators=(",", ":"))
 
 
-@pytest.mark.parametrize("source, description", [
-    ("\n  @", "carácter inválido '@'"),
-    ('\n  "sin cerrar\nsegunda línea', "texto sin cerrar"),
-    ("\n  --\nsin cerrar", "comentario multilínea sin cerrar"),
+@pytest.mark.parametrize("source, description, code", [
+    ("\n  @", "carácter inválido '@'", "LEX_INVALID_CHARACTER"),
+    ('\n  "sin cerrar\nsegunda línea', "texto sin cerrar", "LEX_UNTERMINATED_STRING"),
+    ("\n  --\nsin cerrar", "comentario multilínea sin cerrar", "LEX_UNTERMINATED_COMMENT"),
 ])
 @pytest.mark.parametrize("imported", [False, True])
-def test_lexical_origin_and_message_compatibility(source, description, imported):
+def test_lexical_origin_diagnostic_and_message_compatibility(source, description, code, imported):
     from lumi_language.lexer_error import LexerError
     from services.protocol.dispatcher import RequestDispatcher
     file = "lib.lumi" if imported else "main.lumi"
@@ -198,7 +205,10 @@ def test_lexical_origin_and_message_compatibility(source, description, imported)
     result = CompilerService().compile_project(files, entry_file="main.lumi")
     assert result.lexical_error == expected
     assert result.lexical_error_location == error.location
-    assert result.diagnostics == ()
+    assert result.diagnostics == (error.diagnostic,)
+    diagnostic = result.diagnostics[0]
+    assert (diagnostic.category.value, diagnostic.code) == ("LEXICAL", code)
+    assert (diagnostic.file, diagnostic.line, diagnostic.column) == (file, 2, 3)
     assert not result.can_execute
     snapshot = serialize_compilation(result)
     assert snapshot["lexical_error"] == expected
@@ -208,7 +218,7 @@ def test_lexical_origin_and_message_compatibility(source, description, imported)
         "entryFile": "main.lumi", "files": files,
     })
     assert response["result"]["lexicalError"] == expected
-    assert response["result"]["diagnostics"] == []
+    assert response["result"]["diagnostics"] == [serialize_diagnostic(diagnostic)]
     assert "lexical_error_location" not in response["result"]
     assert "lexicalErrorLocation" not in response["result"]
 

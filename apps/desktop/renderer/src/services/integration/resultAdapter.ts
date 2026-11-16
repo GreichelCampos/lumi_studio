@@ -27,7 +27,9 @@ export function adaptBackendResult(response: ResultResponse, project: LumiProjec
   }));
   const logs = [`[Python · ${response.operation === 'analyze' ? 'Análisis' : 'Ejecución'}] ${response.status}`, ...payload.output];
   if (response.operation === 'execute') logs.push(`[Python · Análisis] ${payload.analysisStatus}`);
-  if (payload.lexicalError !== undefined) logs.push(`[Error léxico sin ubicación estructurada] ${payload.lexicalError}`);
+  if (payload.lexicalError !== undefined && !payload.diagnostics.some(diagnostic => diagnostic.category === 'LEXICAL')) {
+    logs.push(`[Error léxico sin ubicación estructurada] ${payload.lexicalError}`);
+  }
   if (payload.limitations.length) logs.push('Capacidad pendiente: análisis semántico espacial.');
   for (const limitation of payload.limitations) logs.push(`Limitación del backend: ${limitation}`);
   return {
