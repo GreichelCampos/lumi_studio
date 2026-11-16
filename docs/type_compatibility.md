@@ -43,5 +43,6 @@ Other combinations produce `SEM_INVALID_UNARY_OPERATION`.
 
 ## Scope of this matrix
 
-This matrix specifies simple-type compatibility. Collection operations and the
-special `nulo` value are outside its scope.
+This matrix specifies simple-type compatibility. Collection operations are
+outside its scope. The `nulo` type is assignable only to itself and supports
+only equality and inequality comparisons.

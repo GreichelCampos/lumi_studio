@@ -446,6 +446,7 @@ class Parser:
             TokenType.DECIMAL_TYPE,
             TokenType.STRING_TYPE,
             TokenType.BOOLEAN_TYPE,
+            TokenType.NULL,
             TokenType.LIST_TYPE,
             TokenType.VECTOR_TYPE,
         )

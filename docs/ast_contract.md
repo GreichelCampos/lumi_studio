@@ -114,7 +114,7 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `type`: tipo declarado de una variable.
 * `name`: nombre de un identificador.
 * `value`: valor o expresión asociada al nodo.
-* `literal_kind`: clase del literal, por ejemplo `entero`, `decimal`, `texto`, `booleano` o `nulo`. El valor `nulo` es un valor especial de Lumi y no constituye un tipo de dato independiente.
+* `literal_kind`: clase del literal, por ejemplo `entero`, `decimal`, `texto`, `booleano` o `nulo`. `nulo` también es un tipo simple y solo es asignable a variables de ese mismo tipo.
 * `elements`: lista de nodos de expresión que componen un `ListNode`.
 * `x`, `y` y `z`: componentes numéricos de un `VectorNode`; cada componente puede ser un nodo de expresión.
 * `left` y `right`: operandos de una expresión binaria.

@@ -451,7 +451,7 @@ Lumi includes `nulo` to represent the absence of a value.
 For example:
 
 ```lumi
-texto nombre = nulo>>
+nulo nombre = nulo>>
 ```
 
 The value can be checked explicitly:

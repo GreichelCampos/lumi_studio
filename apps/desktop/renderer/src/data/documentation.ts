@@ -47,7 +47,7 @@ export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [
   {
     title: '2. Tipos de Datos y Manejo de Nulo',
     exampleKind: 'syntax-only',
-    description: 'El parser acepta tipos primitivos, listas, vectores y nulo. Las listas y los vectores declarados como variables todavía no se evalúan en el intérprete; este ejemplo permite comprobar su análisis, no una ejecución completa. Los vectores de colocar, mover y rotar sí se evalúan en operaciones espaciales.',
+    description: 'El parser acepta tipos primitivos, listas, vectores y el tipo nulo. Las listas y los vectores declarados como variables todavía no se evalúan en el intérprete; este ejemplo permite comprobar su análisis, no una ejecución completa. Los vectores de colocar, mover y rotar sí se evalúan en operaciones espaciales.',
     code: `-- Declaraciones de tipos primitivos y compuestos
 entero cantidad_sillas = 4>>
 decimal factor_escala = 1.25>>
@@ -56,8 +56,8 @@ booleano iluminacion_dia = verdadero>>
 vector origen_sala = [0.0, 0.0, 0.0]>>
 lista colores_disponibles = ["blanco", "gris", "azul"]>>
 
--- Variables con valor nulo
-entero seleccion = nulo>>
+-- Variable de tipo nulo
+nulo seleccion = nulo>>
 
 si seleccion == nulo {
   mostrar("No se seleccionó ningún elemento inicial")>>

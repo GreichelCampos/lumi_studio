@@ -13,6 +13,7 @@ class DataType(str, Enum):
     DECIMAL = "decimal"
     STRING = "texto"
     BOOLEAN = "booleano"
+    NULL = "nulo"
     LIST = "lista"
     VECTOR = "vector"
     VOID = "vacio"

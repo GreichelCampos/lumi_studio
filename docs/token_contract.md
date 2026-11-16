@@ -92,6 +92,7 @@ Los tipos de tokens de Lumi se representan mediante la enumeración `TokenType`.
 | `DECIMAL_TYPE` | `decimal` |
 | `STRING_TYPE` | `texto` |
 | `BOOLEAN_TYPE` | `booleano` |
+| `NULL` | `nulo` |
 | `LIST_TYPE` | `lista` |
 | `VECTOR_TYPE` | `vector` |
 
