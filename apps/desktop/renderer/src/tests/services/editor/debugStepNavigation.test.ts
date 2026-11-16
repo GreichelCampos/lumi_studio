@@ -32,6 +32,19 @@ describe('debug step project boundaries', () => {
     expect(resolveDebugStep(project, step).navigation).toEqual({ fileId: 'other', line: 2, column: 3 });
   });
 
+  it('selects an explicit wall identified by a real spatial trace step', () => {
+    const snapshot = structuredClone(step.sceneSnapshot);
+    snapshot.rooms[0].walls.north = {
+      id: 'wall-explicit', name: 'pared_norte', color: '#ffffff', material: 'concreto',
+      sourceRef: { file: 'lib/other.lumi', line: 2, column: 3 },
+    };
+    const current = {
+      ...step, sceneSnapshot: snapshot, activeObjectId: 'wall-explicit', roomId: snapshot.rooms[0].id,
+    };
+
+    expect(resolveDebugStep(project, current).activeObjectId).toBe('wall-explicit');
+  });
+
   it.each(['../other.lumi', '/other.lumi', 'C:/other.lumi', '//host/other.lumi',
     'file:///other.lumi', 'https://host/other.lumi', 'lib/../other.lumi', 'lib\\other.lumi',
     'lib//other.lumi', 'missing.lumi', 'lib/other.lumi\0'])('rejects untrusted or missing file %s', identity => {

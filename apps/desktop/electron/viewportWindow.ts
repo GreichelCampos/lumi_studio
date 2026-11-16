@@ -59,8 +59,13 @@ export function registerViewportWindow(owner: BrowserWindow, renderer: URL, icon
   });
   ipcMain.on('lumi:viewport:update', (event, next: ViewportWindowState) => {
     if (!isOwner(event)) return;
-    if (!state || next.sessionId !== state.sessionId) return;
-    state = next; sendState();
+    if (state && next.sessionId !== state.sessionId) return;
+    state = next;
+    if (!viewport || viewport.isDestroyed()) {
+      void create().then(sendState);
+    } else {
+      sendState();
+    }
   });
   ipcMain.on('lumi:viewport:clear', event => {
     if (!isOwner(event)) return;

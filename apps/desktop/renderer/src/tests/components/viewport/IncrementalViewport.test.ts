@@ -67,6 +67,34 @@ describe('progressive CPU construction/selection and room-owned resources (mock 
 });
 
 describe('incremental ownership and invalidation', () => {
+  it('adds, transforms and removes meshes when debugger snapshots move forward and backward', () => {
+    const container = document.createElement('div');
+    const manager = new ThreeSceneManager({ container, onSelectEntity: vi.fn() });
+    const placed = createMockSpatialObject({ id: 'desk-debug', position: [1, 0, 2], rotation: [0, 0, 0] });
+    const { position: _position, ...withoutPosition } = placed;
+    const unplaced = { ...withoutPosition, placed: false as const };
+    const before = createMockRoom({ objects: [unplaced] });
+
+    manager.renderRoom(before, null);
+    expect(container.dataset.renderedObjectIds).toBe('');
+    expect(manager['scene'].getObjectByName('desk-debug')).toBeUndefined();
+
+    const afterPlacement = createMockRoom({ objects: [placed] });
+    manager.renderRoom(afterPlacement, null);
+    expect(container.dataset.renderedObjectIds).toBe('desk-debug');
+    expect(manager['scene'].getObjectByName('desk-debug')).toBeDefined();
+
+    const afterRotation = structuredClone(afterPlacement);
+    afterRotation.objects[0].rotation = [0, 90, 0];
+    manager.renderRoom(afterRotation, null);
+    expect(JSON.parse(container.dataset.renderedObjectState!)[0].rotation).toEqual([0, 90, 0]);
+
+    manager.renderRoom(before, null);
+    expect(container.dataset.renderedObjectIds).toBe('');
+    expect(manager['scene'].getObjectByName('desk-debug')).toBeUndefined();
+    manager.dispose();
+  });
+
   it.each(['silla', 'mesa', 'sofa', 'cama', 'planta'])('batches %s and preserves picking, highlight and disposal', type => {
     const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
     const items = Array.from({ length: 40 }, (_, i) =>

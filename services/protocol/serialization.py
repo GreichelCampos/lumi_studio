@@ -53,8 +53,32 @@ def decode_request(data: bytes) -> object:
     return raw
 
 
+def response_size_bytes(response: Response | InputRequest) -> int:
+    """Return the exact UTF-8 wire size, including the line terminator."""
+
+    return len(
+        (
+            json.dumps(
+                response,
+                ensure_ascii=False,
+                allow_nan=False,
+                separators=(",", ":"),
+            )
+            + "\n"
+        ).encode("utf-8")
+    )
+
+
 def encode_response(response: Response | InputRequest) -> bytes:
-    data = (json.dumps(response, ensure_ascii=False, allow_nan=False, separators=(",", ":")) + "\n").encode("utf-8")
+    data = (
+        json.dumps(
+            response,
+            ensure_ascii=False,
+            allow_nan=False,
+            separators=(",", ":"),
+        )
+        + "\n"
+    ).encode("utf-8")
     if len(data) > MAX_RESPONSE_BYTES:
         raise ResponseTooLargeError("La respuesta excede 4 MiB.")
     return data

@@ -18,6 +18,7 @@
     "test:window": "node scripts/build.mjs && node tests/window.integration.mjs",
     "test:workspace": "node scripts/build.mjs && node tests/workspace.integration.mjs",
     "test:viewport": "node scripts/build.mjs && node tests/viewport.integration.mjs",
+    "test:spatial-debugger": "node scripts/build.mjs && node tests/spatial-debugger.integration.mjs",
     "runtime:prepare": "node scripts/prepare-runtime.mjs",
     "pack:win": "npm run build && npm run runtime:prepare && electron-builder --win --x64 --dir --publish never",
     "dist:win": "npm run build && npm run runtime:prepare && electron-builder --win nsis --x64 --publish never",

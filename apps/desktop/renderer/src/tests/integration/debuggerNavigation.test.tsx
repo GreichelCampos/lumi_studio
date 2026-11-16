@@ -179,7 +179,7 @@ describe('App navigation with imported fixture events, not Python traces', () =>
     const replacement = { ...state.steps[0], id: 'replacement', sourceRef: { file: 'principal.lumi', line: 3 } };
     state.steps = [replacement];
     act(() => view.rerender(<App />));
-    expect(editor()).toMatchObject({ activeFileId: 'main', highlightedLine: 3 });
+    expect(editor()).toMatchObject({ activeFileId: 'other', highlightedLine: null, sourceNavigation: null });
     state.steps = [];
     act(() => view.rerender(<App />));
     expect(editor()).toMatchObject({ highlightedLine: null, sourceNavigation: null });

@@ -69,7 +69,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
               <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Estudio LUMI</span>
               <h3 className="text-lg font-extrabold text-[#f3ebd6] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
               <p className="text-xs text-[#d5cbb2] mt-1 max-w-xl leading-relaxed">
-                En Electron, Analizar código revisa el programa y Ejecutar Lumi puede generar escenas con habitaciones, pisos y muebles colocados mediante el intérprete real. El visor también importa archivos .lumic. Paredes y aberturas declaradas todavía requieren geometría acordada; Python no produce trazas de depuración. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
+                En Electron, Analizar código revisa el programa y Ejecutar Lumi genera escenas mediante el intérprete real. El depurador reproduce los snapshots espaciales publicados por Python y el visor también importa archivos .lumic. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
               </p>
             </div>
             <div className="hidden sm:block">

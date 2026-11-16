@@ -368,3 +368,185 @@ def test_builder_leaves_l026_validation_to_spatial_validator():
     assert scene.rooms[0].width.value == 0
     assert scene.rooms[0].length.value == -4
     assert scene.rooms[0].height.value == float("inf")
+
+
+def test_snapshot_of_empty_builder_returns_empty_scene():
+    scene_builder = builder()
+
+    snapshot = scene_builder.snapshot()
+
+    assert snapshot.rooms == ()
+    assert snapshot.source == location()
+
+
+def test_snapshot_includes_active_room_without_finalizing_it():
+    scene_builder = builder()
+    begin_room(scene_builder)
+
+    snapshot = scene_builder.snapshot()
+
+    assert tuple(room.name for room in snapshot.rooms) == ("sala",)
+    assert snapshot.rooms[0].elements == ()
+    assert scene_builder.end_room().name == "sala"
+
+
+def test_snapshot_includes_finalized_rooms():
+    scene_builder = builder()
+    begin_room(scene_builder, "sala", 1)
+    finalized = scene_builder.end_room()
+
+    snapshot = scene_builder.snapshot()
+
+    assert snapshot.rooms == (finalized,)
+
+
+def test_snapshot_preserves_declared_elements_and_properties():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    properties = (
+        SpatialProperty("color", "azul", location(2, 20)),
+        SpatialProperty("material", "madera", location(2, 36)),
+    )
+    scene_builder.declare_element(
+        name="mesa1",
+        element_kind="object",
+        object_type="mesa",
+        properties=properties,
+        source=location(2, 5),
+    )
+
+    element = scene_builder.snapshot().rooms[0].elements[0]
+
+    assert (element.name, element.element_kind, element.object_type) == (
+        "mesa1",
+        "object",
+        "mesa",
+    )
+    assert element.properties == properties
+    assert element.source == location(2, 5)
+
+
+def test_snapshot_records_placed_element():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    declare_object(scene_builder)
+    position = vector(1, 0, 2, 3)
+    scene_builder.place_element(name="silla1", position=position)
+
+    element = scene_builder.snapshot().rooms[0].elements[0]
+
+    assert element.position == position
+
+
+def test_snapshot_records_moved_element():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    declare_object(scene_builder)
+    scene_builder.place_element(name="silla1", position=vector(1, 0, 2, 3))
+    moved = vector(3, 0, 4, 4)
+    scene_builder.move_element(name="silla1", position=moved)
+
+    element = scene_builder.snapshot().rooms[0].elements[0]
+
+    assert element.position == moved
+
+
+def test_snapshot_records_rotated_element():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    declare_object(scene_builder)
+    rotation = vector(0, 90, 0, 3)
+    scene_builder.rotate_element(name="silla1", rotation=rotation)
+
+    element = scene_builder.snapshot().rooms[0].elements[0]
+
+    assert element.rotation == rotation
+
+
+def test_previous_snapshots_do_not_change_after_spatial_operations():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    declare_object(scene_builder)
+    declared = scene_builder.snapshot()
+    first_position = vector(1, 0, 2, 3)
+    scene_builder.place_element(name="silla1", position=first_position)
+    placed = scene_builder.snapshot()
+    moved_position = vector(3, 0, 4, 4)
+    scene_builder.move_element(name="silla1", position=moved_position)
+    rotated = vector(0, 90, 0, 5)
+    scene_builder.rotate_element(name="silla1", rotation=rotated)
+
+    assert declared.rooms[0].elements[0].position is None
+    assert declared.rooms[0].elements[0].rotation is None
+    assert placed.rooms[0].elements[0].position == first_position
+    assert placed.rooms[0].elements[0].rotation is None
+    current = scene_builder.snapshot().rooms[0].elements[0]
+    assert current.position == moved_position
+    assert current.rotation == rotated
+
+
+def test_consecutive_snapshots_are_equal_but_independent_scene_instances():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    declare_object(scene_builder)
+
+    first = scene_builder.snapshot()
+    second = scene_builder.snapshot()
+
+    assert first == second
+    assert first is not second
+    assert first.rooms[0] is not second.rooms[0]
+    assert first.rooms[0].elements[0] is not second.rooms[0].elements[0]
+
+
+def test_snapshot_orders_finalized_rooms_before_active_room():
+    scene_builder = builder()
+    begin_room(scene_builder, "sala", 1)
+    scene_builder.end_room()
+    begin_room(scene_builder, "cocina", 5)
+    declare_object(scene_builder, name="mesa_cocina", line=6)
+
+    snapshot = scene_builder.snapshot()
+
+    assert tuple(room.name for room in snapshot.rooms) == ("sala", "cocina")
+    assert snapshot.rooms[1].elements[0].name == "mesa_cocina"
+    assert scene_builder.end_room().name == "cocina"
+
+
+def test_snapshot_does_not_make_build_accept_an_active_room():
+    scene_builder = builder()
+    begin_room(scene_builder)
+    scene_builder.snapshot()
+
+    with pytest.raises(ScenePlanBuilderError) as raised:
+        scene_builder.build()
+
+    assert_error(raised, ScenePlanBuilderErrorReason.ACTIVE_ROOM_NOT_FINALIZED)
+    scene_builder.end_room()
+    assert len(scene_builder.build().rooms) == 1
+
+
+def test_final_scene_is_same_whether_or_not_snapshots_were_taken():
+    with_snapshots = builder()
+    begin_room(with_snapshots)
+    with_snapshots.snapshot()
+    declare_object(with_snapshots)
+    with_snapshots.snapshot()
+    position = vector(1, 0, 2, 3)
+    rotation = vector(0, 90, 0, 4)
+    with_snapshots.place_element(name="silla1", position=position)
+    with_snapshots.snapshot()
+    with_snapshots.rotate_element(name="silla1", rotation=rotation)
+    with_snapshots.snapshot()
+    with_snapshots.end_room()
+    observed = with_snapshots.build()
+
+    without_snapshots = builder()
+    begin_room(without_snapshots)
+    declare_object(without_snapshots)
+    without_snapshots.place_element(name="silla1", position=position)
+    without_snapshots.rotate_element(name="silla1", rotation=rotation)
+    without_snapshots.end_room()
+    baseline = without_snapshots.build()
+
+    assert observed == baseline

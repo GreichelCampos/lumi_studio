@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from typing import Literal, NotRequired, TypedDict
 
-from .scene_adapter import ScenePlanDTO
+from .scene_adapter import ScenePlanDTO, SourceReferenceDTO
 
 PROTOCOL_VERSION = "1.0.0"
 MAX_REQUEST_BYTES = 1_048_576
@@ -25,6 +25,11 @@ ProtocolErrorCode = Literal[
     "UNKNOWN_OPERATION", "REQUEST_TOO_LARGE", "DUPLICATE_REQUEST_ID",
     "SESSION_LIMIT_REACHED",
 ]
+DebugEventType = Literal[
+    "start", "declaration", "assignment", "condition", "loop",
+    "room_create", "place_object", "move_object", "rotate_object",
+    "spatial_warning", "spatial_error", "end",
+]
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,9 +50,24 @@ class DiagnosticDTO(TypedDict):
     suggestion: NotRequired[str]
 
 
+class DebugStepDTO(TypedDict):
+    id: str
+    stepIndex: int
+    eventType: DebugEventType
+    description: str
+    sourceRef: SourceReferenceDTO
+    roomId: NotRequired[str]
+    activeObjectId: NotRequired[str]
+    spatialState: NotRequired[dict[str, object]]
+    lineNumber: int
+    codeLine: str
+    actionDescription: str
+    sceneSnapshot: ScenePlanDTO
+
+
 class Capabilities(TypedDict):
     scenePlan: bool
-    debugTrace: Literal[False]
+    debugTrace: bool
     interactiveInput: bool
     cancellation: Literal[False]
 
@@ -61,6 +81,8 @@ class ResultPayload(TypedDict):
     limitations: list[Limitation]
     lexicalError: NotRequired[str]
     scenePlan: NotRequired[ScenePlanDTO]
+    debugSteps: NotRequired[list[DebugStepDTO]]
+    debugTraceUnavailableReason: NotRequired[str]
     executionAttempted: bool
     capabilities: Capabilities
 

@@ -17,11 +17,151 @@ function validDiagnostic(raw: unknown): boolean {
     && (!Object.hasOwn(raw, 'suggestion') || typeof raw.suggestion === 'string');
 }
 
+const DEBUG_EVENT_TYPES = new Set([
+  'start', 'declaration', 'assignment', 'condition', 'loop', 'room_create',
+  'place_object', 'move_object', 'rotate_object', 'spatial_warning',
+  'spatial_error', 'end',
+]);
+
+function sceneEntityIds(scene: Record<string, unknown>, roomId: string): Set<string> {
+  const ids = new Set<string>();
+  if (!Array.isArray(scene.rooms)) return ids;
+  const room = scene.rooms.find(item => isRecord(item) && item.id === roomId);
+  if (!isRecord(room)) return ids;
+  for (const key of ['objects', 'doors', 'windows']) {
+    const items = room[key];
+    if (Array.isArray(items)) for (const item of items) {
+      if (isRecord(item) && isText(item.id)) ids.add(item.id);
+    }
+  }
+  if (isRecord(room.walls)) for (const wall of Object.values(room.walls)) {
+    if (isRecord(wall) && isText(wall.id)) ids.add(wall.id);
+  }
+  return ids;
+}
+
+function debugStepErrors(raw: unknown, expectedIndex: number): string[] {
+  const errors: string[] = [];
+  const required = [
+    'id', 'stepIndex', 'eventType', 'description', 'sourceRef', 'lineNumber',
+    'codeLine', 'actionDescription', 'sceneSnapshot',
+  ];
+  if (!isRecord(raw) || !hasKeys(raw, required,
+    ['roomId', 'activeObjectId', 'spatialState', 'assistantMessage'])) {
+    return ['Paso de depuraciÃ³n con campos incorrectos.'];
+  }
+  if (!isText(raw.id)) errors.push('DebugStep.id debe ser texto no vacÃ­o.');
+  if (!Number.isSafeInteger(raw.stepIndex) || raw.stepIndex !== expectedIndex) {
+    errors.push('Los Ã­ndices de depuraciÃ³n deben ser consecutivos desde cero.');
+  }
+  if (typeof raw.eventType !== 'string' || !DEBUG_EVENT_TYPES.has(raw.eventType)) {
+    errors.push('DebugStep.eventType no estÃ¡ permitido.');
+  }
+  if (!isText(raw.description) || !isText(raw.actionDescription)) {
+    errors.push('Las descripciones del paso son obligatorias.');
+  }
+  if (typeof raw.codeLine !== 'string') errors.push('DebugStep.codeLine debe ser texto.');
+  if (!isRecord(raw.sourceRef)
+    || !hasKeys(raw.sourceRef, ['file', 'line', 'column'])
+    || !isText(raw.sourceRef.file)
+    || !isPositiveInteger(raw.sourceRef.line)
+    || !isPositiveInteger(raw.sourceRef.column)) {
+    errors.push('DebugStep.sourceRef no es una ubicaciÃ³n vÃ¡lida.');
+  } else if (raw.lineNumber !== raw.sourceRef.line) {
+    errors.push('DebugStep.lineNumber debe coincidir con sourceRef.line.');
+  }
+  if (raw.roomId !== undefined && !isText(raw.roomId)) errors.push('roomId invÃ¡lido.');
+  if (raw.activeObjectId !== undefined && !isText(raw.activeObjectId)) {
+    errors.push('activeObjectId invÃ¡lido.');
+  }
+  if (raw.spatialState !== undefined && !isRecord(raw.spatialState)) {
+    errors.push('spatialState invÃ¡lido.');
+  }
+  if (raw.assistantMessage !== undefined && !isText(raw.assistantMessage)) {
+    errors.push('assistantMessage invÃ¡lido.');
+  }
+  if (!isRecord(raw.sceneSnapshot)) {
+    errors.push('DebugStep.sceneSnapshot es obligatorio.');
+  } else {
+    const snapshot = raw.sceneSnapshot;
+    errors.push(...validateScenePayload({
+      capabilities: { scenePlan: true }, scenePlan: snapshot,
+    }, 'completed'));
+    if (isText(raw.roomId)) {
+      const rooms = snapshot.rooms;
+      const roomExists = Array.isArray(rooms)
+        && rooms.some(room => isRecord(room) && room.id === raw.roomId);
+      if (!roomExists) errors.push('DebugStep.roomId no existe en sceneSnapshot.');
+      if (isText(raw.activeObjectId)
+        && !sceneEntityIds(snapshot, raw.roomId).has(raw.activeObjectId)) {
+        errors.push('DebugStep.activeObjectId no existe en la habitaciÃ³n activa.');
+      }
+    } else if (isText(raw.activeObjectId)) {
+      const rooms = snapshot.rooms;
+      const objectExists = Array.isArray(rooms) && rooms.some(room => (
+        isRecord(room) && isText(room.id)
+        && sceneEntityIds(snapshot, room.id).has(raw.activeObjectId as string)
+      ));
+      if (!objectExists) {
+        errors.push('DebugStep.activeObjectId no existe en sceneSnapshot.');
+      }
+    }
+  }
+  return errors;
+}
+
+function validUnavailableReason(value: unknown): boolean {
+  return typeof value === 'string' && (
+    ['execution_failed', 'execution_not_attempted', 'step_limit_exceeded',
+      'response_size_exceeded', 'trace_empty', 'trace_incomplete'].includes(value)
+    || /^source_unavailable:.+:[1-9][0-9]*$/.test(value)
+  );
+}
+
+function debugTraceErrors(
+  envelope: Record<string, unknown>, result: Record<string, unknown>,
+): string[] {
+  const errors: string[] = [];
+  if (!isRecord(result.capabilities)) return errors;
+  const enabled = result.capabilities.debugTrace;
+  const hasSteps = Object.hasOwn(result, 'debugSteps');
+  const hasReason = Object.hasOwn(result, 'debugTraceUnavailableReason');
+  if (enabled === true) {
+    if (envelope.operation !== 'execute' || envelope.status !== 'completed'
+      || result.executionAttempted !== true) {
+      errors.push('Solo F6 exitoso puede publicar trazas.');
+    }
+    if (!Array.isArray(result.debugSteps) || result.debugSteps.length === 0) {
+      errors.push('debugTrace=true requiere debugSteps no vacÃ­o.');
+    } else {
+      const ids = new Set<string>();
+      result.debugSteps.forEach((step, index) => {
+        errors.push(...debugStepErrors(step, index));
+        if (isRecord(step) && isText(step.id)) {
+          if (ids.has(step.id)) errors.push('Los IDs de pasos deben ser Ãºnicos.');
+          ids.add(step.id);
+        }
+      });
+    }
+    if (hasReason) {
+      errors.push('Una traza disponible no admite razÃ³n de indisponibilidad.');
+    }
+  } else {
+    if (hasSteps) errors.push('debugTrace=false no admite debugSteps.');
+    if (hasReason && !validUnavailableReason(result.debugTraceUnavailableReason)) {
+      errors.push('RazÃ³n de indisponibilidad de traza invÃ¡lida.');
+    }
+  }
+  return errors;
+}
+
 function validResult(raw: unknown): raw is Record<string, unknown> {
   if (!isRecord(raw) || !hasKeys(raw, [
     'entryFile', 'analysisStatus', 'stage', 'output', 'diagnostics',
     'limitations', 'executionAttempted', 'capabilities',
-  ], ['lexicalError', 'scenePlan'])) return false;
+  ], [
+    'lexicalError', 'scenePlan', 'debugSteps', 'debugTraceUnavailableReason',
+  ])) return false;
   const caps = raw.capabilities;
   return isText(raw.entryFile)
     && typeof raw.analysisStatus === 'string'
@@ -36,7 +176,8 @@ function validResult(raw: unknown): raw is Record<string, unknown> {
     && (!Object.hasOwn(raw, 'lexicalError') || isText(raw.lexicalError))
     && isRecord(caps) && hasKeys(caps, ['scenePlan', 'debugTrace', 'interactiveInput', 'cancellation'])
     && typeof caps.scenePlan === 'boolean'
-    && caps.debugTrace === false && typeof caps.interactiveInput === 'boolean' && caps.cancellation === false;
+    && typeof caps.debugTrace === 'boolean'
+    && typeof caps.interactiveInput === 'boolean' && caps.cancellation === false;
 }
 
 function coherentResult(envelope: Record<string, unknown>, result: Record<string, unknown>): boolean {
@@ -97,6 +238,7 @@ export function validateProtocolResponse(raw: unknown): ValidationResult<Protoco
     else {
       if (!coherentResult(raw, raw.result)) errors.push('Estado y resultado contradictorios.');
       errors.push(...validateScenePayload(raw.result, raw.status));
+      errors.push(...debugTraceErrors(raw, raw.result));
     }
   }
   // This cast follows validation of every required/optional field and invariant.

@@ -4,10 +4,12 @@ from typing import cast
 
 from lumi_language.diagnostics import Diagnostic, serialize_diagnostic
 from services.results import CompilationResult, ExecutionResult
+from .debug_trace_adapter import adapt_spatial_debug_trace
 from .scene_adapter import scene_plan_dto
+from .serialization import response_size_bytes
 
 from .models import (
-    AnalysisStatus, DiagnosticDTO, Limitation, PROTOCOL_VERSION,
+    AnalysisStatus, DiagnosticDTO, Limitation, MAX_RESPONSE_BYTES, PROTOCOL_VERSION,
     ProgramStatus, Request, ResultPayload, ResultResponse, Stage,
 )
 
@@ -43,10 +45,35 @@ def adapt_result(
     ):
         payload["scenePlan"] = scene_plan_dto(execution.scene_plan)
         payload["capabilities"]["scenePlan"] = True
-    return {
+    response: ResultResponse = {
         "protocolVersion": PROTOCOL_VERSION,
         "requestId": request.request_id,
         "operation": request.operation,
         "status": cast(ProgramStatus, execution.status.value if execution is not None else compilation.status.value),
         "result": payload,
     }
+    if execution is not None:
+        adapted_trace = adapt_spatial_debug_trace(
+            execution.spatial_trace,
+            request.files,
+            available_bytes=MAX_RESPONSE_BYTES,
+        )
+        if adapted_trace.available:
+            payload["debugSteps"] = list(adapted_trace.debug_steps)
+            payload["capabilities"]["debugTrace"] = True
+            if response_size_bytes(response) > MAX_RESPONSE_BYTES:
+                del payload["debugSteps"]
+                payload["capabilities"]["debugTrace"] = False
+                payload["debugTraceUnavailableReason"] = (
+                    "response_size_exceeded"
+                )
+        elif adapted_trace.unavailable_reason is not None:
+            payload["debugTraceUnavailableReason"] = (
+                adapted_trace.unavailable_reason
+            )
+        if (
+            "debugTraceUnavailableReason" in payload
+            and response_size_bytes(response) > MAX_RESPONSE_BYTES
+        ):
+            del payload["debugTraceUnavailableReason"]
+    return response

@@ -29,6 +29,18 @@ describe('useSpatialDebugger', () => {
     expect(readyResult.current.currentStep).toEqual(steps[0]);
   });
 
+  it('no activa el snapshot inicial hasta que el usuario utiliza un control', () => {
+    const steps = createMockDebugSteps();
+    const onStepChange = vi.fn();
+    const { result } = renderHook(() => useSpatialDebugger({ debugSteps: steps, onStepChange }));
+
+    expect(result.current.currentStep).toBe(steps[0]);
+    expect(onStepChange).not.toHaveBeenCalled();
+
+    act(() => result.current.resetDebugger());
+    expect(onStepChange).toHaveBeenLastCalledWith(steps[0]);
+  });
+
   it('debe avanzar y retroceder pasos respetando los límites del array', () => {
     const steps = createMockDebugSteps(); // 3 steps: index 0, 1, 2
     const { result } = renderHook(() =>

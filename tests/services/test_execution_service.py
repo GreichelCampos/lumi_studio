@@ -281,3 +281,139 @@ def test_core_loop_limit_can_be_configured_without_alternative_execution_logic()
     assert result.status == ExecutionStatus.FAILED
     assert result.output == ("1", "1")
     assert result.diagnostics[0].category == DiagnosticCategory.RUNTIME
+
+
+def test_successful_spatial_execution_preserves_complete_trace_and_scene():
+    result = ExecutionService().execute_source(
+        "habitacion sala(10, 10, 3) { silla silla1 { } "
+        "colocar silla1 [1, 0, 1]>> mover silla1 [2, 0, 2]>> "
+        "rotar silla1 [0, 90, 0]>> }",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    assert result.spatial_trace.complete
+    assert [step.event_type for step in result.spatial_trace.steps] == [
+        "start",
+        "room_create",
+        "declaration",
+        "place_object",
+        "move_object",
+        "rotate_object",
+        "end",
+    ]
+    assert all(
+        step.scene_snapshot is not None for step in result.spatial_trace.steps
+    )
+    assert result.scene_plan is not None
+    assert result.spatial_trace.steps[-1].scene_snapshot == result.scene_plan
+    assert result.scene_plan.rooms[0].elements[0].position.x.value == 2
+
+
+def test_non_spatial_execution_preserves_boundary_trace():
+    result = ExecutionService().execute_source(
+        'mostrar("listo")>>', "principal.lumi"
+    )
+
+    assert result.succeeded
+    assert result.output == ("listo",)
+    assert [step.event_type for step in result.spatial_trace.steps] == [
+        "start",
+        "end",
+    ]
+    assert all(
+        step.scene_snapshot.rooms == () for step in result.spatial_trace.steps
+    )
+
+
+def test_semantic_failure_blocks_execution_and_has_no_trace():
+    result = ExecutionService().execute_source(
+        'entero valor = "texto">>', "principal.lumi"
+    )
+
+    assert result.status == ExecutionStatus.BLOCKED
+    assert not result.spatial_trace.complete
+    assert result.spatial_trace.unavailable_reason == "execution_not_attempted"
+    assert result.spatial_trace.steps == ()
+
+
+def test_runtime_error_preserves_unavailable_trace_reason():
+    result = ExecutionService().execute_source(
+        "mostrar(1 / 0)>>", "principal.lumi"
+    )
+
+    assert result.status == ExecutionStatus.FAILED
+    assert result.scene_plan is None
+    assert not result.spatial_trace.complete
+    assert result.spatial_trace.unavailable_reason == "execution_failed"
+    assert result.spatial_trace.steps == ()
+
+
+def test_spatial_builder_error_does_not_expose_partial_trace():
+    result = ExecutionService().execute_source(
+        "habitacion sala(8, 8, 3) { "
+        "si verdadero { mover fantasma [2, 0, 2]>> } }",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.FAILED
+    assert result.diagnostics[0].code == "RUN_SPATIAL_OPERATION_FAILED"
+    assert result.scene_plan is None
+    assert result.spatial_trace.unavailable_reason == "execution_failed"
+    assert result.spatial_trace.steps == ()
+
+
+def test_runtime_spatial_validation_error_has_no_published_trace():
+    result = ExecutionService().execute_source(
+        "entero ancho = 0>> habitacion sala(ancho, 4, 3) { }",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.FAILED
+    assert result.diagnostics[0].code == "SPA_INVALID_DIMENSION"
+    assert result.scene_plan is None
+    assert result.spatial_trace.unavailable_reason == "execution_failed"
+    assert result.spatial_trace.steps == ()
+
+
+def test_trace_step_limit_is_propagated_without_failing_execution():
+    service = ExecutionService(
+        interpreter_factory=lambda: Interpreter(max_spatial_trace_steps=3)
+    )
+
+    result = service.execute_source(
+        "habitacion sala(8, 8, 3) { silla silla1 { } "
+        "colocar silla1 [1, 0, 1]>> }",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.COMPLETED
+    assert result.scene_plan is not None
+    assert not result.spatial_trace.complete
+    assert result.spatial_trace.unavailable_reason == "step_limit_exceeded"
+    assert result.spatial_trace.steps == ()
+
+
+def test_service_executions_have_independent_traces():
+    service = ExecutionService()
+    first = service.execute_source(
+        "habitacion sala(8, 8, 3) { silla silla1 { } }",
+        "primero.lumi",
+    )
+    second = service.execute_source(
+        "habitacion estudio(6, 6, 3) { mesa mesa1 { } }",
+        "segundo.lumi",
+    )
+
+    assert first.spatial_trace is not second.spatial_trace
+    assert first.spatial_trace.steps is not second.spatial_trace.steps
+    assert first.spatial_trace.steps[1].room_name == "sala"
+    assert second.spatial_trace.steps[1].room_name == "estudio"
+    assert all(
+        step.source.file == "primero.lumi"
+        for step in first.spatial_trace.steps
+    )
+    assert all(
+        step.source.file == "segundo.lumi"
+        for step in second.spatial_trace.steps
+    )

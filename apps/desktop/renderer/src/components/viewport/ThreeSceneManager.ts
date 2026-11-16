@@ -325,6 +325,12 @@ export class ThreeSceneManager {
       || !this.renderedBounds?.equals(bounds);
     this.currentRoom = room;
     this.visualItems = room.objects.filter(isPlacedSpatialObject);
+    this.container.dataset.renderedObjectIds = this.visualItems.map(item => item.id).join(',');
+    this.container.dataset.renderedObjectState = JSON.stringify(this.visualItems.map(item => ({
+      id: item.id,
+      position: item.position,
+      rotation: item.rotation,
+    })));
     this.diagnosticKeys = this.visualItems.map(objectDiagnosticKey);
     this.renderedBounds = bounds.clone(); this.renderedDimensions = [...room.dimensions];
     if (needsFit) this.cameraController.adaptCameraToRoom(room);
@@ -382,6 +388,8 @@ export class ThreeSceneManager {
 
   public clearRoom(): void {
     this.visualUpdates.clear(); this.contentKey = null; this.renderedBounds = null; this.renderedDimensions = [];
+    delete this.container.dataset.renderedObjectIds;
+    delete this.container.dataset.renderedObjectState;
     this.visualItems = []; this.diagnosticKeys = [];
     this.activeEntityId = null; this.debugActiveObjectId = null;
     ThreeResourceDisposer.disposeHierarchy(this.roomGroup);

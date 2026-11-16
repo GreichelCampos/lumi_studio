@@ -22,7 +22,12 @@ export function resolveDebugStep(project: LumiProject | null, step: DebugStep | 
   const scenePlan = snapshot && errors.length === 0 ? snapshot : null;
   const objectId = step?.activeObjectId;
   const matches = scenePlan?.rooms.filter(room => !step?.roomId || room.id === step.roomId)
-    .flatMap(room => [...room.objects.filter(isPlacedSpatialObject), ...room.doors, ...room.windows].filter(entity => entity.id === objectId));
+    .flatMap(room => [
+      ...room.objects.filter(isPlacedSpatialObject),
+      ...room.doors,
+      ...room.windows,
+      ...Object.values(room.walls),
+    ].filter(entity => entity.id === objectId));
   const activeObjectId = objectId && matches?.length === 1 ? objectId : null;
   const source = step?.sourceRef;
   let navigation: SourceNavigation | null = null;

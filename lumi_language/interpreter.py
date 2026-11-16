@@ -17,6 +17,11 @@ from spatial.spatial_validator import SpatialValidator
 
 from .ast_adapter import normalize_ast
 from .diagnostics import Diagnostic, DiagnosticCategory
+from .spatial_debug_trace import (
+    SpatialDebugTrace,
+    SpatialTraceEvent,
+    SpatialTraceRecorder,
+)
 
 
 @dataclass(slots=True)
@@ -26,6 +31,7 @@ class InterpreterResult:
     output: list[str] = field(default_factory=list)
     diagnostics: list[Diagnostic] = field(default_factory=list)
     scene_plan: ScenePlan | None = None
+    spatial_trace: SpatialDebugTrace = field(default_factory=SpatialDebugTrace)
 
     @property
     def succeeded(self) -> bool:
@@ -116,11 +122,15 @@ class Interpreter:
         self,
         *,
         max_loop_iterations: int = 1_000,
+        max_spatial_trace_steps: int = 1_000,
         input_provider: Callable[[str], str] = input,
     ) -> None:
         if max_loop_iterations <= 0:
             raise ValueError("max_loop_iterations must be positive")
+        if max_spatial_trace_steps <= 0:
+            raise ValueError("max_spatial_trace_steps must be positive")
         self.max_loop_iterations = max_loop_iterations
+        self.max_spatial_trace_steps = max_spatial_trace_steps
         self.input_provider = input_provider
         self.result = InterpreterResult()
         self.environment = RuntimeEnvironment()
@@ -133,6 +143,8 @@ class Interpreter:
         self._initialized_modules: set[str] = set()
         self._initializing_modules: set[str] = set()
         self._scene_builder: ScenePlanBuilder | None = None
+        self._spatial_trace_recorder: SpatialTraceRecorder | None = None
+        self._active_trace_room: str | None = None
 
     def execute(
         self,
@@ -158,16 +170,42 @@ class Interpreter:
         self._scene_builder = ScenePlanBuilder(
             self._source_location(normalized_program)
         )
+        self._spatial_trace_recorder = SpatialTraceRecorder(
+            self.max_spatial_trace_steps
+        )
+        self._active_trace_room = None
+        self._record_spatial_event(
+            event_type="start",
+            description="Inicio de la ejecución.",
+            source=self._source_location(normalized_program),
+        )
         try:
             self._execute_node(normalized_program)
             self.result.scene_plan = self._scene_builder.build()
             validation = SpatialValidator().validate(self.result.scene_plan)
             self.result.diagnostics.extend(validation.diagnostics)
+            if self.result.diagnostics:
+                self.result.spatial_trace = SpatialDebugTrace.unavailable(
+                    "execution_failed"
+                )
+            else:
+                self._record_spatial_event(
+                    event_type="end",
+                    description="Finalización exitosa de la ejecución.",
+                    source=self._source_location(normalized_program),
+                )
+                self.result.spatial_trace = self._spatial_trace_recorder.finish()
         except ScenePlanBuilderError as error:
             self.result.diagnostics.append(self._scene_builder_diagnostic(error))
+            self.result.spatial_trace = SpatialDebugTrace.unavailable(
+                "execution_failed"
+            )
             self._scene_builder = None
         except InterpreterRuntimeError as error:
             self.result.diagnostics.append(error.diagnostic)
+            self.result.spatial_trace = SpatialDebugTrace.unavailable(
+                "execution_failed"
+            )
             self._scene_builder = None
         return self.result
 
@@ -286,8 +324,19 @@ class Interpreter:
             ),
             source=self._source_location(node),
         )
-        self._execute_block(node.get("body", []))
-        self._scene_builder.end_room()
+        previous_room = self._active_trace_room
+        self._active_trace_room = node["name"]
+        self._record_spatial_event(
+            event_type="room_create",
+            description=f"Se creó la habitación '{node['name']}'.",
+            source=self._source_location(node),
+            room_name=node["name"],
+        )
+        try:
+            self._execute_block(node.get("body", []))
+            self._scene_builder.end_room()
+        finally:
+            self._active_trace_room = previous_room
 
     def _declare_spatial_element(
         self,
@@ -305,33 +354,69 @@ class Interpreter:
             )
             for property_node in node.get("properties", [])
         )
+        element_name = self._spatial_name(node, "name")
         builder.declare_element(
-            name=self._spatial_name(node, "name"),
+            name=element_name,
             element_kind=element_kind,
             object_type=object_type,
             properties=properties,
             source=self._source_location(node),
         )
+        self._record_spatial_event(
+            event_type="declaration",
+            description=f"Se declaró el elemento espacial '{element_name}'.",
+            source=self._source_location(node),
+            room_name=self._active_trace_room,
+            element_name=element_name,
+            spatial_state=(
+                ("element_kind", element_kind),
+                ("object_type", object_type),
+            ),
+        )
 
     def _place_spatial_element(self, node: dict[str, Any]) -> None:
+        element_name = self._spatial_name(node, "object_name")
         self._require_scene_builder().place_element(
-            name=self._spatial_name(node, "object_name"),
+            name=element_name,
             position=self._evaluate_vector(node["position"]),
             source=self._source_location(node),
+        )
+        self._record_spatial_event(
+            event_type="place_object",
+            description=f"Se colocó el elemento '{element_name}'.",
+            source=self._source_location(node),
+            room_name=self._active_trace_room,
+            element_name=element_name,
         )
 
     def _move_spatial_element(self, node: dict[str, Any]) -> None:
+        element_name = self._spatial_name(node, "object_name")
         self._require_scene_builder().move_element(
-            name=self._spatial_name(node, "object_name"),
+            name=element_name,
             position=self._evaluate_vector(node["position"]),
             source=self._source_location(node),
         )
+        self._record_spatial_event(
+            event_type="move_object",
+            description=f"Se movió el elemento '{element_name}'.",
+            source=self._source_location(node),
+            room_name=self._active_trace_room,
+            element_name=element_name,
+        )
 
     def _rotate_spatial_element(self, node: dict[str, Any]) -> None:
+        element_name = self._spatial_name(node, "object_name")
         self._require_scene_builder().rotate_element(
-            name=self._spatial_name(node, "object_name"),
+            name=element_name,
             rotation=self._evaluate_vector(node["rotation"]),
             source=self._source_location(node),
+        )
+        self._record_spatial_event(
+            event_type="rotate_object",
+            description=f"Se rotó el elemento '{element_name}'.",
+            source=self._source_location(node),
+            room_name=self._active_trace_room,
+            element_name=element_name,
         )
 
     def _spatial_name(self, node: dict[str, Any], name_key: str) -> str:
@@ -365,6 +450,32 @@ class Interpreter:
         if self._scene_builder is None:
             raise RuntimeError("ScenePlanBuilder is unavailable during execution")
         return self._scene_builder
+
+    def _record_spatial_event(
+        self,
+        *,
+        event_type: SpatialTraceEvent,
+        description: str,
+        source: SourceLocation,
+        room_name: str | None = None,
+        element_name: str | None = None,
+        spatial_state: tuple[
+            tuple[str, str | int | float | bool | None], ...
+        ] = (),
+    ) -> None:
+        """Observe one successful event without changing runtime state."""
+
+        if self._scene_builder is None or self._spatial_trace_recorder is None:
+            return
+        self._spatial_trace_recorder.record(
+            event_type=event_type,
+            description=description,
+            source=source,
+            scene_snapshot=self._scene_builder.snapshot(),
+            room_name=room_name,
+            element_name=element_name,
+            spatial_state=spatial_state,
+        )
 
     def _execute_statements(self, statements: list[dict[str, Any]]) -> None:
         for statement in statements:

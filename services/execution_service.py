@@ -3,6 +3,7 @@
 from typing import Callable, Mapping
 
 from lumi_language.interpreter import Interpreter
+from lumi_language.spatial_debug_trace import SpatialDebugTrace
 
 from .compiler_service import CompilerService
 from .results import CompilationResult, ExecutionResult, ExecutionStatus
@@ -62,6 +63,9 @@ class ExecutionService:
             return ExecutionResult(
                 compilation, ExecutionStatus.BLOCKED,
                 diagnostics=compilation.diagnostics,
+                spatial_trace=SpatialDebugTrace.unavailable(
+                    "execution_not_attempted"
+                ),
             )
 
         catalog = compilation._compiled_programs
@@ -81,4 +85,5 @@ class ExecutionService:
             tuple(runtime.output),
             tuple(runtime.diagnostics),
             runtime.scene_plan if status is ExecutionStatus.COMPLETED else None,
+            runtime.spatial_trace,
         )
