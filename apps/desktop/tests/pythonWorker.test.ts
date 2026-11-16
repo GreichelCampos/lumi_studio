@@ -6,7 +6,7 @@ import { pythonExecutable } from '../electron/pythonConfig';
 import { JsonLines } from '../electron/jsonLines';
 
 const root = resolve('../..');
-const input = { entryFile: 'principal.lumi', files: { 'principal.lumi': 'mostrar("PYTHON_REAL")>>' } };
+const input = { entryFile: 'principal.lumi', files: { 'principal.lumi': 'principal { mostrar("PYTHON_REAL")>> }' } };
 const workers: PythonWorker[] = [];
 afterEach(async () => { await Promise.all(workers.splice(0).map((worker) => worker.close())); });
 function track(worker: PythonWorker): PythonWorker { workers.push(worker); return worker; }
