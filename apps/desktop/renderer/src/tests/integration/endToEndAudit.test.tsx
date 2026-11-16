@@ -29,7 +29,7 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
       const project = createMockProject({
         files: [
           createMockFile({
-            content: `principal {\n  habitacion sala(6.0, 5.0, 2.8) {\n    colocar sofa en [0.0, 0.0, -1.0]>>\n  }\n  visualizar3D(sala)>>\n}`,
+            content: `principal {\n  habitacion sala(6.0, 5.0, 2.8) {\n    sofa sofa {}\n    colocar sofa [0.0, 0.0, -1.0]>>\n  }\n}`,
           }),
         ],
       });
@@ -66,7 +66,7 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
         files: [
           createMockFile({
             // Falta terminador >> en la colocación
-            content: `principal {\n  habitacion sala(5.0, 4.0, 2.7) {\n    colocar sofa en [0.0, 0.0, 0.0]\n  }\n}`,
+            content: `principal {\n  habitacion sala(5.0, 4.0, 2.7) {\n    sofa sofa {}\n    colocar sofa [0.0, 0.0, 0.0]\n  }\n}`,
           }),
         ],
       });
@@ -92,7 +92,7 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
       // Los diagnósticos deben incluir referencia exacta al archivo y línea
       const blockingError = compileRes?.diagnostics.find((d) => d.blocking);
       expect(blockingError).toBeDefined();
-      expect(blockingError?.line).toBe(3);
+      expect(blockingError?.line).toBe(4);
       expect(blockingError?.description).toContain('>>');
     });
   });
@@ -103,7 +103,7 @@ describe('Fase 7 — Auditoría funcional e integración de extremo a extremo', 
         files: [
           createMockFile({
             // Mesa y silla colocadas exactamente en la misma posición [0,0,0]
-            content: `principal {\n  habitacion sala(6.0, 5.0, 2.7) {\n    colocar mesa en [0.0, 0.0, 0.0]>>\n    colocar silla en [0.0, 0.0, 0.0]>>\n  }\n}`,
+            content: `principal {\n  habitacion sala(6.0, 5.0, 2.7) {\n    mesa mesa {}\n    silla silla {}\n    colocar mesa [0.0, 0.0, 0.0]>>\n    colocar silla [0.0, 0.0, 0.0]>>\n  }\n}`,
           }),
         ],
       });

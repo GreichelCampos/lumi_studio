@@ -20,7 +20,7 @@ describe('lumiSyntaxTokenizer (tokenizador visual puro)', () => {
         '',
         'principal {',
         '  habitacion Sala [10, 12, 3] en [0, 0, 0];',
-        '  colocar pared en [5, 0, 0];',
+        '  colocar pared [5, 0, 0];',
         '  si (verdadero) {',
         '    mostrar("Area calculada: " + calcularArea(10.5, 12.0));',
         '  } sino {',
@@ -129,6 +129,21 @@ describe('lumiSyntaxTokenizer (tokenizador visual puro)', () => {
       }
     });
 
+    it('no presenta como palabras reservadas instrucciones fuera del contrato vigente', () => {
+      for (const word of ['en', 'visualizar3D']) {
+        const token = tokenizeLumiLine(word).find((item) => item.text === word);
+        expect(token?.type).toBe('identifier');
+        expect(LUMI_SYNTAX_KEYWORDS).not.toContain(word);
+      }
+    });
+
+    it('reconoce los operadores lógicos definidos por el lexer', () => {
+      for (const word of ['y', 'o', 'no']) {
+        const token = tokenizeLumiLine(word).find((item) => item.text === word);
+        expect(token?.type).toBe('keyword');
+      }
+    });
+
     it('debe reconocer el operador de flujo >>', () => {
       const line = 'funcion f() >> entero';
       const tokens = tokenizeLumiLine(line);
@@ -177,6 +192,12 @@ describe('lumiSyntaxTokenizer (tokenizador visual puro)', () => {
         expect(propToken).toBeDefined();
         expect(propToken?.type).toBe('property');
       }
+    });
+
+    it('mantiene exactamente las propiedades espaciales aceptadas por el parser', () => {
+      expect(LUMI_SYNTAX_PROPERTIES).toEqual([
+        'material', 'color', 'ancho', 'alto', 'orientacion', 'desplazamiento', 'elevacion',
+      ]);
     });
 
     it('debe reconocer enteros y números decimales', () => {

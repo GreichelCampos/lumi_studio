@@ -76,9 +76,10 @@ export const AppearanceTab: React.FC = () => {
                   </div>
                   <div className="pl-2.5 truncate">
                     <span style={{ color: theme.previewColors.keyword }}>habitacion</span>{' '}
-                    <span style={{ color: theme.previewColors.accent }}>"Salon"</span>{' '}
-                    <span style={{ color: theme.previewColors.text }}>[8, 5, 3]</span>
+                    <span style={{ color: theme.previewColors.accent }}>sala</span>
+                    <span style={{ color: theme.previewColors.text }}>(8, 5, 3) &#123;</span>
                   </div>
+                  <div className="pl-2.5">&#125;</div>
                   <div>&#125;</div>
                 </div>
               </div>

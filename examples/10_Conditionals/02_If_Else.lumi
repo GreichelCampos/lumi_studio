@@ -1,0 +1,9 @@
+principal {
+    decimal ancho = 3.0>>
+
+    si ancho >= 5 {
+        mostrar("Habitacion amplia")>>
+    } sino {
+        mostrar("Habitacion compacta")>>
+    }
+}

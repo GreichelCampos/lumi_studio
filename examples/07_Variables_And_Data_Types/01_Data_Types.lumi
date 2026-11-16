@@ -1,0 +1,17 @@
+
+principal {
+    entero cantidad_sillas = 4>>
+    decimal ancho = 5.5>>
+    texto nombre = "Sala principal">>
+    booleano tiene_ventanas = verdadero>>
+    nulo resultado = nulo>>
+
+    mostrar(cantidad_sillas)>>
+    mostrar(ancho)>>
+    mostrar(nombre)>>
+    mostrar(tiene_ventanas)>>
+
+    si resultado == nulo {
+        mostrar("No existe un resultado")>>
+    }
+}

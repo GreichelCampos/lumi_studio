@@ -41,7 +41,6 @@ export const LUMI_SYNTAX_KEYWORDS = [
   'puerta',
   'ventana',
   'colocar',
-  'en',
   'rotar',
   'mover',
   'si',
@@ -56,9 +55,11 @@ export const LUMI_SYNTAX_KEYWORDS = [
   'retornar',
   'mostrar',
   'leer',
-  'visualizar3D',
   'importar',
   'usar',
+  'y',
+  'o',
+  'no',
 ] as const;
 
 export const LUMI_SYNTAX_TYPES = [
@@ -76,21 +77,22 @@ export const LUMI_SYNTAX_PROPERTIES = [
   'color',
   'ancho',
   'alto',
-  'largo',
-  'posicion',
+  'orientacion',
+  'desplazamiento',
+  'elevacion',
 ] as const;
 
 export const LUMI_SYNTAX_BOOLEANS = ['verdadero', 'falso'] as const;
 
 export const LUMI_SYNTAX_NULL = 'nulo';
 
-const KEYWORD_REGEX = /^(principal|habitacion|piso|pared|puerta|ventana|colocar|en|rotar|mover|si|sino|segun|caso|defecto|hacer|mientras|repetir|funcion|retornar|mostrar|leer|visualizar3D|importar|usar)$/;
+const KEYWORD_REGEX = /^(principal|habitacion|piso|pared|puerta|ventana|colocar|rotar|mover|si|sino|segun|caso|defecto|hacer|mientras|repetir|funcion|retornar|mostrar|leer|importar|usar|y|o|no)$/;
 const TYPE_REGEX = /^(entero|decimal|texto|booleano|vector|lista|vacio)$/;
-const PROPERTY_REGEX = /^(material|color|ancho|alto|largo|posicion)$/;
+const PROPERTY_REGEX = /^(material|color|ancho|alto|orientacion|desplazamiento|elevacion)$/;
 const NUMBER_REGEX = /^\d+(\.\d+)?$/;
 
 export const LUMI_TOKEN_REGEX_SOURCE =
-  '(--[^\\n]*|\\/\\/[^\\n]*|"(?:\\\\.|[^"\\\\])*"|\\[[^\\]]+\\]|\\b(?:principal|habitacion|piso|pared|puerta|ventana|colocar|en|rotar|mover|si|sino|segun|caso|defecto|hacer|mientras|repetir|funcion|retornar|mostrar|leer|visualizar3D|importar|usar)\\b|\\b(?:entero|decimal|texto|booleano|vector|lista|vacio)\\b|\\bnulo\\b|\\b(?:verdadero|falso)\\b|\\b\\d+(?:\\.\\d+)?\\b|>>|[{}();,=+\\-*\\/]|[a-zA-Z_][a-zA-Z0-9_]*)';
+  '(--[^\\n]*|\\/\\/[^\\n]*|"(?:\\\\.|[^"\\\\])*"|\\[[^\\]]+\\]|\\b(?:principal|habitacion|piso|pared|puerta|ventana|colocar|rotar|mover|si|sino|segun|caso|defecto|hacer|mientras|repetir|funcion|retornar|mostrar|leer|importar|usar|y|o|no)\\b|\\b(?:entero|decimal|texto|booleano|vector|lista|vacio)\\b|\\bnulo\\b|\\b(?:verdadero|falso)\\b|\\b\\d+(?:\\.\\d+)?\\b|>>|[{}();,=+\\-*\\/]|[a-zA-Z_][a-zA-Z0-9_]*)';
 
 /**
  * Tokeniza una única línea de texto de código Lumi en fragmentos clasificados.

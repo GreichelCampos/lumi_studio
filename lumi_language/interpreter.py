@@ -435,6 +435,16 @@ class Interpreter:
         return f"{name}[{index}]"
 
     def _evaluate_vector(self, node: dict[str, Any]) -> Vector3:
+        if node["node"] != "VectorNode":
+            value = self._evaluate(node)
+            if isinstance(value, Vector3):
+                return value
+            self._fail(
+                node,
+                "RUN_SPATIAL_OPERAND_NOT_VECTOR",
+                "La operación espacial requiere un valor de tipo vector.",
+                "Utilice una variable vectorial o un vector literal [x, y, z].",
+            )
         components = []
         for component_name in ("x", "y", "z"):
             component = node[component_name]
@@ -584,6 +594,13 @@ class Interpreter:
             return self.input_provider(str(self._evaluate(node["message"])))
         if node_type == "FunctionCallNode":
             return self._evaluate_function_call(node)
+        if node_type == "ListNode":
+            return [
+                self._evaluate(element)
+                for element in node.get("elements", [])
+            ]
+        if node_type == "VectorNode":
+            return self._evaluate_vector(node)
         self._fail(
             node,
             "RUN_UNSUPPORTED_EXPRESSION",
@@ -844,6 +861,17 @@ class Interpreter:
             return "falso"
         if value is None:
             return "nulo"
+        if isinstance(value, Vector3):
+            return "[" + ", ".join(
+                Interpreter._format_value(component.value)
+                for component in (value.x, value.y, value.z)
+            ) + "]"
+        if isinstance(value, list):
+            return "[" + ", ".join(
+                f'"{element}"' if isinstance(element, str)
+                else Interpreter._format_value(element)
+                for element in value
+            ) + "]"
         return str(value)
 
     def _fail(

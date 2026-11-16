@@ -15,7 +15,7 @@ export const createMockFile = (overrides?: Partial<LumiFile>): LumiFile => ({
   name: 'principal.lumi',
   path: 'ProyectoTest/principal.lumi',
   isEntry: true,
-  content: `principal {\n  habitacion sala(5.0, 4.0, 2.7) {\n    colocar mesa en [0.0, 0.0, 0.0]>>\n  }\n  visualizar3D(sala)>>\n}`,
+  content: `principal {\n  habitacion sala(5.0, 4.0, 2.7) {\n    mesa mesa {}\n    colocar mesa [0.0, 0.0, 0.0]>>\n  }\n}`,
   ...overrides,
 });
 

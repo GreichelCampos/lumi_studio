@@ -28,7 +28,8 @@ describe('projectOperations', () => {
     expect(project.activeFileId).toBe(principalFile.id);
     expect(project.openTabIds).toContain(principalFile.id);
     expect(principalFile.content).toContain('principal {');
-    expect(principalFile.content).toContain('visualizar3D');
+    expect(principalFile.content).toContain('colocar sofa_principal [');
+    expect(principalFile.content).not.toContain(' colocar sofa_principal en ');
   });
 
   it('createLumiFile debe generar un archivo con id único y plantilla de función válida', () => {
@@ -39,6 +40,8 @@ describe('projectOperations', () => {
     expect(file.path).toBe('MiProyecto/cocina.lumi');
     expect(file.isEntry).toBe(false);
     expect(file.content).toContain('funcion vacio espacio_cocina()');
+    expect(file.content).toContain('mesa mesa_centro {}');
+    expect(file.content).toContain('colocar mesa_centro [');
   });
 
   it('renameLumiFile debe actualizar el nombre y la ruta sin modificar otros archivos', () => {

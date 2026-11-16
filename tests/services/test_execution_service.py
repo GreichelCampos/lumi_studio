@@ -4,6 +4,7 @@ import pytest
 
 from lumi_language.diagnostics import DiagnosticCategory
 from lumi_language.interpreter import Interpreter
+from spatial.scene_plan import SourceLocation
 from services.compiler_service import CompilerService
 from services.execution_service import ExecutionService, InputUnavailableError
 from services.results import CompilationStatus, ExecutionStatus
@@ -19,6 +20,141 @@ def test_valid_program_runs_and_keeps_output_order():
     assert result.execution_attempted
     assert result.output == ("primero", "2", "tercero")
     assert result.diagnostics == ()
+
+
+@pytest.mark.parametrize(
+    "declaration, expected",
+    [
+        ('lista valores = ["blanco", "gris", "azul"]>>',
+         '["blanco", "gris", "azul"]'),
+        ("lista valores = [1, 2.5, 3]>>", "[1, 2.5, 3]"),
+        ("lista valores = []>>", "[]"),
+        ('lista valores = [[1, 2], ["a", "b"]]>>',
+         '[[1, 2], ["a", "b"]]'),
+        ('lista valores = [1, "texto", verdadero, nulo]>>',
+         '[1, "texto", verdadero, nulo]'),
+    ],
+)
+def test_lists_execute_and_use_lumi_output_format(declaration, expected):
+    result = ExecutionService().execute_source(
+        f"principal {{ {declaration} mostrar(valores)>> }}",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    assert result.output == (expected,)
+
+
+def test_list_value_can_be_stored_and_retrieved_through_variables():
+    result = ExecutionService().execute_source(
+        'principal { lista colores = ["blanco", "gris"]>> '
+        "lista copia = colores>> mostrar(copia)>> }",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    assert result.output == ('["blanco", "gris"]',)
+
+
+def test_semantic_error_inside_list_blocks_execution():
+    result = ExecutionService().execute_source(
+        "principal { lista valores = [1, no_declarada]>> mostrar(valores)>> }",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.BLOCKED
+    assert not result.execution_attempted
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "SEM_UNDECLARED_VARIABLE",
+    ]
+
+
+def test_vector_value_can_be_initialized_stored_and_retrieved():
+    result = ExecutionService().execute_source(
+        "principal { vector origen = [0, 1.5, -2]>> mostrar(origen)>> }",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    assert result.output == ("[0, 1.5, -2]",)
+
+
+@pytest.mark.parametrize("component", ['"arriba"', "verdadero", "nulo"])
+def test_vector_declaration_rejects_non_numeric_components(component):
+    result = ExecutionService().execute_source(
+        f"principal {{ vector origen = [0, {component}, 2]>> }}",
+        "principal.lumi",
+    )
+
+    assert result.status == ExecutionStatus.BLOCKED
+    assert not result.execution_attempted
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "SEM_VECTOR_COMPONENT_NOT_NUMERIC",
+    ]
+
+
+def test_literal_spatial_vectors_still_generate_the_scene_plan():
+    result = ExecutionService().execute_source(
+        "principal { habitacion sala(6, 5, 3) { mesa mesa1 {} "
+        "colocar mesa1 [0, 0, 0]>> mover mesa1 [1.5, 0, 1]>> "
+        "rotar mesa1 [0, 90, 0]>> } }",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    element = result.scene_plan.rooms[0].elements[0]
+    assert tuple(component.value for component in (
+        element.position.x, element.position.y, element.position.z,
+    )) == (1.5, 0, 1)
+    assert tuple(component.value for component in (
+        element.rotation.x, element.rotation.y, element.rotation.z,
+    )) == (0, 90, 0)
+
+
+def test_vector_variables_drive_place_move_and_rotate_scene_state():
+    source = """principal {
+    vector posicion_inicial = [0, 0, 0]>>
+    vector posicion_final = [2, 0, 3]>>
+    vector rotacion_final = [0, 90, 0]>>
+    habitacion sala(8, 8, 3) {
+        mesa mesa1 {}
+        colocar mesa1 posicion_inicial>>
+        mover mesa1 posicion_final>>
+        rotar mesa1 rotacion_final>>
+    }
+}"""
+
+    result = ExecutionService().execute_source(source, "variables_vector.lumi")
+
+    assert result.succeeded
+    element = result.scene_plan.rooms[0].elements[0]
+    assert tuple(component.value for component in (
+        element.position.x, element.position.y, element.position.z,
+    )) == (2, 0, 3)
+    assert tuple(component.value for component in (
+        element.rotation.x, element.rotation.y, element.rotation.z,
+    )) == (0, 90, 0)
+    assert element.position.source == SourceLocation(
+        "variables_vector.lumi", 3, 29,
+    )
+    assert element.position.x.source == SourceLocation(
+        "variables_vector.lumi", 3, 30,
+    )
+
+
+def test_indexed_furniture_keeps_literal_vector_disambiguation():
+    result = ExecutionService().execute_source(
+        "principal { habitacion sala(6, 5, 3) { entero i = 0>> "
+        "silla silla[i] {} colocar silla[i] [1, 0, 2]>> } }",
+        "principal.lumi",
+    )
+
+    assert result.succeeded
+    element = result.scene_plan.rooms[0].elements[0]
+    assert element.name == "silla[0]"
+    assert tuple(component.value for component in (
+        element.position.x, element.position.y, element.position.z,
+    )) == (1, 0, 2)
 
 
 def test_existing_analysis_is_reused_without_recompilation():

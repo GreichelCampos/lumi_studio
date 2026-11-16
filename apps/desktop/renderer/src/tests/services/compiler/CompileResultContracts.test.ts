@@ -9,7 +9,8 @@ describe('CompileResult Contracts (Regla de Severidad vs Bloqueo)', () => {
     // Código con violación física de límites (diagnóstico de severidad 'error', pero no bloqueante a nivel sintáctico/AST)
     const codeWithSpatialError = `principal {
   habitacion dormitorio(4.0, 4.0, 2.5) {
-    colocar cama en [3.0, 0.0, 0.0]>>
+    cama cama {}
+    colocar cama [3.0, 0.0, 0.0]>>
   }
   visualizar3D(dormitorio)>>
 }`;
@@ -44,7 +45,8 @@ describe('CompileResult Contracts (Regla de Severidad vs Bloqueo)', () => {
   it('debe bloquear la generación del ScenePlan solo si existe al menos un diagnóstico con blocking === true', async () => {
     const codeWithBlockingError = `principal {
   habitacion sala(5.0, 4.0, 2.7) {
-    colocar mesa en [0.0, 0.0, 0.0]
+    mesa mesa {}
+    colocar mesa [0.0, 0.0, 0.0]
   }
   visualizar3D(sala)>>
 }`;

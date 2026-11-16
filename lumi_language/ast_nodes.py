@@ -198,7 +198,7 @@ class WindowNode:
 @dataclass
 class PlaceObjectNode:
     object_name: str
-    position: VectorNode
+    position: Any
     file: str
     line: int
     column: int
@@ -208,7 +208,7 @@ class PlaceObjectNode:
 @dataclass
 class MoveObjectNode:
     object_name: str
-    position: VectorNode
+    position: Any
     file: str
     line: int
     column: int
@@ -218,7 +218,7 @@ class MoveObjectNode:
 @dataclass
 class RotateObjectNode:
     object_name: str
-    rotation: VectorNode
+    rotation: Any
     file: str
     line: int
     column: int

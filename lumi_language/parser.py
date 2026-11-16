@@ -1065,7 +1065,19 @@ class Parser:
         return properties
 
     def parse_spatial_transform_target(self):
-        # After the name, [expr] is an index and [x, y, z] is the legacy vector.
+        # An identifier is a vector variable. After the object name, [expr]
+        # remains either an index followed by a vector or a literal vector.
+        if not self.check(TokenType.LEFT_BRACKET):
+            vector_token = self.consume(
+                TokenType.IDENTIFIER,
+                "Se esperaba un vector literal o una variable vectorial.",
+            )
+            return None, IdentifierNode(
+                name=vector_token.lexeme,
+                file=vector_token.file,
+                line=vector_token.line,
+                column=vector_token.column,
+            )
         bracket = self.consume(TokenType.LEFT_BRACKET, "Se esperaba '[' para iniciar el vector.")
         first = self.parse_expression()
         if self.match(TokenType.RIGHT_BRACKET):

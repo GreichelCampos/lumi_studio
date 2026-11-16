@@ -203,7 +203,7 @@ Example:
 ```lumi
 habitacion sala(5.0, 4.0, 2.7) {
 
-    // Lumi code
+    -- Código Lumi
 
 }
 ```
@@ -474,11 +474,11 @@ It is primarily intended to represent the controlled absence of a value.
 
 #  Lists
 
-Lists allow developers to group multiple values or objects.
+Lists allow developers to group multiple values. The following is a conceptual
+sketch that assumes the three room identifiers were declared previously; it is
+not a standalone executable program:
 
-For example:
-
-```lumi
+```text
 lista habitaciones = [
     sala,
     cocina,
@@ -500,22 +500,21 @@ A simple output example is:
 mostrar("Welcome to Lumi")>>
 ```
 
-Input can also affect the 3D experience.
+Input can also guide program decisions using the implemented `leer` instruction.
 
-For example, a program could allow the user to select a room:
+The following executable example asks for a room name and reports the selected
+value using separate `mostrar` instructions:
 
 ```lumi
-texto habitacion = seleccionar(
-    "Seleccione una habitación:",
-    ["Sala", "Cocina", "Dormitorio"]
-)>>
-
-cambiarHabitacion(habitacion)>>
-
-mostrar("Habitación actual: " + habitacion)>>
+principal {
+    texto habitacion = leer("Seleccione una habitación:")>>
+    mostrar("Habitación seleccionada:")>>
+    mostrar(habitacion)>>
+}
 ```
 
-This allows user input to produce a visible change in the 3D environment.
+Changing the room displayed by the viewport remains an IDE action; Lumi does not
+currently provide `seleccionar` or `cambiarHabitacion` instructions.
 
 ---
 

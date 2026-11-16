@@ -1,0 +1,16 @@
+principal {
+    vector posicion_inicial = [0, 0, 0]>>
+    vector posicion_final = [2, 0, 3]>>
+    vector rotacion_final = [0, 90, 0]>>
+
+    habitacion sala(8, 8, 3) {
+        mesa mesa1 {
+            material "madera">>
+            color "cafe">>
+        }
+
+        colocar mesa1 posicion_inicial>>
+        mover mesa1 posicion_final>>
+        rotar mesa1 rotacion_final>>
+    }
+}

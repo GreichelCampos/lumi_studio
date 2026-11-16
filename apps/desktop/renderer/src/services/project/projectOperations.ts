@@ -27,28 +27,18 @@ principal {
 
   -- Origen [0.0, 0.0, 0.0] centrado en el piso
   habitacion sala_principal(ancho, largo, alto) {
-    piso material material_piso>>
-    pared norte color "blanco">>
-    pared sur color "gris">>
-    
-    puerta en norte {
-      ancho = 0.90>>
-      alto = 2.10>>
-      posicion = 1.0>>
+    piso suelo {
+      material material_piso>>
     }
 
-    ventana en sur {
-      ancho = 1.60>>
-      alto = 1.30>>
-      posicion = -0.5>>
-    }
+    sofa sofa_principal {}
+    mesa mesa_centro {}
+    planta planta_ventana {}
 
-    colocar sofa en [0.0, 0.0, -0.8]>>
-    colocar mesa en [0.0, 0.0, 0.6]>>
-    colocar planta en [1.7, 0.0, 1.2]>>
+    colocar sofa_principal [0.0, 0.0, -0.8]>>
+    colocar mesa_centro [0.0, 0.0, 0.6]>>
+    colocar planta_ventana [1.7, 0.0, 1.2]>>
   }
-
-  visualizar3D(sala_principal)>>
 }
 `,
   };
@@ -78,8 +68,10 @@ export function createLumiFile(projectName: string, cleanFileName: string): Lumi
     isEntry: false,
     content: `-- Módulo: ${cleanFileName}
 funcion vacio espacio_${cleanFileName.replace(/\.lumi$/i, '').replace(/[^a-zA-Z0-9_]/g, '_')}() {
-  colocar mesa en [0.0, 0.0, 0.0]>>
-  colocar silla en [0.0, 0.0, -0.6]>>
+  mesa mesa_centro {}
+  silla silla_visita {}
+  colocar mesa_centro [0.0, 0.0, 0.0]>>
+  colocar silla_visita [0.0, 0.0, -0.6]>>
 }
 `,
   };

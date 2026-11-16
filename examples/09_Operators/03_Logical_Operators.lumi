@@ -1,0 +1,8 @@
+principal {
+    booleano tiene_puerta = verdadero>>
+    booleano tiene_ventana = falso>>
+
+    mostrar(tiene_puerta y tiene_ventana)>>
+    mostrar(tiene_puerta o tiene_ventana)>>
+    mostrar(no tiene_ventana)>>
+}

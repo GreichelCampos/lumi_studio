@@ -1,0 +1,5 @@
+principal {
+    hacer entero i = 0; i < 4; i = i + 1 {
+        mostrar(i)>>
+    }
+}

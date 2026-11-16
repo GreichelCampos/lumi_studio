@@ -1,0 +1,14 @@
+principal {
+    decimal ancho = 6.0>>
+    decimal largo = 4.0>>
+
+    decimal suma = ancho + largo>>
+    decimal resta = ancho - largo>>
+    decimal area = ancho * largo>>
+    decimal division = ancho / largo>>
+
+    mostrar(suma)>>
+    mostrar(resta)>>
+    mostrar(area)>>
+    mostrar(division)>>
+}

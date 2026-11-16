@@ -125,8 +125,10 @@ Además de `file`, `line` y `column`, cada tipo de nodo almacenará únicamente 
 * `return_type`: tipo de retorno declarado por una función.
 * `cases`: lista de nodos `CaseNode` pertenecientes a una estructura `segun`.
 * `width`, `length` y `height`: nodos de expresión que representan las dimensiones de una habitación.
-* `position`: nodo `VectorNode` que representa una posición `[x, y, z]`.
-* `rotation`: nodo `VectorNode` que representa una rotación `[x, y, z]`.
+* `position`: nodo `VectorNode` que representa una posición `[x, y, z]`, o
+  `IdentifierNode` que referencia una variable de tipo `vector`.
+* `rotation`: nodo `VectorNode` que representa una rotación `[x, y, z]`, o
+  `IdentifierNode` que referencia una variable de tipo `vector`.
 * `properties`: lista de nodos `SpatialPropertyNode`. Puede estar vacía porque `color` y `material` son opcionales.
 * `file_name`: nombre del archivo `.lumi` que se desea importar.
 * `symbol_name`: único símbolo solicitado mediante `usar`; su importación no hace visibles automáticamente los demás símbolos del archivo.

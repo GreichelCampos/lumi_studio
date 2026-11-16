@@ -1075,6 +1075,24 @@ def test_l025_place_with_expression_vector():
     assert isinstance(statement.position.z, BinaryExpressionNode)
 
 
+@pytest.mark.parametrize(
+    "source, node_type, field",
+    [
+        ("colocar silla1 posicion_inicial>>", PlaceObjectNode, "position"),
+        ("mover silla1 nueva_posicion>>", MoveObjectNode, "position"),
+        ("rotar silla1 rotacion_final>>", RotateObjectNode, "rotation"),
+    ],
+)
+def test_spatial_operations_accept_vector_variable(source, node_type, field):
+    statement = parse_source(source).statements[0]
+
+    assert isinstance(statement, node_type)
+    operand = getattr(statement, field)
+    assert isinstance(operand, IdentifierNode)
+    assert operand.name in {"posicion_inicial", "nueva_posicion", "rotacion_final"}
+    assert statement.object_index is None
+
+
 def test_l025_move_and_rotate_use_vectors():
     ast = parse_source("mover silla1 [2, 0, 3]>> rotar silla1 [0, 90, 0]>>")
 
@@ -1143,8 +1161,8 @@ def test_l025_list_assignment_remains_list_not_vector():
         ),
         ("silla silla1 { mostrar(1)>> }", "Solo se permiten las propiedades"),
         ("colocar [1, 0, 2]>>", "Se esperaba el nombre del objeto a colocar."),
-        ("colocar silla1 en [1, 0, 2]>>", "Se esperaba '['"),
-        ("mover silla1 a [2, 0, 3]>>", "Se esperaba '['"),
+        ("colocar silla1 en [1, 0, 2]>>", "Se esperaba '>>'"),
+        ("mover silla1 a [2, 0, 3]>>", "Se esperaba '>>'"),
         ("colocar silla1 [1, 0]>>", "Se esperaba ',' despues del componente y."),
         ("rotar silla1 [0, 90, 0, 1]>>", "Se esperaba ']'"),
     ],
