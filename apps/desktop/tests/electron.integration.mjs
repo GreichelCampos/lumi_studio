@@ -12,6 +12,13 @@ try {
   delete env.ELECTRON_RUN_AS_NODE;
   desktop = await launchDesktop(env, workspace);
   const page = await desktop.firstWindow();
+  const roomInViewer = async () => {
+    const embedded = page.locator('#room-selector-single');
+    if (await embedded.isVisible()) return embedded;
+    const detached = desktop.windows().find(window => new URL(window.url()).searchParams.get('window') === 'viewport')
+      ?? await desktop.waitForEvent('window');
+    return detached.locator('#room-selector-single');
+  };
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
   await waitForStudioReady(page);
@@ -23,13 +30,13 @@ try {
   assert.deepEqual(await page.evaluate(() => Object.keys(window.lumiDesktop).sort()), ['analyze', 'availability', 'execute', 'onInputPrompt', 'replyInput']);
   assert.equal(await page.getByLabel('Modo de demostración').count(), 0);
   const editor = page.locator('textarea');
-  await editor.fill('mostrar("SALIDA_REAL_PYTHON_42")>>');
+  await editor.fill('principal { mostrar("SALIDA_REAL_PYTHON_42")>> }');
   await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByText('SALIDA_REAL_PYTHON_42', { exact: true }).waitFor();
   await mkdir(new URL('../test-results/', import.meta.url), { recursive: true });
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-output.png', import.meta.url)), fullPage: true });
   // CompilerService must call analyze, which must not evaluate the division.
-  await editor.fill('mostrar(4 / 0)>>');
+  await editor.fill('principal {\n  mostrar(4 / 0)>>\n}');
   await page.getByRole('button', { name: 'Compilar', exact: true }).click();
   await page.getByText('[Python · Análisis] completed', { exact: true }).waitFor();
   assert.equal(await page.getByTestId('output-log-view').getByText('Análisis terminado', { exact: true }).count(), 1);
@@ -39,7 +46,7 @@ try {
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).waitFor();
   await page.getByRole('button', { name: 'Errores (1)', exact: true }).click();
   await page.getByText('ERROR', { exact: true }).waitFor();
-  await page.getByText('principal.lumi:1:9', { exact: true }).waitFor();
+  await page.getByText('principal.lumi:2:11', { exact: true }).waitFor();
   await mkdir(new URL('../test-results/', import.meta.url), { recursive: true });
   await page.getByText('RUN_DIVISION_BY_ZERO', { exact: true }).scrollIntoViewIfNeeded();
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/electron-real-python.png', import.meta.url)), fullPage: true });
@@ -83,14 +90,14 @@ try {
   assert.equal(await inputDialog.getByLabel('Respuesta').inputValue(), '');
   await inputDialog.getByRole('button', { name: 'Enviar entrada' }).click();
   await page.getByText('Hola, María[]', { exact: true }).waitFor();
-  await page.locator('#room-selector-single').waitFor();
+  await (await roomInViewer()).waitFor();
   await page.screenshot({ path: fileURLToPath(new URL('../test-results/leer-result.png', import.meta.url)) });
   await run.click();
   await inputDialog.getByText('¿Cómo te llamás?', { exact: true }).waitFor();
   await inputDialog.getByRole('button', { name: 'Cancelar ejecución' }).click();
   await inputDialog.waitFor({ state: 'hidden' });
   await page.getByText(/\[INPUT_CANCELLED\]/).first().waitFor();
-  await editor.fill('mostrar("DESPUÉS_DE_CANCELAR")>>');
+  await editor.fill('principal { mostrar("DESPUÉS_DE_CANCELAR")>> }');
   await run.click();
   await page.getByText('DESPUÉS_DE_CANCELAR', { exact: true }).waitFor();
 
@@ -106,7 +113,7 @@ try {
     await editor.fill(baseCase);
     await run.click();
     await page.getByText('120', { exact: true }).waitFor();
-    await page.locator('#room-selector-single').waitFor();
+    await (await roomInViewer()).waitFor();
   }
   await runFactorial();
   await editor.fill('funcion vacio ciclo() {\n  ciclo()>>\n}\nprincipal { ciclo()>> }');

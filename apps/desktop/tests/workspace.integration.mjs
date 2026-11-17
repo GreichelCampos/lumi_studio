@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile, stat, mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { setTimeout } from 'node:timers/promises';
 import { startVite } from '../scripts/development.mjs';
 import { launchDesktop, temporaryWorkspace } from './workspaceHarness.mjs';
@@ -43,7 +44,7 @@ try {
   await page.getByLabel('Nuevo proyecto Lumi', { exact: true }).click();
   await page.getByPlaceholder('Ej: ApartamentoModerno').fill('CasaReal');
   await page.getByRole('button', { name: 'Elegir carpeta...', exact: true }).click();
-  await page.getByRole('button', { name: 'Crear Proyecto', exact: true }).click();
+  await page.getByRole('button', { name: 'Crear proyecto', exact: true }).click();
   await page.locator('#modal-new-project').waitFor({ state: 'hidden' });
   const root = join(workspace.root, 'CasaReal');
   await eventually(async () => (await metadata()).projects.some(p => p.root === root), 'Project root was not persisted');
@@ -65,18 +66,31 @@ try {
   const about = page.getByRole('dialog', { name: 'Acerca de Lumi Studio' });
   await about.getByText(/Lenguaje Unificado de Modelado de Interiores/).waitFor();
   assert.equal(await about.getByText('Errores frecuentes').count(), 0);
+  const evidence = new URL('../test-results/', import.meta.url);
+  await mkdir(evidence, { recursive: true });
+  await about.screenshot({ path: fileURLToPath(new URL('acerca-de-lumi.png', evidence)) });
+  await desktop.evaluate(({ shell }) => {
+    globalThis.lumiAuditLinks = [];
+    shell.openExternal = async (url) => { globalThis.lumiAuditLinks.push(url); };
+  });
+  const links = about.getByRole('link');
+  const destinations = await links.evaluateAll(elements => elements.map(element => element.href));
+  assert.equal(destinations.length, 4);
+  for (const link of await links.all()) await link.click();
+  await eventually(async () => (await desktop.evaluate(() => globalThis.lumiAuditLinks)).length === 4, 'About links did not reach the external browser');
+  assert.deepEqual(await desktop.evaluate(() => globalThis.lumiAuditLinks), destinations);
   await page.keyboard.press('Escape');
   await about.waitFor({ state: 'hidden' });
 
   await editor.fill('funcion entero suma(ent a) { retornar a>> }');
   await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
-  await page.getByText(/Escriba el tipo y el nombre, por ejemplo: entero cantidad/).waitFor();
+  await page.getByText(/Escribí el tipo y el nombre, por ejemplo: entero cantidad/).waitFor();
   await editor.fill('principal { mostrar("CORREGIDO")>> }');
   await page.locator('#tab-salida-btn').click();
   await page.getByRole('button', { name: 'Ejecutar Lumi', exact: true }).click();
   await page.getByText('CORREGIDO', { exact: true }).waitFor();
   console.log('Malformed Lumi shows source location and a repair hint; F1 help and recovery verified.');
-  const principal = 'importar "modulo.lumi" usar dividir>>\nmostrar(dividir())>>';
+  const principal = 'importar "modulo.lumi" usar dividir>>\nprincipal { mostrar(dividir())>> }';
   await page.locator('textarea').fill(principal);
   await save(page, join(root, 'principal.lumi'), principal);
   await page.getByLabel('Nuevo archivo .lumi', { exact: true }).click();

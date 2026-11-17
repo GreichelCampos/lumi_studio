@@ -2,7 +2,7 @@ import React from 'react';
 import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE } from '../data/documentation';
 import { LUMI_REPOSITORY, LUMI_TEAM } from '../../../projectCredits';
 import { LumiMascot } from './LumiMascot';
-import { X, Code2, Check, Sparkles } from 'lucide-react';
+import { X, Code2, Check, Sparkles, ExternalLink, Github, MousePointer2 } from 'lucide-react';
 
 interface DocumentationModalProps {
   isOpen: boolean;
@@ -100,7 +100,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         aria-modal="true"
         aria-labelledby="lumi-help-title"
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-4xl max-h-[85vh] flex flex-col glass-modal text-slate-200"
+        className={`relative w-full max-h-[85vh] flex flex-col glass-modal text-slate-200 ${isAbout ? 'max-w-3xl' : 'max-w-4xl'}`}
       >
         <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15">
           <div className="flex items-center gap-3">
@@ -124,17 +124,38 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         </div>
 
         {isAbout ? (
-          <section className="overflow-y-auto p-6 space-y-4 text-sm">
-            <p className="text-lg font-semibold"><strong>LUMI</strong> · Lenguaje Unificado de Modelado de Interiores</p>
-            <p>Lumi nació como proyecto del curso Paradigmas de Programación de la Universidad Nacional, Campus Pérez Zeledón.</p>
-            <p>La idea es aprender programación en español al diseñar habitaciones. Podés cambiar una medida, mover un mueble y ver qué efecto tiene esa instrucción en 3D. Lumi también señala problemas como una colisión o una puerta bloqueada.</p>
-            <h3 className="font-semibold">Equipo</h3>
-            <ul className="space-y-2">
-              {LUMI_TEAM.map(({ name, github }) => (
-                <li key={github}>{name} · <a className="underline" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">@{github}</a></li>
-              ))}
-            </ul>
-            <a className="underline" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">Repositorio de Lumi Studio en GitHub</a>
+          <section className="overflow-y-auto px-5 py-5 sm:px-7 sm:py-6 space-y-6 text-sm">
+            <div className="rounded-2xl border border-[#f3ebd6]/20 bg-[#112c22] px-5 py-6 flex items-center gap-5">
+              <div className="min-w-0 flex-1">
+                <p className="text-4xl font-bold tracking-tight text-[#f3ebd6]">LUMI</p>
+                <p className="mt-2 font-semibold text-[#f3ebd6]">Lenguaje Unificado de Modelado de Interiores</p>
+                <p className="mt-3 text-[#d5cbb2] leading-relaxed">Aprendé programación en español al diseñar habitaciones. Cambiá una medida o mové un mueble en el código y observá el resultado en 3D.</p>
+              </div>
+              <div className="hidden sm:block shrink-0" aria-hidden="true"><LumiMascot state="ready" size={84} isAnimated={false} /></div>
+            </div>
+
+            <div>
+              <h3 className="flex items-center gap-2 font-semibold text-[#f3ebd6]"><MousePointer2 aria-hidden="true" className="h-4 w-4" /> Qué podés hacer</h3>
+              <p className="mt-2 leading-relaxed text-[#d5cbb2]">Creá espacios con paredes, puertas, ventanas y muebles. Revisá las colisiones y las puertas bloqueadas en Diagnósticos. Usá el depurador espacial para ver cómo cambia la escena paso a paso.</p>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-[#f3ebd6]">Equipo</h3>
+              <p className="mt-1 text-xs leading-relaxed text-[#d5cbb2]">Proyecto de Paradigmas de Programación · Universidad Nacional, Campus Pérez Zeledón</p>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-3">
+                {LUMI_TEAM.map(({ name, github }) => (
+                  <li key={github} className="rounded-xl border border-[#f3ebd6]/15 bg-[#071b14] p-3">
+                    <p className="font-semibold text-[#f3ebd6]">{name}</p>
+                    <a className="mt-1 inline-flex items-center gap-1.5 break-all text-xs text-[#d5cbb2] underline underline-offset-2 hover:text-white" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">
+                      @{github}<ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <a className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#f3ebd6]/25 px-3 py-2 text-xs font-semibold text-[#f3ebd6] hover:bg-[#f3ebd6]/10" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">
+                <Github aria-hidden="true" className="h-4 w-4" /> Repositorio de Lumi Studio en GitHub <ExternalLink aria-hidden="true" className="h-3 w-3" />
+              </a>
+            </div>
           </section>
         ) : (
           <>

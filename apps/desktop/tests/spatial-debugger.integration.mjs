@@ -37,6 +37,33 @@ try {
 
   const viewport = viewportPage.locator('#viewport-3d-main');
   await viewport.locator('#room-selector-single, #room-selector-multi').filter({ hasText: 'oficina' }).waitFor();
+  for (const label of [
+    'Acercar cámara', 'Alejar cámara', 'Restablecer cámara isométrica',
+    'Mostrar u ocultar ejes coordenados', 'Mostrar u ocultar cotas métricas',
+    'Modo alámbrico', 'Iluminación atardecer', 'Iluminación nocturna', 'Iluminación diurna',
+  ]) {
+    const control = viewport.getByRole('button', { name: label, exact: true });
+    assert.equal(await control.isEnabled(), true, label);
+    await control.click();
+  }
+  await viewport.getByRole('button', { name: 'Modo alámbrico', exact: true }).click();
+  await viewport.getByTitle('Ajustar encuadre para aprovechar al máximo el espacio de la habitación').click();
+  await desktop.evaluate(({ session }) => {
+    session.defaultSession.once('will-download', (_event, item) => {
+      globalThis.lumiAuditDownload = { filename: item.getFilename(), mime: item.getMimeType() };
+      item.cancel();
+    });
+  });
+  await viewport.getByRole('button', { name: 'Capturar imagen PNG', exact: true }).click();
+  let capture;
+  for (let attempt = 0; attempt < 30 && !capture; attempt++) {
+    capture = await desktop.evaluate(() => globalThis.lumiAuditDownload);
+    if (!capture) await new Promise(resolve => setTimeout(resolve, 100));
+  }
+  assert.ok(capture, 'La captura no inició una descarga.');
+  assert.match(capture.filename, /\.png$/i);
+  assert.equal(capture.mime, 'image/png');
+  console.log('Viewport toolbar accepted camera, axes, measurements, wireframe and lighting controls.');
   const executionPixels = await viewport.locator('canvas').screenshot();
   const renderedScene = viewport.locator('[data-rendered-object-ids]').first();
   assert.equal((await renderedScene.getAttribute('data-rendered-object-ids')).split(',').filter(Boolean).length, 12);

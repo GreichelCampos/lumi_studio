@@ -107,19 +107,19 @@ try {
   }
   assert.equal(await page.getByRole('button', { name: 'Compilar', exact: true }).count(), 1);
   const editor = page.locator('textarea');
-  await editor.fill('mostrar("ATAJO_F5")>>');
+  await editor.fill('principal { mostrar("ATAJO_F5")>> }');
   await editor.focus();
   await page.keyboard.press('Control+a');
-  assert.equal(await editor.evaluate((el) => el.selectionEnd - el.selectionStart), 'mostrar("ATAJO_F5")>>'.length);
+  assert.equal(await editor.evaluate((el) => el.selectionEnd - el.selectionStart), 'principal { mostrar("ATAJO_F5")>> }'.length);
   await page.keyboard.press('F5');
   await page.getByText('[Python · Análisis] completed', { exact: true }).waitFor();
   await editor.focus();
   await page.keyboard.press('End');
   await page.keyboard.type(' ');
   await page.keyboard.press('Control+z');
-  assert.equal(await editor.inputValue(), 'mostrar("ATAJO_F5")>>');
+  assert.equal(await editor.inputValue(), 'principal { mostrar("ATAJO_F5")>> }');
   await page.keyboard.press('Control+y');
-  assert.equal(await editor.inputValue(), 'mostrar("ATAJO_F5")>> ');
+  assert.equal(await editor.inputValue(), 'principal { mostrar("ATAJO_F5")>> } ');
   await page.keyboard.press('Control+s');
   assert.equal(await editor.evaluate((el) => document.activeElement === el), true);
   await mkdir(new URL('../test-results/', import.meta.url), { recursive: true });
