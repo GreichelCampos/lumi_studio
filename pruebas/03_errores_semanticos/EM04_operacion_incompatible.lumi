@@ -1,0 +1,3 @@
+principal {
+    mostrar("Lumi" - 1)>>
+}

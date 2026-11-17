@@ -1,0 +1,7 @@
+principal {
+    entero cantidad = 0>>
+    mientras cantidad < 4 {
+        mostrar(cantidad)>>
+        cantidad = cantidad + 1>>
+    }
+}

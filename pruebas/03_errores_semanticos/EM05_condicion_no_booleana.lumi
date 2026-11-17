@@ -1,0 +1,5 @@
+principal {
+    si 1 {
+        mostrar("No debe ejecutarse")>>
+    }
+}

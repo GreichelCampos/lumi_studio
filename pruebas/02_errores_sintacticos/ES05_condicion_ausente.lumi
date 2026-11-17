@@ -1,0 +1,5 @@
+principal {
+    si {
+        mostrar("Condición ausente")>>
+    }
+}

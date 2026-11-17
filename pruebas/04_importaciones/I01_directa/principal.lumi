@@ -1,0 +1,5 @@
+importar "matematica.lumi" usar sumar>>
+
+principal {
+    mostrar(sumar(4, 5))>>
+}

@@ -1,0 +1,7 @@
+importar "matematica.lumi" usar duplicar>>
+importar "mensajes.lumi" usar anunciar>>
+
+principal {
+    anunciar()>>
+    mostrar(duplicar(7))>>
+}

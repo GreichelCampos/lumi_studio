@@ -1,0 +1,10 @@
+principal {
+    entero cantidad = 4>>
+    decimal ancho = 5.5>>
+    texto nombre = "Sala principal">>
+    booleano disponible = verdadero>>
+    mostrar(cantidad)>>
+    mostrar(ancho)>>
+    mostrar(nombre)>>
+    mostrar(disponible)>>
+}

@@ -1,0 +1,38 @@
+principal {
+    habitacion sala(8, 6, 3) {
+        piso piso_sala {
+            color "gris">>
+            material "ceramica">>
+        }
+        pared pared_norte {
+            orientacion "norte">>
+            color "blanco">>
+            material "concreto">>
+        }
+        puerta entrada {
+            orientacion "norte">>
+            ancho 1>>
+            alto 2.1>>
+            desplazamiento 0.5>>
+            material "madera">>
+        }
+        ventana ventana_sur {
+            orientacion "sur">>
+            ancho 1.5>>
+            alto 1>>
+            desplazamiento 3>>
+            elevacion 1>>
+            material "vidrio">>
+        }
+        mesa mesa_central {
+            color "cafe">>
+            material "madera">>
+        }
+        silla silla_visita {
+            color "azul">>
+        }
+        colocar mesa_central [0, 0, 0]>>
+        colocar silla_visita [2, 0, 1]>>
+        rotar mesa_central [0, 45, 0]>>
+    }
+}

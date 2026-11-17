@@ -1,0 +1,5 @@
+importar "fachada.lumi" usar resultado>>
+
+principal {
+    mostrar(resultado(8))>>
+}

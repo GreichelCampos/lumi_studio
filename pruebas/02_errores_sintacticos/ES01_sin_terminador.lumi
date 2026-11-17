@@ -1,0 +1,4 @@
+principal {
+    entero cantidad = 5
+    mostrar(cantidad)>>
+}

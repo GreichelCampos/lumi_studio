@@ -1,0 +1,4 @@
+principal {
+    si verdadero {
+        mostrar("Bloque incompleto")>>
+}

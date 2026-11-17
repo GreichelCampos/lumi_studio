@@ -1,0 +1,3 @@
+funcion vacio anunciar() {
+    mostrar("Importaciones múltiples")>>
+}

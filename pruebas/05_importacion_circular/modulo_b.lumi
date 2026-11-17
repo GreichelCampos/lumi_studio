@@ -1,0 +1,5 @@
+importar "modulo_a.lumi" usar funcion_a>>
+
+funcion entero funcion_b() {
+    retornar funcion_a()>>
+}

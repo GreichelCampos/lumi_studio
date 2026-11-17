@@ -1,0 +1,3 @@
+funcion entero doble(entero valor) {
+    retornar valor * 2>>
+}
