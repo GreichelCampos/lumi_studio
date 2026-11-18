@@ -237,3 +237,19 @@ describe('incremental ownership and invalidation', () => {
     manager.dispose();
   });
 });
+
+describe('viewport preferences', () => {
+  it('applies grid visibility, pixel ratio and shadows and keeps the quality after resizing', () => {
+    const manager = new ThreeSceneManager({ container: document.createElement('div'), onSelectEntity: vi.fn() });
+    manager.applyPreferences(false, 'performance');
+    expect(manager['scene'].getObjectByName('gridHelper')?.visible).toBe(false);
+    expect(manager['renderer'].shadowMap.enabled).toBe(false);
+    expect(manager['renderer'].setPixelRatio).toHaveBeenLastCalledWith(Math.min(window.devicePixelRatio, 1));
+    manager.handleResize();
+    expect(manager['renderer'].setPixelRatio).toHaveBeenLastCalledWith(Math.min(window.devicePixelRatio, 1));
+    manager.applyPreferences(true, 'high');
+    expect(manager['scene'].getObjectByName('gridHelper')?.visible).toBe(true);
+    expect(manager['renderer'].shadowMap.enabled).toBe(true);
+    manager.dispose();
+  });
+});

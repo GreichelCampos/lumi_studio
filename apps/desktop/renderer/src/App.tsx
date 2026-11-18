@@ -1,3 +1,4 @@
+import { LUMIC_SCHEMA_VERSION } from './types';
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useProjectManager } from './hooks/useProjectManager';
 import { useEditorState } from './hooks/useEditorState';
@@ -296,6 +297,16 @@ export default function App() {
       const res = await LumicFileService.readAndValidateFile(file);
       if (res.success && res.artifact) {
         loadCompiledArtifact(res.artifact);
+        const sessionId = `viewport-${Date.now()}-${++viewportSessionSequenceRef.current}`;
+        viewportSessionRef.current = sessionId;
+        preferredRoomIdRef.current = null;
+        setActiveObjectId(null);
+        setHasExecutedScene(true);
+        await window.lumiViewport?.show({
+          sessionId, scenePlan: res.artifact.scenePlan, sceneSource: 'artifact',
+          legacyPlacement: res.artifact.schemaVersion !== LUMIC_SCHEMA_VERSION,
+          activeObjectId: null, debugActiveObjectId: null, debugRoomId: null,
+        });
         return { success: true };
       }
       return { success: false, error: res.error || 'Error al validar el archivo .lumic' };

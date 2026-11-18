@@ -121,11 +121,10 @@ describe('TopBar Component', () => {
     expect(screen.queryByText('Ejecutar archivo actual')).not.toBeInTheDocument();
   });
 
-  it('reports that formatting is unavailable without claiming to change the source', () => {
+  it('omits the unavailable formatter', () => {
     render(<TopBar {...defaultProps} />);
     fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
-    fireEvent.click(screen.getByText('Formatear código Lumi (no disponible)'));
-    expect(screen.getByText('El formateador de código Lumi todavía no está implementado.')).toBeInTheDocument();
+    expect(screen.queryByText('Formatear código Lumi (no disponible)')).not.toBeInTheDocument();
     expect(screen.queryByText('Código formateado con indentación oficial Lumi')).not.toBeInTheDocument();
   });
 });

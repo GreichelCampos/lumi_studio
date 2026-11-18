@@ -8,6 +8,9 @@ vi.mock('../../../components/viewport/ThreeSceneManager', () => ({
   ThreeSceneManager: class {
     dispose() {}
     applyTheme() {}
+    toggleDimensions() {}
+    toggleAxes() {}
+    applyPreferences() {}
     handleResize() {}
     setLegacyPlacement() {}
     clearRoom() {}

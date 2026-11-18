@@ -25,6 +25,7 @@ export const ViewportTab: React.FC = () => {
             </div>
             <input
               type="checkbox"
+              aria-label="Cuadrícula del suelo"
               checked={settings.showGrid}
               onChange={(e) => updateSettings({ showGrid: e.target.checked })}
               className="w-4 h-4 rounded accent-[var(--ide-accent)] cursor-pointer"
@@ -38,6 +39,7 @@ export const ViewportTab: React.FC = () => {
             </div>
             <input
               type="checkbox"
+              aria-label="Ejes cartesianos"
               checked={settings.showAxes}
               onChange={(e) => updateSettings({ showAxes: e.target.checked })}
               className="w-4 h-4 rounded accent-[var(--ide-accent)] cursor-pointer"
@@ -51,6 +53,7 @@ export const ViewportTab: React.FC = () => {
             </div>
             <input
               type="checkbox"
+              aria-label="Cotas y medidas métricas"
               checked={settings.showDimensions}
               onChange={(e) => updateSettings({ showDimensions: e.target.checked })}
               className="w-4 h-4 rounded accent-[var(--ide-accent)] cursor-pointer"
@@ -63,13 +66,14 @@ export const ViewportTab: React.FC = () => {
               <div className="text-[10px] text-[var(--ide-text-muted)]">Tono del sol y atmósfera de la escena</div>
             </div>
             <select
+              aria-label="Iluminación ambiental"
               value={settings.lightingMode}
               onChange={(e) => updateSettings({ lightingMode: e.target.value as LightingMode })}
               className="px-2.5 py-1 rounded bg-[var(--ide-dropdown-bg)] border border-[var(--ide-panel-border)] text-xs text-[var(--ide-text)] outline-none cursor-pointer"
             >
               <option value="day">Día (Soleado)</option>
-              <option value="night">Noche (Estrellado)</option>
-              <option value="studio">Estudio neutral</option>
+              <option value="night">Noche (Ciber)</option>
+              <option value="studio">Atardecer</option>
             </select>
           </div>
 
@@ -79,6 +83,7 @@ export const ViewportTab: React.FC = () => {
               <div className="text-[10px] text-[var(--ide-text-muted)]">Fondo del visor tridimensional y cuadrícula métrica</div>
             </div>
             <select
+              aria-label="Color y entorno del espacio 3D"
               value={settings.spatialBackground || 'theme'}
               onChange={(e) => updateSettings({ spatialBackground: e.target.value as SpatialBackgroundMode })}
               className="px-2.5 py-1 rounded bg-[var(--ide-dropdown-bg)] border border-[var(--ide-panel-border)] text-xs text-[var(--ide-text)] outline-none cursor-pointer"
@@ -98,9 +103,9 @@ export const ViewportTab: React.FC = () => {
         </h3>
         <div className="grid grid-cols-3 gap-3">
           {[
-            { id: 'high', label: 'Alta Fidelidad', desc: 'Sombras suaves y antialiasing activo' },
-            { id: 'balanced', label: 'Equilibrada', desc: 'Rendimiento fluido estándar' },
-            { id: 'performance', label: 'Alto Rendimiento', desc: 'Optimizado para equipos modestos' },
+            { id: 'high', label: 'Alta Fidelidad', desc: 'Sombras y resolución adaptada a la pantalla' },
+            { id: 'balanced', label: 'Equilibrada', desc: 'Sombras y resolución estándar' },
+            { id: 'performance', label: 'Alto Rendimiento', desc: 'Sin sombras y con resolución estándar' },
           ].map((opt) => (
             <button
               key={opt.id}

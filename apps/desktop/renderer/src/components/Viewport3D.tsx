@@ -83,10 +83,15 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(initialRoomId);
 
 
-  const [showDimensions, setShowDimensions] = useState(true);
-  const [showAxes, setShowAxes] = useState(true);
+  const [localDimensions, setShowDimensions] = useState(true);
+  const showDimensions = ideContext?.settings.showDimensions ?? localDimensions;
+  const [localAxes, setShowAxes] = useState(true);
+  const showAxes = ideContext?.settings.showAxes ?? localAxes;
   const [wireframeMode, setWireframeMode] = useState(false);
-  const [lightingMode, setLightingMode] = useState<'day' | 'evening' | 'cyber'>('day');
+  const [localLighting, setLightingMode] = useState<'day' | 'evening' | 'cyber'>('day');
+  const lightingMode = ideContext
+    ? ({ day: 'day', night: 'cyber', studio: 'evening' } as const)[ideContext.settings.lightingMode]
+    : localLighting;
   const [showLegend, setShowLegend] = useState(false);
 
   const clearSelection = useCallback(() => {
@@ -229,6 +234,9 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   useEffect(() => {
     if (!sceneManagerRef.current) return;
     sceneManagerRef.current.setLegacyPlacement(legacyPlacement);
+    sceneManagerRef.current.toggleDimensions(showDimensions);
+    sceneManagerRef.current.toggleAxes(showAxes);
+    sceneManagerRef.current.applyPreferences(ideContext?.settings.showGrid ?? true, ideContext?.settings.renderQuality ?? 'high');
 
     if (activeRoom) {
       sceneManagerRef.current.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
@@ -244,7 +252,7 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
       sceneManagerRef.current.clearRoom();
       prevFocusedIdRef.current = null;
     }
-  }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData, legacyPlacement]);
+  }, [activeRoom, activeObjectId, debugActiveObjectId, selectedEntityData, legacyPlacement, showDimensions, showAxes, ideContext?.settings.showGrid, ideContext?.settings.renderQuality, currentTheme, spatialBackground, lightingMode]);
 
   const handleRoomSelect = useCallback(
     (newRoomId: string) => {
@@ -265,14 +273,16 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
 
   const handleToggleDimensions = () => {
     const next = !showDimensions;
-    setShowDimensions(next);
+    if (ideContext) ideContext.updateSettings({ showDimensions: next });
+    else setShowDimensions(next);
     sceneManagerRef.current?.toggleDimensions(next);
     if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
   };
 
   const handleToggleAxes = () => {
     const next = !showAxes;
-    setShowAxes(next);
+    if (ideContext) ideContext.updateSettings({ showAxes: next });
+    else setShowAxes(next);
     sceneManagerRef.current?.toggleAxes(next);
     if (activeRoom) sceneManagerRef.current?.renderRoom(activeRoom, activeObjectId, debugActiveObjectId);
   };
@@ -285,7 +295,8 @@ export const Viewport3D: React.FC<Viewport3DProps> = ({
   };
 
   const handleLightingChange = (mode: 'day' | 'evening' | 'cyber') => {
-    setLightingMode(mode);
+    if (ideContext) ideContext.updateSettings({ lightingMode: ({ day: 'day', evening: 'studio', cyber: 'night' } as const)[mode] });
+    else setLightingMode(mode);
     sceneManagerRef.current?.setLighting(mode);
   };
 

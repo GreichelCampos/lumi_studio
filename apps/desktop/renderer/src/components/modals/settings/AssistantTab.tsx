@@ -12,10 +12,10 @@ export const AssistantTab: React.FC = () => {
       <div>
         <h3 className="text-sm font-bold text-[var(--ide-text)] mb-1 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[var(--ide-accent)]" />
-          <span>Asistente Lumi y sistema de compilación</span>
+          <span>Asistente Lumi</span>
         </h3>
         <p className="text-xs text-[var(--ide-text-muted)] mb-4">
-          Controla la presencia de la mascota interactiva Lumi y la validación en tiempo real.
+          Elegí cuándo mostrar la mascota y su color.
         </p>
 
         <div className="space-y-3">
@@ -34,35 +34,6 @@ export const AssistantTab: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
-            <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Compilación automática al escribir</div>
-              <div className="text-[11px] text-[var(--ide-text-muted)]">
-                Validar sintaxis y generar AST automáticamente tras 1.5s sin pulsar teclas
-              </div>
-            </div>
-            <input
-              type="checkbox"
-              checked={settings.autoCompileOnType}
-              onChange={(e) => updateSettings({ autoCompileOnType: e.target.checked })}
-              className="w-4 h-4 rounded accent-[var(--ide-accent)] cursor-pointer"
-            />
-          </div>
-
-          <div className="flex items-center justify-between p-3.5 rounded-xl bg-[var(--ide-control-bg,rgba(0,0,0,0.1))] border border-[var(--ide-panel-border)]">
-            <div>
-              <div className="text-xs font-semibold text-[var(--ide-text)]">Efectos de audio de la interfaz</div>
-              <div className="text-[11px] text-[var(--ide-text-muted)]">
-                Sonidos sutiles de confirmación al compilar o renderizar exitosamente
-              </div>
-            </div>
-            <input
-              type="checkbox"
-              checked={settings.soundEffects}
-              onChange={(e) => updateSettings({ soundEffects: e.target.checked })}
-              className="w-4 h-4 rounded accent-[var(--ide-accent)] cursor-pointer"
-            />
-          </div>
         </div>
 
         <div className="pt-5 mt-5 border-t border-[var(--ide-panel-border)]/60">

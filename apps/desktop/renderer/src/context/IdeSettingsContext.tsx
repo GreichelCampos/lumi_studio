@@ -34,6 +34,18 @@ export const IdeSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     return DEFAULT_IDE_SETTINGS;
   });
 
+  useEffect(() => {
+    const sync = (event: StorageEvent) => {
+      if (event.key !== SETTINGS_STORAGE_KEY || !event.newValue) return;
+      try {
+        const incoming = { ...DEFAULT_IDE_SETTINGS, ...JSON.parse(event.newValue) };
+        setSettings(previous => JSON.stringify(previous) === JSON.stringify(incoming) ? previous : incoming);
+      } catch { /* Keep the current preferences when stored data is invalid. */ }
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
   const currentTheme = useMemo(() => {
     return IDE_THEMES.find((t) => t.id === settings.theme) || IDE_THEMES[0];
   }, [settings.theme]);

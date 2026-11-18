@@ -25,7 +25,6 @@ import {
   Pencil,
   FileOutput,
   FileInput,
-  WandSparkles,
   BedDouble,
   CircleHelp,
   Info,
@@ -193,12 +192,6 @@ export const TopBar: React.FC<TopBarProps> = ({
       id: 'editar',
       label: 'Editar',
       items: [
-        { 
-          label: 'Formatear código Lumi (no disponible)',
-          action: () => showToast('El formateador de código Lumi todavía no está implementado.'),
-          shortcut: '',
-          icon: WandSparkles
-        },
         { 
           label: 'Guardar espacio de trabajo', 
           action: onSaveAll, 

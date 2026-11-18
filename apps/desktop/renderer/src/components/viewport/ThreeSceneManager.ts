@@ -41,6 +41,7 @@ export class ThreeSceneManager {
   private isWireframe = false;
   private showDimensions = true;
   private showReferenceAxes = true;
+  private quality: 'high' | 'balanced' | 'performance' = 'high';
   private lightingMode: 'day' | 'evening' | 'cyber' = 'day';
   private currentThemeDef: IdeThemeDefinition | null = null;
   private spatialSpaceMode: SpatialBackgroundMode = 'theme';
@@ -76,7 +77,7 @@ export class ThreeSceneManager {
       powerPreference: 'high-performance',
     });
     try {
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.quality === 'high' ? 2 : 1));
       this.renderer.setSize(width, height, false);
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -184,7 +185,7 @@ export class ThreeSceneManager {
     if (w === 0 || h === 0) return;
 
     this.cameraController.handleResize(this.currentRoom);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, this.quality === 'high' ? 2 : 1));
     this.renderer.setSize(w, h, false);
   }
 
@@ -552,6 +553,17 @@ export class ThreeSceneManager {
         rim.intensity = 0.45;
       }
     }
+  }
+
+  public applyPreferences(showGrid: boolean, quality: 'high' | 'balanced' | 'performance'): void {
+    const grid = this.scene.getObjectByName('gridHelper');
+    if (grid) grid.visible = showGrid;
+    if (this.quality === quality) return;
+    this.quality = quality;
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, quality === 'high' ? 2 : 1));
+    this.renderer.shadowMap.enabled = quality !== 'performance';
+    this.renderer.shadowMap.needsUpdate = true;
+    this.handleResize();
   }
 
   public toggleDimensions(show: boolean): void {
