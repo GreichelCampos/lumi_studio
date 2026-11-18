@@ -41,7 +41,7 @@ function CodeExample({ code }: { code: string }) {
 
   return (
     <div className="space-y-2">
-      <pre className="overflow-x-auto rounded-xl bg-[#02110c]/60 p-3 text-xs text-[#f3ebd6]"><code>{code}</code></pre>
+      <pre className="overflow-x-auto rounded-xl bg-[var(--ide-control-bg)] p-3 text-xs text-[var(--ide-text)]"><code>{code}</code></pre>
       <button type="button" onClick={() => void copy()} className="glass-btn rounded-lg px-3 py-1 text-xs">Copiar código</button>
       <span role="status" className="ml-2 text-xs">{status}</span>
     </div>
@@ -119,23 +119,23 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
         aria-modal="true"
         aria-labelledby="lumi-help-title"
         onClick={(e) => e.stopPropagation()}
-        className={`relative w-full max-h-[85vh] flex flex-col glass-modal text-slate-200 ${isAbout ? 'max-w-3xl' : 'max-w-4xl'}`}
+        className={`relative w-full max-h-[85vh] flex flex-col glass-modal text-[var(--ide-text)] ${isAbout ? 'max-w-3xl' : 'max-w-4xl'}`}
       >
-        <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[#f3ebd6]/15">
+        <div className="flex items-center justify-between px-6 py-4 glass-panel-header border-b border-[var(--ide-panel-border)]">
           <div className="flex items-center gap-3">
             {!isAbout && <LumiMascot state="ready" size={34} />}
             <div>
-              <h2 id="lumi-help-title" className="text-base font-bold text-[#f3ebd6] drop-shadow-[0_0_8px_rgba(243,235,214,0.4)]">
+              <h2 id="lumi-help-title" className="text-base font-bold text-[var(--ide-text)]">
                 {isAbout ? 'Acerca de Lumi Studio' : 'Ayuda de Lumi'}
               </h2>
-              {!isAbout && <p className="text-xs text-[#d5cbb2]">Lenguaje Unificado de Modelado de Interiores</p>}
+              {!isAbout && <p className="text-xs text-[var(--ide-text-muted)]">Lenguaje Unificado de Modelado de Interiores</p>}
             </div>
           </div>
           <button
             id="btn-close-documentation-modal"
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl glass-btn text-[#d5cbb2] hover:text-[#f3ebd6] transition-colors"
+            className="p-1.5 rounded-xl glass-btn text-[var(--ide-text-muted)] hover:text-[var(--ide-accent)] transition-colors"
             title="Cerrar modal (Esc)"
           >
             <X className="w-5 h-5" />
@@ -144,34 +144,34 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
 
         {isAbout ? (
           <section className="overflow-y-auto px-5 py-5 sm:px-7 sm:py-6 space-y-6 text-sm">
-            <div className="rounded-2xl border border-[#f3ebd6]/20 bg-[#112c22] px-5 py-6 flex items-center gap-5">
+            <div className="rounded-2xl border border-[var(--ide-panel-border)] bg-[var(--ide-accent-bg)] px-5 py-6 flex items-center gap-5">
               <div className="min-w-0 flex-1">
-                <p className="text-4xl font-bold tracking-tight text-[#f3ebd6]">LUMI</p>
-                <p className="mt-2 font-semibold text-[#f3ebd6]">Lenguaje Unificado de Modelado de Interiores</p>
-                <p className="mt-3 text-[#d5cbb2] leading-relaxed">Aprendé programación en español al diseñar habitaciones. Cambiá una medida o mové un mueble en el código y observá el resultado en 3D.</p>
+                <p className="text-4xl font-bold tracking-tight text-[var(--ide-text)]">LUMI</p>
+                <p className="mt-2 font-semibold text-[var(--ide-text)]">Lenguaje Unificado de Modelado de Interiores</p>
+                <p className="mt-3 text-[var(--ide-text-muted)] leading-relaxed">Aprendé programación en español al diseñar habitaciones. Cambiá una medida o mové un mueble en el código y observá el resultado en 3D.</p>
               </div>
               <div className="hidden sm:block shrink-0" aria-hidden="true"><LumiMascot state="ready" size={84} isAnimated={false} /></div>
             </div>
 
             <div>
-              <h3 className="flex items-center gap-2 font-semibold text-[#f3ebd6]"><MousePointer2 aria-hidden="true" className="h-4 w-4" /> Qué podés hacer</h3>
-              <p className="mt-2 leading-relaxed text-[#d5cbb2]">Creá espacios con paredes, puertas, ventanas y muebles. Revisá las colisiones y las puertas bloqueadas en Diagnósticos. Usá el depurador espacial para ver cómo cambia la escena paso a paso.</p>
+              <h3 className="flex items-center gap-2 font-semibold text-[var(--ide-text)]"><MousePointer2 aria-hidden="true" className="h-4 w-4" /> Qué podés hacer</h3>
+              <p className="mt-2 leading-relaxed text-[var(--ide-text-muted)]">Creá espacios con paredes, puertas, ventanas y muebles. Revisá las colisiones y las puertas bloqueadas en Diagnósticos. Usá el depurador espacial para ver cómo cambia la escena paso a paso.</p>
             </div>
 
             <div>
-              <h3 className="font-semibold text-[#f3ebd6]">Equipo</h3>
-              <p className="mt-1 text-xs leading-relaxed text-[#d5cbb2]">Proyecto de Paradigmas de Programación · Universidad Nacional, Campus Pérez Zeledón</p>
+              <h3 className="font-semibold text-[var(--ide-text)]">Equipo</h3>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--ide-text-muted)]">Proyecto de Paradigmas de Programación · Universidad Nacional, Campus Pérez Zeledón</p>
               <ul className="mt-3 grid gap-2 sm:grid-cols-3">
                 {LUMI_TEAM.map(({ name, github }) => (
-                  <li key={github} className="rounded-xl border border-[#f3ebd6]/15 bg-[#071b14] p-3">
-                    <p className="font-semibold text-[#f3ebd6]">{name}</p>
-                    <a className="mt-1 inline-flex items-center gap-1.5 break-all text-xs text-[#d5cbb2] underline underline-offset-2 hover:text-white" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">
+                  <li key={github} className="rounded-xl border border-[var(--ide-panel-border)] bg-[var(--ide-control-bg)] p-3">
+                    <p className="font-semibold text-[var(--ide-text)]">{name}</p>
+                    <a className="mt-1 inline-flex items-center gap-1.5 break-all text-xs text-[var(--ide-text-muted)] underline underline-offset-2 hover:text-[var(--ide-accent)]" href={`https://github.com/${github}`} target="_blank" rel="noreferrer">
                       @{github}<ExternalLink aria-hidden="true" className="h-3 w-3 shrink-0" />
                     </a>
                   </li>
                 ))}
               </ul>
-              <a className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[#f3ebd6]/25 px-3 py-2 text-xs font-semibold text-[#f3ebd6] hover:bg-[#f3ebd6]/10" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">
+              <a className="mt-4 inline-flex items-center gap-2 rounded-lg border border-[var(--ide-panel-border)] px-3 py-2 text-xs font-semibold text-[var(--ide-text)] hover:bg-[var(--ide-accent-bg)]" href={LUMI_REPOSITORY} target="_blank" rel="noreferrer">
                 <Github aria-hidden="true" className="h-4 w-4" /> Repositorio de Lumi Studio en GitHub <ExternalLink aria-hidden="true" className="h-3 w-3" />
               </a>
             </div>
@@ -186,7 +186,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                 value={query}
                 onChange={event => setQuery(event.target.value)}
                 placeholder="Ej. vectores, importar, ciclo"
-                className="min-w-0 flex-1 rounded-lg border border-[#f3ebd6]/25 bg-[#02110c]/60 px-3 py-2 text-sm"
+                className="min-w-0 flex-1 rounded-lg border border-[var(--ide-panel-border)] bg-[var(--ide-control-bg)] px-3 py-2 text-sm"
               />
             </div>
             <nav aria-label="Temas de ayuda" className="flex flex-wrap gap-2 px-6 pt-4">
@@ -197,7 +197,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                   aria-pressed={topic === id}
                   onClick={() => { setTopic(id); setQuery(''); }}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-semibold focus-visible:outline focus-visible:outline-offset-2 ${
-                    topic === id ? 'bg-[#f3ebd6] text-[#082016]' : 'glass-btn border-[#f3ebd6]/25 text-[#f3ebd6]'
+                    topic === id ? 'bg-[var(--ide-accent)] text-[var(--ide-accent-text)]' : 'glass-btn border-[var(--ide-panel-border)] text-[var(--ide-text)]'
                   }`}
                 >
                   {label}
@@ -253,9 +253,9 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                   <h3 className="text-sm font-bold">Ejemplos de Lumi</h3>
                   {LUMI_DOCUMENTATION_SECTIONS.map((sec, idx) => (
                     <div key={idx} className="glass-card p-4 space-y-2 !w-auto !h-auto">
-                      <h4 className="text-sm font-bold text-[#f3ebd6] drop-shadow-sm">{sec.title}</h4>
-                      <p className="text-xs font-semibold text-[#f3ebd6]">{exampleKindLabels[sec.exampleKind]}</p>
-                      <p className="text-xs text-[#d5cbb2] leading-relaxed">{sec.description}</p>
+                      <h4 className="text-sm font-bold text-[var(--ide-text)] drop-shadow-sm">{sec.title}</h4>
+                      <p className="text-xs font-semibold text-[var(--ide-text)]">{exampleKindLabels[sec.exampleKind]}</p>
+                      <p className="text-xs text-[var(--ide-text-muted)] leading-relaxed">{sec.description}</p>
                       <CodeExample code={sec.code} />
                     </div>
                   ))}
@@ -263,19 +263,19 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
               )}
               {topic === 'keywords' && (
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)] mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--ide-text)] mb-3 flex items-center gap-2">
                     <Code2 className="w-4 h-4" />
                     <span>Palabras reservadas y estructuras principales</span>
                   </h4>
                   <div className="space-y-4">
                     {Array.from(new Set(LUMI_KEYWORDS.map(item => item.category))).map(category => (
                       <section key={category}>
-                        <h5 className="mb-2 text-xs font-semibold text-[#d5cbb2]">{category}</h5>
+                        <h5 className="mb-2 text-xs font-semibold text-[var(--ide-text-muted)]">{category}</h5>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {LUMI_KEYWORDS.filter(item => item.category === category).map(item => (
                             <details key={item.word} className="glass-card p-3 !w-auto !h-auto text-xs">
-                              <summary className="cursor-pointer font-mono font-bold text-[#f3ebd6]">{item.word}</summary>
-                              <p className="my-2 leading-relaxed text-[#d5cbb2]">{item.desc}</p>
+                              <summary className="cursor-pointer font-mono font-bold text-[var(--ide-text)]">{item.word}</summary>
+                              <p className="my-2 leading-relaxed text-[var(--ide-text-muted)]">{item.desc}</p>
                               <CodeExample code={item.code} />
                             </details>
                           ))}
@@ -323,12 +323,12 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                       <div className="mt-3"><Procedure procedure={procedure} /></div>
                     </details>
                   ))}
-                <div className="p-4 rounded-2xl glass-card border border-[#f3ebd6]/25 flex items-center justify-between !w-auto !h-auto">
+                <div className="p-4 rounded-2xl glass-card border border-[var(--ide-panel-border)] flex items-center justify-between !w-auto !h-auto">
                   <div>
-                    <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Lumi Studio</span>
-                    <h3 className="text-lg font-extrabold text-[#f3ebd6] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
-                    <p className="text-xs text-[#d5cbb2] mt-1 max-w-xl leading-relaxed">
-                      Compilar analiza el archivo principal del proyecto. Ejecutar Lumi corre ese archivo y abre el visor cuando el programa genera una escena. El visor muestra habitaciones, pisos, paredes, puertas, ventanas y muebles colocados. Si el programa usa leer, aparece un formulario. Las instrucciones simples terminan en <code className="text-[#f3ebd6] bg-[#02110c]/60 px-1 rounded">&gt;&gt;</code>.
+                    <span className="text-xs font-bold tracking-widest uppercase text-[var(--ide-text)]">Lumi Studio</span>
+                    <h3 className="text-lg font-extrabold text-[var(--ide-text)] mt-0.5">“Imagina espacios. Prográmalos.”</h3>
+                    <p className="text-xs text-[var(--ide-text-muted)] mt-1 max-w-xl leading-relaxed">
+                      Compilar analiza el archivo principal del proyecto. Ejecutar Lumi corre ese archivo y abre el visor cuando el programa genera una escena. El visor muestra habitaciones, pisos, paredes, puertas, ventanas y muebles colocados. Si el programa usa leer, aparece un formulario. Las instrucciones simples terminan en <code className="text-[var(--ide-text)] bg-[var(--ide-control-bg)] px-1 rounded">&gt;&gt;</code>.
                     </p>
                   </div>
                   <div className="hidden sm:block">
@@ -336,36 +336,36 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                   </div>
                 </div>
                 <div className="glass-card p-4.5 !w-auto !h-auto">
-                  <h4 className="text-sm font-bold text-[#f3ebd6] mb-3 flex items-center gap-2 drop-shadow-sm">
-                    <Sparkles className="w-4 h-4 text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
+                  <h4 className="text-sm font-bold text-[var(--ide-text)] mb-3 flex items-center gap-2 drop-shadow-sm">
+                    <Sparkles className="w-4 h-4 text-[var(--ide-text)]" />
                     <span>Estados visuales del asistente Lumi</span>
                   </h4>
-                  <p className="text-xs text-[#d5cbb2]">Listo y Compilación exitosa usan el color elegido en Configuración del IDE. Compilando se muestra morado, Advertencia amarillo y Error rojo.</p>
+                  <p className="text-xs text-[var(--ide-text-muted)]">Listo y Compilación exitosa usan el color elegido en Configuración del IDE. Compilando se muestra morado, Advertencia amarillo y Error rojo.</p>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
-                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[#f3ebd6]/30">
+                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[var(--ide-panel-border)]">
                       <LumiMascot state="ready" size={40} isAnimated={false} />
-                      <span className="font-bold text-[#f3ebd6] mt-1">Color configurado</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Listo</span>
+                      <span className="font-bold text-[var(--ide-text)] mt-1">Color configurado</span>
+                      <span className="text-[10px] text-[var(--ide-text-muted)]">Listo</span>
                     </div>
-                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[#4d6932]/50">
+                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[var(--ide-panel-border)]">
                       <LumiMascot state="compiling" size={40} isAnimated={false} />
-                      <span className="font-bold text-[#f3ebd6] mt-1">Morado</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Compilando</span>
+                      <span className="font-bold text-[var(--ide-text)] mt-1">Morado</span>
+                      <span className="text-[10px] text-[var(--ide-text-muted)]">Compilando</span>
                     </div>
-                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-emerald-400/30">
+                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[var(--ide-panel-border)]">
                       <LumiMascot state="success" size={40} isAnimated={false} />
-                      <span className="font-bold text-emerald-300 mt-1">Color configurado</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Compilación exitosa</span>
+                      <span className="font-bold text-[var(--ide-text)] mt-1">Color configurado</span>
+                      <span className="text-[10px] text-[var(--ide-text-muted)]">Compilación exitosa</span>
                     </div>
-                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-amber-400/30">
+                    <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[var(--ide-panel-border)]">
                       <LumiMascot state="warning" size={40} isAnimated={false} />
-                      <span className="font-bold text-amber-300 mt-1">Amarillo</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Advertencia</span>
+                      <span className="font-bold text-[var(--ide-text)] mt-1">Amarillo</span>
+                      <span className="text-[10px] text-[var(--ide-text-muted)]">Advertencia</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-rose-400/30">
                       <LumiMascot state="error" size={40} isAnimated={false} />
-                      <span className="font-bold text-rose-300 mt-1">Rojo</span>
-                      <span className="text-[10px] text-[#d5cbb2]">Error recibido</span>
+                      <span className="font-bold text-[var(--ide-text)] mt-1">Rojo</span>
+                      <span className="text-[10px] text-[var(--ide-text-muted)]">Error recibido</span>
                     </div>
                   </div>
                 </div>
@@ -376,10 +376,10 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
           </>
         )}
 
-        <div className="px-6 py-3.5 glass-panel-header border-t border-[#f3ebd6]/15 flex items-center justify-end">
+        <div className="px-6 py-3.5 glass-panel-header border-t border-[var(--ide-panel-border)] flex items-center justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-[#f3ebd6] hover:bg-[#fff9ec] text-[#082016] font-bold text-xs transition-all shadow-lg shadow-[#02110c]/40 flex items-center gap-1.5"
+            className="px-5 py-2 rounded-xl bg-[var(--ide-accent)] hover:brightness-110 text-[var(--ide-accent-text)] font-bold text-xs transition-all shadow-lg flex items-center gap-1.5"
           >
             <Check className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Entendido</span>
