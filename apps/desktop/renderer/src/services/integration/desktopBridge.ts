@@ -9,6 +9,7 @@ export type InputReply = Pick<InputPrompt, 'requestId' | 'inputId'> & { value: s
 export type InputReplyResult = { ok: true } | { ok: false; error: BackendError };
 
 export interface DesktopBridge {
+  copyText?(text: string): Promise<void>;
   analyze(input: BackendInput): Promise<BackendReply>;
   execute(input: BackendInput, interactive?: boolean): Promise<BackendReply>;
   onInputPrompt?(listener: (prompt: InputPrompt | null) => void): () => void;

@@ -57,6 +57,11 @@ try {
   await editor.press('F1');
   const help = page.locator('#modal-documentation');
   await help.getByRole('heading', { name: 'Primeros pasos' }).waitFor();
+  const copiedCode = await help.locator('pre').first().innerText();
+  await help.getByRole('button', { name: 'Copiar código', exact: true }).first().click();
+  await help.getByText('Código copiado', { exact: true }).waitFor();
+  assert.equal(await desktop.evaluate(({ clipboard }) => clipboard.readText()), copiedCode);
+
   await desktop.evaluate(({ session }) => {
     session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (details, callback) => {
       callback({ cancel: !details.url.startsWith('http://127.0.0.1:') });

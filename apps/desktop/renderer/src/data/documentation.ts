@@ -6,37 +6,38 @@ export interface DocumentationSection {
 }
 
 export interface KeywordDoc {
+  code: string;
   word: string;
   category: string;
   desc: string;
 }
 
 export const LUMI_KEYWORDS: KeywordDoc[] = [
-  { word: 'principal', category: 'Estructura', desc: 'Define el bloque principal del programa' },
-  { word: 'habitacion', category: 'Espacio', desc: 'Declara una habitación con dimensiones (ancho, largo, alto)' },
-  { word: 'piso', category: 'Espacio', desc: 'Declara un piso con nombre y propiedades color o material' },
-  { word: 'pared', category: 'Espacio', desc: 'Declara una pared con orientación norte, sur, este u oeste' },
-  { word: 'puerta', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas' },
-  { word: 'ventana', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas' },
-  { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]' },
-  { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad' },
-  { word: 'mover', category: 'Transformación', desc: 'Reemplaza la posición absoluta de un objeto previamente colocado' },
-  { word: 'si / sino', category: 'Control', desc: 'Estructura condicional lógica' },
-  { word: 'hacer', category: 'Control', desc: 'Ciclo de iteración delimitado por cabecera con punto y coma (;)' },
-  { word: 'mientras', category: 'Control', desc: 'Ciclo condicional iterativo' },
-  { word: 'nulo', category: 'Valor', desc: 'Representa ausencia de valor; comparable solo con == y !=' },
-  { word: 'mostrar', category: 'E/S', desc: 'Emite texto o datos a la consola del IDE' },
-  { word: 'leer', category: 'E/S', desc: 'Pide un dato y continúa cuando la persona responde' },
-  { word: 'entero / decimal', category: 'Tipos', desc: 'Números sin parte fraccionaria y con punto decimal, por ejemplo 4 y 2.5' },
-  { word: 'texto', category: 'Tipos', desc: 'Cadena entre comillas dobles, por ejemplo "sala"' },
-  { word: 'booleano', category: 'Tipos', desc: 'Representa verdadero o falso para condiciones' },
-  { word: 'lista', category: 'Tipos', desc: 'Agrupa elementos entre corchetes y separados por comas' },
-  { word: 'vector', category: 'Tipos', desc: 'Contiene exactamente tres componentes [x, y, z]' },
-  { word: 'funcion / retornar', category: 'Funciones', desc: 'Declara una función con tipo de retorno. Usá vacio para una función sin resultado' },
-  { word: 'importar / usar', category: 'Proyectos', desc: 'Incorpora una función de otro archivo .lumi del proyecto' },
-  { word: 'segun / caso / defecto', category: 'Control', desc: 'Elige un bloque según el valor de una expresión' },
-  { word: 'y / o / no', category: 'Operaciones', desc: 'Combinan o invierten valores booleanos' },
-  { word: 'visualizar3D', category: 'Render', desc: 'Selecciona la habitación inicial del visor después de ejecutar, por ejemplo visualizar3D(sala)>>' },
+  { word: 'principal', category: 'Estructura', desc: 'Define el bloque principal del programa', code: "principal {\n  mostrar(\"Hola\")>>\n}" },
+  { word: 'habitacion', category: 'Espacio', desc: 'Declara una habitación con dimensiones (ancho, largo, alto)', code: "habitacion sala(6, 5, 3) {}" },
+  { word: 'piso', category: 'Espacio', desc: 'Declara un piso con nombre y propiedades color o material', code: "piso suelo { material \"madera\">> }" },
+  { word: 'pared', category: 'Espacio', desc: 'Declara una pared con orientación norte, sur, este u oeste', code: "pared norte { orientacion \"norte\">> }" },
+  { word: 'puerta', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas', code: "puerta acceso { orientacion \"norte\">> ancho 1>> alto 2>> desplazamiento 1>> }" },
+  { word: 'ventana', category: 'Aperturas', desc: 'Declara una abertura en una pared con orientación y medidas', code: "ventana luz { orientacion \"sur\">> ancho 1>> alto 1>> desplazamiento 1>> elevacion 1>> }" },
+  { word: 'colocar', category: 'Transformación', desc: 'Posiciona un objeto 3D en coordenadas [x, y, z]', code: "colocar asiento [0, 0, 0]>>" },
+  { word: 'rotar', category: 'Transformación', desc: 'Aplica rotación [rx, ry, rz] a una entidad', code: "rotar asiento [0, 90, 0]>>" },
+  { word: 'mover', category: 'Transformación', desc: 'Reemplaza la posición absoluta de un objeto previamente colocado', code: "mover asiento [1, 0, 0]>>" },
+  { word: 'si / sino', category: 'Control', desc: 'Estructura condicional lógica', code: "si cantidad > 0 { mostrar(\"Hay sillas\")>> } sino { mostrar(\"Sin sillas\")>> }" },
+  { word: 'hacer', category: 'Control', desc: 'Ciclo de iteración delimitado por cabecera con punto y coma (;)', code: "hacer entero i = 0; i < 3; i = i + 1 { mostrar(i)>> }" },
+  { word: 'mientras', category: 'Control', desc: 'Ciclo condicional iterativo', code: "entero i = 0>>\nmientras i < 3 { mostrar(i)>> i = i + 1>> }" },
+  { word: 'nulo', category: 'Valor', desc: 'Representa ausencia de valor; comparable solo con == y !=', code: "nulo resultado = nulo>>\nmostrar(resultado == nulo)>>" },
+  { word: 'mostrar', category: 'E/S', desc: 'Emite texto o datos a la consola del IDE', code: "mostrar(\"Hola\")>>" },
+  { word: 'leer', category: 'E/S', desc: 'Pide un dato y continúa cuando la persona responde', code: "texto nombre = leer(\"Nombre\")>>" },
+  { word: 'entero / decimal', category: 'Tipos', desc: 'Números sin parte fraccionaria y con punto decimal, por ejemplo 4 y 2.5', code: "entero cantidad = 4>>\ndecimal ancho = 5.5>>" },
+  { word: 'texto', category: 'Tipos', desc: 'Cadena entre comillas dobles, por ejemplo "sala"', code: "texto nombre = \"Sala\">>" },
+  { word: 'booleano', category: 'Tipos', desc: 'Representa verdadero o falso para condiciones', code: "booleano disponible = verdadero>>" },
+  { word: 'lista', category: 'Tipos', desc: 'Agrupa elementos entre corchetes y separados por comas', code: "lista colores = [\"azul\", \"rojo\"]>>" },
+  { word: 'vector', category: 'Tipos', desc: 'Contiene exactamente tres componentes [x, y, z]', code: "vector punto = [1, 0, 2]>>" },
+  { word: 'funcion / retornar', category: 'Funciones', desc: 'Declara una función con tipo de retorno. Usá vacio para una función sin resultado', code: "funcion entero doble(entero n) { retornar n * 2>> }\nprincipal { mostrar(doble(3))>> }" },
+  { word: 'importar / usar', category: 'Proyectos', desc: 'Incorpora una función de otro archivo .lumi del proyecto', code: "importar \"calculos.lumi\" usar doble>>\nprincipal { mostrar(doble(3))>> }" },
+  { word: 'segun / caso / defecto', category: 'Control', desc: 'Elige un bloque según el valor de una expresión', code: "texto acabado = \"madera\">>\nsegun acabado { caso \"madera\": mostrar(\"Madera\")>> defecto: mostrar(\"Otro\")>> }" },
+  { word: 'y / o / no', category: 'Operaciones', desc: 'Combinan o invierten valores booleanos', code: "booleano visible = verdadero y no falso>>\nmostrar(visible o falso)>>" },
+  { word: 'visualizar3D', category: 'Render', desc: 'Selecciona la habitación inicial del visor después de ejecutar, por ejemplo visualizar3D(sala)>>', code: "principal { habitacion sala(6, 5, 3) {} visualizar3D(sala)>> }" },
 ];
 
 export const LUMI_DOCUMENTATION_SECTIONS: DocumentationSection[] = [

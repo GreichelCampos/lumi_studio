@@ -71,4 +71,21 @@ describe('DocumentationModal', () => {
     expect(screen.getByRole('searchbox')).toHaveValue('');
     expect(screen.getByRole('heading', { name: 'Primeros pasos' })).toBeInTheDocument();
   });
+
+  it('copies examples through the desktop clipboard and expands keyword cards', async () => {
+    const copyText = vi.fn().mockResolvedValue(undefined);
+    window.lumiDesktop = { copyText } as unknown as Window['lumiDesktop'];
+    try {
+      render(<DocumentationModal isOpen onClose={vi.fn()} />);
+      fireEvent.click(screen.getByRole('button', { name: 'Palabras reservadas' }));
+      fireEvent.click(screen.getByText('vector', { exact: true }));
+      const card = screen.getByText('vector', { exact: true }).closest('details')!;
+      expect(card).toHaveAttribute('open');
+      fireEvent.click(card.querySelector('button')!);
+      expect(copyText).toHaveBeenCalledWith('vector punto = [1, 0, 2]>>');
+      await screen.findByText('Código copiado');
+    } finally {
+      delete window.lumiDesktop;
+    }
+  });
 });

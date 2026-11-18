@@ -6,6 +6,7 @@ import type { ViewportSelection, ViewportWindowBridge, ViewportWindowState } fro
 import type { StartupBridge } from '../renderer/src/startupBridge';
 
 const bridge: DesktopBridge = Object.freeze({
+  copyText: (text: string) => ipcRenderer.invoke('lumi:copyText', text),
   analyze: (input: BackendInput) => ipcRenderer.invoke('lumi:analyze', input),
   execute: (input: BackendInput, interactive?: boolean) => ipcRenderer.invoke('lumi:execute', input, interactive),
   onInputPrompt: (listener: (prompt: InputPrompt | null) => void) => {

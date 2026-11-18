@@ -5,7 +5,8 @@ import { localRendererUrl, trustedFrame, contentSecurityPolicy } from '../electr
 import { PythonWorker } from '../electron/pythonWorker';
 
 const handlers = vi.hoisted(() => new Map<string, (...args: unknown[]) => unknown>());
-vi.mock('electron', () => ({ ipcMain: {
+const writeText = vi.hoisted(() => vi.fn());
+vi.mock('electron', () => ({ clipboard: { writeText }, ipcMain: {
   handle: (channel: string, handler: (...args: unknown[]) => unknown) => handlers.set(channel, handler),
   removeHandler: (channel: string) => handlers.delete(channel),
 } }));
@@ -32,6 +33,23 @@ describe('IPC boundary', () => {
     expect(await handler({ ...event, senderFrame: { url: mainFrame.url } }, valid)).toMatchObject({ ok: false });
     expect(request).toHaveBeenCalledOnce();
     dispose(); expect(handlers.size).toBe(0);
+  });
+
+  it('copies only text from the authorized renderer', () => {
+    const mainFrame = { url: 'http://127.0.0.1:5173/' };
+    const window = { webContents: { mainFrame } } as unknown as BrowserWindow;
+    const worker = new PythonWorker({ root: '.' });
+    const dispose = registerIpc(window, worker, new URL(mainFrame.url));
+    try {
+      const handler = handlers.get('lumi:copyText')!;
+      const event = { sender: window.webContents, senderFrame: mainFrame };
+      handler(event, 'principal {}');
+      expect(writeText).toHaveBeenCalledWith('principal {}');
+      expect(() => handler({ ...event, sender: {} }, 'secret')).toThrow();
+      expect(() => handler(event, {})).toThrow();
+      expect(() => handler(event, 'a'.repeat(262145))).toThrow();
+      expect(writeText).toHaveBeenCalledTimes(1);
+    } finally { dispose(); }
   });
 
   it('restricts renderer URL and script policy', () => {

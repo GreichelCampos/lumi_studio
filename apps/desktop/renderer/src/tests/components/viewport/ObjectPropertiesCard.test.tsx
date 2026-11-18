@@ -116,24 +116,13 @@ describe('ObjectPropertiesCard', () => {
     expect(handleNavigate).toHaveBeenCalledWith(sourceRef);
   });
 
-  it('debe llamar a onClose tanto desde el botón de la X como desde el botón "Cerrar" del pie', () => {
-    const objectData = createMockSpatialObject();
-    const handleClose = vi.fn();
-
-    render(
-      <ObjectPropertiesCard
-        entity={{ kind: 'object', data: objectData }}
-        onClose={handleClose}
-      />
-    );
-
-    const btnX = screen.getByRole('button', { name: /cerrar detalles del objeto/i });
-    fireEvent.click(btnX);
-    expect(handleClose).toHaveBeenCalledTimes(1);
-
-    const btnFooterClose = screen.getByRole('button', { name: /^cerrar$/i });
-    fireEvent.click(btnFooterClose);
-    expect(handleClose).toHaveBeenCalledTimes(2);
+  it('provides a single close control', () => {
+    const close = vi.fn();
+    render(<ObjectPropertiesCard entity={{ kind: 'object', data: createMockSpatialObject() }} onClose={close} />);
+    const button = screen.getByRole('button', { name: 'Cerrar detalles del objeto' });
+    expect(screen.queryByRole('button', { name: 'Cerrar' })).not.toBeInTheDocument();
+    fireEvent.click(button);
+    expect(close).toHaveBeenCalledOnce();
   });
 
   it('debe mostrar banner de alerta cuando el objeto tiene colisión o está fuera de límites', () => {

@@ -1,4 +1,4 @@
-import { ipcMain, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
+import { clipboard, ipcMain, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
 import { backendError, WorkerError } from './backendError';
 import { validateInput } from './requestValidation';
 import { trustedFrame } from './security';
@@ -12,6 +12,13 @@ export function registerIpc(window: BrowserWindow, worker: PythonWorker, rendere
       throw new WorkerError('UNTRUSTED_SENDER', 'Origen IPC no autorizado.');
     }
   }
+  ipcMain.handle('lumi:copyText', (event, text: unknown) => {
+    authorize(event);
+    if (typeof text !== 'string' || text.length > 262_144) {
+      throw new WorkerError('INVALID_IPC_INPUT', 'El texto para copiar no es válido.');
+    }
+    clipboard.writeText(text);
+  });
   for (const operation of ['analyze', 'execute'] as const) {
     ipcMain.handle(`lumi:${operation}`, async (event, raw: unknown, interactive?: unknown) => {
       try {
@@ -40,6 +47,6 @@ export function registerIpc(window: BrowserWindow, worker: PythonWorker, rendere
     authorize(event); return worker.availability();
   });
   return () => {
-    for (const channel of ['lumi:analyze', 'lumi:execute', 'lumi:availability', 'lumi:replyInput']) ipcMain.removeHandler(channel);
+    for (const channel of ['lumi:copyText', 'lumi:analyze', 'lumi:execute', 'lumi:availability', 'lumi:replyInput']) ipcMain.removeHandler(channel);
   };
 }

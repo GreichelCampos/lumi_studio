@@ -20,8 +20,8 @@ def help_content():
     node = shutil.which("node")
     assert node is not None, "Validar la ayuda del IDE requiere Node.js 24."
     script = (
-        f"import {{ LUMI_DOCUMENTATION_SECTIONS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE, LUMI_FIRST_STEPS, LUMI_IDE_PROCEDURES }} from {json.dumps(module.as_uri())};"
-        "console.log(JSON.stringify({sections: LUMI_DOCUMENTATION_SECTIONS, errors: LUMI_COMMON_ERRORS, projects: LUMI_PROJECT_EXAMPLES, debugger: LUMI_DEBUG_GUIDE, firstSteps: LUMI_FIRST_STEPS, procedures: LUMI_IDE_PROCEDURES}));"
+        f"import {{ LUMI_DOCUMENTATION_SECTIONS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE, LUMI_FIRST_STEPS, LUMI_IDE_PROCEDURES, LUMI_KEYWORDS }} from {json.dumps(module.as_uri())};"
+        "console.log(JSON.stringify({sections: LUMI_DOCUMENTATION_SECTIONS, errors: LUMI_COMMON_ERRORS, projects: LUMI_PROJECT_EXAMPLES, debugger: LUMI_DEBUG_GUIDE, firstSteps: LUMI_FIRST_STEPS, procedures: LUMI_IDE_PROCEDURES, keywords: LUMI_KEYWORDS}));"
     )
     result = subprocess.run(
         [node, "--experimental-strip-types", "--input-type=module", "-e", script],
@@ -161,3 +161,9 @@ def test_getting_started_and_read_procedure_examples(help_content):
             assert room.elements[1].position is not None
         else:
             assert result.output == ("Ana",)
+
+def test_keyword_cards_have_parseable_usage_examples(help_content):
+    for keyword in help_content["keywords"]:
+        parser = Parser(Lexer(keyword["code"], "referencia.lumi").tokenize())
+        parser.parse()
+        assert parser.diagnostics == [], keyword["word"]

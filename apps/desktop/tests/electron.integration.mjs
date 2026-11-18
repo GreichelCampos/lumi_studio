@@ -27,7 +27,7 @@ try {
   assert.equal(preferences.nodeIntegration, false);
   assert.equal(preferences.sandbox, true);
   assert.equal(await page.evaluate(() => typeof window.require), 'undefined');
-  assert.deepEqual(await page.evaluate(() => Object.keys(window.lumiDesktop).sort()), ['analyze', 'availability', 'execute', 'onInputPrompt', 'replyInput']);
+  assert.deepEqual(await page.evaluate(() => Object.keys(window.lumiDesktop).sort()), ['analyze', 'availability', 'copyText', 'execute', 'onInputPrompt', 'replyInput']);
   assert.equal(await page.getByLabel('Modo de demostración').count(), 0);
   const editor = page.locator('textarea');
   await editor.fill('principal { mostrar("SALIDA_REAL_PYTHON_42")>> }');

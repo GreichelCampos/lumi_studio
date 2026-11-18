@@ -31,7 +31,8 @@ function CodeExample({ code }: { code: string }) {
 
   async function copy() {
     try {
-      await navigator.clipboard.writeText(code);
+      if (window.lumiDesktop?.copyText) await window.lumiDesktop.copyText(code);
+      else await navigator.clipboard.writeText(code);
       setStatus('Código copiado');
     } catch {
       setStatus('Seleccioná el código para copiarlo.');
@@ -266,15 +267,20 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <Code2 className="w-4 h-4" />
                     <span>Palabras reservadas y estructuras principales</span>
                   </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
-                    {LUMI_KEYWORDS.map((item) => (
-                      <div key={item.word} className="glass-card p-3 !w-auto !h-auto">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[#f3ebd6] font-bold drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">{item.word}</span>
-                          <span className="text-[9px] text-[#f3ebd6] font-sans uppercase font-bold glass-btn px-1.5 py-0.5 rounded-full bg-[#4d6932]/30">{item.category}</span>
+                  <div className="space-y-4">
+                    {Array.from(new Set(LUMI_KEYWORDS.map(item => item.category))).map(category => (
+                      <section key={category}>
+                        <h5 className="mb-2 text-xs font-semibold text-[#d5cbb2]">{category}</h5>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          {LUMI_KEYWORDS.filter(item => item.category === category).map(item => (
+                            <details key={item.word} className="glass-card p-3 !w-auto !h-auto text-xs">
+                              <summary className="cursor-pointer font-mono font-bold text-[#f3ebd6]">{item.word}</summary>
+                              <p className="my-2 leading-relaxed text-[#d5cbb2]">{item.desc}</p>
+                              <CodeExample code={item.code} />
+                            </details>
+                          ))}
                         </div>
-                        <p className="text-[10px] text-[#d5cbb2] font-sans mt-1.5 leading-snug">{item.desc}</p>
-                      </div>
+                      </section>
                     ))}
                   </div>
                 </div>
@@ -334,20 +340,21 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                     <Sparkles className="w-4 h-4 text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]" />
                     <span>Estados visuales del asistente Lumi</span>
                   </h4>
+                  <p className="text-xs text-[#d5cbb2]">Listo y Compilación exitosa usan el color elegido en Configuración del IDE. Compilando se muestra morado, Advertencia amarillo y Error rojo.</p>
                   <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-xs">
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[#f3ebd6]/30">
                       <LumiMascot state="ready" size={40} isAnimated={false} />
-                      <span className="font-bold text-[#f3ebd6] mt-1">Crema</span>
+                      <span className="font-bold text-[#f3ebd6] mt-1">Color configurado</span>
                       <span className="text-[10px] text-[#d5cbb2]">Listo</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-[#4d6932]/50">
                       <LumiMascot state="compiling" size={40} isAnimated={false} />
-                      <span className="font-bold text-[#f3ebd6] mt-1">Oliva</span>
+                      <span className="font-bold text-[#f3ebd6] mt-1">Morado</span>
                       <span className="text-[10px] text-[#d5cbb2]">Compilando</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-emerald-400/30">
                       <LumiMascot state="success" size={40} isAnimated={false} />
-                      <span className="font-bold text-emerald-300 mt-1">Verde</span>
+                      <span className="font-bold text-emerald-300 mt-1">Color configurado</span>
                       <span className="text-[10px] text-[#d5cbb2]">Compilación exitosa</span>
                     </div>
                     <div className="flex flex-col items-center text-center p-2.5 rounded-xl glass-btn border-amber-400/30">
