@@ -56,6 +56,20 @@ try {
   await page.getByRole('button', { name: 'Ir al código (principal.lumi:2)', exact: true }).click();
   await editor.press('F1');
   const help = page.locator('#modal-documentation');
+  await help.getByRole('heading', { name: 'Primeros pasos' }).waitFor();
+  await desktop.evaluate(({ session }) => {
+    session.defaultSession.webRequest.onBeforeRequest({ urls: ['http://*/*', 'https://*/*'] }, (details, callback) => {
+      callback({ cancel: !details.url.startsWith('http://127.0.0.1:') });
+    });
+  });
+  await help.getByRole('searchbox', { name: 'Buscar en la ayuda' }).fill('archivo principal');
+  await help.getByText('Identificar el archivo principal', { exact: true }).waitFor();
+  await help.getByRole('button', { name: 'Guía del IDE', exact: true }).click();
+  await help.getByText('Compilar y Ejecutar Lumi', { exact: true }).click();
+  await help.getByText(/Algunas comprobaciones dependen de los valores/).waitFor();
+  await help.getByRole('button', { name: 'Palabras reservadas', exact: true }).click();
+  await help.getByText('Palabras reservadas y estructuras principales', { exact: true }).waitFor();
+  await help.getByRole('button', { name: 'Errores frecuentes', exact: true }).click();
   await help.getByRole('heading', { name: 'Errores frecuentes' }).waitFor();
   await help.getByText('Paréntesis, corchetes y comas', { exact: true }).click();
   await help.getByText(/Un vector va entre corchetes/).waitFor();

@@ -302,7 +302,7 @@ principal {
 ];
 
 export const LUMI_DEBUG_GUIDE = [
-  { title: 'Ejecutá una habitación', advice: 'Pegá este programa en el archivo principal y pulsá Ejecutar Lumi (F6). La escena final muestra la silla desplazada.',
+  { title: 'Ejecutá una habitación', expected: 'El visor muestra sala con la silla en [1, 0, 0].', troubleshooting: 'Si falta la escena, comprobá el archivo principal, el programa completo y Diagnósticos.', advice: 'Pegá este programa en el archivo principal y pulsá Ejecutar Lumi (F6). La escena final muestra la silla desplazada.',
     code: `principal {
   habitacion sala(5, 4, 3) {
     silla asiento {}
@@ -310,10 +310,137 @@ export const LUMI_DEBUG_GUIDE = [
     mover asiento [1, 0, 0]>>
   }
 }` },
-  { title: 'Avanzá por los pasos', advice: 'Abrí Depurador en la consola. Usá Paso anterior y Paso siguiente o Reproducir paso a paso. El visor muestra cómo estaba la habitación en el paso elegido.',
+  { title: 'Avanzá por los pasos', expected: 'El contador cambia y el visor muestra el estado del paso seleccionado.', troubleshooting: 'Si indica Paso 0 de 0, usá Ejecutar Lumi con el programa del primer paso.', advice: 'Abrí Depurador espacial en la consola. Usá Paso anterior y Paso siguiente o Reproducir paso a paso. El visor muestra cómo estaba la habitación en el paso elegido.',
     code: 'colocar asiento [0, 0, 0]>>' },
-  { title: 'Inspeccioná el objeto y su código', advice: 'Buscá el paso de mover. Revisá la línea activa y la posición del objeto. Si el paso tiene una referencia al código, podés ir a esa línea.',
+  { title: 'Inspeccioná el objeto y su código', expected: 'El paso de mover corresponde a la posición [1, 0, 0] y muestra su ubicación en el código.', troubleshooting: 'Si no hay datos del mueble, avanzá hasta su colocación. Una declaración sin colocar todavía no dibuja el objeto.', advice: 'Buscá el paso de mover. Revisá la línea activa y la posición del objeto. Si el paso tiene una referencia al código, podés ir a esa línea.',
     code: 'mover asiento [1, 0, 0]>>' },
-  { title: 'Probá una coordenada fuera de la sala', advice: 'Cambiá el movimiento a este valor y volvé a ejecutar. El diagnóstico indica que el asiento salió de la habitación. Volvé a usar [1, 0, 0] y revisá la escena.',
+  { title: 'Probá una coordenada fuera de la sala', expected: 'Diagnósticos muestra que el asiento queda fuera de los límites. Al corregir y ejecutar vuelve la escena válida.', troubleshooting: 'Si no aparece el error, comprobá que cambiaste el mover del archivo principal y ejecutaste de nuevo.', advice: 'Cambiá el movimiento a este valor y volvé a ejecutar. El diagnóstico indica que el asiento salió de la habitación. Volvé a usar [1, 0, 0] y revisá la escena.',
     code: 'mover asiento [20, 0, 0]>>' },
+];
+
+
+export interface HelpProcedure {
+  title: string;
+  action: string;
+  expected: string;
+  troubleshooting: string;
+  code?: string;
+}
+
+export const LUMI_FIRST_STEPS: HelpProcedure[] = [
+  {
+    title: 'Crear un proyecto',
+    action: 'Abrí Archivo → Nuevo proyecto... Escribí MiPrimeraSala, pulsá Elegir carpeta... y seleccioná dónde guardar el proyecto. Pulsá Crear proyecto.',
+    expected: 'El explorador muestra el proyecto y abre principal.lumi.',
+    troubleshooting: 'Si no se crea, revisá el nombre, la ubicación y el aviso del formulario. Elegí una carpeta donde tengás permiso para guardar.',
+  },
+  {
+    title: 'Identificar el archivo principal',
+    action: 'Abrí principal.lumi y comprobá la etiqueta Principal en el explorador. Si todavía no es el principal, abrí sus Opciones de archivo y elegí Establecer como principal.',
+    expected: 'Ese archivo queda marcado como principal. Compilar y Ejecutar Lumi lo usan aunque después seleccionés otra pestaña.',
+    troubleshooting: 'Si se ejecuta otro programa o se solicita un principal, revisá qué archivo está marcado en el explorador.',
+  },
+  {
+    title: 'Editar el programa',
+    action: 'Usá Copiar código, cerrá la ayuda con Entendido y pegá este programa completo en principal.lumi. Podés volver a consultar F1 en cualquier momento.',
+    expected: 'El editor contiene el bloque principal, la habitación sala, el piso suelo y la silla asiento colocada en el centro.',
+    troubleshooting: 'Revisá las llaves, las comas y los cierres >>. El vector de colocar usa corchetes y exactamente tres componentes.',
+    code: `principal {
+  mostrar("Mi primera sala")>>
+  habitacion sala(6, 5, 3) {
+    piso suelo {
+      material "madera">>
+    }
+    silla asiento {
+      color "azul">>
+    }
+    colocar asiento [0, 0, 0]>>
+  }
+}`,
+  },
+  {
+    title: 'Guardar el archivo',
+    action: 'Elegí Archivo → Guardar archivo actual o pulsá Ctrl+S.',
+    expected: 'El estado del editor indica Guardado y el programa queda escrito en principal.lumi dentro de la carpeta del proyecto.',
+    troubleshooting: 'Si sigue modificado o aparece un aviso, revisá que la carpeta exista y permita escribir. Conservá el contenido del editor hasta resolver el guardado.',
+  },
+  {
+    title: 'Compilar el proyecto',
+    action: 'Pulsá Compilar o F5.',
+    expected: 'La consola registra el resultado del análisis. Este programa termina sin errores. El análisis por sí solo no abre una escena nueva.',
+    troubleshooting: 'Si falla, abrí Diagnósticos, leé la descripción y usá Ir al código para corregir la línea y columna señaladas. Después volvé a compilar.',
+  },
+  {
+    title: 'Ejecutar y comprobar el resultado',
+    action: 'Pulsá Ejecutar Lumi o F6. En Salida buscá Mi primera sala y revisá la ventana del visor 3D.',
+    expected: 'La consola muestra Mi primera sala. El visor contiene una habitación de 6 × 5 × 3 metros, un piso de madera y una silla azul. Un clic en la silla permite revisar sus propiedades.',
+    troubleshooting: 'Si falta el texto o la escena, revisá Diagnósticos y el archivo principal. Si la silla no se ve, comprobá colocar asiento [0, 0, 0]>> y usá Restablecer cámara isométrica.',
+  },
+];
+
+export const LUMI_IDE_PROCEDURES: HelpProcedure[] = [
+  {
+    title: 'Insertar una habitación desde el formulario',
+    action: 'Elegí Insertar → Habitación... o Alt+H. Completá el nombre y las dimensiones, revisá Código Lumi generado y pulsá Insertar en el editor.',
+    expected: 'La plantilla aparece en el archivo activo. Si la vas a ejecutar, ubicá la declaración dentro del bloque principal del archivo principal.',
+    troubleshooting: 'Si no se inserta, revisá los avisos del formulario y que haya un archivo abierto. Si ya existe una habitación con ese nombre, elegí otro nombre antes de ejecutar.',
+  },
+  {
+    title: 'Proyectos y archivos',
+    action: 'Usá Archivo → Abrir proyecto... y Abrir carpeta del disco... para trabajar con una carpeta existente. Nuevo archivo .lumi agrega un archivo al proyecto. Las Opciones de archivo permiten renombrar, eliminar y Establecer como principal. Guardar todos los cambios escribe los archivos modificados.',
+    expected: 'El explorador y las pestañas muestran los archivos del proyecto. El principal sigue identificado al abrir un módulo. Al cerrar una pestaña modificada, podés Guardar, Descartar o Cancelar.',
+    troubleshooting: 'Si una importación falla, verificá que ambos archivos pertenezcan al proyecto y que la ruta y la función coincidan. Antes de descartar, comprobá si necesitás conservar el borrador.',
+  },
+  {
+    title: 'Compilar y Ejecutar Lumi',
+    action: 'Usá Compilar (F5) para analizar el principal y sus importaciones. Usá Ejecutar Lumi (F6) para evaluar las instrucciones del programa y obtener su salida y escena.',
+    expected: 'Compilar informa problemas de sintaxis y tipos. Ejecutar Lumi puede pedir datos, escribir en Salida y abrir el visor. Algunas comprobaciones dependen de los valores calculados al ejecutar.',
+    troubleshooting: 'Un análisis sin errores no garantiza que una división tenga divisor distinto de cero o que todos los muebles queden dentro de la sala. Si falla F6, revisá el diagnóstico de ejecución.',
+  },
+  {
+    title: 'Responder a leer',
+    action: 'Ejecutá el ejemplo y escribí un nombre en Respuesta. Pulsá Enviar entrada. Para detener el programa mientras espera datos, elegí Cancelar ejecución.',
+    expected: 'Después de enviar, el programa continúa y Salida muestra el nombre. Compilar no abre el formulario de entrada.',
+    troubleshooting: 'Si el programa está esperando, revisá si el formulario Entrada del programa Lumi está abierto. leer devuelve texto; usá una variable de tipo texto para guardar la respuesta.',
+    code: `principal {
+  texto nombre = leer("¿Cómo te llamás?")>>
+  mostrar(nombre)>>
+}`,
+  },
+  {
+    title: 'Navegar e inspeccionar el visor',
+    action: 'Usá Acercar cámara, Alejar cámara y Restablecer cámara isométrica. Hacé clic en la vista para usar las flechas de desplazamiento; la rueda acerca la cámara al cursor. Elegí una habitación en el selector si hay varias. Seleccioná un mueble colocado y usá Ir al código en sus propiedades para abrir su declaración.',
+    expected: 'La cámara cambia de encuadre y la tarjeta muestra los datos del elemento seleccionado. Ir al código navega al archivo y la línea de su declaración.',
+    troubleshooting: 'Si no podés enfocar un mueble, comprobá que esté colocado y pertenezca a la habitación seleccionada. Si la vista quedó lejos, usá Restablecer cámara isométrica.',
+  },
+  {
+    title: 'Ajustes y captura de la escena',
+    action: 'En Configuración del IDE → Visor 3D y gráficos ajustá cuadrícula, ejes, cotas, iluminación y calidad. La barra del visor tiene Mostrar u ocultar ejes coordenados, Mostrar u ocultar cotas métricas, Modo alámbrico y controles de iluminación. Capturar imagen PNG guarda una imagen de la vista.',
+    expected: 'El visor refleja los ajustes. La captura descarga una imagen PNG con el encuadre actual.',
+    troubleshooting: 'Si la escena pierde fluidez, elegí Alto Rendimiento y reducí la cantidad de muebles. Si la imagen no aparece, revisá la ubicación de descargas y que exista una escena visible.',
+  },
+  {
+    title: 'Exportar y abrir una escena lumic',
+    action: 'Después de ejecutar un programa con habitaciones, usá Archivo → Exportar escena (.lumic)... Para consultar ese archivo, elegí Abrir escena (.lumic)... y seleccionalo.',
+    expected: 'La exportación guarda la escena del resultado actual. Abrir un .lumic muestra los datos almacenados en el archivo; no ejecuta de nuevo el programa .lumi. Solo incluye pasos de depuración si el archivo los contiene.',
+    troubleshooting: 'Si no se puede exportar, ejecutá un programa con una escena válida. Si falla la apertura, leé el aviso de validación y comprobá que elegiste un archivo .lumic compatible.',
+  },
+  {
+    title: 'Revisar el depurador espacial',
+    action: 'Ejecutá una habitación y abrí Depurador espacial. Usá Paso siguiente, Paso anterior, Ir al inicio (Paso 1), Ir al paso final y Reiniciar depuración. Reproducir paso a paso inicia el recorrido y Pausar depuración lo detiene. Podés cambiar la velocidad con los controles disponibles.',
+    expected: 'El contador avanza y el visor muestra la escena registrada en cada paso espacial. La línea y el objeto asociados permiten relacionar el código con lo que cambió. El recorrido de la pestaña Depurador espacial de esta ayuda muestra un ejemplo.',
+    troubleshooting: 'Si indica Paso 0 de 0, verificá que ejecutaste un programa que cree una escena. Compilar no genera pasos de ejecución. Un archivo .lumic puede no contener pasos. La reproducción recorre estados registrados y no vuelve a pedir datos de leer.',
+  },
+  {
+    title: 'Resolver errores y recuperar la escena',
+    action: 'Abrí Diagnósticos y consultá el archivo, la línea, la columna, la descripción y la solución cuando exista. Usá Ir al código, corregí el programa y pulsá Ejecutar Lumi otra vez.',
+    expected: 'Al corregir, el resultado nuevo reemplaza el anterior. Un programa que no supera las validaciones muestra el diagnóstico correspondiente.',
+    troubleshooting: 'Si borraste parte de una línea, revisá también el símbolo anterior al marcado. Para vectores usá [x, y, z]; para dimensiones usá (ancho, largo, alto). Si falta una propiedad obligatoria de pared, puerta o ventana, consultá Ejemplos.',
+  },
+  {
+    title: 'Atajos de teclado',
+    action: 'F1 abre la ayuda. F5 compila. F6 ejecuta. Ctrl+N abre Nuevo archivo .lumi; Ctrl+O abre Abrir proyecto...; Ctrl+S guarda el actual; Ctrl+Shift+S guarda todos; Ctrl+E exporta la escena; Ctrl+Shift+O abre la selección de .lumic; Ctrl+, abre Configuración; Alt+H abre Habitación...',
+    expected: 'El atajo abre el mismo flujo que el botón o el menú correspondiente. Escape cierra la ayuda y los formularios que admiten cancelación.',
+    troubleshooting: 'Cerrá el formulario activo antes de usar un atajo del editor. Si el teclado de tu equipo reserva las teclas F, usá la combinación Fn correspondiente o elegí la acción desde el menú.',
+  },
 ];

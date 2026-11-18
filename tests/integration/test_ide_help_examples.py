@@ -20,8 +20,8 @@ def help_content():
     node = shutil.which("node")
     assert node is not None, "Validar la ayuda del IDE requiere Node.js 24."
     script = (
-        f"import {{ LUMI_DOCUMENTATION_SECTIONS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE }} from {json.dumps(module.as_uri())};"
-        "console.log(JSON.stringify({sections: LUMI_DOCUMENTATION_SECTIONS, errors: LUMI_COMMON_ERRORS, projects: LUMI_PROJECT_EXAMPLES, debugger: LUMI_DEBUG_GUIDE}));"
+        f"import {{ LUMI_DOCUMENTATION_SECTIONS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE, LUMI_FIRST_STEPS, LUMI_IDE_PROCEDURES }} from {json.dumps(module.as_uri())};"
+        "console.log(JSON.stringify({sections: LUMI_DOCUMENTATION_SECTIONS, errors: LUMI_COMMON_ERRORS, projects: LUMI_PROJECT_EXAMPLES, debugger: LUMI_DEBUG_GUIDE, firstSteps: LUMI_FIRST_STEPS, procedures: LUMI_IDE_PROCEDURES}));"
     )
     result = subprocess.run(
         [node, "--experimental-strip-types", "--input-type=module", "-e", script],
@@ -140,3 +140,24 @@ def test_malformed_program_explains_what_to_correct(source, code, repair):
     assert (diagnostic.file, diagnostic.line) == ("principal.lumi", 2)
     assert 1 <= diagnostic.column <= len(source) + 1
     assert repair in f"{diagnostic.description} {diagnostic.suggestion or ''}"
+
+def test_getting_started_and_read_procedure_examples(help_content):
+    service = ExecutionService(interpreter_factory=lambda: Interpreter(input_provider=lambda _: "Ana"))
+    for procedure in help_content["firstSteps"] + help_content["procedures"]:
+        if not procedure.get("code"):
+            continue
+        result = service.execute_source(procedure["code"], "principal.lumi")
+        assert result.status is ExecutionStatus.COMPLETED, (procedure["title"], result.diagnostics)
+        if procedure["title"] == "Editar el programa":
+            assert result.output == ("Mi primera sala",)
+            assert result.scene_plan is not None
+            assert len(result.scene_plan.rooms) == 1
+            room = result.scene_plan.rooms[0]
+            assert room.name == "sala"
+            assert (room.width.value, room.length.value, room.height.value) == (6, 5, 3)
+            assert [(element.name, element.object_type) for element in room.elements] == [
+                ("suelo", None), ("asiento", "silla"),
+            ]
+            assert room.elements[1].position is not None
+        else:
+            assert result.output == ("Ana",)

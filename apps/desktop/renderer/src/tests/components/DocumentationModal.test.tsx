@@ -7,11 +7,16 @@ describe('DocumentationModal', () => {
     render(<DocumentationModal isOpen onClose={vi.fn()} />);
     expect(screen.getByRole('heading', { name: 'Ayuda de Lumi' })).toBeInTheDocument();
     expect(screen.queryByText('Manual y Especificación Oficial de Lumi')).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Primeros pasos' })).toBeInTheDocument();
+    expect(screen.getByText('Identificar el archivo principal')).toBeInTheDocument();
+    expect(screen.getByText('Ejecutar y comprobar el resultado')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Errores frecuentes' }));
     expect(screen.getByRole('heading', { name: 'Errores frecuentes' })).toBeInTheDocument();
     expect(screen.getByText('Paréntesis, corchetes y comas')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Palabras reservadas' }));
     expect(screen.getByRole('heading', { name: 'Palabras reservadas y estructuras principales' })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Guía del IDE' }));
+    fireEvent.click(screen.getByText('Compilar y Ejecutar Lumi', { exact: true }));
     expect(screen.getByText('Estados visuales del asistente Lumi')).toBeInTheDocument();
     expect(screen.getByText(/Compilar analiza el archivo principal/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Ejemplos' }));
@@ -52,5 +57,18 @@ describe('DocumentationModal', () => {
     expect(screen.getByText('Paso 2 de 4')).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Anterior' }));
     expect(screen.getByText('Paso 1 de 4')).toBeInTheDocument();
+  });
+
+  it('searches procedures and keeps their action, outcome and recovery available', () => {
+    render(<DocumentationModal isOpen onClose={vi.fn()} />);
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar en la ayuda' }), { target: { value: 'exportar' } });
+    fireEvent.click(screen.getByText('Exportar y abrir una escena lumic'));
+    expect(screen.getAllByText('Qué hacer').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Resultado esperado').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('Si falla').length).toBeGreaterThan(0);
+    expect(screen.getByText(/no ejecuta de nuevo el programa .lumi/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Primeros pasos' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.getByRole('heading', { name: 'Primeros pasos' })).toBeInTheDocument();
   });
 });

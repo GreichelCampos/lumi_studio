@@ -1,5 +1,5 @@
 import React from 'react';
-import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE } from '../data/documentation';
+import { LUMI_DOCUMENTATION_SECTIONS, LUMI_KEYWORDS, LUMI_COMMON_ERRORS, LUMI_PROJECT_EXAMPLES, LUMI_DEBUG_GUIDE, LUMI_FIRST_STEPS, LUMI_IDE_PROCEDURES, type HelpProcedure } from '../data/documentation';
 import { LUMI_REPOSITORY, LUMI_TEAM } from '../../../projectCredits';
 import { LumiMascot } from './LumiMascot';
 import { X, Code2, Check, Sparkles, ExternalLink, Github, MousePointer2 } from 'lucide-react';
@@ -11,6 +11,7 @@ interface DocumentationModalProps {
 }
 
 const helpTopics = [
+  { id: 'start', label: 'Primeros pasos' },
   { id: 'errors', label: 'Errores frecuentes' },
   { id: 'examples', label: 'Ejemplos' },
   { id: 'keywords', label: 'Palabras reservadas' },
@@ -46,11 +47,28 @@ function CodeExample({ code }: { code: string }) {
   );
 }
 
-const searchEntries = [
+function Procedure({ procedure }: { procedure: HelpProcedure }) {
+  return (
+    <div className="space-y-2 text-xs leading-relaxed">
+      <p><strong>Qué hacer</strong> {procedure.action}</p>
+      {procedure.code && <CodeExample code={procedure.code} />}
+      <p><strong>Resultado esperado</strong> {procedure.expected}</p>
+      <p><strong>Si falla</strong> {procedure.troubleshooting}</p>
+    </div>
+  );
+}
+
+const searchEntries: { title: string; description: string; code: string; procedure?: HelpProcedure }[] = [
+  ...[...LUMI_FIRST_STEPS, ...LUMI_IDE_PROCEDURES].map(procedure => ({
+    title: procedure.title,
+    description: [procedure.action, procedure.expected, procedure.troubleshooting].join(' '),
+    code: procedure.code ?? '',
+    procedure,
+  })),
   ...LUMI_DOCUMENTATION_SECTIONS.map(({ title, description, code }) => ({ title, description, code })),
   ...LUMI_COMMON_ERRORS.map(({ title, advice, code }) => ({ title, description: advice, code })),
   ...LUMI_PROJECT_EXAMPLES,
-  ...LUMI_DEBUG_GUIDE.map(({ title, advice, code }) => ({ title, description: advice, code })),
+  ...LUMI_DEBUG_GUIDE.map(({ title, advice, code, expected, troubleshooting }) => ({ title, description: [advice, expected, troubleshooting].join(' '), code, procedure: { title, action: advice, expected, troubleshooting, code } })),
   ...LUMI_KEYWORDS.map(({ word, category, desc }) => ({ title: word, description: category + ' · ' + desc, code: '' })),
 ];
 
@@ -63,7 +81,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
   view = 'syntax',
   onClose,
 }) => {
-  const [topic, setTopic] = React.useState<(typeof helpTopics)[number]['id']>('errors');
+  const [topic, setTopic] = React.useState<(typeof helpTopics)[number]['id']>('start');
   const [query, setQuery] = React.useState('');
   const [debugIndex, setDebugIndex] = React.useState(0);
   const terms = normalize(query).split(/\s+/).filter(Boolean);
@@ -188,16 +206,34 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
             {terms.length > 0 ? (
               <section className="flex-1 overflow-y-auto p-6 space-y-3" aria-label="Resultados de búsqueda">
                 <p role="status" className="text-xs">{searchResults.length ? `Resultados: ${searchResults.length}` : 'Sin resultados. Probá con otra palabra.'}</p>
-                {searchResults.map(({ title, description, code }) => (
-                  <details key={title} className="glass-card p-3 !w-auto !h-auto text-sm">
-                    <summary className="cursor-pointer font-semibold">{title}</summary>
-                    <p className="my-2 text-xs">{description}</p>
-                    {code && <CodeExample code={code} />}
+                {searchResults.map(entry => (
+                  <details key={entry.title} className="glass-card p-3 !w-auto !h-auto text-sm">
+                    <summary className="cursor-pointer font-semibold">{entry.title}</summary>
+                    {entry.procedure ? <Procedure procedure={entry.procedure} /> : (
+                      <>
+                        <p className="my-2 text-xs">{entry.description}</p>
+                        {entry.code && <CodeExample code={entry.code} />}
+                      </>
+                    )}
                   </details>
                 ))}
               </section>
             ) : (
             <div key={topic} className="flex-1 overflow-y-auto p-6 space-y-6">
+              {topic === 'start' && (
+                <section className="space-y-4">
+                  <h3 className="text-sm font-bold">Primeros pasos</h3>
+                  <p className="text-xs">Creá una sala desde cero y comprobá el resultado. Toda esta ayuda está disponible sin conexión.</p>
+                  <ol className="list-decimal pl-5 space-y-4">
+                    {LUMI_FIRST_STEPS.map(procedure => (
+                      <li key={procedure.title} className="glass-card p-4 !w-auto !h-auto">
+                        <h4 className="mb-2 text-sm font-semibold">{procedure.title}</h4>
+                        <Procedure procedure={procedure} />
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
               {topic === 'errors' && (
                 <section className="space-y-3">
                   <h3 className="text-sm font-bold">Errores frecuentes</h3>
@@ -264,8 +300,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
                   <article aria-live="polite" className="glass-card p-4 space-y-2 !w-auto !h-auto">
                     <p className="text-xs">Paso {debugIndex + 1} de {LUMI_DEBUG_GUIDE.length}</p>
                     <h4 className="text-sm font-semibold">{debugStep.title}</h4>
-                    <p className="text-xs">{debugStep.advice}</p>
-                    <CodeExample key={debugStep.title} code={debugStep.code} />
+                    <Procedure key={debugStep.title} procedure={{ ...debugStep, action: debugStep.advice }} />
                   </article>
                   <div className="flex flex-wrap gap-2">
                     <button type="button" className="glass-btn rounded-lg px-3 py-2 text-xs disabled:opacity-50" disabled={debugIndex === 0} onClick={() => setDebugIndex(debugIndex - 1)}>Anterior</button>
@@ -275,6 +310,13 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({
               )}
               {topic === 'ide' && (
                 <section className="space-y-4">
+                  <h3 className="text-sm font-bold">Guía del IDE</h3>
+                  {LUMI_IDE_PROCEDURES.map(procedure => (
+                    <details key={procedure.title} className="glass-card p-4 !w-auto !h-auto">
+                      <summary className="cursor-pointer text-sm font-semibold">{procedure.title}</summary>
+                      <div className="mt-3"><Procedure procedure={procedure} /></div>
+                    </details>
+                  ))}
                 <div className="p-4 rounded-2xl glass-card border border-[#f3ebd6]/25 flex items-center justify-between !w-auto !h-auto">
                   <div>
                     <span className="text-xs font-bold tracking-widest uppercase text-[#f3ebd6] drop-shadow-[0_0_6px_rgba(243,235,214,0.5)]">Lumi Studio</span>
